@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import StatCard from '@/components/ui/StatCard';
 import LessonCard from '@/components/lessons/LessonCard';
+import UserManagement from '@/components/admin/UserManagement';
 import { 
   Users, 
   Clock, 
@@ -22,6 +23,11 @@ import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
 
 export default function InstructorDashboard() {
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
   const { data: pupils = [], isLoading: pupilsLoading } = useQuery({
     queryKey: ['pupils'],
     queryFn: () => base44.entities.Pupil.list()
@@ -215,6 +221,18 @@ export default function InstructorDashboard() {
             </Card>
           </div>
         </div>
+
+        {/* Admin User Management */}
+        {currentUser?.role === 'admin' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-6"
+          >
+            <UserManagement />
+          </motion.div>
+        )}
       </div>
     </div>
   );
