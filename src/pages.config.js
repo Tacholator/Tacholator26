@@ -6,6 +6,7 @@ import LearnerDashboard from './pages/LearnerDashboard';
 import LearnerProgress from './pages/LearnerProgress';
 import LearnerLessons from './pages/LearnerLessons';
 import LearnerHomework from './pages/LearnerHomework';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -22,4 +23,5 @@ export const PAGES = {
 export const pagesConfig = {
     mainPage: "InstructorDashboard",
     Pages: PAGES,
+    Layout: __Layout,
 };

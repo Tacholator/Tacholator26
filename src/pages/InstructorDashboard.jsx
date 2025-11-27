@@ -13,7 +13,8 @@ import {
   Trophy,
   ChevronRight,
   Car,
-  Loader2
+  Loader2,
+  LayoutDashboard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,9 +63,37 @@ export default function InstructorDashboard() {
     );
   }
 
+  const quickNavItems = [
+    { name: 'Dashboard', icon: LayoutDashboard, page: 'InstructorDashboard', active: true },
+    { name: 'Calendar', icon: Calendar, page: 'Calendar' },
+    { name: 'Pupils', icon: Users, page: 'PupilList' },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
+        {/* Quick Nav Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex gap-2 mb-6"
+        >
+          {quickNavItems.map((item) => (
+            <Link
+              key={item.name}
+              to={createPageUrl(item.page)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                item.active
+                  ? 'bg-teal-600 text-white shadow-md'
+                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              <item.icon className="w-4 h-4" />
+              {item.name}
+            </Link>
+          ))}
+        </motion.div>
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
