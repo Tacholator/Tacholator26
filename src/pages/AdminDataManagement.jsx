@@ -15,6 +15,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { 
   ArrowLeft, 
   Trash2, 
@@ -25,8 +39,11 @@ import {
   GraduationCap,
   FolderOpen,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  Eye,
+  X
 } from 'lucide-react';
+import moment from 'moment';
 
 const dataEntities = [
   { 
@@ -75,8 +92,17 @@ const dataEntities = [
 
 export default function AdminDataManagement() {
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [confirmDeleteSingle, setConfirmDeleteSingle] = useState(null);
+  const [viewEntity, setViewEntity] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
+
+  // Fetch data for viewing
+  const { data: viewData = [], isLoading: viewLoading, refetch: refetchView } = useQuery({
+    queryKey: ['viewEntityData', viewEntity?.key],
+    queryFn: () => base44.entities[viewEntity.key].list(),
+    enabled: !!viewEntity
+  });
 
   // Fetch counts for each entity
   const { data: counts = {}, refetch: refetchCounts } = useQuery({
@@ -100,9 +126,44 @@ export default function AdminDataManagement() {
       }
       queryClient.invalidateQueries();
       refetchCounts();
+      if (viewEntity?.key === entityKey) {
+        refetchView();
+      }
     } finally {
       setIsDeleting(false);
       setConfirmDelete(null);
+    }
+  };
+
+  const handleDeleteSingle = async (entityKey, id) => {
+    setIsDeleting(true);
+    try {
+      await base44.entities[entityKey].delete(id);
+      queryClient.invalidateQueries();
+      refetchCounts();
+      refetchView();
+    } finally {
+      setIsDeleting(false);
+      setConfirmDeleteSingle(null);
+    }
+  };
+
+  const getDisplayValue = (item, entityKey) => {
+    switch (entityKey) {
+      case 'Pupil':
+        return `${item.firstName} ${item.lastName}`;
+      case 'Lesson':
+        return `${moment(item.date).format('D MMM YYYY')} - ${item.startTime}`;
+      case 'DiaryEntry':
+        return `${moment(item.date).format('D MMM YYYY')} - ${item.objective || 'No objective'}`;
+      case 'Skill':
+        return `${item.skillName} (${item.status})`;
+      case 'HomeworkItem':
+        return item.title;
+      case 'Resource':
+        return item.title;
+      default:
+        return item.id;
     }
   };
 
@@ -154,6 +215,15 @@ export default function AdminDataManagement() {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => setViewEntity(entity)}
+                        disabled={count === 0}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => setConfirmDelete(entity)}
                         disabled={count === 0}
                         className="text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700"
@@ -192,6 +262,88 @@ export default function AdminDataManagement() {
                 </>
               ) : (
                 'Delete All'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* View Records Dialog */}
+      <Dialog open={!!viewEntity} onOpenChange={() => setViewEntity(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {viewEntity && <viewEntity.icon className="w-5 h-5" />}
+              {viewEntity?.name} ({viewData.length})
+            </DialogTitle>
+          </DialogHeader>
+          <div className="overflow-y-auto flex-1">
+            {viewLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
+              </div>
+            ) : viewData.length === 0 ? (
+              <p className="text-center py-8 text-slate-500">No records found</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Record</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {viewData.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">
+                        {getDisplayValue(item, viewEntity?.key)}
+                      </TableCell>
+                      <TableCell className="text-slate-500">
+                        {moment(item.created_date).format('D MMM YYYY')}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setConfirmDeleteSingle({ entity: viewEntity, item })}
+                          className="text-rose-500 hover:text-rose-700 hover:bg-rose-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Delete Single */}
+      <AlertDialog open={!!confirmDeleteSingle} onOpenChange={() => setConfirmDeleteSingle(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this record?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete "{confirmDeleteSingle && getDisplayValue(confirmDeleteSingle.item, confirmDeleteSingle.entity?.key)}". This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => handleDeleteSingle(confirmDeleteSingle.entity.key, confirmDeleteSingle.item.id)}
+              disabled={isDeleting}
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
