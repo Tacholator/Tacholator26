@@ -9,7 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CheckCircle2, Circle, PlayCircle, Star } from 'lucide-react';
+import { CheckCircle2, Circle, PlayCircle, Star, Trophy } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 const statusConfig = {
   NotStarted: { label: 'Not Started', color: 'bg-slate-100 text-slate-600', icon: Circle },
@@ -19,6 +20,10 @@ const statusConfig = {
 };
 
 export default function SkillsGrid({ skills, onUpdateSkill, readOnly = false }) {
+  const independentCount = skills.filter(s => s.status === 'Independent').length;
+  const totalSkills = skills.length || 27;
+  const progressPercentage = Math.round((independentCount / totalSkills) * 100);
+
   const groupedSkills = skills.reduce((acc, skill) => {
     const category = skill.skillCode?.split('.')[0] || 'Other';
     if (!acc[category]) acc[category] = [];
@@ -50,6 +55,25 @@ export default function SkillsGrid({ skills, onUpdateSkill, readOnly = false }) 
 
   return (
     <div className="space-y-6">
+      {/* Progress Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-xl border border-slate-100 p-5"
+      >
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-amber-500" />
+            <h3 className="font-semibold text-slate-700">Overall DVSA Skills Progress</h3>
+          </div>
+          <span className="text-lg font-bold text-teal-600">{progressPercentage}%</span>
+        </div>
+        <Progress value={progressPercentage} className="h-3" />
+        <p className="text-sm text-slate-500 mt-2">
+          {independentCount} of {totalSkills} skills at Independent level
+        </p>
+      </motion.div>
+
       {Object.entries(groupedSkills).map(([category, categorySkills]) => (
         <motion.div
           key={category}
