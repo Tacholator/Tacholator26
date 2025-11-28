@@ -12,6 +12,7 @@ import {
   Loader2
 } from 'lucide-react';
 import LessonFormModal from '@/components/modals/LessonFormModal';
+import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import moment from 'moment';
 
 const VIEW_MODES = ['day', 'week', 'month'];
@@ -20,6 +21,7 @@ export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(moment());
   const [viewMode, setViewMode] = useState('week');
   const [showLessonModal, setShowLessonModal] = useState(false);
+  const [showDiaryModal, setShowDiaryModal] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
@@ -76,7 +78,42 @@ export default function Calendar() {
   const openEditLesson = (lesson) => {
     setSelectedLesson(lesson);
     setSelectedSlot(null);
-    setShowLessonModal(true);
+    // If lesson is Scheduled, open diary form; otherwise open lesson form
+    if (lesson.status === 'Scheduled') {
+      setShowDiaryModal(true);
+    } else {
+      setShowLessonModal(true);
+    }
+  };
+
+  const handleSaveDiaryAndComplete = async (diaryData) => {
+    if (!selectedLesson) return;
+    
+    // Create the diary entry
+    await base44.entities.DiaryEntry.create({
+      ...diaryData,
+      pupilId: selectedLesson.pupilId,
+      lessonId: selectedLesson.id,
+      instructorId: selectedLesson.instructorId
+    });
+
+    // Calculate lesson duration in hours
+    const startMoment = moment(selectedLesson.startTime, 'HH:mm');
+    const endMoment = moment(selectedLesson.endTime, 'HH:mm');
+    const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
+
+    // Update lesson status to Completed
+    await base44.entities.Lesson.update(selectedLesson.id, { status: 'Completed' });
+
+    // Update pupil's hoursCompleted
+    const pupil = pupilMap[selectedLesson.pupilId];
+    if (pupil) {
+      const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
+      await base44.entities.Pupil.update(pupil.id, { hoursCompleted: newHoursCompleted });
+      queryClient.invalidateQueries(['pupils']);
+    }
+
+    queryClient.invalidateQueries(['lessons']);
   };
 
   const navigate = (direction) => {
@@ -315,6 +352,19 @@ export default function Calendar() {
         pupils={pupils}
         onSave={handleSaveLesson}
         onDelete={handleDeleteLesson}
+      />
+
+      <DiaryEntryModal
+        open={showDiaryModal}
+        onClose={() => {
+          setShowDiaryModal(false);
+          setSelectedLesson(null);
+        }}
+        pupilId={selectedLesson?.pupilId}
+        lessonId={selectedLesson?.id}
+        lesson={selectedLesson}
+        pupil={selectedLesson ? pupilMap[selectedLesson.pupilId] : null}
+        onSave={handleSaveDiaryAndComplete}
       />
     </div>
   );

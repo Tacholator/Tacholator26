@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Loader2, Save } from 'lucide-react';
+import { Sparkles, Loader2, Save, CheckCircle, Clock, User } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import moment from 'moment';
+import { Badge } from '@/components/ui/badge';
 
-export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, existingEntry, onSave }) {
+export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, existingEntry, onSave, lesson, pupil }) {
   const [formData, setFormData] = useState(existingEntry || {
-    date: moment().format('YYYY-MM-DD'),
+    date: lesson?.date || moment().format('YYYY-MM-DD'),
     objective: '',
     whatWentWell: '',
     areasToImprove: '',
@@ -18,6 +19,13 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
     homeworkSuggestions: '',
     aiSummary: ''
   });
+
+  // Calculate lesson duration for display
+  const lessonDuration = lesson ? (() => {
+    const startMoment = moment(lesson.startTime, 'HH:mm');
+    const endMoment = moment(lesson.endTime, 'HH:mm');
+    return endMoment.diff(startMoment, 'minutes');
+  })() : 0;
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -79,9 +87,33 @@ Write a warm, supportive summary that highlights progress and next steps.`;
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-slate-800">
-            {existingEntry ? 'Edit Lesson Feedback' : 'Add Lesson Feedback'}
+            {existingEntry ? 'Edit Lesson Feedback' : 'Lesson Feedback'}
           </DialogTitle>
         </DialogHeader>
+
+        {/* Lesson Info Banner */}
+        {lesson && pupil && (
+          <div className="bg-slate-50 rounded-lg p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
+                <User className="w-5 h-5 text-teal-600" />
+              </div>
+              <div>
+                <p className="font-medium text-slate-800">{pupil.firstName} {pupil.lastName}</p>
+                <p className="text-sm text-slate-500">{moment(lesson.date).format('ddd, D MMM YYYY')}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="flex items-center gap-2 text-slate-600">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm">{lesson.startTime} - {lesson.endTime}</span>
+              </div>
+              <Badge className="mt-1 bg-blue-100 text-blue-700">
+                {lessonDuration} mins
+              </Badge>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-5 py-4">
           <div className="grid grid-cols-2 gap-4">
@@ -181,8 +213,8 @@ Write a warm, supportive summary that highlights progress and next steps.`;
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 gap-2">
-            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            Save Entry
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+            {lesson?.status === 'Scheduled' ? 'Save & Mark Completed' : 'Save Entry'}
           </Button>
         </DialogFooter>
       </DialogContent>
