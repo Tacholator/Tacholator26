@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -60,6 +60,7 @@ export default function Layout({ children, currentPageName }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -70,6 +71,23 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     base44.auth.isAuthenticated().then(setIsAuthenticated);
   }, []);
+
+  // Redirect learners to LearnerDashboard on first sign-in
+  useEffect(() => {
+    if (user && isAuthenticated) {
+      const isLearner = user.role === 'user';
+      const isOnInstructorPage = currentPageName === 'InstructorDashboard' || 
+                                  currentPageName === 'Calendar' || 
+                                  currentPageName === 'PupilList' ||
+                                  currentPageName === 'PupilProfile' ||
+                                  currentPageName === 'InstructorResources' ||
+                                  currentPageName === 'AdminDataManagement';
+      
+      if (isLearner && isOnInstructorPage) {
+        navigate(createPageUrl('LearnerDashboard'), { replace: true });
+      }
+    }
+  }, [user, isAuthenticated, currentPageName, navigate]);
 
   // Determine if user is instructor or learner
   const isInstructor = user?.role === 'admin';
