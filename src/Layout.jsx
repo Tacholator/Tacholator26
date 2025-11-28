@@ -44,7 +44,6 @@ const instructorNav = [
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
-  { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' },
 ];
 
 const learnerNav = [
@@ -91,7 +90,14 @@ export default function Layout({ children, currentPageName }) {
 
   // Determine if user is instructor or learner
   const isInstructor = user?.role === 'admin';
-  const navItems = isInstructor ? instructorNav : learnerNav;
+  const isMainAdmin = user?.email === 'fasobah@gmail.com';
+  
+  // Build nav items - add Data Management only for main admin
+  const navItems = isInstructor 
+    ? (isMainAdmin 
+        ? [...instructorNav, { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' }]
+        : instructorNav)
+    : learnerNav;
 
   const handleLogout = () => {
     base44.auth.logout();
