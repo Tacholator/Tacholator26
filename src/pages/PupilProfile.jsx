@@ -51,6 +51,7 @@ export default function PupilProfile() {
   const [showDiaryModal, setShowDiaryModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDiaryEntry, setSelectedDiaryEntry] = useState(null);
+  const [selectedLesson, setSelectedLesson] = useState(null);
 
   const queryClient = useQueryClient();
 
@@ -117,6 +118,34 @@ export default function PupilProfile() {
     } else {
       await createDiaryMutation.mutateAsync(data);
     }
+  };
+
+  const handleSaveDiaryAndComplete = async (diaryData) => {
+    if (!selectedLesson) return;
+    
+    // Create the diary entry
+    await base44.entities.DiaryEntry.create({
+      ...diaryData,
+      pupilId: selectedLesson.pupilId,
+      lessonId: selectedLesson.id,
+      instructorId: selectedLesson.instructorId
+    });
+
+    // Calculate lesson duration in hours
+    const startMoment = moment(selectedLesson.startTime, 'HH:mm');
+    const endMoment = moment(selectedLesson.endTime, 'HH:mm');
+    const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
+
+    // Update lesson status to Completed
+    await base44.entities.Lesson.update(selectedLesson.id, { status: 'Completed' });
+
+    // Update pupil's hoursCompleted
+    const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
+    await base44.entities.Pupil.update(pupil.id, { hoursCompleted: newHoursCompleted });
+    
+    queryClient.invalidateQueries(['lessons', pupilId]);
+    queryClient.invalidateQueries(['diaryEntries', pupilId]);
+    queryClient.invalidateQueries(['pupil', pupilId]);
   };
 
   const handleSavePupil = async (data) => {
@@ -282,6 +311,14 @@ export default function PupilProfile() {
           </TabsContent>
 
           <TabsContent value="lessons">
+            <div className="mb-4 flex justify-end">
+              <Link to={createPageUrl('Calendar')}>
+                <Button className="bg-teal-600 hover:bg-teal-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Book New Lesson
+                </Button>
+              </Link>
+            </div>
             <Card className="border-0 shadow-sm">
               <CardContent className="p-0">
                 <Table>
@@ -296,7 +333,17 @@ export default function PupilProfile() {
                   </TableHeader>
                   <TableBody>
                     {lessons.map(lesson => (
-                      <TableRow key={lesson.id}>
+                      <TableRow 
+                        key={lesson.id}
+                        className={lesson.status === 'Scheduled' ? 'cursor-pointer hover:bg-slate-50' : ''}
+                        onClick={() => {
+                          if (lesson.status === 'Scheduled') {
+                            setSelectedLesson(lesson);
+                            setSelectedDiaryEntry(null);
+                            setShowDiaryModal(true);
+                          }
+                        }}
+                      >
                         <TableCell className="font-medium">
                           {moment(lesson.date).format('ddd, D MMM YYYY')}
                         </TableCell>
@@ -343,10 +390,14 @@ export default function PupilProfile() {
         onClose={() => {
           setShowDiaryModal(false);
           setSelectedDiaryEntry(null);
+          setSelectedLesson(null);
         }}
         pupilId={pupilId}
+        lessonId={selectedLesson?.id}
+        lesson={selectedLesson}
+        pupil={pupil}
         existingEntry={selectedDiaryEntry}
-        onSave={handleSaveDiary}
+        onSave={selectedLesson ? handleSaveDiaryAndComplete : handleSaveDiary}
       />
 
       <PupilFormModal
