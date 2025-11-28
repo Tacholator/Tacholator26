@@ -117,7 +117,7 @@ export default function LearnerDashboard() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800">
-            Hello, {pupil.firstName}! 👋
+            Hello, {user?.firstName || pupil.firstName}! 👋
           </h1>
           <p className="text-slate-500 mt-1">
             Keep up the great work on your driving journey

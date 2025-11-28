@@ -143,7 +143,9 @@ export default function InstructorDashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-slate-800">
+            Welcome, {currentUser?.firstName || currentUser?.full_name?.split(' ')[0] || 'Instructor'}!
+          </h1>
           <p className="text-slate-500 mt-1">{moment().format('dddd, D MMMM YYYY')}</p>
         </motion.div>
 
