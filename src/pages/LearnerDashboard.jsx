@@ -1,5 +1,5 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -23,6 +23,8 @@ import {
 import moment from 'moment';
 
 export default function LearnerDashboard() {
+  const queryClient = useQueryClient();
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
@@ -46,6 +48,20 @@ export default function LearnerDashboard() {
     },
     enabled: !!user
   });
+
+  // Auto-link pupil record when learner signs in with matching email
+  const linkPupilMutation = useMutation({
+    mutationFn: ({ pupilId, userId }) => 
+      base44.entities.Pupil.update(pupilId, { linkedUserId: userId }),
+    onSuccess: () => queryClient.invalidateQueries(['myPupilProfile'])
+  });
+
+  useEffect(() => {
+    // If pupil exists but isn't linked yet, link it
+    if (pupil && user && !pupil.linkedUserId && pupil.email?.toLowerCase() === user.email?.toLowerCase()) {
+      linkPupilMutation.mutate({ pupilId: pupil.id, userId: user.id });
+    }
+  }, [pupil, user]);
 
   const { data: lessons = [] } = useQuery({
     queryKey: ['myLessons', pupil?.id],
