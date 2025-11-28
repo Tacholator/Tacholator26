@@ -46,7 +46,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
     phone: '',
     pickupAddress: '',
     preferredDaysTimes: '',
-    status: 'Lead',
+    status: 'Active',
     provisionalLicenceNumber: '',
     theoryTestDate: '',
     theoryTestNotBooked: false,

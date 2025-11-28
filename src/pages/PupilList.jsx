@@ -197,7 +197,6 @@ export default function PupilList() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="Lead">Lead</SelectItem>
               <SelectItem value="Active">Active</SelectItem>
               <SelectItem value="OnHold">On Hold</SelectItem>
               <SelectItem value="Passed">Passed</SelectItem>

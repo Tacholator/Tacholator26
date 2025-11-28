@@ -39,7 +39,6 @@ import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 
 const statusColors = {
-  Lead: 'bg-slate-100 text-slate-700',
   Active: 'bg-emerald-100 text-emerald-700',
   OnHold: 'bg-amber-100 text-amber-700',
   Passed: 'bg-blue-100 text-blue-700',
