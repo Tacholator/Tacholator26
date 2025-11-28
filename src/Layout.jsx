@@ -34,7 +34,8 @@ import {
   Menu,
   X,
   Car,
-  Trash2
+  Trash2,
+  Settings
 } from 'lucide-react';
 
 const instructorNav = [
@@ -136,12 +137,12 @@ export default function Layout({ children, currentPageName }) {
                 <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-slate-50 transition-colors">
                   <Avatar className="h-9 w-9">
                     <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white">
-                      {user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                      {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 text-left">
                     <p className="text-sm font-medium text-slate-700 truncate">
-                      {user?.full_name || user?.email}
+                      {user?.firstName ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}` : user?.full_name || user?.email}
                     </p>
                     <p className="text-xs text-slate-400">
                       {isInstructor ? 'Instructor' : 'Learner'}
@@ -150,6 +151,13 @@ export default function Layout({ children, currentPageName }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
+                  <Link to={createPageUrl('ProfileSettings')}>
+                    <DropdownMenuItem className="text-slate-600 cursor-pointer">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Profile Settings
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-slate-600">
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign out
@@ -181,7 +189,7 @@ export default function Layout({ children, currentPageName }) {
         </div>
         <Avatar className="h-8 w-8">
           <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-sm">
-            {user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+            {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
           </AvatarFallback>
         </Avatar>
       </div>
