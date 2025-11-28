@@ -14,6 +14,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   LayoutDashboard,
   Calendar,
   Users,
@@ -23,7 +33,8 @@ import {
   LogOut,
   Menu,
   X,
-  Car
+  Car,
+  Trash2
 } from 'lucide-react';
 
 const instructorNav = [
@@ -42,6 +53,8 @@ const learnerNav = [
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -59,6 +72,17 @@ export default function Layout({ children, currentPageName }) {
 
   const handleLogout = () => {
     base44.auth.logout();
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await base44.entities.User.delete(user.id);
+      base44.auth.logout();
+    } catch (error) {
+      console.error('Failed to delete account:', error);
+      setIsDeleting(false);
+    }
   };
 
   // Don't show layout for non-authenticated users
@@ -126,11 +150,16 @@ export default function Layout({ children, currentPageName }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={handleLogout} className="text-rose-600">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+                  <DropdownMenuItem onClick={handleLogout} className="text-slate-600">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign out
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-rose-600">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete account
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
