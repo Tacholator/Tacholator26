@@ -24,7 +24,9 @@ import {
   Plus,
   Clock,
   Loader2,
-  Edit
+  Edit,
+  CheckCircle2,
+  CircleDashed
 } from 'lucide-react';
 import ProgressRing from '@/components/ui/ProgressRing';
 import SkillsGrid from '@/components/skills/SkillsGrid';
@@ -231,31 +233,47 @@ export default function PupilProfile() {
               />
               
               <div className="space-y-3">
-                {pupil.theoryTestDate && (
-                  <div className="flex items-center gap-2 text-sm">
+                {/* Theory Test */}
+                <div className="flex items-center gap-2 text-sm">
+                  {pupil.theoryTestPassed ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  ) : pupil.theoryTestNotBooked ? (
+                    <CircleDashed className="w-4 h-4 text-slate-400" />
+                  ) : (
                     <Calendar className="w-4 h-4 text-blue-500" />
-                    <div>
-                      <p className="text-slate-400 text-xs">Theory Test</p>
-                      <p className="font-medium text-slate-700">
-                        {moment(pupil.theoryTestDate).format('D MMM YYYY')}
-                      </p>
-                    </div>
+                  )}
+                  <div>
+                    <p className="text-slate-400 text-xs">Theory Test</p>
+                    <p className="font-medium text-slate-700">
+                      {pupil.theoryTestPassed ? 'Passed' : 
+                       pupil.theoryTestNotBooked ? 'Not booked' :
+                       pupil.theoryTestDate ? moment(pupil.theoryTestDate).format('D MMM YYYY') : 'Not set'}
+                    </p>
                   </div>
-                )}
-                {pupil.practicalTestDate && (
-                  <div className="flex items-center gap-2 text-sm">
+                </div>
+                
+                {/* Practical Test */}
+                <div className="flex items-center gap-2 text-sm">
+                  {pupil.practicalTestPassed ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  ) : pupil.practicalTestNotBooked ? (
+                    <CircleDashed className="w-4 h-4 text-slate-400" />
+                  ) : (
                     <Calendar className="w-4 h-4 text-rose-500" />
-                    <div>
-                      <p className="text-slate-400 text-xs">Practical Test</p>
-                      <p className="font-medium text-slate-700">
-                        {moment(pupil.practicalTestDate).format('D MMM YYYY')}
-                      </p>
-                      {pupil.practicalTestCentre && (
-                        <p className="text-xs text-slate-400">{pupil.practicalTestCentre}</p>
-                      )}
-                    </div>
+                  )}
+                  <div>
+                    <p className="text-slate-400 text-xs">Practical Test</p>
+                    <p className="font-medium text-slate-700">
+                      {pupil.practicalTestPassed ? 'Passed' : 
+                       pupil.practicalTestNotBooked ? 'Not booked' :
+                       pupil.practicalTestDate ? moment(pupil.practicalTestDate).format('D MMM YYYY') : 'Not set'}
+                    </p>
+                    {pupil.practicalTestCentre && !pupil.practicalTestPassed && !pupil.practicalTestNotBooked && (
+                      <p className="text-xs text-slate-400">{pupil.practicalTestCentre}</p>
+                    )}
                   </div>
-                )}
+                </div>
+                
                 {pupil.googleSheetUrl && (
                   <a 
                     href={pupil.googleSheetUrl} 
