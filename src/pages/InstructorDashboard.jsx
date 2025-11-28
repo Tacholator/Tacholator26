@@ -150,7 +150,7 @@ export default function InstructorDashboard() {
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <StatCard
             title="Active Pupils"
             value={activePupils.length}
@@ -168,6 +168,12 @@ export default function InstructorDashboard() {
             value={todayLessons.length}
             icon={Calendar}
             color="amber"
+          />
+          <StatCard
+            title="Upcoming Tests"
+            value={upcomingTests.length}
+            icon={Trophy}
+            color="rose"
           />
         </div>
 
