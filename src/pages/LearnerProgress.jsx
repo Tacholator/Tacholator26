@@ -7,7 +7,7 @@ import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Loader2, CheckCircle2, Circle, PlayCircle, Star, Car } from 'lucide-react';
+import { ArrowLeft, Loader2, CheckCircle2, Circle, PlayCircle, Star, Car, ExternalLink } from 'lucide-react';
 import ProgressRing from '@/components/ui/ProgressRing';
 
 const statusConfig = {
@@ -128,8 +128,20 @@ export default function LearnerProgress() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-slate-800">Skills Progress</h1>
-          <p className="text-slate-500 mt-1">Track your driving skills development</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800">Skills Progress</h1>
+              <p className="text-slate-500 mt-1">Track your driving skills development</p>
+            </div>
+            {pupil.googleSheetUrl && (
+              <a href={pupil.googleSheetUrl} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="gap-2">
+                  <ExternalLink className="w-4 h-4" />
+                  Google Sheet
+                </Button>
+              </a>
+            )}
+          </div>
         </motion.div>
 
         {/* Stats Overview */}
