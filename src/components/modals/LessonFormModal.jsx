@@ -142,12 +142,32 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
 
           <div className="space-y-2">
             <Label htmlFor="location">Pickup Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => handleChange('location', e.target.value)}
-              placeholder="Enter pickup address"
-            />
+            <Select value={formData.locationType || 'Home'} onValueChange={(v) => {
+              handleChange('locationType', v);
+              if (v !== 'Other') {
+                handleChange('location', v);
+              } else {
+                handleChange('location', '');
+              }
+            }}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Home">Home</SelectItem>
+                <SelectItem value="Work">Work</SelectItem>
+                <SelectItem value="School">School</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+            {(formData.locationType === 'Other') && (
+              <Input
+                className="mt-2"
+                value={formData.location}
+                onChange={(e) => handleChange('location', e.target.value)}
+                placeholder="Enter pickup address"
+              />
+            )}
           </div>
 
           <div className="space-y-2">
@@ -162,27 +182,6 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
                 <SelectItem value="Cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="bufferBefore">Buffer Before (mins)</Label>
-              <Input
-                id="bufferBefore"
-                type="number"
-                value={formData.bufferBeforeMinutes}
-                onChange={(e) => handleChange('bufferBeforeMinutes', parseInt(e.target.value) || 0)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="bufferAfter">Buffer After (mins)</Label>
-              <Input
-                id="bufferAfter"
-                type="number"
-                value={formData.bufferAfterMinutes}
-                onChange={(e) => handleChange('bufferAfterMinutes', parseInt(e.target.value) || 0)}
-              />
-            </div>
           </div>
 
           <div className="space-y-2">

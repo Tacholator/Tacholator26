@@ -7,6 +7,7 @@ import { createPageUrl } from '@/utils';
 import StatCard from '@/components/ui/StatCard';
 import LessonCard from '@/components/lessons/LessonCard';
 import UserManagement from '@/components/admin/UserManagement';
+import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import { 
   Users, 
   Clock, 
@@ -21,8 +22,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export default function InstructorDashboard() {
+  const [showDiaryModal, setShowDiaryModal] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState(null);
+  const queryClient = useQueryClient();
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
@@ -60,6 +66,37 @@ export default function InstructorDashboard() {
     acc[p.id] = `${p.firstName} ${p.lastName}`;
     return acc;
   }, {});
+
+  const pupilFullMap = pupils.reduce((acc, p) => {
+    acc[p.id] = p;
+    return acc;
+  }, {});
+
+  const handleSaveDiaryAndComplete = async (diaryData) => {
+    if (!selectedLesson) return;
+    
+    await base44.entities.DiaryEntry.create({
+      ...diaryData,
+      pupilId: selectedLesson.pupilId,
+      lessonId: selectedLesson.id,
+      instructorId: selectedLesson.instructorId
+    });
+
+    const startMoment = moment(selectedLesson.startTime, 'HH:mm');
+    const endMoment = moment(selectedLesson.endTime, 'HH:mm');
+    const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
+
+    await base44.entities.Lesson.update(selectedLesson.id, { status: 'Completed' });
+
+    const pupil = pupilFullMap[selectedLesson.pupilId];
+    if (pupil) {
+      const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
+      await base44.entities.Pupil.update(pupil.id, { hoursCompleted: newHoursCompleted });
+    }
+
+    queryClient.invalidateQueries(['lessons']);
+    queryClient.invalidateQueries(['pupils']);
+  };
 
   if (pupilsLoading || lessonsLoading) {
     return (
@@ -164,6 +201,10 @@ export default function InstructorDashboard() {
                         key={lesson.id}
                         lesson={lesson}
                         pupilName={pupilMap[lesson.pupilId]}
+                        onClick={() => {
+                          setSelectedLesson(lesson);
+                          setShowDiaryModal(true);
+                        }}
                       />
                     ))}
                   </div>
@@ -234,6 +275,19 @@ export default function InstructorDashboard() {
           </motion.div>
         )}
       </div>
+
+      <DiaryEntryModal
+        open={showDiaryModal}
+        onClose={() => {
+          setShowDiaryModal(false);
+          setSelectedLesson(null);
+        }}
+        pupilId={selectedLesson?.pupilId}
+        lessonId={selectedLesson?.id}
+        lesson={selectedLesson}
+        pupil={selectedLesson ? pupilFullMap[selectedLesson.pupilId] : null}
+        onSave={handleSaveDiaryAndComplete}
+      />
     </div>
   );
 }
