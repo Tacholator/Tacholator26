@@ -24,13 +24,20 @@ export default function LearnerProgress() {
   });
 
   const { data: pupil } = useQuery({
-    queryKey: ['myPupilProfile', user?.email],
+    queryKey: ['myPupilProfile', user?.id, user?.email],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const pupils = await base44.entities.Pupil.filter({ email: user.email });
-      return pupils[0] || null;
+      if (!user) return null;
+      if (user.id) {
+        const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+        if (byLinkedId.length > 0) return byLinkedId[0];
+      }
+      if (user.email) {
+        const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+        return byEmail[0] || null;
+      }
+      return null;
     },
-    enabled: !!user?.email
+    enabled: !!user
   });
 
   const { data: skills = [], isLoading } = useQuery({
