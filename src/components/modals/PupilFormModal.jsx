@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Save, User, Car, Calendar } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Loader2, Save, User, Car, Calendar, Phone, CreditCard } from 'lucide-react';
 
 const DVSA_SKILLS = [
   { code: '1.1', name: 'Cockpit Drill' },
@@ -44,17 +45,31 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
   const [formData, setFormData] = useState(existingPupil || {
     firstName: '',
     lastName: '',
+    dateOfBirth: '',
     email: '',
     phone: '',
     pickupAddress: '',
     preferredDaysTimes: '',
     status: 'Lead',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    emergencyContactRelation: '',
+    medicalConditions: '',
+    wearsGlasses: false,
+    previousExperience: 'None',
+    previousHours: 0,
+    howHeardAboutUs: '',
     provisionalLicenceNumber: '',
+    provisionalLicenceExpiry: '',
     theoryTestDate: '',
+    theoryTestPassed: false,
     practicalTestDate: '',
     practicalTestCentre: '',
     targetHours: 45,
     hoursCompleted: 0,
+    pricePerHour: '',
+    paymentMethod: 'Cash',
+    notes: '',
     tags: []
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -84,18 +99,26 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="personal" className="gap-2">
-              <User className="w-4 h-4" />
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="personal" className="gap-1 text-xs">
+              <User className="w-3 h-3" />
               Personal
             </TabsTrigger>
-            <TabsTrigger value="driving" className="gap-2">
-              <Car className="w-4 h-4" />
+            <TabsTrigger value="emergency" className="gap-1 text-xs">
+              <Phone className="w-3 h-3" />
+              Emergency
+            </TabsTrigger>
+            <TabsTrigger value="driving" className="gap-1 text-xs">
+              <Car className="w-3 h-3" />
               Driving
             </TabsTrigger>
-            <TabsTrigger value="tests" className="gap-2">
-              <Calendar className="w-4 h-4" />
+            <TabsTrigger value="tests" className="gap-1 text-xs">
+              <Calendar className="w-3 h-3" />
               Tests
+            </TabsTrigger>
+            <TabsTrigger value="billing" className="gap-1 text-xs">
+              <CreditCard className="w-3 h-3" />
+              Billing
             </TabsTrigger>
           </TabsList>
 
@@ -118,6 +141,33 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                   onChange={(e) => handleChange('lastName', e.target.value)}
                   placeholder="Smith"
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={(e) => handleChange('dateOfBirth', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select value={formData.status} onValueChange={(v) => handleChange('status', v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Lead">Lead</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="OnHold">On Hold</SelectItem>
+                    <SelectItem value="Passed">Passed</SelectItem>
+                    <SelectItem value="Stopped">Stopped</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -166,56 +216,159 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select value={formData.status} onValueChange={(v) => handleChange('status', v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Lead">Lead</SelectItem>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="OnHold">On Hold</SelectItem>
-                  <SelectItem value="Passed">Passed</SelectItem>
-                  <SelectItem value="Stopped">Stopped</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="howHeardAboutUs">How did they hear about you?</Label>
+              <Input
+                id="howHeardAboutUs"
+                value={formData.howHeardAboutUs}
+                onChange={(e) => handleChange('howHeardAboutUs', e.target.value)}
+                placeholder="e.g., Google, Referral, Social Media"
+              />
             </div>
           </TabsContent>
 
-          <TabsContent value="driving" className="space-y-4 mt-4">
+          <TabsContent value="emergency" className="space-y-4 mt-4">
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg mb-4">
+              <p className="text-sm text-amber-800">Emergency contact details are important for safety during lessons.</p>
+            </div>
+            
             <div className="space-y-2">
-              <Label htmlFor="provisionalLicenceNumber">Provisional Licence Number</Label>
+              <Label htmlFor="emergencyContactName">Emergency Contact Name</Label>
               <Input
-                id="provisionalLicenceNumber"
-                value={formData.provisionalLicenceNumber}
-                onChange={(e) => handleChange('provisionalLicenceNumber', e.target.value)}
-                placeholder="SMITH901256AB9CD"
+                id="emergencyContactName"
+                value={formData.emergencyContactName}
+                onChange={(e) => handleChange('emergencyContactName', e.target.value)}
+                placeholder="Jane Smith"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="targetHours">Target Hours</Label>
+                <Label htmlFor="emergencyContactPhone">Contact Phone</Label>
                 <Input
-                  id="targetHours"
-                  type="number"
-                  value={formData.targetHours}
-                  onChange={(e) => handleChange('targetHours', parseInt(e.target.value))}
+                  id="emergencyContactPhone"
+                  value={formData.emergencyContactPhone}
+                  onChange={(e) => handleChange('emergencyContactPhone', e.target.value)}
+                  placeholder="07123 456789"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="hoursCompleted">Hours Completed</Label>
+                <Label htmlFor="emergencyContactRelation">Relationship</Label>
                 <Input
-                  id="hoursCompleted"
-                  type="number"
-                  value={formData.hoursCompleted}
-                  onChange={(e) => handleChange('hoursCompleted', parseInt(e.target.value))}
+                  id="emergencyContactRelation"
+                  value={formData.emergencyContactRelation}
+                  onChange={(e) => handleChange('emergencyContactRelation', e.target.value)}
+                  placeholder="e.g., Parent, Partner, Sibling"
                 />
               </div>
             </div>
 
+            <div className="border-t pt-4 mt-4">
+              <h4 className="font-medium text-slate-700 mb-3">Medical Information</h4>
+              
+              <div className="space-y-2 mb-4">
+                <Label htmlFor="medicalConditions">Medical Conditions</Label>
+                <Textarea
+                  id="medicalConditions"
+                  value={formData.medicalConditions}
+                  onChange={(e) => handleChange('medicalConditions', e.target.value)}
+                  placeholder="Any conditions that may affect driving (e.g., diabetes, epilepsy, anxiety)"
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="wearsGlasses"
+                  checked={formData.wearsGlasses}
+                  onCheckedChange={(checked) => handleChange('wearsGlasses', checked)}
+                />
+                <Label htmlFor="wearsGlasses" className="font-normal cursor-pointer">
+                  Wears glasses or contact lenses for driving
+                </Label>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="driving" className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="provisionalLicenceNumber">Provisional Licence Number</Label>
+                <Input
+                  id="provisionalLicenceNumber"
+                  value={formData.provisionalLicenceNumber}
+                  onChange={(e) => handleChange('provisionalLicenceNumber', e.target.value)}
+                  placeholder="SMITH901256AB9CD"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="provisionalLicenceExpiry">Licence Expiry Date</Label>
+                <Input
+                  id="provisionalLicenceExpiry"
+                  type="date"
+                  value={formData.provisionalLicenceExpiry}
+                  onChange={(e) => handleChange('provisionalLicenceExpiry', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="border-t pt-4 mt-2">
+              <h4 className="font-medium text-slate-700 mb-3">Previous Experience</h4>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="previousExperience">Experience Level</Label>
+                  <Select value={formData.previousExperience} onValueChange={(v) => handleChange('previousExperience', v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="None">No Previous Experience</SelectItem>
+                      <SelectItem value="Some Private Practice">Some Private Practice</SelectItem>
+                      <SelectItem value="Previous Lessons">Previous Lessons with Instructor</SelectItem>
+                      <SelectItem value="International Licence">International Licence Holder</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="previousHours">Previous Hours (if any)</Label>
+                  <Input
+                    id="previousHours"
+                    type="number"
+                    value={formData.previousHours}
+                    onChange={(e) => handleChange('previousHours', parseInt(e.target.value) || 0)}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 mt-2">
+              <h4 className="font-medium text-slate-700 mb-3">Training Progress</h4>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="targetHours">Target Hours</Label>
+                  <Input
+                    id="targetHours"
+                    type="number"
+                    value={formData.targetHours}
+                    onChange={(e) => handleChange('targetHours', parseInt(e.target.value))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="hoursCompleted">Hours Completed</Label>
+                  <Input
+                    id="hoursCompleted"
+                    type="number"
+                    value={formData.hoursCompleted}
+                    onChange={(e) => handleChange('hoursCompleted', parseInt(e.target.value))}
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="googleSheetUrl">Google Sheet URL</Label>
+              <Label htmlFor="googleSheetUrl">Google Sheet URL (optional)</Label>
               <Input
                 id="googleSheetUrl"
                 value={formData.googleSheetUrl || ''}
@@ -226,34 +379,99 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
           </TabsContent>
 
           <TabsContent value="tests" className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Label htmlFor="theoryTestDate">Theory Test Date</Label>
-              <Input
-                id="theoryTestDate"
-                type="date"
-                value={formData.theoryTestDate}
-                onChange={(e) => handleChange('theoryTestDate', e.target.value)}
-              />
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+              <p className="text-sm text-blue-800">Keep track of theory and practical test dates and results.</p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="practicalTestDate">Practical Test Date</Label>
-              <Input
-                id="practicalTestDate"
-                type="date"
-                value={formData.practicalTestDate}
-                onChange={(e) => handleChange('practicalTestDate', e.target.value)}
-              />
+            <h4 className="font-medium text-slate-700">Theory Test</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="theoryTestDate">Theory Test Date</Label>
+                <Input
+                  id="theoryTestDate"
+                  type="date"
+                  value={formData.theoryTestDate}
+                  onChange={(e) => handleChange('theoryTestDate', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2 flex items-end pb-2">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="theoryTestPassed"
+                    checked={formData.theoryTestPassed}
+                    onCheckedChange={(checked) => handleChange('theoryTestPassed', checked)}
+                  />
+                  <Label htmlFor="theoryTestPassed" className="font-normal cursor-pointer">
+                    Theory Test Passed
+                  </Label>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="practicalTestCentre">Test Centre</Label>
-              <Input
-                id="practicalTestCentre"
-                value={formData.practicalTestCentre}
-                onChange={(e) => handleChange('practicalTestCentre', e.target.value)}
-                placeholder="e.g., London Chingford"
-              />
+            <div className="border-t pt-4 mt-2">
+              <h4 className="font-medium text-slate-700 mb-3">Practical Test</h4>
+              
+              <div className="space-y-2">
+                <Label htmlFor="practicalTestDate">Practical Test Date</Label>
+                <Input
+                  id="practicalTestDate"
+                  type="date"
+                  value={formData.practicalTestDate}
+                  onChange={(e) => handleChange('practicalTestDate', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2 mt-4">
+                <Label htmlFor="practicalTestCentre">Test Centre</Label>
+                <Input
+                  id="practicalTestCentre"
+                  value={formData.practicalTestCentre}
+                  onChange={(e) => handleChange('practicalTestCentre', e.target.value)}
+                  placeholder="e.g., London Chingford"
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="billing" className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="pricePerHour">Price Per Hour (£)</Label>
+                <Input
+                  id="pricePerHour"
+                  type="number"
+                  value={formData.pricePerHour}
+                  onChange={(e) => handleChange('pricePerHour', parseFloat(e.target.value) || '')}
+                  placeholder="35"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod">Payment Method</Label>
+                <Select value={formData.paymentMethod} onValueChange={(v) => handleChange('paymentMethod', v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Cash">Cash</SelectItem>
+                    <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+                    <SelectItem value="Card">Card</SelectItem>
+                    <SelectItem value="Block Booking">Block Booking</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 mt-2">
+              <div className="space-y-2">
+                <Label htmlFor="notes">General Notes</Label>
+                <Textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) => handleChange('notes', e.target.value)}
+                  placeholder="Any additional notes about this pupil..."
+                  rows={4}
+                />
+              </div>
             </div>
           </TabsContent>
         </Tabs>
