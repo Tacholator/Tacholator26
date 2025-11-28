@@ -65,6 +65,15 @@ export default function Calendar() {
     }
   };
 
+  const handleStatusChangeToCompleted = async (pupilId, durationHours) => {
+    const pupil = pupilMap[pupilId];
+    if (pupil) {
+      const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
+      await base44.entities.Pupil.update(pupil.id, { hoursCompleted: newHoursCompleted });
+      queryClient.invalidateQueries(['pupils']);
+    }
+  };
+
   const handleDeleteLesson = async (id) => {
     await deleteLessonMutation.mutateAsync(id);
   };
@@ -352,6 +361,7 @@ export default function Calendar() {
         pupils={pupils}
         onSave={handleSaveLesson}
         onDelete={handleDeleteLesson}
+        onStatusChange={handleStatusChangeToCompleted}
       />
 
       <DiaryEntryModal
