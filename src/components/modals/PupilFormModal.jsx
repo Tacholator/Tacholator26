@@ -49,7 +49,11 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
     status: 'Lead',
     provisionalLicenceNumber: '',
     theoryTestDate: '',
+    theoryTestNotBooked: false,
+    theoryTestPassed: false,
     practicalTestDate: '',
+    practicalTestNotBooked: false,
+    practicalTestPassed: false,
     practicalTestCentre: '',
     targetHours: 45,
     hoursCompleted: 0,
@@ -227,36 +231,104 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
           </TabsContent>
 
           <TabsContent value="tests" className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Label htmlFor="theoryTestDate">Theory Test Date</Label>
-              <Input
-                id="theoryTestDate"
-                type="date"
-                value={formData.theoryTestDate}
-                onChange={(e) => handleChange('theoryTestDate', e.target.value)}
-              />
-            </div>
+                          <div className="space-y-2">
+                            <Label>Theory Test</Label>
+                            <div className="flex gap-4 mb-2">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="theoryStatus"
+                                  checked={!formData.theoryTestNotBooked && !formData.theoryTestPassed}
+                                  onChange={() => handleChange('theoryTestNotBooked', false) || handleChange('theoryTestPassed', false)}
+                                  className="w-4 h-4 text-teal-600"
+                                />
+                                <span className="text-sm text-slate-600">Date booked</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="theoryStatus"
+                                  checked={formData.theoryTestNotBooked}
+                                  onChange={() => handleChange('theoryTestNotBooked', true) || handleChange('theoryTestPassed', false) || handleChange('theoryTestDate', '')}
+                                  className="w-4 h-4 text-teal-600"
+                                />
+                                <span className="text-sm text-slate-600">Not booked</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="theoryStatus"
+                                  checked={formData.theoryTestPassed}
+                                  onChange={() => handleChange('theoryTestPassed', true) || handleChange('theoryTestNotBooked', false) || handleChange('theoryTestDate', '')}
+                                  className="w-4 h-4 text-teal-600"
+                                />
+                                <span className="text-sm text-slate-600">Passed</span>
+                              </label>
+                            </div>
+                            {!formData.theoryTestNotBooked && !formData.theoryTestPassed && (
+                              <Input
+                                id="theoryTestDate"
+                                type="date"
+                                value={formData.theoryTestDate}
+                                onChange={(e) => handleChange('theoryTestDate', e.target.value)}
+                              />
+                            )}
+                          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="practicalTestDate">Practical Test Date</Label>
-              <Input
-                id="practicalTestDate"
-                type="date"
-                value={formData.practicalTestDate}
-                onChange={(e) => handleChange('practicalTestDate', e.target.value)}
-              />
-            </div>
+                          <div className="space-y-2">
+                            <Label>Practical Test</Label>
+                            <div className="flex gap-4 mb-2">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="practicalStatus"
+                                  checked={!formData.practicalTestNotBooked && !formData.practicalTestPassed}
+                                  onChange={() => handleChange('practicalTestNotBooked', false) || handleChange('practicalTestPassed', false)}
+                                  className="w-4 h-4 text-teal-600"
+                                />
+                                <span className="text-sm text-slate-600">Date booked</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="practicalStatus"
+                                  checked={formData.practicalTestNotBooked}
+                                  onChange={() => handleChange('practicalTestNotBooked', true) || handleChange('practicalTestPassed', false) || handleChange('practicalTestDate', '')}
+                                  className="w-4 h-4 text-teal-600"
+                                />
+                                <span className="text-sm text-slate-600">Not booked</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="practicalStatus"
+                                  checked={formData.practicalTestPassed}
+                                  onChange={() => handleChange('practicalTestPassed', true) || handleChange('practicalTestNotBooked', false) || handleChange('practicalTestDate', '')}
+                                  className="w-4 h-4 text-teal-600"
+                                />
+                                <span className="text-sm text-slate-600">Passed</span>
+                              </label>
+                            </div>
+                            {!formData.practicalTestNotBooked && !formData.practicalTestPassed && (
+                              <Input
+                                id="practicalTestDate"
+                                type="date"
+                                value={formData.practicalTestDate}
+                                onChange={(e) => handleChange('practicalTestDate', e.target.value)}
+                              />
+                            )}
+                          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="practicalTestCentre">Test Centre</Label>
-              <Input
-                id="practicalTestCentre"
-                value={formData.practicalTestCentre}
-                onChange={(e) => handleChange('practicalTestCentre', e.target.value)}
-                placeholder="e.g., London Chingford"
-              />
-            </div>
-          </TabsContent>
+                          <div className="space-y-2">
+                            <Label htmlFor="practicalTestCentre">Test Centre</Label>
+                            <Input
+                              id="practicalTestCentre"
+                              value={formData.practicalTestCentre}
+                              onChange={(e) => handleChange('practicalTestCentre', e.target.value)}
+                              placeholder="e.g., London Chingford"
+                            />
+                          </div>
+                        </TabsContent>
         </Tabs>
 
         <DialogFooter className="gap-2 mt-6">
