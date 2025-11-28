@@ -35,13 +35,15 @@ import {
   X,
   Car,
   Trash2,
-  Settings
+  Settings,
+  FolderOpen
 } from 'lucide-react';
 
 const instructorNav = [
   { name: 'Dashboard', icon: LayoutDashboard, page: 'InstructorDashboard' },
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
+  { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
 ];
 
 const learnerNav = [
@@ -49,6 +51,7 @@ const learnerNav = [
   { name: 'Progress', icon: GraduationCap, page: 'LearnerProgress' },
   { name: 'Lessons', icon: BookOpen, page: 'LearnerLessons' },
   { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework' },
+  { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
 ];
 
 export default function Layout({ children, currentPageName }) {

@@ -7,6 +7,8 @@ import LearnerProgress from './pages/LearnerProgress';
 import LearnerLessons from './pages/LearnerLessons';
 import LearnerHomework from './pages/LearnerHomework';
 import ProfileSettings from './pages/ProfileSettings';
+import InstructorResources from './pages/InstructorResources';
+import LearnerResources from './pages/LearnerResources';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +22,8 @@ export const PAGES = {
     "LearnerLessons": LearnerLessons,
     "LearnerHomework": LearnerHomework,
     "ProfileSettings": ProfileSettings,
+    "InstructorResources": InstructorResources,
+    "LearnerResources": LearnerResources,
 }
 
 export const pagesConfig = {
