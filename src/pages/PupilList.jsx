@@ -29,7 +29,8 @@ import {
   Clock,
   Calendar,
   ChevronRight,
-  Loader2
+  Loader2,
+  Trash2
 } from 'lucide-react';
 import PupilFormModal, { DVSA_SKILLS } from '@/components/modals/PupilFormModal';
 import moment from 'moment';
@@ -82,6 +83,11 @@ export default function PupilList() {
 
   const createSkillsMutation = useMutation({
     mutationFn: (skills) => base44.entities.Skill.bulkCreate(skills)
+  });
+
+  const deletePupilMutation = useMutation({
+    mutationFn: (id) => base44.entities.Pupil.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['pupils'])
   });
 
   const handleSavePupil = async (data, isNew) => {
@@ -288,8 +294,21 @@ export default function PupilList() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <ChevronRight className="w-5 h-5 text-slate-300" />
-                      </TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                      <button
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          if (confirm(`Delete ${pupil.firstName} ${pupil.lastName}?`)) {
+                                                            deletePupilMutation.mutate(pupil.id);
+                                                          }
+                                                        }}
+                                                        className="p-1 text-slate-400 hover:text-rose-500 transition-colors"
+                                                      >
+                                                        <Trash2 className="w-4 h-4" />
+                                                      </button>
+                                                      <ChevronRight className="w-5 h-5 text-slate-300" />
+                                                    </div>
+                                                  </TableCell>
                     </motion.tr>
                   );
                 })}
