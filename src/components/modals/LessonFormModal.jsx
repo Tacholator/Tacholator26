@@ -4,9 +4,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from '@/components/ui/select';
 import { Loader2, Save, Trash2 } from 'lucide-react';
 import moment from 'moment';
+
+// Generate time options for 24-hour format
+const generateTimeOptions = () => {
+  const times = [];
+  for (let hour = 0; hour < 24; hour++) {
+    for (let min = 0; min < 60; min += 15) {
+      const time = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+      times.push(time);
+    }
+  }
+  return times;
+};
+
+const TIME_OPTIONS = generateTimeOptions();
 
 export default function LessonFormModal({ open, onClose, existingLesson, pupils, onSave, onDelete, onStatusChange }) {
   const [formData, setFormData] = useState(existingLesson || {
@@ -100,21 +114,29 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="startTime">Start Time *</Label>
-              <Input
-                id="startTime"
-                type="time"
-                value={formData.startTime}
-                onChange={(e) => handleChange('startTime', e.target.value)}
-              />
+              <Select value={formData.startTime} onValueChange={(v) => handleChange('startTime', v)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select time" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {TIME_OPTIONS.map(time => (
+                    <SelectItem key={time} value={time}>{time}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="endTime">End Time *</Label>
-              <Input
-                id="endTime"
-                type="time"
-                value={formData.endTime}
-                onChange={(e) => handleChange('endTime', e.target.value)}
-              />
+              <Select value={formData.endTime} onValueChange={(v) => handleChange('endTime', v)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select time" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {TIME_OPTIONS.map(time => (
+                    <SelectItem key={time} value={time}>{time}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

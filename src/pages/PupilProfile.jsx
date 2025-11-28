@@ -31,6 +31,7 @@ import SkillsGrid from '@/components/skills/SkillsGrid';
 import DiaryTimeline from '@/components/diary/DiaryTimeline';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import PupilFormModal from '@/components/modals/PupilFormModal';
+import LessonFormModal from '@/components/modals/LessonFormModal';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
@@ -52,6 +53,7 @@ export default function PupilProfile() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDiaryEntry, setSelectedDiaryEntry] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [showLessonModal, setShowLessonModal] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -211,14 +213,24 @@ export default function PupilProfile() {
                   )}
                 </div>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowEditModal(true)}
-              >
-                <Edit className="w-4 h-4 mr-2" />
-                Edit
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm"
+                  onClick={() => setShowLessonModal(true)}
+                  className="bg-teal-600 hover:bg-teal-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Book Next Lesson
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowEditModal(true)}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit
+                </Button>
+              </div>
             </div>
 
             {/* Progress Ring */}
@@ -311,14 +323,6 @@ export default function PupilProfile() {
           </TabsContent>
 
           <TabsContent value="lessons">
-            <div className="mb-4 flex justify-end">
-              <Link to={createPageUrl('Calendar')}>
-                <Button className="bg-teal-600 hover:bg-teal-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Book New Lesson
-                </Button>
-              </Link>
-            </div>
             <Card className="border-0 shadow-sm">
               <CardContent className="p-0">
                 <Table>
@@ -405,6 +409,17 @@ export default function PupilProfile() {
         onClose={() => setShowEditModal(false)}
         existingPupil={pupil}
         onSave={handleSavePupil}
+      />
+
+      <LessonFormModal
+        open={showLessonModal}
+        onClose={() => setShowLessonModal(false)}
+        existingLesson={{ pupilId: pupilId, date: moment().format('YYYY-MM-DD'), startTime: '09:00', endTime: '10:00', status: 'Scheduled' }}
+        pupils={[pupil]}
+        onSave={async (data) => {
+          await base44.entities.Lesson.create(data);
+          queryClient.invalidateQueries(['lessons', pupilId]);
+        }}
       />
     </div>
   );
