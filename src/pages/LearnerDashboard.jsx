@@ -17,7 +17,8 @@ import {
   Target,
   ChevronRight,
   Loader2,
-  Car
+  Car,
+  User
 } from 'lucide-react';
 import moment from 'moment';
 
@@ -231,6 +232,33 @@ export default function LearnerDashboard() {
                     View All Lessons <ChevronRight className="w-4 h-4" />
                   </Button>
                 </Link>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Instructor Info */}
+        {pupil.instructorName && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="mt-6"
+          >
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-slate-50 to-slate-100">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-xl font-bold">
+                    {pupil.instructorName?.[0] || 'I'}
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Your Instructor</p>
+                    <p className="text-xl font-semibold text-slate-800">{pupil.instructorName}</p>
+                    {pupil.instructorEmail && (
+                      <p className="text-sm text-slate-500">{pupil.instructorEmail}</p>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </motion.div>

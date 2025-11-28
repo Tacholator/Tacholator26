@@ -50,6 +50,11 @@ export default function PupilList() {
 
   const queryClient = useQueryClient();
 
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
   const { data: pupils = [], isLoading } = useQuery({
     queryKey: ['pupils'],
     queryFn: () => base44.entities.Pupil.list()
@@ -76,7 +81,14 @@ export default function PupilList() {
 
   const handleSavePupil = async (data, isNew) => {
     if (isNew) {
-      const result = await createPupilMutation.mutateAsync(data);
+      // Add instructor info to the pupil record
+      const pupilData = {
+        ...data,
+        instructorId: currentUser?.id,
+        instructorEmail: currentUser?.email,
+        instructorName: currentUser?.full_name
+      };
+      const result = await createPupilMutation.mutateAsync(pupilData);
       // Create DVSA skills for new pupil
       const skills = DVSA_SKILLS.map(skill => ({
         pupilId: result.id,
