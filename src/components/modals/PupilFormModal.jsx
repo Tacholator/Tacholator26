@@ -184,14 +184,15 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="hoursCompleted">Hours Completed</Label>
-                <Input
-                  id="hoursCompleted"
-                  type="number"
-                  value={formData.hoursCompleted}
-                  onChange={(e) => handleChange('hoursCompleted', parseInt(e.target.value))}
-                />
-              </div>
+                                    <Label htmlFor="hoursCompleted">Hours Completed</Label>
+                                    <Input
+                                      id="hoursCompleted"
+                                      type="number"
+                                      step="0.5"
+                                      value={formData.hoursCompleted}
+                                      onChange={(e) => handleChange('hoursCompleted', parseFloat(e.target.value) || 0)}
+                                    />
+                                  </div>
             </div>
 
             <div className="space-y-2">
