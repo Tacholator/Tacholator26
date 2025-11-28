@@ -213,24 +213,14 @@ export default function PupilProfile() {
                   )}
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button 
-                  size="sm"
-                  onClick={() => setShowLessonModal(true)}
-                  className="bg-teal-600 hover:bg-teal-700"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Book Next Lesson
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowEditModal(true)}
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
-              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowEditModal(true)}
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
             </div>
 
             {/* Progress Ring */}
@@ -291,6 +281,15 @@ export default function PupilProfile() {
           </TabsList>
 
           <TabsContent value="skills">
+            <div className="mb-4">
+              <Button 
+                onClick={() => setShowLessonModal(true)}
+                className="bg-teal-600 hover:bg-teal-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Book Next Lesson
+              </Button>
+            </div>
             {skillsLoading ? (
               <div className="flex justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
