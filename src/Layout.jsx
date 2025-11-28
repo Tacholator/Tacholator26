@@ -44,6 +44,7 @@ const instructorNav = [
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
+  { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' },
 ];
 
 const learnerNav = [
