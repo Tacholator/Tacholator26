@@ -60,6 +60,11 @@ export default function PupilList() {
     queryFn: () => base44.entities.Pupil.list()
   });
 
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['allUsers'],
+    queryFn: () => base44.entities.User.list()
+  });
+
   const { data: lessons = [] } = useQuery({
     queryKey: ['lessons'],
     queryFn: () => base44.entities.Lesson.list()
@@ -81,12 +86,24 @@ export default function PupilList() {
 
   const handleSavePupil = async (data, isNew) => {
     if (isNew) {
+      // Check if a learner account exists with the same email
+      let linkedUserId = null;
+      if (data.email) {
+        const matchingUser = allUsers.find(
+          u => u.email?.toLowerCase() === data.email.toLowerCase() && u.role === 'user'
+        );
+        if (matchingUser) {
+          linkedUserId = matchingUser.id;
+        }
+      }
+
       // Add instructor info to the pupil record
       const pupilData = {
         ...data,
         instructorId: currentUser?.id,
         instructorEmail: currentUser?.email,
-        instructorName: currentUser?.full_name
+        instructorName: currentUser?.full_name,
+        linkedUserId: linkedUserId
       };
       const result = await createPupilMutation.mutateAsync(pupilData);
       // Create DVSA skills for new pupil
@@ -98,7 +115,18 @@ export default function PupilList() {
       }));
       await createSkillsMutation.mutateAsync(skills);
     } else {
-      await updatePupilMutation.mutateAsync({ id: editingPupil.id, data });
+      // When updating, also check for linked user if email changed
+      let linkedUserId = editingPupil.linkedUserId;
+      if (data.email && data.email !== editingPupil.email) {
+        const matchingUser = allUsers.find(
+          u => u.email?.toLowerCase() === data.email.toLowerCase() && u.role === 'user'
+        );
+        linkedUserId = matchingUser ? matchingUser.id : null;
+      }
+      await updatePupilMutation.mutateAsync({ 
+        id: editingPupil.id, 
+        data: { ...data, linkedUserId } 
+      });
     }
   };
 

@@ -29,13 +29,22 @@ export default function LearnerDashboard() {
   });
 
   const { data: pupil, isLoading: pupilLoading } = useQuery({
-    queryKey: ['myPupilProfile', user?.email],
+    queryKey: ['myPupilProfile', user?.id, user?.email],
     queryFn: async () => {
-      if (!user?.email) return null;
-      const pupils = await base44.entities.Pupil.filter({ email: user.email });
-      return pupils[0] || null;
+      if (!user) return null;
+      // First try to find by linkedUserId
+      if (user.id) {
+        const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+        if (byLinkedId.length > 0) return byLinkedId[0];
+      }
+      // Fallback to email match
+      if (user.email) {
+        const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+        return byEmail[0] || null;
+      }
+      return null;
     },
-    enabled: !!user?.email
+    enabled: !!user
   });
 
   const { data: lessons = [] } = useQuery({
