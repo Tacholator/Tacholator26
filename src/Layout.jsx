@@ -100,12 +100,14 @@ export default function Layout({ children, currentPageName }) {
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-slate-100 px-6 pb-4">
           {/* Logo */}
-          <div className="flex h-16 shrink-0 items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center">
-              <Car className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-bold text-xl text-slate-800">Mobrage</span>
-          </div>
+                      <div className="flex h-16 shrink-0 items-center gap-2">
+                        <img 
+                          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
+                          alt="Mobrage" 
+                          className="w-10 h-10 rounded-xl object-cover"
+                        />
+                        <span className="font-bold text-xl text-slate-800">Mobrage</span>
+                      </div>
 
           {/* Navigation */}
           <nav className="flex flex-1 flex-col">
@@ -185,11 +187,13 @@ export default function Layout({ children, currentPageName }) {
           <Menu className="w-6 h-6" />
         </button>
         <div className="flex items-center gap-2 flex-1">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center">
-            <Car className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-bold text-lg text-slate-800">Mobrage</span>
-        </div>
+                      <img 
+                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
+                        alt="Mobrage" 
+                        className="w-8 h-8 rounded-lg object-cover"
+                      />
+                      <span className="font-bold text-lg text-slate-800">Mobrage</span>
+                    </div>
         <Avatar className="h-8 w-8">
           <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-sm">
             {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
@@ -217,11 +221,13 @@ export default function Layout({ children, currentPageName }) {
             >
               <div className="flex h-16 items-center justify-between px-6">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center">
-                    <Car className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="font-bold text-lg text-slate-800">Mobrage</span>
-                </div>
+                                      <img 
+                                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
+                                        alt="Mobrage" 
+                                        className="w-8 h-8 rounded-lg object-cover"
+                                      />
+                                      <span className="font-bold text-lg text-slate-800">Mobrage</span>
+                                    </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2 -m-2 text-slate-500"
