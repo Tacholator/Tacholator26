@@ -38,12 +38,7 @@ import moment from 'moment';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 
-const statusColors = {
-  Active: 'bg-emerald-100 text-emerald-700',
-  OnHold: 'bg-amber-100 text-amber-700',
-  Passed: 'bg-blue-100 text-blue-700',
-  Stopped: 'bg-rose-100 text-rose-700'
-};
+
 
 export default function PupilProfile() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -188,11 +183,10 @@ export default function PupilProfile() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl font-bold text-slate-800">
-                    {pupil.firstName} {pupil.lastName}
-                  </h1>
-                  <Badge className={statusColors[pupil.status]}>{pupil.status}</Badge>
-                </div>
+                                        <h1 className="text-2xl font-bold text-slate-800">
+                                          {pupil.firstName} {pupil.lastName}
+                                        </h1>
+                                      </div>
                 <div className="flex flex-wrap gap-4 text-sm text-slate-500">
                   {pupil.phone && (
                     <div className="flex items-center gap-1">

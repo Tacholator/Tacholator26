@@ -35,16 +35,11 @@ import {
 import PupilFormModal, { DVSA_SKILLS } from '@/components/modals/PupilFormModal';
 import moment from 'moment';
 
-const statusColors = {
-  Active: 'bg-emerald-100 text-emerald-700',
-  OnHold: 'bg-amber-100 text-amber-700',
-  Passed: 'bg-blue-100 text-blue-700',
-  Stopped: 'bg-rose-100 text-rose-700'
-};
+
 
 export default function PupilList() {
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  
   const [showPupilModal, setShowPupilModal] = useState(false);
   const [editingPupil, setEditingPupil] = useState(null);
 
@@ -144,9 +139,7 @@ export default function PupilList() {
   };
 
   const filteredPupils = pupils.filter(pupil => {
-    const matchesSearch = `${pupil.firstName} ${pupil.lastName}`.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || pupil.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    return `${pupil.firstName} ${pupil.lastName}`.toLowerCase().includes(search.toLowerCase());
   });
 
   if (isLoading) {
@@ -190,18 +183,7 @@ export default function PupilList() {
               className="pl-10"
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="OnHold">On Hold</SelectItem>
-              <SelectItem value="Passed">Passed</SelectItem>
-              <SelectItem value="Stopped">Stopped</SelectItem>
-            </SelectContent>
-          </Select>
+          
         </div>
 
         {/* Table */}
@@ -210,7 +192,7 @@ export default function PupilList() {
             <TableHeader>
               <TableRow className="bg-slate-50">
                 <TableHead className="font-semibold">Pupil</TableHead>
-                <TableHead className="font-semibold">Status</TableHead>
+                
                 <TableHead className="font-semibold">Progress</TableHead>
                 <TableHead className="font-semibold">Next Lesson</TableHead>
                 <TableHead className="font-semibold">Test Date</TableHead>
@@ -247,11 +229,7 @@ export default function PupilList() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <Badge className={statusColors[pupil.status]}>
-                          {pupil.status}
-                        </Badge>
-                      </TableCell>
+                      
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
