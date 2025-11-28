@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Save, Trash2 } from 'lucide-react';
 import moment from 'moment';
 
-export default function LessonFormModal({ open, onClose, existingLesson, pupils, onSave, onDelete }) {
+export default function LessonFormModal({ open, onClose, existingLesson, pupils, onSave, onDelete, onStatusChange }) {
   const [formData, setFormData] = useState(existingLesson || {
     pupilId: '',
     date: moment().format('YYYY-MM-DD'),
@@ -31,7 +31,19 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
     setIsSaving(true);
     try {
       const durationMinutes = moment(formData.endTime, 'HH:mm').diff(moment(formData.startTime, 'HH:mm'), 'minutes');
+      
+      // Check if status changed to Completed
+      const statusChangedToCompleted = existingLesson && 
+        existingLesson.status !== 'Completed' && 
+        formData.status === 'Completed';
+      
       await onSave({ ...formData, durationMinutes });
+      
+      // If status changed to Completed, update pupil hours
+      if (statusChangedToCompleted && onStatusChange) {
+        await onStatusChange(formData.pupilId, durationMinutes / 60);
+      }
+      
       onClose();
     } finally {
       setIsSaving(false);
