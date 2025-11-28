@@ -159,32 +159,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="preferredDaysTimes">Preferred Days/Times</Label>
-              <Textarea
-                id="preferredDaysTimes"
-                value={formData.preferredDaysTimes}
-                onChange={(e) => handleChange('preferredDaysTimes', e.target.value)}
-                placeholder="Weekday evenings, Saturday mornings"
-                rows={2}
-              />
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select value={formData.status} onValueChange={(v) => handleChange('status', v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Lead">Lead</SelectItem>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="OnHold">On Hold</SelectItem>
-                  <SelectItem value="Passed">Passed</SelectItem>
-                  <SelectItem value="Stopped">Stopped</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </TabsContent>
 
           <TabsContent value="driving" className="space-y-4 mt-4">
