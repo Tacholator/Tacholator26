@@ -121,7 +121,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -129,6 +129,9 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                   onChange={(e) => handleChange('email', e.target.value)}
                   placeholder="john@example.com"
                 />
+                <p className="text-xs text-slate-500">
+                  This email will be used to link the learner's account
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone</Label>
