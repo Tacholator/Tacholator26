@@ -131,7 +131,7 @@ export default function Layout({ children, currentPageName }) {
                           alt="Mobrage" 
                           className="w-10 h-10 rounded-xl object-cover"
                         />
-                        <span className="font-bold text-xl text-slate-800">Mobrage</span>
+                        <span className="font-bold text-xl text-slate-800">Mobrage Learner Driver</span>
                       </div>
 
           {/* Navigation */}
@@ -217,7 +217,7 @@ export default function Layout({ children, currentPageName }) {
                         alt="Mobrage" 
                         className="w-8 h-8 rounded-lg object-cover"
                       />
-                      <span className="font-bold text-lg text-slate-800">Mobrage</span>
+                      <span className="font-bold text-lg text-slate-800">Mobrage Learner Driver</span>
                     </div>
         <Avatar className="h-8 w-8">
           <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-sm">
@@ -251,7 +251,7 @@ export default function Layout({ children, currentPageName }) {
                                         alt="Mobrage" 
                                         className="w-8 h-8 rounded-lg object-cover"
                                       />
-                                      <span className="font-bold text-lg text-slate-800">Mobrage</span>
+                                      <span className="font-bold text-lg text-slate-800">Mobrage Learner Driver</span>
                                     </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
