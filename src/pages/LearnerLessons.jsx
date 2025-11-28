@@ -24,8 +24,11 @@ export default function LearnerLessons() {
         if (byLinkedId.length > 0) return byLinkedId[0];
       }
       if (user.email) {
-        const byEmail = await base44.entities.Pupil.filter({ email: user.email });
-        return byEmail[0] || null;
+        const allPupils = await base44.entities.Pupil.list();
+        const matchingPupil = allPupils.find(p => 
+          p.email?.toLowerCase() === user.email.toLowerCase()
+        );
+        return matchingPupil || null;
       }
       return null;
     },
