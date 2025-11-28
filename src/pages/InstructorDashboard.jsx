@@ -222,8 +222,8 @@ export default function InstructorDashboard() {
           </div>
         </div>
 
-        {/* Admin User Management */}
-        {currentUser?.role === 'admin' && (
+        {/* Admin User Management - Only for main admin */}
+        {currentUser?.email === 'fasobah@gmail.com' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
