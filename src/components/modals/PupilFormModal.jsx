@@ -187,10 +187,16 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                                     <Label htmlFor="hoursCompleted">Hours Completed</Label>
                                     <Input
                                       id="hoursCompleted"
-                                      type="number"
-                                      step="0.5"
+                                      type="text"
+                                      inputMode="decimal"
+                                      placeholder="e.g. 3.5"
                                       value={formData.hoursCompleted}
-                                      onChange={(e) => handleChange('hoursCompleted', parseFloat(e.target.value) || 0)}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                                          handleChange('hoursCompleted', val === '' ? 0 : parseFloat(val) || 0);
+                                        }
+                                      }}
                                     />
                                   </div>
             </div>
@@ -286,13 +292,28 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                               </label>
                             </div>
                             {!formData.practicalTestNotBooked && !formData.practicalTestPassed && (
-                              <Input
-                                id="practicalTestDate"
-                                type="date"
-                                value={formData.practicalTestDate}
-                                onChange={(e) => handleChange('practicalTestDate', e.target.value)}
-                              />
-                            )}
+                                                <div className="grid grid-cols-2 gap-4">
+                                                  <div className="space-y-1">
+                                                    <Label htmlFor="practicalTestDate" className="text-xs text-slate-500">Date</Label>
+                                                    <Input
+                                                      id="practicalTestDate"
+                                                      type="date"
+                                                      value={formData.practicalTestDate}
+                                                      onChange={(e) => handleChange('practicalTestDate', e.target.value)}
+                                                    />
+                                                  </div>
+                                                  <div className="space-y-1">
+                                                    <Label htmlFor="practicalTestTime" className="text-xs text-slate-500">Time (24hr)</Label>
+                                                    <Input
+                                                      id="practicalTestTime"
+                                                      type="time"
+                                                      value={formData.practicalTestTime || ''}
+                                                      onChange={(e) => handleChange('practicalTestTime', e.target.value)}
+                                                      placeholder="e.g. 14:30"
+                                                    />
+                                                  </div>
+                                                </div>
+                                              )}
                           </div>
 
                           <div className="space-y-2">
