@@ -58,6 +58,8 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
     practicalTestCentre: '',
     targetHours: 45,
     hoursCompleted: 0,
+    hourlyRate: 0,
+    bulkPaymentBalance: 0,
     tags: []
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -87,7 +89,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="personal" className="gap-2">
               <User className="w-4 h-4" />
               Personal
@@ -99,6 +101,10 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
             <TabsTrigger value="tests" className="gap-2">
               <Calendar className="w-4 h-4" />
               Tests
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="gap-2">
+              £
+              Payments
             </TabsTrigger>
           </TabsList>
 
@@ -327,6 +333,37 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                             />
                           </div>
                         </TabsContent>
+
+          <TabsContent value="payments" className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="hourlyRate">Hourly Rate (£)</Label>
+                <Input
+                  id="hourlyRate"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.hourlyRate || ''}
+                  onChange={(e) => handleChange('hourlyRate', parseFloat(e.target.value) || 0)}
+                  placeholder="e.g. 35.00"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bulkPaymentBalance">Bulk Payment Balance (£)</Label>
+                <Input
+                  id="bulkPaymentBalance"
+                  type="number"
+                  step="0.01"
+                  value={formData.bulkPaymentBalance || ''}
+                  onChange={(e) => handleChange('bulkPaymentBalance', parseFloat(e.target.value) || 0)}
+                  placeholder="e.g. 350.00"
+                />
+                <p className="text-xs text-slate-500">
+                  This balance will be deducted when lessons are completed
+                </p>
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
 
         <DialogFooter className="gap-2 mt-6">

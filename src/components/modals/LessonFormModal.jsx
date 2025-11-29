@@ -21,8 +21,17 @@ const generateTimeOptions = () => {
 };
 
 const TIME_OPTIONS = generateTimeOptions();
+const DURATION_OPTIONS = ['0.5', '1.0', '1.5', '2.0', '2.5'];
 
 export default function LessonFormModal({ open, onClose, existingLesson, pupils, onSave, onDelete, onStatusChange }) {
+  const getInitialDuration = (lesson) => {
+    if (!lesson?.startTime || !lesson?.endTime) return '1.0';
+    const start = moment(lesson.startTime, 'HH:mm');
+    const end = moment(lesson.endTime, 'HH:mm');
+    const hours = end.diff(start, 'minutes') / 60;
+    return hours.toFixed(1);
+  };
+
   const [formData, setFormData] = useState(existingLesson || {
     pupilId: '',
     date: moment().format('YYYY-MM-DD'),
@@ -34,11 +43,25 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
     bufferAfterMinutes: 0,
     notes: ''
   });
+  const [duration, setDuration] = useState(getInitialDuration(existingLesson));
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const updateEndTime = (startTime, durationHours) => {
+    const endTime = moment(startTime, 'HH:mm').add(parseFloat(durationHours) * 60, 'minutes').format('HH:mm');
+    setFormData(prev => ({ ...prev, endTime }));
+  };
+
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'startTime') {
+      updateEndTime(value, duration);
+    }
+  };
+
+  const handleDurationChange = (value) => {
+    setDuration(value);
+    updateEndTime(formData.startTime, value);
   };
 
   const handleSubmit = async () => {
@@ -126,18 +149,22 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endTime">End Time *</Label>
-              <Select value={formData.endTime} onValueChange={(v) => handleChange('endTime', v)}>
+              <Label htmlFor="duration">Duration (hours) *</Label>
+              <Select value={duration} onValueChange={handleDurationChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select time" />
+                  <SelectValue placeholder="Select duration" />
                 </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  {TIME_OPTIONS.map(time => (
-                    <SelectItem key={time} value={time}>{time}</SelectItem>
+                <SelectContent>
+                  {DURATION_OPTIONS.map(d => (
+                    <SelectItem key={d} value={d}>{d} hr{parseFloat(d) !== 1 ? 's' : ''}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="text-sm text-slate-500">
+            Ends at: <span className="font-medium text-slate-700">{formData.endTime}</span>
           </div>
 
           <div className="space-y-2">
