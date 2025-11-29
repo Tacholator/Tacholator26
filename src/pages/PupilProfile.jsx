@@ -137,9 +137,14 @@ export default function PupilProfile() {
     // Update lesson status to Completed
     await base44.entities.Lesson.update(selectedLesson.id, { status: 'Completed' });
 
-    // Update pupil's hoursCompleted
+    // Update pupil's hoursCompleted and deduct from bulk payment
     const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
-    await base44.entities.Pupil.update(pupil.id, { hoursCompleted: newHoursCompleted });
+    const lessonCost = (pupil.hourlyRate || 0) * durationHours;
+    const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
+    await base44.entities.Pupil.update(pupil.id, { 
+      hoursCompleted: newHoursCompleted,
+      bulkPaymentBalance: newBalance
+    });
     
     queryClient.invalidateQueries(['lessons', pupilId]);
     queryClient.invalidateQueries(['diaryEntries', pupilId]);
@@ -267,17 +272,29 @@ export default function PupilProfile() {
                   </div>
                 </div>
                 
-                {pupil.googleSheetUrl && (
-                  <a 
-                    href={pupil.googleSheetUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Google Sheet
-                  </a>
-                )}
+                {/* Payment Info */}
+                                      {(pupil.hourlyRate > 0 || pupil.bulkPaymentBalance !== 0) && (
+                                        <div className="flex items-center gap-2 text-sm">
+                                          <div className={`px-2 py-1 rounded-lg ${pupil.bulkPaymentBalance < 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                                            Balance: £{(pupil.bulkPaymentBalance || 0).toFixed(2)}
+                                          </div>
+                                          {pupil.hourlyRate > 0 && (
+                                            <span className="text-slate-400">@ £{pupil.hourlyRate}/hr</span>
+                                          )}
+                                        </div>
+                                      )}
+
+                                      {pupil.googleSheetUrl && (
+                                        <a 
+                                          href={pupil.googleSheetUrl} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700"
+                                        >
+                                          <ExternalLink className="w-4 h-4" />
+                                          Google Sheet
+                                        </a>
+                                      )}
               </div>
             </div>
           </div>

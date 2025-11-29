@@ -69,7 +69,12 @@ export default function Calendar() {
     const pupil = pupilMap[pupilId];
     if (pupil) {
       const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
-      await base44.entities.Pupil.update(pupil.id, { hoursCompleted: newHoursCompleted });
+      const lessonCost = (pupil.hourlyRate || 0) * durationHours;
+      const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
+      await base44.entities.Pupil.update(pupil.id, { 
+        hoursCompleted: newHoursCompleted,
+        bulkPaymentBalance: newBalance
+      });
       queryClient.invalidateQueries(['pupils']);
     }
   };
@@ -115,11 +120,16 @@ export default function Calendar() {
     // Update lesson status to Completed
     await base44.entities.Lesson.update(selectedLesson.id, { status: 'Completed' });
 
-    // Update pupil's hoursCompleted
+    // Update pupil's hoursCompleted and deduct from bulk payment
     const pupil = pupilMap[selectedLesson.pupilId];
     if (pupil) {
       const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
-      await base44.entities.Pupil.update(pupil.id, { hoursCompleted: newHoursCompleted });
+      const lessonCost = (pupil.hourlyRate || 0) * durationHours;
+      const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
+      await base44.entities.Pupil.update(pupil.id, { 
+        hoursCompleted: newHoursCompleted,
+        bulkPaymentBalance: newBalance
+      });
       queryClient.invalidateQueries(['pupils']);
     }
 
