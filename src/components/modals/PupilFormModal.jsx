@@ -366,6 +366,65 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                 </p>
               </div>
             </div>
+
+            <div className="border-t pt-4 mt-4">
+              <h4 className="font-medium text-slate-700 mb-3">Manual Adjustment</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="hoursAlreadyCompleted">Hours Already Completed</Label>
+                  <Input
+                    id="hoursAlreadyCompleted"
+                    type="number"
+                    step="0.25"
+                    min="0"
+                    value={formData.hoursCompleted || ''}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      if (e.target.value === '' || (!isNaN(val) && val >= 0)) {
+                        handleChange('hoursCompleted', e.target.value === '' ? 0 : val);
+                      }
+                    }}
+                    placeholder="e.g. 10.5"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="hoursToDeduct">Hours to Deduct from Balance</Label>
+                  <Input
+                    id="hoursToDeduct"
+                    type="number"
+                    step="0.25"
+                    min="0"
+                    placeholder="e.g. 2.0"
+                    onChange={(e) => {
+                      const hoursToDeduct = parseFloat(e.target.value) || 0;
+                      if (hoursToDeduct > 0 && formData.hourlyRate > 0) {
+                        const deduction = hoursToDeduct * formData.hourlyRate;
+                        const newBalance = (formData.bulkPaymentBalance || 0) - deduction;
+                        handleChange('bulkPaymentBalance', newBalance);
+                      }
+                    }}
+                  />
+                  <p className="text-xs text-slate-500">
+                    Enter hours to deduct (£{((formData.hourlyRate || 0)).toFixed(2)}/hr)
+                  </p>
+                </div>
+              </div>
+              
+              {formData.hourlyRate > 0 && (
+                <div className="mt-4 p-3 bg-slate-50 rounded-lg">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Current Balance:</span>
+                    <span className={`font-medium ${(formData.bulkPaymentBalance || 0) < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                      £{(formData.bulkPaymentBalance || 0).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm mt-1">
+                    <span className="text-slate-600">Hours Completed:</span>
+                    <span className="font-medium text-slate-700">{formData.hoursCompleted || 0} hrs</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
 
