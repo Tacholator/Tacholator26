@@ -52,6 +52,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
     theoryTestNotBooked: false,
     theoryTestPassed: false,
     practicalTestDate: '',
+    practicalTestTime: '',
     practicalTestNotBooked: false,
     practicalTestPassed: false,
     practicalTestCentre: '',

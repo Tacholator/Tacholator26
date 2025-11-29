@@ -258,8 +258,8 @@ export default function PupilProfile() {
                     <p className="text-slate-400 text-xs">Practical Test</p>
                     <p className="font-medium text-slate-700">
                       {pupil.practicalTestPassed ? 'Passed' : 
-                       pupil.practicalTestNotBooked ? 'Not booked' :
-                       pupil.practicalTestDate ? moment(pupil.practicalTestDate).format('D MMM YYYY') : 'Not set'}
+                                               pupil.practicalTestNotBooked ? 'Not booked' :
+                                               pupil.practicalTestDate ? `${moment(pupil.practicalTestDate).format('D MMM YYYY')}${pupil.practicalTestTime ? ` at ${pupil.practicalTestTime}` : ''}` : 'Not set'}
                     </p>
                     {pupil.practicalTestCentre && !pupil.practicalTestPassed && !pupil.practicalTestNotBooked && (
                       <p className="text-xs text-slate-400">{pupil.practicalTestCentre}</p>
