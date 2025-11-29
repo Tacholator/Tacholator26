@@ -87,12 +87,13 @@ export default function Calendar() {
   const openEditLesson = (lesson) => {
     setSelectedLesson(lesson);
     setSelectedSlot(null);
-    // If lesson is Scheduled, open diary form; otherwise open lesson form
-    if (lesson.status === 'Scheduled') {
-      setShowDiaryModal(true);
-    } else {
-      setShowLessonModal(true);
-    }
+    setShowLessonModal(true);
+  };
+
+  const openCompleteLessonWithDiary = (lesson) => {
+    setSelectedLesson(lesson);
+    setSelectedSlot(null);
+    setShowDiaryModal(true);
   };
 
   const handleSaveDiaryAndComplete = async (diaryData) => {
