@@ -194,14 +194,17 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                                     <Label htmlFor="hoursCompleted">Hours Completed</Label>
                                     <Input
                                       id="hoursCompleted"
-                                      type="text"
+                                      type="number"
                                       inputMode="decimal"
+                                      step="0.25"
+                                      min="0"
                                       placeholder="e.g. 3.5"
-                                      value={formData.hoursCompleted}
+                                      value={formData.hoursCompleted || ''}
                                       onChange={(e) => {
                                         const val = e.target.value;
-                                        if (val === '' || /^\d*\.?\d*$/.test(val)) {
-                                          handleChange('hoursCompleted', val === '' ? 0 : parseFloat(val) || 0);
+                                        const numVal = parseFloat(val);
+                                        if (val === '' || (!isNaN(numVal) && numVal >= 0)) {
+                                          handleChange('hoursCompleted', val === '' ? 0 : numVal);
                                         }
                                       }}
                                     />
