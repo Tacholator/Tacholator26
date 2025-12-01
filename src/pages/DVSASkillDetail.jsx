@@ -39,7 +39,7 @@ export default function DVSASkillDetail() {
   const [selectedPupils, setSelectedPupils] = useState([]);
   const [assignComponents, setAssignComponents] = useState('both');
   const [materialProgress, setMaterialProgress] = useState({ scrollDepth: 0, timeSpent: 0 });
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingMaterial, setIsEditingMaterial] = useState(false);
 
   const queryClient = useQueryClient();
   const skill = getSkillById(skillId);
@@ -264,10 +264,6 @@ export default function DVSASkillDetail() {
                 <BookOpen className="w-4 h-4" />
                 Study Material
               </TabsTrigger>
-              <TabsTrigger value="edit" className="gap-2">
-                <Edit className="w-4 h-4" />
-                Edit Material
-              </TabsTrigger>
               <TabsTrigger value="quiz" className="gap-2" disabled={!canTakeQuiz && !assignment?.hasOpenedMaterial}>
                 <ClipboardCheck className="w-4 h-4" />
                 Take Quiz
@@ -281,7 +277,27 @@ export default function DVSASkillDetail() {
             <TabsContent value="material">
               <Card className="border-0 shadow-sm">
                 <CardContent className="p-6">
-                  {materialContent ? (
+                  <div className="flex justify-end mb-4">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setIsEditingMaterial(!isEditingMaterial)}
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      {isEditingMaterial ? 'View Material' : 'Edit Material'}
+                    </Button>
+                  </div>
+                  
+                  {isEditingMaterial ? (
+                    <MaterialEditor
+                      initialContent={customMaterial?.content || skill?.learningMaterial || ''}
+                      initialTitle={customMaterial?.title || ''}
+                      initialVisibility={customMaterial?.isVisibleToPupils || false}
+                      lastSavedAt={customMaterial?.lastSavedAt}
+                      onSave={(data) => saveMaterialMutation.mutate(data)}
+                      isSaving={saveMaterialMutation.isPending}
+                    />
+                  ) : materialContent ? (
                     <StudyMaterial
                       content={materialContent}
                       onProgress={handleMaterialProgress}
@@ -294,28 +310,13 @@ export default function DVSASkillDetail() {
                       <Button 
                         variant="outline" 
                         className="mt-4"
-                        onClick={() => setActiveTab('edit')}
+                        onClick={() => setIsEditingMaterial(true)}
                       >
                         <Edit className="w-4 h-4 mr-2" />
                         Create Material
                       </Button>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="edit">
-              <Card className="border-0 shadow-sm">
-                <CardContent className="p-6">
-                  <MaterialEditor
-                    initialContent={customMaterial?.content || skill?.learningMaterial || ''}
-                    initialTitle={customMaterial?.title || ''}
-                    initialVisibility={customMaterial?.isVisibleToPupils || false}
-                    lastSavedAt={customMaterial?.lastSavedAt}
-                    onSave={(data) => saveMaterialMutation.mutate(data)}
-                    isSaving={saveMaterialMutation.isPending}
-                  />
                 </CardContent>
               </Card>
             </TabsContent>
