@@ -282,7 +282,7 @@ export default function LearnerDashboard() {
         )}
 
         {/* Instructor Info */}
-        {pupil.instructorName && (
+        {(pupil.instructorName || pupil.instructorEmail) && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -293,11 +293,13 @@ export default function LearnerDashboard() {
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-xl font-bold">
-                    {pupil.instructorName?.[0] || 'I'}
+                    <User className="w-7 h-7" />
                   </div>
                   <div>
                     <p className="text-sm text-slate-500">Your Instructor</p>
-                    <p className="text-xl font-semibold text-slate-800">{pupil.instructorName}</p>
+                    <p className="text-xl font-semibold text-slate-800">
+                      {pupil.instructorName || 'Your Instructor'}
+                    </p>
                     {pupil.instructorEmail && (
                       <p className="text-sm text-slate-500">{pupil.instructorEmail}</p>
                     )}

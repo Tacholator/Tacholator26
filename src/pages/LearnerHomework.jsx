@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Loader2, Car, BookOpen, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Car, BookOpen, CheckCircle2, Calendar } from 'lucide-react';
 import moment from 'moment';
 
 export default function LearnerHomework() {
@@ -138,9 +138,15 @@ export default function LearnerHomework() {
                           {item.description && (
                             <p className="text-sm text-slate-500 mt-1">{item.description}</p>
                           )}
-                          <p className="text-xs text-slate-400 mt-2">
-                            Added {moment(item.created_date).format('D MMM YYYY')}
-                          </p>
+                          <div className="flex items-center gap-3 mt-2 text-xs text-slate-400">
+                            <span>Assigned {moment(item.created_date).format('D MMM YYYY')}</span>
+                            {item.dueDate && (
+                              <span className="flex items-center gap-1 text-amber-600">
+                                <Calendar className="w-3 h-3" />
+                                Due {moment(item.dueDate).format('D MMM')}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <Badge className="bg-amber-100 text-amber-700">Pending</Badge>
                       </div>

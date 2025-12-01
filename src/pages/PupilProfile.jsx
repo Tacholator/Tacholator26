@@ -34,6 +34,7 @@ import DiaryTimeline from '@/components/diary/DiaryTimeline';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
+import HomeworkSection from '@/components/homework/HomeworkSection';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
@@ -84,6 +85,20 @@ export default function PupilProfile() {
       return allLessons.sort((a, b) => b.date.localeCompare(a.date));
     },
     enabled: !!pupilId
+  });
+
+  const { data: homework = [] } = useQuery({
+    queryKey: ['homework', pupilId],
+    queryFn: async () => {
+      const items = await base44.entities.HomeworkItem.filter({ pupilId });
+      return items.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+    },
+    enabled: !!pupilId
+  });
+
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
   });
 
   const updateSkillMutation = useMutation({
@@ -336,10 +351,11 @@ export default function PupilProfile() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="bg-white border shadow-sm mb-6">
-            <TabsTrigger value="skills">Skills Tracker</TabsTrigger>
-            <TabsTrigger value="diary">Lesson Diary</TabsTrigger>
-            <TabsTrigger value="lessons">Lessons</TabsTrigger>
-          </TabsList>
+                          <TabsTrigger value="skills">Skills Tracker</TabsTrigger>
+                          <TabsTrigger value="diary">Lesson Diary</TabsTrigger>
+                          <TabsTrigger value="lessons">Lessons</TabsTrigger>
+                          <TabsTrigger value="homework">Homework</TabsTrigger>
+                        </TabsList>
 
           <TabsContent value="skills">
             <div className="mb-4">
@@ -446,10 +462,18 @@ export default function PupilProfile() {
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
-      </div>
 
-      <DiaryEntryModal
+                        <TabsContent value="homework">
+                          <HomeworkSection
+                            pupilId={pupilId}
+                            instructorId={currentUser?.id}
+                            homework={homework}
+                          />
+                        </TabsContent>
+                      </Tabs>
+                    </div>
+
+                    <DiaryEntryModal
         open={showDiaryModal}
         onClose={() => {
           setShowDiaryModal(false);
