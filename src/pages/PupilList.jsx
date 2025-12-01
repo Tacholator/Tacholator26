@@ -50,14 +50,60 @@ export default function PupilList() {
     queryFn: () => base44.auth.me()
   });
 
-  const { data: pupils = [], isLoading } = useQuery({
-    queryKey: ['pupils'],
-    queryFn: () => base44.entities.Pupil.list()
-  });
-
   const { data: allUsers = [] } = useQuery({
     queryKey: ['allUsers'],
     queryFn: () => base44.entities.User.list()
+  });
+
+  const { data: pupils = [], isLoading } = useQuery({
+    queryKey: ['pupils'],
+    queryFn: async () => {
+      const allPupils = await base44.entities.Pupil.list();
+      const users = await base44.entities.User.list();
+      
+      // Backfill signup status for existing pupils
+      for (const pupil of allPupils) {
+        if (pupil.signupStatus === 'not_signed_up' || !pupil.signupStatus) {
+          // Check if there's a matching user account
+          const matchingUser = users.find(
+            u => u.email?.toLowerCase() === pupil.email?.toLowerCase() && u.role === 'user'
+          );
+          
+          if (matchingUser) {
+            // User account exists, update pupil status
+            const updates = {
+              hasSignedUp: true,
+              linkedUserId: matchingUser.id
+            };
+            
+            // Determine status based on login timestamps
+            if (pupil.lastLoginTimestamp) {
+              const lastLogin = new Date(pupil.lastLoginTimestamp);
+              const now = new Date();
+              const daysSinceLogin = (now - lastLogin) / (1000 * 60 * 60 * 24);
+              
+              if (daysSinceLogin <= 7) {
+                updates.signupStatus = 'active_recently';
+              } else if (daysSinceLogin <= 30) {
+                updates.signupStatus = 'active_but_quiet';
+              } else {
+                updates.signupStatus = 'inactive';
+              }
+            } else {
+              updates.signupStatus = 'signed_up_only';
+            }
+            
+            // Update in background (don't await)
+            base44.entities.Pupil.update(pupil.id, updates);
+            
+            // Also update local object for immediate display
+            Object.assign(pupil, updates);
+          }
+        }
+      }
+      
+      return allPupils;
+    }
   });
 
   const { data: lessons = [] } = useQuery({
