@@ -11,28 +11,22 @@ import moment from 'moment';
 
 const modules = {
   toolbar: [
-    [{ 'font': [] }],
-    [{ 'size': ['small', false, 'large', 'huge'] }],
     [{ 'header': [1, 2, 3, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
+    ['bold', 'italic', 'underline'],
     [{ 'list': 'ordered' }, { 'list': 'bullet' }],
     [{ 'indent': '-1' }, { 'indent': '+1' }],
-    ['link', 'image'],
-    ['blockquote', 'code-block'],
+    [{ 'color': [] }],
+    ['link'],
     ['clean']
   ]
 };
 
 const formats = [
-  'font', 'size', 'header',
-  'bold', 'italic', 'underline', 'strike',
-  'color', 'background',
-  'align',
+  'header',
+  'bold', 'italic', 'underline',
+  'color',
   'list', 'bullet', 'indent',
-  'link', 'image',
-  'blockquote', 'code-block'
+  'link'
 ];
 
 export default function MaterialEditor({ 
@@ -52,8 +46,26 @@ export default function MaterialEditor({
   const [lastAutosave, setLastAutosave] = useState(null);
   const autosaveRef = useRef(null);
 
+  const blankTemplate = `<h1>Topic Title</h1>
+<p><br></p>
+<h2>1. Section One</h2>
+<ol>
+<li>First point</li>
+<li>Second point</li>
+</ol>
+<p><br></p>
+<h2>2. Section Two</h2>
+<ul>
+<li>Bullet point</li>
+<li>Another bullet</li>
+</ul>
+<p><br></p>
+`;
+
   useEffect(() => {
-    setContent(initialContent || '');
+    // If no content exists, start with blank template
+    const startingContent = initialContent || blankTemplate;
+    setContent(startingContent);
     setTitle(initialTitle || '');
     setDescription(initialDescription || '');
     setIsVisibleToPupils(initialVisibility || false);
