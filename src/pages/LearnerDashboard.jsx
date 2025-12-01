@@ -52,19 +52,37 @@ export default function LearnerDashboard() {
     enabled: !!user
   });
 
-  // Auto-link pupil record when learner signs in with matching email
-  const linkPupilMutation = useMutation({
-    mutationFn: ({ pupilId, userId }) => 
-      base44.entities.Pupil.update(pupilId, { linkedUserId: userId }),
+  // Auto-link pupil record and track login timestamps
+  const updatePupilMutation = useMutation({
+    mutationFn: ({ pupilId, data }) => 
+      base44.entities.Pupil.update(pupilId, data),
     onSuccess: () => queryClient.invalidateQueries(['myPupilProfile'])
   });
 
   useEffect(() => {
-    // If pupil exists but isn't linked yet, link it
-    if (pupil && user && !pupil.linkedUserId && pupil.email?.toLowerCase() === user.email?.toLowerCase()) {
-      linkPupilMutation.mutate({ pupilId: pupil.id, userId: user.id });
+    if (pupil && user) {
+      const now = new Date().toISOString();
+      const updates = {
+        lastLoginTimestamp: now
+      };
+      
+      // If pupil exists but isn't linked yet, link it and set first login
+      if (!pupil.linkedUserId && pupil.email?.toLowerCase() === user.email?.toLowerCase()) {
+        updates.linkedUserId = user.id;
+        updates.signupStatus = 'active';
+        updates.firstLoginTimestamp = now;
+      } else if (pupil.signupStatus === 'signed_up') {
+        // If signed up but not active yet, mark as active
+        updates.signupStatus = 'active';
+      } else if (!pupil.signupStatus || pupil.signupStatus === 'not_signed_up') {
+        // First time login
+        updates.signupStatus = 'active';
+        updates.firstLoginTimestamp = now;
+      }
+      
+      updatePupilMutation.mutate({ pupilId: pupil.id, data: updates });
     }
-  }, [pupil, user]);
+  }, [pupil?.id, user?.id]);
 
   const { data: lessons = [] } = useQuery({
     queryKey: ['myLessons', pupil?.id],

@@ -192,7 +192,7 @@ export default function PupilList() {
             <TableHeader>
               <TableRow className="bg-slate-50">
                 <TableHead className="font-semibold">Pupil</TableHead>
-                
+                <TableHead className="font-semibold">Status</TableHead>
                 <TableHead className="font-semibold">Progress</TableHead>
                 <TableHead className="font-semibold">Next Lesson</TableHead>
                 <TableHead className="font-semibold">Test Date</TableHead>
@@ -229,7 +229,17 @@ export default function PupilList() {
                           </div>
                         </div>
                       </TableCell>
-                      
+                      <TableCell>
+                        <Badge className={{
+                          'active': 'bg-emerald-100 text-emerald-700',
+                          'signed_up': 'bg-amber-100 text-amber-700',
+                          'not_signed_up': 'bg-rose-100 text-rose-700'
+                        }[pupil.signupStatus || 'not_signed_up']}>
+                          {pupil.signupStatus === 'active' ? 'Active' : 
+                           pupil.signupStatus === 'signed_up' ? 'Signed Up' : 
+                           'Not Signed Up'}
+                        </Badge>
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
