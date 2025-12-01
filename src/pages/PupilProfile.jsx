@@ -298,16 +298,24 @@ export default function PupilProfile() {
                                       )}
 
                                       {/* Account Activity */}
-                                                                                  {pupil.hasSignedUp && (
-                                                                                    <div className="text-xs text-slate-500 space-y-1 border-t pt-2 mt-2">
-                                                                                      {pupil.firstLoginTimestamp && (
-                                                                                        <p>First login: {moment(pupil.firstLoginTimestamp).format('D MMM YYYY')}</p>
-                                                                                      )}
-                                                                                      {pupil.lastLoginTimestamp && (
-                                                                                        <p>Last login: {moment(pupil.lastLoginTimestamp).fromNow()}</p>
-                                                                                      )}
-                                                                                    </div>
-                                                                                  )}
+                                                                                  <div className="text-xs text-slate-500 space-y-1 border-t pt-2 mt-2">
+                                                                                    <p className="font-medium text-slate-600">Account Status</p>
+                                                                                    {pupil.hasSignedUp ? (
+                                                                                      <>
+                                                                                        {pupil.firstLoginTimestamp && (
+                                                                                          <p>First login: {moment(pupil.firstLoginTimestamp).format('D MMM YYYY, h:mm a')}</p>
+                                                                                        )}
+                                                                                        {pupil.lastLoginTimestamp && (
+                                                                                          <p>Last login: {moment(pupil.lastLoginTimestamp).fromNow()}</p>
+                                                                                        )}
+                                                                                        {pupil.lastActivityTimestamp && (
+                                                                                          <p>Last activity: {moment(pupil.lastActivityTimestamp).fromNow()}</p>
+                                                                                        )}
+                                                                                      </>
+                                                                                    ) : (
+                                                                                      <p className="text-rose-500">Not signed up yet</p>
+                                                                                    )}
+                                                                                  </div>
 
                                                                                   {pupil.googleSheetUrl && (
                                                                                     <a 
