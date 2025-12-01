@@ -297,17 +297,29 @@ export default function PupilProfile() {
                                         </div>
                                       )}
 
-                                      {pupil.googleSheetUrl && (
-                                        <a 
-                                          href={pupil.googleSheetUrl} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer"
-                                          className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700"
-                                        >
-                                          <ExternalLink className="w-4 h-4" />
-                                          Google Sheet
-                                        </a>
-                                      )}
+                                      {/* Account Activity */}
+                                                                                  {pupil.hasSignedUp && (
+                                                                                    <div className="text-xs text-slate-500 space-y-1 border-t pt-2 mt-2">
+                                                                                      {pupil.firstLoginTimestamp && (
+                                                                                        <p>First login: {moment(pupil.firstLoginTimestamp).format('D MMM YYYY')}</p>
+                                                                                      )}
+                                                                                      {pupil.lastLoginTimestamp && (
+                                                                                        <p>Last login: {moment(pupil.lastLoginTimestamp).fromNow()}</p>
+                                                                                      )}
+                                                                                    </div>
+                                                                                  )}
+
+                                                                                  {pupil.googleSheetUrl && (
+                                                                                    <a 
+                                                                                      href={pupil.googleSheetUrl} 
+                                                                                      target="_blank" 
+                                                                                      rel="noopener noreferrer"
+                                                                                      className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700"
+                                                                                    >
+                                                                                      <ExternalLink className="w-4 h-4" />
+                                                                                      Google Sheet
+                                                                                    </a>
+                                                                                  )}
               </div>
             </div>
           </div>
