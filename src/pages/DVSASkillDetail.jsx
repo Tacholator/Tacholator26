@@ -102,10 +102,11 @@ export default function DVSASkillDetail() {
   });
 
   const saveMaterialMutation = useMutation({
-    mutationFn: async ({ content, title, isVisibleToPupils }) => {
+    mutationFn: async ({ content, title, description, isVisibleToPupils }) => {
       const data = { 
         content, 
         title, 
+        description,
         isVisibleToPupils,
         lastSavedAt: new Date().toISOString()
       };
@@ -291,7 +292,8 @@ export default function DVSASkillDetail() {
                   {isEditingMaterial ? (
                     <MaterialEditor
                       initialContent={customMaterial?.content || skill?.learningMaterial || ''}
-                      initialTitle={customMaterial?.title || ''}
+                      initialTitle={customMaterial?.title || skill?.skillTitle || ''}
+                      initialDescription={customMaterial?.description || skill?.shortDescription || ''}
                       initialVisibility={customMaterial?.isVisibleToPupils || false}
                       lastSavedAt={customMaterial?.lastSavedAt}
                       onSave={(data) => saveMaterialMutation.mutate(data)}

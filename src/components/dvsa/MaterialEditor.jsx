@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactQuill from 'react-quill';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +38,7 @@ const formats = [
 export default function MaterialEditor({ 
   initialContent, 
   initialTitle,
+  initialDescription,
   initialVisibility,
   lastSavedAt,
   onSave, 
@@ -44,6 +46,7 @@ export default function MaterialEditor({
 }) {
   const [content, setContent] = useState(initialContent || '');
   const [title, setTitle] = useState(initialTitle || '');
+  const [description, setDescription] = useState(initialDescription || '');
   const [isVisibleToPupils, setIsVisibleToPupils] = useState(initialVisibility || false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastAutosave, setLastAutosave] = useState(null);
@@ -52,9 +55,10 @@ export default function MaterialEditor({
   useEffect(() => {
     setContent(initialContent || '');
     setTitle(initialTitle || '');
+    setDescription(initialDescription || '');
     setIsVisibleToPupils(initialVisibility || false);
     setHasUnsavedChanges(false);
-  }, [initialContent, initialTitle, initialVisibility]);
+  }, [initialContent, initialTitle, initialDescription, initialVisibility]);
 
   // Autosave every 30 seconds
   useEffect(() => {
@@ -66,7 +70,7 @@ export default function MaterialEditor({
     return () => {
       if (autosaveRef.current) clearTimeout(autosaveRef.current);
     };
-  }, [content, title, isVisibleToPupils, hasUnsavedChanges]);
+  }, [content, title, description, isVisibleToPupils, hasUnsavedChanges]);
 
   const handleContentChange = (value) => {
     setContent(value);
@@ -78,6 +82,11 @@ export default function MaterialEditor({
     setHasUnsavedChanges(true);
   };
 
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+    setHasUnsavedChanges(true);
+  };
+
   const handleVisibilityChange = (checked) => {
     setIsVisibleToPupils(checked);
     setHasUnsavedChanges(true);
@@ -85,61 +94,78 @@ export default function MaterialEditor({
 
   const handleSave = (isAutosave = false) => {
     if (autosaveRef.current) clearTimeout(autosaveRef.current);
-    onSave({ content, title, isVisibleToPupils });
+    onSave({ content, title, description, isVisibleToPupils });
     setHasUnsavedChanges(false);
     if (isAutosave) setLastAutosave(new Date());
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="flex-1 w-full sm:max-w-md">
-          <Label htmlFor="materialTitle" className="text-sm text-slate-500 mb-1 block">Material Title (optional)</Label>
-          <Input
-            id="materialTitle"
-            value={title}
-            onChange={handleTitleChange}
-            placeholder="e.g., My notes on Legal Responsibilities"
-            className="w-full"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={isVisibleToPupils}
-              onCheckedChange={handleVisibilityChange}
-              id="visibility"
-            />
-            <Label htmlFor="visibility" className="text-sm cursor-pointer flex items-center gap-1">
-              {isVisibleToPupils ? (
-                <>
-                  <Eye className="w-4 h-4 text-emerald-600" />
-                  <span className="text-emerald-700">Visible to pupils</span>
-                </>
-              ) : (
-                <>
-                  <EyeOff className="w-4 h-4 text-slate-400" />
-                  <span className="text-slate-500">Hidden from pupils</span>
-                </>
-              )}
-            </Label>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border">
-        <ReactQuill
-          theme="snow"
-          value={content}
-          onChange={handleContentChange}
-          modules={modules}
-          formats={formats}
-          placeholder="Start writing your teaching notes for this skill here..."
-          style={{ minHeight: '400px' }}
+    <div className="space-y-6">
+      {/* Topic Name */}
+      <div className="space-y-2">
+        <Label htmlFor="materialTitle" className="text-sm font-medium text-slate-700">Skill Topic Name</Label>
+        <Input
+          id="materialTitle"
+          value={title}
+          onChange={handleTitleChange}
+          placeholder="e.g., Legal Responsibilities"
+          className="w-full"
         />
       </div>
 
-      <div className="flex items-center justify-between">
+      {/* Brief Description */}
+      <div className="space-y-2">
+        <Label htmlFor="materialDescription" className="text-sm font-medium text-slate-700">Brief Description</Label>
+        <Textarea
+          id="materialDescription"
+          value={description}
+          onChange={handleDescriptionChange}
+          placeholder="A short description of what this skill covers..."
+          rows={2}
+          className="w-full"
+        />
+      </div>
+
+      {/* Visibility Toggle */}
+      <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+        <Switch
+          checked={isVisibleToPupils}
+          onCheckedChange={handleVisibilityChange}
+          id="visibility"
+        />
+        <Label htmlFor="visibility" className="text-sm cursor-pointer flex items-center gap-2">
+          {isVisibleToPupils ? (
+            <>
+              <Eye className="w-4 h-4 text-emerald-600" />
+              <span className="text-emerald-700">Visible to pupils</span>
+            </>
+          ) : (
+            <>
+              <EyeOff className="w-4 h-4 text-slate-400" />
+              <span className="text-slate-500">Hidden from pupils</span>
+            </>
+          )}
+        </Label>
+      </div>
+
+      {/* Rich Text Editor */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-slate-700">Study Material Content</Label>
+        <div className="bg-white rounded-lg border">
+          <ReactQuill
+            theme="snow"
+            value={content}
+            onChange={handleContentChange}
+            modules={modules}
+            formats={formats}
+            placeholder="Start writing your teaching notes for this skill here..."
+            style={{ minHeight: '400px' }}
+          />
+        </div>
+      </div>
+
+      {/* Footer with Save */}
+      <div className="flex items-center justify-between pt-4 border-t">
         <div className="flex items-center gap-3 text-sm text-slate-500">
           {hasUnsavedChanges && (
             <Badge variant="outline" className="text-amber-600 border-amber-300">
