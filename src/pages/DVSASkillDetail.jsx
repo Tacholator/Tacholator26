@@ -23,10 +23,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy } from 'lucide-react';
+import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit } from 'lucide-react';
 import { getSkillById, DVSA_SKILLS_DATA } from '@/components/dvsa/dvsaSkillsData';
 import StudyMaterial from '@/components/dvsa/StudyMaterial';
 import McqQuiz from '@/components/dvsa/McqQuiz';
+import MaterialEditor from '@/components/dvsa/MaterialEditor';
 
 export default function DVSASkillDetail() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -38,6 +39,7 @@ export default function DVSASkillDetail() {
   const [selectedPupils, setSelectedPupils] = useState([]);
   const [assignComponents, setAssignComponents] = useState('both');
   const [materialProgress, setMaterialProgress] = useState({ scrollDepth: 0, timeSpent: 0 });
+  const [isEditing, setIsEditing] = useState(false);
 
   const queryClient = useQueryClient();
   const skill = getSkillById(skillId);
@@ -69,6 +71,15 @@ export default function DVSASkillDetail() {
     enabled: !!skillId
   });
 
+  const { data: customMaterial } = useQuery({
+    queryKey: ['skillMaterial', skillId],
+    queryFn: async () => {
+      const materials = await base44.entities.SkillMaterial.filter({ skillId });
+      return materials[0] || null;
+    },
+    enabled: !!skillId
+  });
+
   const selectedPupil = pupils.find(p => p.id === pupilIdParam);
 
   const createAssignmentMutation = useMutation({
@@ -89,6 +100,22 @@ export default function DVSASkillDetail() {
     mutationFn: (data) => base44.entities.McqAttempt.create(data),
     onSuccess: () => queryClient.invalidateQueries(['skillAssignment', skillId, pupilIdParam])
   });
+
+  const saveMaterialMutation = useMutation({
+    mutationFn: async (content) => {
+      if (customMaterial) {
+        return base44.entities.SkillMaterial.update(customMaterial.id, { content });
+      } else {
+        return base44.entities.SkillMaterial.create({ skillId, instructorId: user.id, content });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['skillMaterial', skillId]);
+      setIsEditing(false);
+    }
+  });
+
+  const materialContent = customMaterial?.content || skill?.learningMaterial;
 
   const handleMaterialProgress = useCallback((progress) => {
     setMaterialProgress(progress);
@@ -232,6 +259,10 @@ export default function DVSASkillDetail() {
                 <BookOpen className="w-4 h-4" />
                 Study Material
               </TabsTrigger>
+              <TabsTrigger value="edit" className="gap-2">
+                <Edit className="w-4 h-4" />
+                Edit Material
+              </TabsTrigger>
               <TabsTrigger value="quiz" className="gap-2" disabled={!canTakeQuiz && !assignment?.hasOpenedMaterial}>
                 <ClipboardCheck className="w-4 h-4" />
                 Take Quiz
@@ -245,10 +276,37 @@ export default function DVSASkillDetail() {
             <TabsContent value="material">
               <Card className="border-0 shadow-sm">
                 <CardContent className="p-6">
-                  <StudyMaterial
-                    content={skill.learningMaterial}
-                    onProgress={handleMaterialProgress}
-                    isComplete={assignment?.hasOpenedMaterial}
+                  {materialContent ? (
+                    <StudyMaterial
+                      content={materialContent}
+                      onProgress={handleMaterialProgress}
+                      isComplete={assignment?.hasOpenedMaterial}
+                    />
+                  ) : (
+                    <div className="text-center py-12 text-slate-400">
+                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>No learning material yet</p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-4"
+                        onClick={() => setActiveTab('edit')}
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Create Material
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="edit">
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-6">
+                  <MaterialEditor
+                    initialContent={customMaterial?.content || skill?.learningMaterial || ''}
+                    onSave={(content) => saveMaterialMutation.mutate(content)}
+                    isSaving={saveMaterialMutation.isPending}
                   />
                 </CardContent>
               </Card>

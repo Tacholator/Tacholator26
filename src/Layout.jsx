@@ -50,8 +50,9 @@ const instructorNav = [
 
 const learnerNav = [
   { name: 'Dashboard', icon: LayoutDashboard, page: 'LearnerDashboard' },
+  { name: 'DVSA Skills', icon: BookOpen, page: 'LearnerSkills' },
   { name: 'Progress', icon: GraduationCap, page: 'LearnerProgress' },
-  { name: 'Lessons', icon: BookOpen, page: 'LearnerLessons' },
+  { name: 'Lessons', icon: Calendar, page: 'LearnerLessons' },
   { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework' },
   { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
 ];

@@ -13,6 +13,8 @@ import AdminDataManagement from './pages/AdminDataManagement';
 import HomeworkLibrary from './pages/HomeworkLibrary';
 import DVSASkills from './pages/DVSASkills';
 import DVSASkillDetail from './pages/DVSASkillDetail';
+import LearnerSkills from './pages/LearnerSkills';
+import LearnerSkillStudy from './pages/LearnerSkillStudy';
 import __Layout from './Layout.jsx';
 
 
@@ -32,6 +34,8 @@ export const PAGES = {
     "HomeworkLibrary": HomeworkLibrary,
     "DVSASkills": DVSASkills,
     "DVSASkillDetail": DVSASkillDetail,
+    "LearnerSkills": LearnerSkills,
+    "LearnerSkillStudy": LearnerSkillStudy,
 }
 
 export const pagesConfig = {
