@@ -10,6 +10,7 @@ import ProfileSettings from './pages/ProfileSettings';
 import InstructorResources from './pages/InstructorResources';
 import LearnerResources from './pages/LearnerResources';
 import AdminDataManagement from './pages/AdminDataManagement';
+import HomeworkLibrary from './pages/HomeworkLibrary';
 import __Layout from './Layout.jsx';
 
 
@@ -26,6 +27,7 @@ export const PAGES = {
     "InstructorResources": InstructorResources,
     "LearnerResources": LearnerResources,
     "AdminDataManagement": AdminDataManagement,
+    "HomeworkLibrary": HomeworkLibrary,
 }
 
 export const pagesConfig = {

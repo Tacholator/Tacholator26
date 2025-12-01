@@ -1,17 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Loader2, Car, BookOpen, CheckCircle2, Calendar } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { ArrowLeft, Loader2, Car, BookOpen, CheckCircle2, Calendar, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, ChevronRight } from 'lucide-react';
 import moment from 'moment';
+import HomeworkViewer from '@/components/homework/HomeworkViewer';
+
+const FORMAT_ICONS = {
+  text: FileText,
+  checklist: CheckSquare,
+  image: Image,
+  video: Video,
+  audio: Music,
+  link: Link2,
+  attachment: Paperclip
+};
 
 export default function LearnerHomework() {
+  const [selectedHomework, setSelectedHomework] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -49,16 +67,36 @@ export default function LearnerHomework() {
   });
 
   const updateHomeworkMutation = useMutation({
-    mutationFn: ({ id, status }) => base44.entities.HomeworkItem.update(id, { status }),
+    mutationFn: ({ id, data }) => base44.entities.HomeworkItem.update(id, data),
     onSuccess: () => queryClient.invalidateQueries(['myHomework', pupil?.id])
   });
 
   const toggleHomework = async (item) => {
     const newStatus = item.status === 'Completed' ? 'Pending' : 'Completed';
-    await updateHomeworkMutation.mutateAsync({ id: item.id, status: newStatus });
+    await updateHomeworkMutation.mutateAsync({ id: item.id, data: { status: newStatus } });
   };
 
-  const pendingHomework = homework.filter(h => h.status === 'Pending');
+  const handleChecklistUpdate = async (items) => {
+    if (!selectedHomework) return;
+    const allCompleted = items.every(i => i.isCompleted);
+    await updateHomeworkMutation.mutateAsync({
+      id: selectedHomework.id,
+      data: {
+        formatPayload: { ...selectedHomework.formatPayload, items },
+        status: allCompleted ? 'Completed' : (selectedHomework.status === 'Pending' ? 'Viewed' : selectedHomework.status)
+      }
+    });
+    setSelectedHomework({ ...selectedHomework, formatPayload: { ...selectedHomework.formatPayload, items } });
+  };
+
+  const openHomework = async (item) => {
+    setSelectedHomework(item);
+    if (item.status === 'Pending') {
+      await updateHomeworkMutation.mutateAsync({ id: item.id, data: { status: 'Viewed' } });
+    }
+  };
+
+  const pendingHomework = homework.filter(h => h.status !== 'Completed');
   const completedHomework = homework.filter(h => h.status === 'Completed');
 
   if (isLoading) {
@@ -118,42 +156,51 @@ export default function LearnerHomework() {
             </Card>
           ) : (
             <div className="space-y-3">
-              {pendingHomework.map((item, idx) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
-                  <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-4">
-                        <Checkbox
-                          checked={false}
-                          onCheckedChange={() => toggleHomework(item)}
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-medium text-slate-800">{item.title}</h3>
-                          {item.description && (
-                            <p className="text-sm text-slate-500 mt-1">{item.description}</p>
-                          )}
-                          <div className="flex items-center gap-3 mt-2 text-xs text-slate-400">
-                            <span>Assigned {moment(item.created_date).format('D MMM YYYY')}</span>
-                            {item.dueDate && (
-                              <span className="flex items-center gap-1 text-amber-600">
-                                <Calendar className="w-3 h-3" />
-                                Due {moment(item.dueDate).format('D MMM')}
-                              </span>
+              {pendingHomework.map((item, idx) => {
+                const FormatIcon = FORMAT_ICONS[item.formatType] || FileText;
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Card 
+                      className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => openHomework(item)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-4">
+                          <div className="p-2 rounded-lg bg-amber-50">
+                            <FormatIcon className="w-5 h-5 text-amber-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-medium text-slate-800">{item.title}</h3>
+                            {item.description && (
+                              <p className="text-sm text-slate-500 mt-1 line-clamp-2">{item.description}</p>
                             )}
+                            <div className="flex items-center gap-3 mt-2 text-xs text-slate-400">
+                              <span>Assigned {moment(item.created_date).format('D MMM YYYY')}</span>
+                              {item.dueDate && (
+                                <span className="flex items-center gap-1 text-amber-600">
+                                  <Calendar className="w-3 h-3" />
+                                  Due {moment(item.dueDate).format('D MMM')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className={item.status === 'Viewed' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}>
+                              {item.status === 'Viewed' ? 'In Progress' : 'New'}
+                            </Badge>
+                            <ChevronRight className="w-5 h-5 text-slate-300" />
                           </div>
                         </div>
-                        <Badge className="bg-amber-100 text-amber-700">Pending</Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -166,37 +213,80 @@ export default function LearnerHomework() {
               Completed ({completedHomework.length})
             </h2>
             <div className="space-y-3">
-              {completedHomework.map((item, idx) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
-                  <Card className="border-0 shadow-sm bg-slate-50/50">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-4">
-                        <Checkbox
-                          checked={true}
-                          onCheckedChange={() => toggleHomework(item)}
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-medium text-slate-500 line-through">{item.title}</h3>
-                          {item.description && (
-                            <p className="text-sm text-slate-400 mt-1">{item.description}</p>
-                          )}
+              {completedHomework.map((item, idx) => {
+                const FormatIcon = FORMAT_ICONS[item.formatType] || FileText;
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Card 
+                      className="border-0 shadow-sm bg-slate-50/50 cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => setSelectedHomework(item)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-4">
+                          <div className="p-2 rounded-lg bg-emerald-50">
+                            <FormatIcon className="w-5 h-5 text-emerald-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-medium text-slate-500">{item.title}</h3>
+                            {item.description && (
+                              <p className="text-sm text-slate-400 mt-1">{item.description}</p>
+                            )}
+                          </div>
+                          <Badge className="bg-emerald-100 text-emerald-700">
+                            <CheckCircle2 className="w-3 h-3 mr-1" /> Done
+                          </Badge>
                         </div>
-                        <Badge className="bg-emerald-100 text-emerald-700">Done</Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         )}
       </div>
+
+      {/* Homework Detail Modal */}
+      <Dialog open={!!selectedHomework} onOpenChange={() => setSelectedHomework(null)}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{selectedHomework?.title}</DialogTitle>
+          </DialogHeader>
+          {selectedHomework && (
+            <div className="py-4">
+              {selectedHomework.description && (
+                <p className="text-slate-600 mb-4">{selectedHomework.description}</p>
+              )}
+              <HomeworkViewer 
+                homework={selectedHomework}
+                onChecklistUpdate={selectedHomework.formatType === 'checklist' ? handleChecklistUpdate : undefined}
+              />
+              <div className="mt-6 pt-4 border-t flex items-center justify-between">
+                <span className="text-sm text-slate-400">
+                  Assigned {moment(selectedHomework.created_date).format('D MMM YYYY')}
+                </span>
+                {selectedHomework.status !== 'Completed' && (
+                  <Button
+                    onClick={() => {
+                      toggleHomework(selectedHomework);
+                      setSelectedHomework(null);
+                    }}
+                    className="bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Mark Complete
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
