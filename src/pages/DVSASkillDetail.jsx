@@ -102,16 +102,21 @@ export default function DVSASkillDetail() {
   });
 
   const saveMaterialMutation = useMutation({
-    mutationFn: async (content) => {
+    mutationFn: async ({ content, title, isVisibleToPupils }) => {
+      const data = { 
+        content, 
+        title, 
+        isVisibleToPupils,
+        lastSavedAt: new Date().toISOString()
+      };
       if (customMaterial) {
-        return base44.entities.SkillMaterial.update(customMaterial.id, { content });
+        return base44.entities.SkillMaterial.update(customMaterial.id, data);
       } else {
-        return base44.entities.SkillMaterial.create({ skillId, instructorId: user.id, content });
+        return base44.entities.SkillMaterial.create({ skillId, instructorId: user.id, ...data });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['skillMaterial', skillId]);
-      setIsEditing(false);
     }
   });
 
@@ -305,7 +310,10 @@ export default function DVSASkillDetail() {
                 <CardContent className="p-6">
                   <MaterialEditor
                     initialContent={customMaterial?.content || skill?.learningMaterial || ''}
-                    onSave={(content) => saveMaterialMutation.mutate(content)}
+                    initialTitle={customMaterial?.title || ''}
+                    initialVisibility={customMaterial?.isVisibleToPupils || false}
+                    lastSavedAt={customMaterial?.lastSavedAt}
+                    onSave={(data) => saveMaterialMutation.mutate(data)}
                     isSaving={saveMaterialMutation.isPending}
                   />
                 </CardContent>

@@ -52,7 +52,9 @@ export default function LearnerSkillStudy() {
     queryKey: ['skillMaterial', skillId],
     queryFn: async () => {
       const materials = await base44.entities.SkillMaterial.filter({ skillId });
-      return materials[0] || null;
+      const mat = materials[0] || null;
+      // Only return if visible to pupils
+      return mat?.isVisibleToPupils ? mat : null;
     },
     enabled: !!skillId
   });
