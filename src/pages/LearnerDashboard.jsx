@@ -18,7 +18,9 @@ import {
   ChevronRight,
   Loader2,
   Car,
-  User
+  User,
+  ClipboardList,
+  FileText
 } from 'lucide-react';
 import moment from 'moment';
 
@@ -93,6 +95,15 @@ export default function LearnerDashboard() {
     queryFn: async () => {
       const entries = await base44.entities.DiaryEntry.filter({ pupilId: pupil.id });
       return entries.sort((a, b) => b.date.localeCompare(a.date));
+    },
+    enabled: !!pupil?.id
+  });
+
+  const { data: homework = [] } = useQuery({
+    queryKey: ['myHomework', pupil?.id],
+    queryFn: async () => {
+      const items = await base44.entities.HomeworkItem.filter({ pupilId: pupil.id });
+      return items.filter(h => h.status !== 'Completed').sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     },
     enabled: !!pupil?.id
   });
@@ -276,6 +287,53 @@ export default function LearnerDashboard() {
                     View All Lessons <ChevronRight className="w-4 h-4" />
                   </Button>
                 </Link>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Quick Access Homework */}
+        {homework.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.32 }}
+            className="mt-6"
+          >
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <ClipboardList className="w-5 h-5 text-amber-500" />
+                  Pending Homework
+                </CardTitle>
+                <Badge className="bg-amber-100 text-amber-700">{homework.length}</Badge>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {homework.slice(0, 3).map(item => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
+                    onClick={() => window.location.href = createPageUrl('LearnerHomework')}
+                  >
+                    <div className="p-2 rounded-lg bg-amber-100">
+                      <FileText className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-slate-700 truncate">{item.title}</p>
+                      {item.dueDate && (
+                        <p className="text-xs text-amber-600">Due {moment(item.dueDate).format('D MMM')}</p>
+                      )}
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                  </div>
+                ))}
+                {homework.length > 3 && (
+                  <Link to={createPageUrl('LearnerHomework')}>
+                    <Button variant="outline" className="w-full gap-2">
+                      View All Homework <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                )}
               </CardContent>
             </Card>
           </motion.div>
