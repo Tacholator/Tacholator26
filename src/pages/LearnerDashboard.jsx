@@ -63,20 +63,18 @@ export default function LearnerDashboard() {
     if (pupil && user) {
       const now = new Date().toISOString();
       const updates = {
-        lastLoginTimestamp: now
+        lastLoginTimestamp: now,
+        lastActivityTimestamp: now,
+        hasSignedUp: true,
+        signupStatus: 'active_recently'
       };
       
       // If pupil exists but isn't linked yet, link it and set first login
       if (!pupil.linkedUserId && pupil.email?.toLowerCase() === user.email?.toLowerCase()) {
         updates.linkedUserId = user.id;
-        updates.signupStatus = 'active';
         updates.firstLoginTimestamp = now;
-      } else if (pupil.signupStatus === 'signed_up') {
-        // If signed up but not active yet, mark as active
-        updates.signupStatus = 'active';
-      } else if (!pupil.signupStatus || pupil.signupStatus === 'not_signed_up') {
+      } else if (!pupil.firstLoginTimestamp) {
         // First time login
-        updates.signupStatus = 'active';
         updates.firstLoginTimestamp = now;
       }
       

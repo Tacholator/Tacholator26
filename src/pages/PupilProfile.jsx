@@ -192,14 +192,18 @@ export default function PupilProfile() {
                                               {pupil.firstName} {pupil.lastName}
                                             </h1>
                                             <Badge className={{
-                                              'active': 'bg-emerald-100 text-emerald-700',
-                                              'signed_up': 'bg-amber-100 text-amber-700',
-                                              'not_signed_up': 'bg-rose-100 text-rose-700'
-                                            }[pupil.signupStatus || 'not_signed_up']}>
-                                              {pupil.signupStatus === 'active' ? 'Active' : 
-                                               pupil.signupStatus === 'signed_up' ? 'Signed Up' : 
-                                               'Not Signed Up'}
-                                            </Badge>
+                                                                          'active_recently': 'bg-emerald-100 text-emerald-700',
+                                                                          'active_but_quiet': 'bg-amber-100 text-amber-700',
+                                                                          'signed_up_only': 'bg-slate-100 text-slate-600',
+                                                                          'inactive': 'bg-rose-100 text-rose-700',
+                                                                          'not_signed_up': 'bg-rose-100 text-rose-700'
+                                                                        }[pupil.signupStatus || 'not_signed_up']}>
+                                                                          {pupil.signupStatus === 'active_recently' ? 'Active' : 
+                                                                           pupil.signupStatus === 'active_but_quiet' ? 'Quiet' :
+                                                                           pupil.signupStatus === 'signed_up_only' ? 'Signed Up' :
+                                                                           pupil.signupStatus === 'inactive' ? 'Inactive' :
+                                                                           'Not Signed Up'}
+                                                                        </Badge>
                                           </div>
                 <div className="flex flex-wrap gap-4 text-sm text-slate-500">
                   {pupil.phone && (
