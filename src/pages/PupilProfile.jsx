@@ -188,10 +188,19 @@ export default function PupilProfile() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                                        <h1 className="text-2xl font-bold text-slate-800">
-                                          {pupil.firstName} {pupil.lastName}
-                                        </h1>
-                                      </div>
+                                            <h1 className="text-2xl font-bold text-slate-800">
+                                              {pupil.firstName} {pupil.lastName}
+                                            </h1>
+                                            <Badge className={{
+                                              'active': 'bg-emerald-100 text-emerald-700',
+                                              'signed_up': 'bg-amber-100 text-amber-700',
+                                              'not_signed_up': 'bg-rose-100 text-rose-700'
+                                            }[pupil.signupStatus || 'not_signed_up']}>
+                                              {pupil.signupStatus === 'active' ? 'Active' : 
+                                               pupil.signupStatus === 'signed_up' ? 'Signed Up' : 
+                                               'Not Signed Up'}
+                                            </Badge>
+                                          </div>
                 <div className="flex flex-wrap gap-4 text-sm text-slate-500">
                   {pupil.phone && (
                     <div className="flex items-center gap-1">
