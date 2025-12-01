@@ -11,6 +11,8 @@ import InstructorResources from './pages/InstructorResources';
 import LearnerResources from './pages/LearnerResources';
 import AdminDataManagement from './pages/AdminDataManagement';
 import HomeworkLibrary from './pages/HomeworkLibrary';
+import DVSASkills from './pages/DVSASkills';
+import DVSASkillDetail from './pages/DVSASkillDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -28,6 +30,8 @@ export const PAGES = {
     "LearnerResources": LearnerResources,
     "AdminDataManagement": AdminDataManagement,
     "HomeworkLibrary": HomeworkLibrary,
+    "DVSASkills": DVSASkills,
+    "DVSASkillDetail": DVSASkillDetail,
 }
 
 export const pagesConfig = {

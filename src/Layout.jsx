@@ -43,6 +43,7 @@ const instructorNav = [
   { name: 'Dashboard', icon: LayoutDashboard, page: 'InstructorDashboard' },
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
+  { name: 'DVSA Skills', icon: GraduationCap, page: 'DVSASkills' },
   { name: 'Homework Library', icon: ClipboardList, page: 'HomeworkLibrary' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
 ];
