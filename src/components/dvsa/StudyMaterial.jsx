@@ -13,25 +13,13 @@ export default function StudyMaterial({ content, onProgress, isComplete }) {
     const handleScroll = () => {
       if (!containerRef.current) return;
       const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-      // Handle case where content fits without scrolling
-      if (scrollHeight <= clientHeight) {
-        setScrollDepth(100);
-        return;
-      }
-      const maxScroll = scrollHeight - clientHeight;
-      if (maxScroll <= 0) {
-        setScrollDepth(100);
-        return;
-      }
-      const depth = Math.round((scrollTop / maxScroll) * 100);
-      setScrollDepth(prev => Math.min(100, Math.max(prev, isNaN(depth) ? 0 : depth)));
+      const depth = Math.round((scrollTop / (scrollHeight - clientHeight)) * 100);
+      setScrollDepth(Math.min(100, Math.max(scrollDepth, depth)));
     };
 
     const container = containerRef.current;
     if (container) {
       container.addEventListener('scroll', handleScroll);
-      // Initial check for short content
-      handleScroll();
     }
 
     const timer = setInterval(() => {
@@ -43,7 +31,7 @@ export default function StudyMaterial({ content, onProgress, isComplete }) {
       if (container) container.removeEventListener('scroll', handleScroll);
       clearInterval(timer);
     };
-  }, [content]);
+  }, []);
 
   useEffect(() => {
     if (onProgress) {

@@ -4,7 +4,162 @@ export const DVSA_SKILLS_DATA = [
     skillNumber: 1,
     skillTitle: 'Legal Responsibilities',
     shortDescription: 'Understanding the legal responsibilities of the driver and vehicle, including fitness to drive, insurance, taxation, MOT, mobile phone rules, and accident duties.',
-    learningMaterial: '',
+    learningMaterial: `# Legal Responsibilities
+
+To drive safely and legally, every driver must understand their responsibilities — both for themselves and for the vehicle they are operating. The law requires you to be fit to drive, avoid distractions, use a roadworthy vehicle, and follow all rules regarding supervision, insurance, and accident reporting.
+
+---
+
+## 1. Your Fitness to Drive
+
+You must be in a safe physical and mental condition to drive. The law requires you to understand how the following factors affect your ability to drive:
+
+### 1.1 Health
+
+- Certain medical conditions **must** be reported to the DVLA.
+- You must **not** drive if your condition affects your ability to drive safely.
+- Failing to notify DVLA can lead to:
+  1. A fine of up to **£1,000**
+  2. Possible prosecution if you're involved in a collision
+
+### 1.2 Eyesight
+
+- You must be able to read a number plate from **20 metres**.
+- If you need glasses or contact lenses to meet this standard, you **must wear them** when driving.
+- Driving with poor eyesight can result in:
+  1. Penalty points
+  2. Fines
+  3. Possible disqualification
+
+### 1.3 Alcohol (Drink Driving)
+
+- There is a legal limit, but the safest option is **not to drink at all** if you are driving.
+- Penalties can include:
+  1. Up to **6 months in prison**
+  2. A **driving ban** (minimum **12 months**)
+  3. **Unlimited fines**
+
+### 1.4 Drugs
+
+- Never drive after taking drugs; the effects can be severe.
+- This includes **illegal drugs** and some **over-the-counter medicines** that cause drowsiness.
+- Penalties can include:
+  1. Up to **6 months in prison**
+  2. A **driving ban**
+  3. **Unlimited fines**
+
+### 1.5 Tiredness
+
+- Tired drivers are far more likely to have collisions.
+- Take a break **every 2 hours** on long journeys.
+
+### 1.6 Mobile Phones
+
+- It is **illegal** to use a **handheld** phone while driving.
+- Even **hands-free** devices can distract you.
+- Penalties:
+  1. **6 penalty points**
+  2. **£200 fine**
+  3. Risk of **disqualification** (especially for new drivers)
+
+> These rules also apply to **anyone supervising a learner driver**.
+
+---
+
+## 2. Vehicle Legal Requirements
+
+Before driving, you must ensure the vehicle is:
+
+### 2.1 Taxed
+
+- Every vehicle must be properly **taxed**.
+
+### 2.2 MOT-Certified
+
+- Vehicles over **3 years old** must have a valid **MOT**.
+- Driving without an MOT can result in a fine of up to **£1,000**.
+
+### 2.3 Insured
+
+- You must be properly **insured** to drive that vehicle.
+- Driving without insurance can result in:
+  1. **6–8 penalty points**
+  2. **Unlimited fines**
+  3. **Vehicle seizure**
+
+### 2.4 Roadworthy
+
+The vehicle must be safe to drive, including:
+
+- Tyres
+- Brakes
+- Lights
+- Steering
+
+Driving an **unroadworthy vehicle** is a **criminal offence**.
+
+### 2.5 L Plates
+
+- **L plates** must be clearly displayed at the **front and back** of the vehicle.
+- **D plates** may be used in **Wales**.
+
+---
+
+## 3. Who Can Teach You to Drive?
+
+Anyone can supervise a learner as long as they:
+
+1. Are at least **21 years old**
+2. Have held a full driving licence for at least **3 years**
+3. Are qualified for the **type of vehicle** being used
+
+### 3.1 For Paid Lessons
+
+Only the following can charge money for lessons:
+
+- **Approved Driving Instructors (ADIs)**
+- **Trainee licence holders**
+
+They must display their **badge** on the windscreen during lessons.
+
+> Driving with an **unqualified paid instructor** is **illegal**.
+
+---
+
+## 4. Distraction and Mobile Phones
+
+- Using a **handheld** phone while driving is **illegal**.
+- Even **hands-free** use can distract your attention.
+- Best practice: **switch off your phone** while driving.
+
+Supervisors must also follow the phone rules — they are considered responsible too.
+
+---
+
+## 5. Accidents and Emergencies
+
+If you're involved in a collision, you **MUST**:
+
+1. **Stop**
+2. Give your **name and address**
+3. Provide **insurance details**
+4. Provide the **vehicle owner's details** (if different)
+
+If details are not exchanged, you must **report the incident to the police within 24 hours**.
+
+> Failing to do this is a **criminal offence**.
+
+---
+
+## 6. Other Legal Responsibilities
+
+You are also legally required to:
+
+1. **Update** your licence details (name, address)
+2. **Inform DVLA** of medical conditions that affect driving
+3. **Follow** all Highway Code rules
+4. **Maintain** legal eyesight standards at all times
+`,
     mcqQuiz: {
       passMarkScore: 8,
       totalQuestions: 10,
