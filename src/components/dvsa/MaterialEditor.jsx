@@ -178,7 +178,7 @@ export default function MaterialEditor({
         </div>
         <Button
           onClick={() => handleSave(false)}
-          disabled={isSaving || !content}
+          disabled={isSaving || !hasUnsavedChanges || !content.trim()}
           className="bg-teal-600 hover:bg-teal-700"
         >
           {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
