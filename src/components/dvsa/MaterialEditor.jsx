@@ -46,26 +46,8 @@ export default function MaterialEditor({
   const [lastAutosave, setLastAutosave] = useState(null);
   const autosaveRef = useRef(null);
 
-  const blankTemplate = `<h1>Topic Title</h1>
-<p><br></p>
-<h2>1. Section One</h2>
-<ol>
-<li>First point</li>
-<li>Second point</li>
-</ol>
-<p><br></p>
-<h2>2. Section Two</h2>
-<ul>
-<li>Bullet point</li>
-<li>Another bullet</li>
-</ul>
-<p><br></p>
-`;
-
   useEffect(() => {
-    // If no content exists, start with blank template
-    const startingContent = initialContent || blankTemplate;
-    setContent(startingContent);
+    setContent(initialContent || '');
     setTitle(initialTitle || '');
     setDescription(initialDescription || '');
     setIsVisibleToPupils(initialVisibility || false);
