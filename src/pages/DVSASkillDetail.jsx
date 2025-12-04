@@ -258,135 +258,132 @@ export default function DVSASkillDetail() {
           </div>
         </motion.div>
 
-        {skill.learningMaterial && skill.mcqQuiz ? (
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="bg-white border shadow-sm mb-6">
-              <TabsTrigger value="material" className="gap-2">
-                <BookOpen className="w-4 h-4" />
-                Study Material
-              </TabsTrigger>
-              <TabsTrigger value="quiz" className="gap-2" disabled={!canTakeQuiz && !assignment?.hasOpenedMaterial}>
-                <ClipboardCheck className="w-4 h-4" />
-                Take Quiz
-              </TabsTrigger>
-              <TabsTrigger value="progress" className="gap-2">
-                <Trophy className="w-4 h-4" />
-                Pupil Progress
-              </TabsTrigger>
-            </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="bg-white border shadow-sm mb-6">
+            <TabsTrigger value="material" className="gap-2">
+              <BookOpen className="w-4 h-4" />
+              Study Material
+            </TabsTrigger>
+            <TabsTrigger value="quiz" className="gap-2" disabled={!skill.mcqQuiz?.questions?.length}>
+              <ClipboardCheck className="w-4 h-4" />
+              Take Quiz
+            </TabsTrigger>
+            <TabsTrigger value="progress" className="gap-2">
+              <Trophy className="w-4 h-4" />
+              Pupil Progress
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="material">
-              <Card className="border-0 shadow-sm">
-                <CardContent className="p-6">
-                  <div className="flex justify-end mb-4">
+          <TabsContent value="material">
+            <Card className="border-0 shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex justify-end mb-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setIsEditingMaterial(!isEditingMaterial)}
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    {isEditingMaterial ? 'View Material' : 'Edit Material'}
+                  </Button>
+                </div>
+                
+                {isEditingMaterial ? (
+                  <MaterialEditor
+                    initialContent={customMaterial?.content || ''}
+                    initialTitle={customMaterial?.title || skill?.skillTitle || ''}
+                    initialDescription={customMaterial?.description || skill?.shortDescription || ''}
+                    initialVisibility={customMaterial?.isVisibleToPupils || false}
+                    lastSavedAt={customMaterial?.lastSavedAt}
+                    onSave={(data) => saveMaterialMutation.mutate(data)}
+                    isSaving={saveMaterialMutation.isPending}
+                  />
+                ) : materialContent ? (
+                  <StudyMaterial
+                    content={materialContent}
+                    onProgress={handleMaterialProgress}
+                    isComplete={assignment?.hasOpenedMaterial}
+                  />
+                ) : (
+                  <div className="text-center py-12 text-slate-400">
+                    <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No learning material yet</p>
+                    <p className="text-sm mt-1">Click "Edit Material" to create your own content</p>
                     <Button 
                       variant="outline" 
-                      size="sm"
-                      onClick={() => setIsEditingMaterial(!isEditingMaterial)}
+                      className="mt-4"
+                      onClick={() => setIsEditingMaterial(true)}
                     >
                       <Edit className="w-4 h-4 mr-2" />
-                      {isEditingMaterial ? 'View Material' : 'Edit Material'}
+                      Create Material
                     </Button>
                   </div>
-                  
-                  {isEditingMaterial ? (
-                    <MaterialEditor
-                      initialContent={customMaterial?.content || skill?.learningMaterial || ''}
-                      initialTitle={customMaterial?.title || skill?.skillTitle || ''}
-                      initialDescription={customMaterial?.description || skill?.shortDescription || ''}
-                      initialVisibility={customMaterial?.isVisibleToPupils || false}
-                      lastSavedAt={customMaterial?.lastSavedAt}
-                      onSave={(data) => saveMaterialMutation.mutate(data)}
-                      isSaving={saveMaterialMutation.isPending}
-                    />
-                  ) : materialContent ? (
-                    <StudyMaterial
-                      content={materialContent}
-                      onProgress={handleMaterialProgress}
-                      isComplete={assignment?.hasOpenedMaterial}
-                    />
-                  ) : (
-                    <div className="text-center py-12 text-slate-400">
-                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>No learning material yet</p>
-                      <Button 
-                        variant="outline" 
-                        className="mt-4"
-                        onClick={() => setIsEditingMaterial(true)}
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Create Material
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            <TabsContent value="quiz">
-              <Card className="border-0 shadow-sm">
-                <CardContent className="p-6">
-                  {!canTakeQuiz && !assignment?.hasOpenedMaterial ? (
-                    <div className="text-center py-8 text-slate-500">
-                      <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>Complete the study material first to unlock the quiz</p>
-                    </div>
-                  ) : (
-                    <McqQuiz
-                      quiz={skill.mcqQuiz}
-                      onComplete={handleQuizComplete}
-                      disabled={!assignment}
-                    />
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+          <TabsContent value="quiz">
+            <Card className="border-0 shadow-sm">
+              <CardContent className="p-6">
+                {!skill.mcqQuiz?.questions?.length ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <ClipboardCheck className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No quiz questions available for this skill yet</p>
+                  </div>
+                ) : !canTakeQuiz && !assignment?.hasOpenedMaterial ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>Complete the study material first to unlock the quiz</p>
+                  </div>
+                ) : (
+                  <McqQuiz
+                    quiz={skill.mcqQuiz}
+                    onComplete={handleQuizComplete}
+                    disabled={!assignment}
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            <TabsContent value="progress">
-              <Card className="border-0 shadow-sm">
-                <CardHeader>
-                  <CardTitle>Pupil Progress Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {allAssignments.length === 0 ? (
-                    <p className="text-slate-500 text-center py-8">No assignments yet</p>
-                  ) : (
-                    <div className="space-y-3">
-                      {allAssignments.map(a => {
-                        const pupil = pupils.find(p => p.id === a.pupilId);
-                        const trafficLight = a.passedMcq ? 'green' : (a.hasOpenedMaterial && a.numberOfAttempts > 0) ? 'amber' : 'red';
-                        return (
-                          <div key={a.id} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg">
-                            <div className={`w-3 h-3 rounded-full ${
-                              trafficLight === 'green' ? 'bg-emerald-500' :
-                              trafficLight === 'amber' ? 'bg-amber-500' : 'bg-slate-300'
-                            }`} />
-                            <div className="flex-1">
-                              <p className="font-medium text-slate-700">
-                                {pupil?.firstName} {pupil?.lastName}
-                              </p>
-                              <p className="text-sm text-slate-500">
-                                {a.passedMcq ? 'Passed' : a.hasOpenedMaterial ? 'In Progress' : 'Not Started'}
-                                {a.bestScore !== undefined && ` • Best: ${a.bestScore}/${skill.mcqQuiz?.totalQuestions || 10}`}
-                              </p>
-                            </div>
+          <TabsContent value="progress">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle>Pupil Progress Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {allAssignments.length === 0 ? (
+                  <p className="text-slate-500 text-center py-8">No assignments yet</p>
+                ) : (
+                  <div className="space-y-3">
+                    {allAssignments.map(a => {
+                      const pupil = pupils.find(p => p.id === a.pupilId);
+                      const trafficLight = a.passedMcq ? 'green' : (a.hasOpenedMaterial && a.numberOfAttempts > 0) ? 'amber' : 'red';
+                      return (
+                        <div key={a.id} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg">
+                          <div className={`w-3 h-3 rounded-full ${
+                            trafficLight === 'green' ? 'bg-emerald-500' :
+                            trafficLight === 'amber' ? 'bg-amber-500' : 'bg-slate-300'
+                          }`} />
+                          <div className="flex-1">
+                            <p className="font-medium text-slate-700">
+                              {pupil?.firstName} {pupil?.lastName}
+                            </p>
+                            <p className="text-sm text-slate-500">
+                              {a.passedMcq ? 'Passed' : a.hasOpenedMaterial ? 'In Progress' : 'Not Started'}
+                              {a.bestScore !== undefined && ` • Best: ${a.bestScore}/${skill.mcqQuiz?.totalQuestions || 10}`}
+                            </p>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        ) : (
-          <Card className="border-0 shadow-sm">
-            <CardContent className="py-12 text-center text-slate-500">
-              <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>Learning material coming soon for this skill</p>
-            </CardContent>
-          </Card>
-        )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
