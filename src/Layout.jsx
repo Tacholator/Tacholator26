@@ -45,6 +45,7 @@ const instructorNav = [
   { name: 'Dashboard', icon: LayoutDashboard, page: 'InstructorDashboard' },
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
+  { name: 'Chats', icon: MessageCircle, page: 'InstructorChats' },
   { name: 'DVSA Skills', icon: GraduationCap, page: 'DVSASkills' },
   { name: 'Homework Library', icon: ClipboardList, page: 'HomeworkLibrary' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
@@ -56,6 +57,7 @@ const learnerNav = [
   { name: 'Progress', icon: GraduationCap, page: 'LearnerProgress' },
   { name: 'Lessons', icon: Calendar, page: 'LearnerLessons' },
   { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework' },
+  { name: 'Chats', icon: MessageCircle, page: 'LearnerChats' },
   { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
 ];
 
