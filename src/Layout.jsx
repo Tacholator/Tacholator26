@@ -36,8 +36,10 @@ import {
   Car,
   Trash2,
   Settings,
-  FolderOpen
+  FolderOpen,
+  MessageCircle
 } from 'lucide-react';
+import NotificationBell from '@/components/notifications/NotificationBell';
 
 const instructorNav = [
   { name: 'Dashboard', icon: LayoutDashboard, page: 'InstructorDashboard' },
