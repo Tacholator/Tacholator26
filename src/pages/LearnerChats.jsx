@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import ChatThread from '@/components/chat/ChatThread';
 import { MessageCircle } from 'lucide-react';
+import ChatThread from '@/components/chat/ChatThread';
 
 export default function LearnerChats() {
   const [conversationData, setConversationData] = useState(null);
   const queryClient = useQueryClient();
-  const urlParams = new URLSearchParams(window.location.search);
-  const conversationIdParam = urlParams.get('conversationId');
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -29,7 +26,7 @@ export default function LearnerChats() {
     queryKey: ['messages', pupil?.id],
     queryFn: () => base44.entities.Message.filter({ pupilId: pupil.id }, '-created_date'),
     enabled: !!pupil?.id,
-    refetchInterval: 5000 // Poll every 5 seconds
+    refetchInterval: 5000
   });
 
   const createMessageMutation = useMutation({
@@ -41,7 +38,21 @@ export default function LearnerChats() {
 
   const markAsReadMutation = useMutation({
     mutationFn: (messageId) => 
-      base44.entities.Message.update(messageId, { readAt: new Date().toISOString() }),
+      base44.entities.Message.update(messageId, { 
+        readAt: new Date().toISOString(),
+        status: 'read'
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['messages']);
+    }
+  });
+
+  const markAsDeliveredMutation = useMutation({
+    mutationFn: (messageId) => 
+      base44.entities.Message.update(messageId, { 
+        deliveredAt: new Date().toISOString(),
+        status: 'delivered'
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries(['messages']);
     }
@@ -50,11 +61,10 @@ export default function LearnerChats() {
   const createNotificationMutation = useMutation({
     mutationFn: async (notificationData) => {
       const { createNotificationIfAllowed } = await import('@/components/notifications/notificationHelper');
-      return createNotificationIfAllowed(notificationData, true); // true = instructor is recipient
+      return createNotificationIfAllowed(notificationData, true);
     }
   });
 
-  // Set up conversation with instructor
   useEffect(() => {
     if (pupil && pupil.instructorId) {
       const conversationId = `${pupil.id}_${pupil.instructorId}`;
@@ -67,12 +77,11 @@ export default function LearnerChats() {
     }
   }, [pupil]);
 
-  // Get messages for conversation
   const messages = conversationData
     ? allMessages.filter(m => m.conversationId === conversationData.conversationId).reverse()
     : [];
 
-  // Mark messages as read
+  // Mark messages as read and delivered
   useEffect(() => {
     if (conversationData) {
       const unreadMessages = allMessages.filter(
@@ -81,6 +90,14 @@ export default function LearnerChats() {
           && !m.readAt
       );
       unreadMessages.forEach(msg => markAsReadMutation.mutate(msg.id));
+
+      // Mark pupil's sent messages as delivered
+      const undeliveredMessages = allMessages.filter(
+        m => m.conversationId === conversationData.conversationId 
+          && m.senderRole === 'pupil' 
+          && m.status === 'sent'
+      );
+      undeliveredMessages.forEach(msg => markAsDeliveredMutation.mutate(msg.id));
     }
   }, [conversationData?.conversationId, allMessages.length]);
 
@@ -93,12 +110,12 @@ export default function LearnerChats() {
       pupilId: pupil.id,
       senderRole: 'pupil',
       senderName: `${pupil.firstName} ${pupil.lastName}`,
-      messageText
+      messageText,
+      status: 'sent'
     };
 
     await createMessageMutation.mutateAsync(messageData);
 
-    // Create notification for instructor (assuming instructorId is the user ID)
     await createNotificationMutation.mutateAsync({
       userId: conversationData.instructorId,
       title: `New message from ${pupil.firstName} ${pupil.lastName}`,
@@ -121,11 +138,13 @@ export default function LearnerChats() {
   }
 
   return (
-    <div className="h-screen lg:h-[calc(100vh-4rem)] bg-slate-50 p-4 lg:p-6">
-      <div className="max-w-4xl mx-auto h-full">
-        <h1 className="text-2xl font-bold text-slate-800 mb-6">Chat with Instructor</h1>
+    <div className="fixed inset-0 top-16 bottom-16 lg:relative lg:top-0 lg:bottom-0 lg:h-[calc(100vh-4rem)] bg-white lg:bg-slate-50 lg:p-4 lg:p-6 overflow-hidden">
+      <div className="lg:max-w-4xl lg:mx-auto h-full flex flex-col">
+        <div className="hidden lg:block mb-6">
+          <h1 className="text-2xl font-bold text-[#071739]">Chat with Instructor</h1>
+        </div>
         
-        <Card className="h-[calc(100%-5rem)] overflow-hidden">
+        <div className="flex-1 lg:rounded-xl lg:border lg:shadow-sm lg:bg-white overflow-hidden">
           <ChatThread
             conversation={conversationData}
             messages={messages}
@@ -133,7 +152,7 @@ export default function LearnerChats() {
             onSendMessage={handleSendMessage}
             isSending={createMessageMutation.isPending}
           />
-        </Card>
+        </div>
       </div>
     </div>
   );

@@ -69,7 +69,10 @@ export default function NotificationsList({ userId, isInstructor }) {
 
   const markAsReadMutation = useMutation({
     mutationFn: (id) => base44.entities.Notification.update(id, { readAt: new Date().toISOString() }),
-    onSuccess: () => queryClient.invalidateQueries(['notifications'])
+    onSuccess: () => {
+      queryClient.invalidateQueries(['notifications']);
+      queryClient.invalidateQueries(['unreadMessages']);
+    }
   });
 
   const markAllAsReadMutation = useMutation({
@@ -79,7 +82,10 @@ export default function NotificationsList({ userId, isInstructor }) {
         unread.map(n => base44.entities.Notification.update(n.id, { readAt: new Date().toISOString() }))
       );
     },
-    onSuccess: () => queryClient.invalidateQueries(['notifications'])
+    onSuccess: () => {
+      queryClient.invalidateQueries(['notifications']);
+      queryClient.invalidateQueries(['unreadMessages']);
+    }
   });
 
   const handleNotificationClick = (notification) => {
@@ -152,16 +158,16 @@ export default function NotificationsList({ userId, isInstructor }) {
               >
                 <Card
                   className={`p-4 cursor-pointer transition-all hover:shadow-md ${
-                    isUnread ? 'bg-teal-50/50 border-teal-200' : 'bg-white'
+                    isUnread ? 'bg-[#F7B602]/5 border-l-4 border-l-[#F7B602]' : 'bg-white'
                   }`}
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex items-start gap-4">
                     <div className={`p-2 rounded-lg shrink-0 ${
-                      isUnread ? 'bg-teal-100' : 'bg-slate-100'
+                      isUnread ? 'bg-[#F7B602]/20' : 'bg-slate-100'
                     }`}>
                       <Icon className={`w-5 h-5 ${
-                        isUnread ? 'text-teal-600' : 'text-slate-500'
+                        isUnread ? 'text-[#F7B602]' : 'text-slate-500'
                       }`} />
                     </div>
                     
@@ -173,7 +179,7 @@ export default function NotificationsList({ userId, isInstructor }) {
                           {notification.title}
                         </h3>
                         {isUnread && (
-                          <Badge className="bg-teal-600 text-white shrink-0">New</Badge>
+                          <Badge className="bg-[#F7B602] text-[#071739] shrink-0 font-bold">New</Badge>
                         )}
                       </div>
                       
