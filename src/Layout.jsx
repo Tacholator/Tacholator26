@@ -219,18 +219,21 @@ export default function Layout({ children, currentPageName }) {
           <Menu className="w-6 h-6" />
         </button>
         <div className="flex items-center gap-2 flex-1">
-                      <img 
-                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
-                        alt="Mobrage" 
-                        className="w-8 h-8 rounded-lg object-cover"
-                      />
-                      <span className="font-bold text-lg text-slate-800">Mobrage Tacholator</span>
-                    </div>
+                    <img 
+                      src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
+                      alt="Mobrage" 
+                      className="w-8 h-8 rounded-lg object-cover"
+                    />
+                    <span className="font-bold text-lg text-slate-800">Mobrage Tacholator</span>
+                  </div>
+        <div className="flex items-center gap-2">
+        <NotificationBell userId={user?.id} />
         <Avatar className="h-8 w-8">
           <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-sm">
             {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
           </AvatarFallback>
         </Avatar>
+        </div>
       </div>
 
       {/* Mobile Menu */}
