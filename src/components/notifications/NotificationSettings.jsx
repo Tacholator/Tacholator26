@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, Check } from 'lucide-react';
+import { Loader2, Check, Volume2 } from 'lucide-react';
 
 const instructorSettings = [
   {
@@ -93,6 +93,42 @@ const learnerSettings = [
   }
 ];
 
+const instructorSoundSettings = [
+  {
+    id: 'soundMessageAlert',
+    label: 'Message sounds',
+    description: 'Play sound when pupils send messages'
+  },
+  {
+    id: 'soundNotificationAlert',
+    label: 'Notification sounds',
+    description: 'Play sound for bookings, homework, and system alerts'
+  },
+  {
+    id: 'soundMuteMode',
+    label: 'Mute all sounds',
+    description: 'Turn off all audio alerts'
+  }
+];
+
+const learnerSoundSettings = [
+  {
+    id: 'soundMessageAlert',
+    label: 'Message sounds',
+    description: 'Play sound when instructor sends messages'
+  },
+  {
+    id: 'soundNotificationAlert',
+    label: 'Notification sounds',
+    description: 'Play sound for bookings, homework, and reminders'
+  },
+  {
+    id: 'soundMuteMode',
+    label: 'Mute all sounds',
+    description: 'Turn off all audio alerts'
+  }
+];
+
 export default function NotificationSettings({ userId, isInstructor }) {
   const queryClient = useQueryClient();
   const [savedSettings, setSavedSettings] = useState({});
@@ -101,6 +137,7 @@ export default function NotificationSettings({ userId, isInstructor }) {
   const entityName = isInstructor ? 'InstructorNotificationPreferences' : 'LearnerNotificationPreferences';
   const userIdField = isInstructor ? 'instructorId' : 'learnerId';
   const settingsConfig = isInstructor ? instructorSettings : learnerSettings;
+  const soundSettingsConfig = isInstructor ? instructorSoundSettings : learnerSoundSettings;
 
   const { data: preferences, isLoading } = useQuery({
     queryKey: ['notificationPreferences', userId, isInstructor],
@@ -152,44 +189,89 @@ export default function NotificationSettings({ userId, isInstructor }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Notification Settings</CardTitle>
-        <p className="text-sm text-slate-500 mt-1">
-          Choose which notifications you'd like to receive
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {settingsConfig.map((setting, index) => {
-          const isEnabled = savedSettings[setting.id] ?? true;
-          const isSaving = updatePreferenceMutation.isPending && updatePreferenceMutation.variables?.field === setting.id;
-          const wasSaved = recentlySaved === setting.id;
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Notification Settings</CardTitle>
+          <p className="text-sm text-slate-500 mt-1">
+            Choose which notifications you'd like to receive
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {settingsConfig.map((setting, index) => {
+            const isEnabled = savedSettings[setting.id] ?? true;
+            const isSaving = updatePreferenceMutation.isPending && updatePreferenceMutation.variables?.field === setting.id;
+            const wasSaved = recentlySaved === setting.id;
 
-          return (
-            <div key={setting.id}>
-              {index > 0 && <Separator className="mb-4" />}
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <Label htmlFor={setting.id} className="text-sm font-medium cursor-pointer">
-                    {setting.label}
-                  </Label>
-                  <p className="text-xs text-slate-500 mt-1">{setting.description}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {isSaving && <Loader2 className="w-4 h-4 animate-spin text-teal-600" />}
-                  {wasSaved && <Check className="w-4 h-4 text-emerald-600" />}
-                  <Switch
-                    id={setting.id}
-                    checked={isEnabled}
-                    onCheckedChange={() => handleToggle(setting.id, isEnabled)}
-                    disabled={isSaving}
-                  />
+            return (
+              <div key={setting.id}>
+                {index > 0 && <Separator className="mb-4" />}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <Label htmlFor={setting.id} className="text-sm font-medium cursor-pointer">
+                      {setting.label}
+                    </Label>
+                    <p className="text-xs text-slate-500 mt-1">{setting.description}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isSaving && <Loader2 className="w-4 h-4 animate-spin text-teal-600" />}
+                    {wasSaved && <Check className="w-4 h-4 text-emerald-600" />}
+                    <Switch
+                      id={setting.id}
+                      checked={isEnabled}
+                      onCheckedChange={() => handleToggle(setting.id, isEnabled)}
+                      disabled={isSaving}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Volume2 className="w-5 h-5 text-teal-600" />
+            Sound Alerts
+          </CardTitle>
+          <p className="text-sm text-slate-500 mt-1">
+            Manage audio notifications
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {soundSettingsConfig.map((setting, index) => {
+            const isEnabled = savedSettings[setting.id] ?? (setting.id === 'soundMuteMode' ? false : true);
+            const isSaving = updatePreferenceMutation.isPending && updatePreferenceMutation.variables?.field === setting.id;
+            const wasSaved = recentlySaved === setting.id;
+
+            return (
+              <div key={setting.id}>
+                {index > 0 && <Separator className="mb-4" />}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <Label htmlFor={setting.id} className="text-sm font-medium cursor-pointer">
+                      {setting.label}
+                    </Label>
+                    <p className="text-xs text-slate-500 mt-1">{setting.description}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isSaving && <Loader2 className="w-4 h-4 animate-spin text-teal-600" />}
+                    {wasSaved && <Check className="w-4 h-4 text-emerald-600" />}
+                    <Switch
+                      id={setting.id}
+                      checked={isEnabled}
+                      onCheckedChange={() => handleToggle(setting.id, isEnabled)}
+                      disabled={isSaving}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
