@@ -108,7 +108,7 @@ export default function Layout({ children, currentPageName }) {
           {/* Logo */}
                       <div className="flex h-16 shrink-0 items-center gap-2">
                         <img 
-                          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
+                          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/b4113dc99_MobrageLearner33.png" 
                           alt="Mobrage" 
                             className="w-10 h-10 rounded-xl object-cover"
                           />
@@ -194,7 +194,7 @@ export default function Layout({ children, currentPageName }) {
         </button>
         <div className="flex items-center gap-2 flex-1">
                     <img 
-                      src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
+                      src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/b4113dc99_MobrageLearner33.png" 
                       alt="Mobrage" 
                       className="w-8 h-8 rounded-lg object-cover"
                       />
@@ -230,7 +230,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="flex h-16 items-center justify-between px-6">
                 <div className="flex items-center gap-2">
                                       <img 
-                                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
+                                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/b4113dc99_MobrageLearner33.png" 
                                         alt="Mobrage" 
                                         className="w-8 h-8 rounded-lg object-cover"
                                         />
