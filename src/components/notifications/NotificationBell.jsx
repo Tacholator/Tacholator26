@@ -19,6 +19,7 @@ const typeIcons = {
   booking: Calendar,
   homework: ClipboardList,
   skill: BookOpen,
+  lesson_arrival: Bell,
   system: Bell,
   payment: Bell
 };
@@ -57,10 +58,28 @@ export default function NotificationBell({ userId }) {
 
   const unreadCount = notifications.filter(n => !n.readAt).length;
 
-  const handleNotificationClick = (notification) => {
+  const handleNotificationClick = async (notification) => {
     if (!notification.readAt) {
       markAsReadMutation.mutate(notification.id);
     }
+    
+    // For arrival notifications, handle acknowledgement
+    if (notification.type === 'lesson_arrival' && !notification.acknowledged) {
+      const now = new Date().toISOString();
+      await base44.entities.Notification.update(notification.id, {
+        acknowledged: true,
+        acknowledgedAt: now,
+        readAt: now
+      });
+      if (notification.linkTargetId) {
+        await base44.entities.Lesson.update(notification.linkTargetId, {
+          pupilAcknowledged: true,
+          pupilAcknowledgedAt: now
+        });
+      }
+      queryClient.invalidateQueries(['notifications']);
+    }
+    
     if (notification.linkTarget) {
       const url = notification.linkParams 
         ? `${createPageUrl(notification.linkTarget)}?${notification.linkParams}`

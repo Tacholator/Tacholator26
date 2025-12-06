@@ -202,6 +202,7 @@ export default function InstructorDashboard() {
                         key={lesson.id}
                         lesson={lesson}
                         pupilName={pupilMap[lesson.pupilId]}
+                        pupil={pupilFullMap[lesson.pupilId]}
                         onClick={() => {
                           setSelectedLesson(lesson);
                           setShowDiaryModal(true);
