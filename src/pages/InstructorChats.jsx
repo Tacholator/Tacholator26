@@ -43,7 +43,10 @@ export default function InstructorChats() {
   });
 
   const createNotificationMutation = useMutation({
-    mutationFn: (notificationData) => base44.entities.Notification.create(notificationData)
+    mutationFn: async (notificationData) => {
+      const { createNotificationIfAllowed } = await import('@/components/notifications/notificationHelper');
+      return createNotificationIfAllowed(notificationData, false); // false = pupil is recipient
+    }
   });
 
   // Build conversations from pupils and messages

@@ -48,7 +48,10 @@ export default function LearnerChats() {
   });
 
   const createNotificationMutation = useMutation({
-    mutationFn: (notificationData) => base44.entities.Notification.create(notificationData)
+    mutationFn: async (notificationData) => {
+      const { createNotificationIfAllowed } = await import('@/components/notifications/notificationHelper');
+      return createNotificationIfAllowed(notificationData, true); // true = instructor is recipient
+    }
   });
 
   // Set up conversation with instructor
