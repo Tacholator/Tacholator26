@@ -21,7 +21,8 @@ export default function NotifyArrivalButton({ lesson, pupil }) {
 
       // Create notification for pupil
       if (pupil?.linkedUserId) {
-        await base44.entities.Notification.create({
+        const { createNotificationIfAllowed } = await import('@/components/notifications/notificationHelper');
+        await createNotificationIfAllowed({
           userId: pupil.linkedUserId,
           title: 'Your instructor has arrived',
           message: `Your Mobrage instructor has arrived for your lesson scheduled at ${lesson.startTime}.`,
@@ -29,7 +30,7 @@ export default function NotifyArrivalButton({ lesson, pupil }) {
           linkTarget: 'LearnerDashboard',
           linkTargetType: 'lesson',
           linkTargetId: lesson.id
-        });
+        }, false); // false = pupil is recipient
       }
     },
     onSuccess: () => {
