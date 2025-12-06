@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
+import { playNotificationSound } from '@/components/notifications/soundHelper';
 import {
   Bell,
   MessageCircle,
@@ -33,7 +34,7 @@ const notificationIcons = {
   system: AlertCircle,
 };
 
-export default function NotificationsList({ userId }) {
+export default function NotificationsList({ userId, isInstructor }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -42,6 +43,29 @@ export default function NotificationsList({ userId }) {
     queryFn: () => base44.entities.Notification.filter({ userId }, '-created_date'),
     enabled: !!userId
   });
+
+  const { data: preferences } = useQuery({
+    queryKey: [isInstructor ? 'instructorPreferences' : 'learnerPreferences', userId],
+    queryFn: async () => {
+      const entityName = isInstructor ? 'InstructorNotificationPreferences' : 'LearnerNotificationPreferences';
+      const userIdField = isInstructor ? 'instructorId' : 'learnerId';
+      const prefs = await base44.entities[entityName].filter({ [userIdField]: userId });
+      return prefs[0];
+    },
+    enabled: !!userId
+  });
+
+  // Play sound for new notifications
+  const [previousNotificationCount, setPreviousNotificationCount] = useState(0);
+  useEffect(() => {
+    const unreadNotifications = notifications.filter(n => !n.readAt);
+    
+    if (unreadNotifications.length > previousNotificationCount && previousNotificationCount > 0) {
+      playNotificationSound(preferences);
+    }
+    
+    setPreviousNotificationCount(unreadNotifications.length);
+  }, [notifications, preferences]);
 
   const markAsReadMutation = useMutation({
     mutationFn: (id) => base44.entities.Notification.update(id, { readAt: new Date().toISOString() }),
