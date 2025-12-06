@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import {
-  LayoutDashboard,
+  Home,
   ClipboardList,
   MessageCircle,
   Bell
@@ -15,7 +15,7 @@ const navItems = [
   {
     id: 'home',
     label: 'Home',
-    icon: LayoutDashboard,
+    icon: Home,
     instructorPage: 'InstructorDashboard',
     learnerPage: 'LearnerDashboard'
   },
