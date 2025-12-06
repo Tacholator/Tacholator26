@@ -160,7 +160,7 @@ export default function Calendar() {
     }
   }, [currentDate, viewMode]);
 
-  const hours = Array.from({ length: 12 }, (_, i) => i + 7); // 7am to 6pm
+  const hours = Array.from({ length: 24 }, (_, i) => i); // 00:00 to 23:00
 
   const getLessonsForDay = (date) => {
     const dateStr = date.format('YYYY-MM-DD');
