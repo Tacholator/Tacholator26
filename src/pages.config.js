@@ -15,6 +15,8 @@ import DVSASkills from './pages/DVSASkills';
 import DVSASkillDetail from './pages/DVSASkillDetail';
 import LearnerSkills from './pages/LearnerSkills';
 import LearnerSkillStudy from './pages/LearnerSkillStudy';
+import InstructorChats from './pages/InstructorChats';
+import LearnerChats from './pages/LearnerChats';
 import __Layout from './Layout.jsx';
 
 
@@ -36,6 +38,8 @@ export const PAGES = {
     "DVSASkillDetail": DVSASkillDetail,
     "LearnerSkills": LearnerSkills,
     "LearnerSkillStudy": LearnerSkillStudy,
+    "InstructorChats": InstructorChats,
+    "LearnerChats": LearnerChats,
 }
 
 export const pagesConfig = {
