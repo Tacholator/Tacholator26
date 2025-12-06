@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProgressRing from '@/components/ui/ProgressRing';
+import ArrivalBanner from '@/components/lessons/ArrivalBanner';
 import { 
   Calendar, 
   Clock, 
@@ -108,6 +109,17 @@ export default function LearnerDashboard() {
     enabled: !!pupil?.id
   });
 
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['notifications', user?.id],
+    queryFn: () => base44.entities.Notification.filter({ userId: user.id }, '-created_date', 10),
+    enabled: !!user?.id
+  });
+
+  const arrivalNotification = notifications.find(n => n.type === 'lesson_arrival' && !n.acknowledged);
+  const arrivalLesson = arrivalNotification 
+    ? lessons.find(l => l.id === arrivalNotification.linkTargetId)
+    : null;
+
   const today = moment().format('YYYY-MM-DD');
   const nextLesson = lessons
     .filter(l => l.date >= today && l.status === 'Scheduled')
@@ -153,6 +165,11 @@ export default function LearnerDashboard() {
             Keep up the great work on your driving journey
           </p>
         </motion.div>
+
+        {/* Arrival Notification Banner */}
+        {arrivalNotification && (
+          <ArrivalBanner notification={arrivalNotification} lesson={arrivalLesson} />
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Progress Card */}

@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, User } from 'lucide-react';
-import moment from 'moment';
+import { Clock, MapPin } from 'lucide-react';
+import NotifyArrivalButton from './NotifyArrivalButton';
 
 const statusColors = {
   Scheduled: 'bg-blue-100 text-blue-700',
@@ -10,7 +10,7 @@ const statusColors = {
   Cancelled: 'bg-rose-100 text-rose-700'
 };
 
-export default function LessonCard({ lesson, pupilName, onClick }) {
+export default function LessonCard({ lesson, pupilName, onClick, pupil }) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -39,6 +39,12 @@ export default function LessonCard({ lesson, pupilName, onClick }) {
         <div className="flex items-center gap-2 mt-3 text-sm text-slate-500">
           <MapPin className="w-3.5 h-3.5" />
           <span>{lesson.location}</span>
+        </div>
+      )}
+
+      {lesson.status === 'Scheduled' && pupil && (
+        <div className="mt-3" onClick={(e) => e.stopPropagation()}>
+          <NotifyArrivalButton lesson={lesson} pupil={pupil} />
         </div>
       )}
     </motion.div>
