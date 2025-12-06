@@ -38,8 +38,7 @@ const navItems = [
     label: 'Notifications',
     icon: Bell,
     instructorPage: 'InstructorNotifications',
-    learnerPage: 'LearnerNotifications',
-    hasBadge: true
+    learnerPage: 'LearnerNotifications'
   }
 ];
 
@@ -52,7 +51,21 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
     enabled: !!userId
   });
 
-  const unreadCount = notifications.length;
+  const { data: unreadMessages = [] } = useQuery({
+    queryKey: ['unreadMessages', userId],
+    queryFn: async () => {
+      const messages = await base44.entities.Message.filter({ readAt: null });
+      // Filter messages where current user is the receiver
+      return messages.filter(msg => {
+        const receiverRole = isInstructor ? 'instructor' : 'pupil';
+        return msg.senderRole !== receiverRole;
+      });
+    },
+    enabled: !!userId
+  });
+
+  const unreadNotificationsCount = notifications.length;
+  const unreadMessagesCount = unreadMessages.length;
 
   return (
     <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#071739] border-t border-slate-700 shadow-lg safe-area-bottom">
@@ -74,11 +87,18 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
             >
               <div className="relative">
                 <Icon className={`w-6 h-6 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-                {item.hasBadge && unreadCount > 0 && (
+                {item.id === 'notifications' && unreadNotificationsCount > 0 && (
                   <Badge 
                     className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-[#F7B602] text-[#071739] text-xs font-bold"
                   >
-                    {unreadCount > 99 ? '99+' : unreadCount}
+                    {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                  </Badge>
+                )}
+                {item.id === 'chats' && unreadMessagesCount > 0 && (
+                  <Badge 
+                    className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-[#F7B602] text-[#071739] text-xs font-bold"
+                  >
+                    {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
                   </Badge>
                 )}
               </div>

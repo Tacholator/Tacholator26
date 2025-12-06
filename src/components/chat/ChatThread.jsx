@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Send, User } from 'lucide-react';
+import { Send, User, Check, CheckCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import moment from 'moment';
@@ -54,14 +54,14 @@ export default function ChatThread({
           {conversation.pupilId && (
             <Link 
               to={createPageUrl('PupilProfile') + '?pupilId=' + conversation.pupilId}
-              className="text-xs text-teal-600 hover:underline"
+              className="text-xs text-[#F7B602] hover:underline font-medium"
             >
               View profile
             </Link>
           )}
         </div>
         <Avatar>
-          <AvatarFallback className="bg-teal-100 text-teal-700">
+          <AvatarFallback className="bg-[#F7B602]/20 text-[#071739] font-semibold">
             {conversation.pupilName?.[0] || 'P'}
           </AvatarFallback>
         </Avatar>
@@ -81,15 +81,22 @@ export default function ChatThread({
                   <div
                     className={`rounded-lg p-3 ${
                       isCurrentUser
-                        ? 'bg-teal-600 text-white'
+                        ? 'bg-[#F7B602] text-[#071739]'
                         : 'bg-slate-100 text-slate-800'
                     }`}
                   >
                     <p className="text-sm whitespace-pre-wrap">{msg.messageText}</p>
                   </div>
-                  <p className={`text-xs text-slate-400 mt-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
-                    {moment(msg.created_date).format('MMM D, h:mm a')}
-                  </p>
+                  <div className={`flex items-center gap-1 text-xs text-slate-400 mt-1 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+                    <span>{moment(msg.created_date).format('MMM D, h:mm a')}</span>
+                    {isCurrentUser && (
+                      msg.readAt ? (
+                        <CheckCheck className="w-3.5 h-3.5 text-[#F7B602]" />
+                      ) : (
+                        <Check className="w-3.5 h-3.5 text-slate-400" />
+                      )
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -111,7 +118,7 @@ export default function ChatThread({
           <Button
             onClick={handleSend}
             disabled={!messageText.trim() || isSending}
-            className="bg-teal-600 hover:bg-teal-700"
+            className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
           >
             <Send className="w-4 h-4" />
           </Button>

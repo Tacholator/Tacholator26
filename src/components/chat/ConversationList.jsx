@@ -33,8 +33,10 @@ export default function ConversationList({
               onClick={() => onSelectConversation(conv)}
               className={`w-full text-left p-3 rounded-lg transition-colors ${
                 isSelected 
-                  ? 'bg-teal-50 border border-teal-200' 
-                  : 'hover:bg-slate-50 border border-transparent'
+                  ? 'bg-[#F7B602]/10 border border-[#F7B602]' 
+                  : hasUnread
+                    ? 'bg-[#F7B602]/5 hover:bg-[#F7B602]/10 border border-[#F7B602]/20'
+                    : 'hover:bg-slate-50 border border-transparent'
               }`}
             >
               <div className="flex items-start justify-between gap-2 mb-1">
@@ -42,8 +44,8 @@ export default function ConversationList({
                   {conv.pupilName}
                 </p>
                 {hasUnread && (
-                  <Badge className="bg-teal-600 text-white text-xs px-1.5 py-0">
-                    {conv.unreadCount}
+                  <Badge className="bg-[#F7B602] text-[#071739] text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] h-5 flex items-center justify-center">
+                    {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
                   </Badge>
                 )}
               </div>
