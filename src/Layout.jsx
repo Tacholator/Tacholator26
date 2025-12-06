@@ -31,7 +31,6 @@ import {
   Trash2,
   Settings
 } from 'lucide-react';
-import NotificationBell from '@/components/notifications/NotificationBell';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
 
@@ -200,10 +199,9 @@ export default function Layout({ children, currentPageName }) {
                       className="w-8 h-8 rounded-lg object-cover"
                     />
                     <span className="font-bold text-lg text-slate-800">Mobrage Tacholator</span>
-                  </div>
-        <div className="flex items-center gap-2">
-        <NotificationBell userId={user?.id} />
-        <Avatar className="h-8 w-8">
+                              </div>
+                    <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
           <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-sm">
             {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
           </AvatarFallback>
