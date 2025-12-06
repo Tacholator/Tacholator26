@@ -37,6 +37,11 @@ export default function Calendar() {
     queryFn: () => base44.entities.Pupil.list()
   });
 
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
   const createLessonMutation = useMutation({
     mutationFn: (data) => base44.entities.Lesson.create(data),
     onSuccess: () => queryClient.invalidateQueries(['lessons'])
@@ -370,6 +375,8 @@ export default function Calendar() {
           status: 'Scheduled'
         } : null)}
         pupils={pupils}
+        allLessons={lessons}
+        currentUser={currentUser}
         onSave={handleSaveLesson}
         onDelete={handleDeleteLesson}
         onStatusChange={handleStatusChangeToCompleted}

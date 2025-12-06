@@ -23,7 +23,7 @@ const generateTimeOptions = () => {
 const TIME_OPTIONS = generateTimeOptions();
 const DURATION_OPTIONS = ['0.5', '1.0', '1.5', '2.0', '2.5'];
 
-export default function LessonFormModal({ open, onClose, existingLesson, pupils, onSave, onDelete, onStatusChange }) {
+export default function LessonFormModal({ open, onClose, existingLesson, pupils, onSave, onDelete, onStatusChange, allLessons, currentUser }) {
   const getInitialDuration = (lesson) => {
     if (!lesson?.startTime || !lesson?.endTime) return '1.0';
     const start = moment(lesson.startTime, 'HH:mm');
@@ -46,6 +46,7 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
   const [duration, setDuration] = useState(getInitialDuration(existingLesson));
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [overlapError, setOverlapError] = useState('');
 
   const updateEndTime = (startTime, durationHours) => {
     const endTime = moment(startTime, 'HH:mm').add(parseFloat(durationHours) * 60, 'minutes').format('HH:mm');
@@ -65,6 +66,36 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
   };
 
   const handleSubmit = async () => {
+    setOverlapError('');
+    
+    // Check for overlapping lessons
+    const instructorId = existingLesson?.instructorId || currentUser?.id;
+    if (allLessons && instructorId) {
+      const newStart = moment(`${formData.date} ${formData.startTime}`, 'YYYY-MM-DD HH:mm');
+      const newEnd = moment(`${formData.date} ${formData.endTime}`, 'YYYY-MM-DD HH:mm');
+      
+      const overlappingLesson = allLessons.find(lesson => {
+        // Skip the current lesson if editing
+        if (existingLesson && lesson.id === existingLesson.id) return false;
+        
+        // Only check scheduled lessons for the same instructor
+        if (lesson.status !== 'Scheduled' || lesson.instructorId !== instructorId) return false;
+        
+        const existingStart = moment(`${lesson.date} ${lesson.startTime}`, 'YYYY-MM-DD HH:mm');
+        const existingEnd = moment(`${lesson.date} ${lesson.endTime}`, 'YYYY-MM-DD HH:mm');
+        
+        // Check for overlap: new_start < existing_end AND new_end > existing_start
+        return newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart);
+      });
+      
+      if (overlappingLesson) {
+        const pupil = pupils?.find(p => p.id === overlappingLesson.pupilId);
+        const pupilName = pupil ? `${pupil.firstName} ${pupil.lastName}` : 'another pupil';
+        setOverlapError(`This booking overlaps with an existing lesson with ${pupilName} at ${overlappingLesson.startTime}-${overlappingLesson.endTime}. Please choose a different time.`);
+        return;
+      }
+    }
+    
     setIsSaving(true);
     try {
       const durationMinutes = moment(formData.endTime, 'HH:mm').diff(moment(formData.startTime, 'HH:mm'), 'minutes');
@@ -221,6 +252,12 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
               rows={2}
             />
           </div>
+
+          {overlapError && (
+            <div className="bg-rose-50 border border-rose-200 rounded-lg p-3">
+              <p className="text-sm text-rose-700">{overlapError}</p>
+            </div>
+          )}
         </div>
 
         <DialogFooter className="gap-2">
