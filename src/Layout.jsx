@@ -24,45 +24,15 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
-  LayoutDashboard,
-  Calendar,
-  Users,
-  GraduationCap,
-  BookOpen,
-  ClipboardList,
   LogOut,
   Menu,
   X,
   Car,
   Trash2,
-  Settings,
-  FolderOpen,
-  MessageCircle,
-  Bell
+  Settings
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
-
-const instructorNav = [
-  { name: 'Dashboard', icon: LayoutDashboard, page: 'InstructorDashboard' },
-  { name: 'Calendar', icon: Calendar, page: 'Calendar' },
-  { name: 'Pupils', icon: Users, page: 'PupilList' },
-  { name: 'Chats', icon: MessageCircle, page: 'InstructorChats' },
-  { name: 'Notifications', icon: Bell, page: 'InstructorNotifications' },
-  { name: 'DVSA Skills', icon: GraduationCap, page: 'DVSASkills' },
-  { name: 'Homework Library', icon: ClipboardList, page: 'HomeworkLibrary' },
-  { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
-];
-
-const learnerNav = [
-  { name: 'Dashboard', icon: LayoutDashboard, page: 'LearnerDashboard' },
-  { name: 'DVSA Skills', icon: BookOpen, page: 'LearnerSkills' },
-  { name: 'Progress', icon: GraduationCap, page: 'LearnerProgress' },
-  { name: 'Lessons', icon: Calendar, page: 'LearnerLessons' },
-  { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework' },
-  { name: 'Chats', icon: MessageCircle, page: 'LearnerChats' },
-  { name: 'Notifications', icon: Bell, page: 'LearnerNotifications' },
-  { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
-];
+import { buildNavigation } from '@/components/navigation/roleBasedNav';
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -102,12 +72,13 @@ export default function Layout({ children, currentPageName }) {
   const isInstructor = user?.role === 'admin';
   const isMainAdmin = user?.email === 'fasobah@gmail.com';
   
-  // Build nav items - add Data Management only for main admin
-  const navItems = isInstructor 
-    ? (isMainAdmin 
-        ? [...instructorNav, { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' }]
-        : instructorNav)
-    : learnerNav;
+  // Build navigation dynamically based on role
+  const baseNavItems = buildNavigation(isInstructor);
+  
+  // Add Data Management only for main admin
+  const navItems = isInstructor && isMainAdmin
+    ? [...baseNavItems, { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' }]
+    : baseNavItems;
 
   const handleLogout = () => {
     base44.auth.logout();
