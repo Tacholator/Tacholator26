@@ -37,6 +37,7 @@ const notificationIcons = {
 export default function NotificationsList({ userId, isInstructor }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [filterUnread, setFilterUnread] = useState(false);
 
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ['notifications', userId],
@@ -102,6 +103,9 @@ export default function NotificationsList({ userId, isInstructor }) {
   };
 
   const unreadCount = notifications.filter(n => !n.readAt).length;
+  const displayedNotifications = filterUnread 
+    ? notifications.filter(n => !n.readAt) 
+    : notifications;
 
   if (isLoading) {
     return (
@@ -113,39 +117,53 @@ export default function NotificationsList({ userId, isInstructor }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">All Notifications</h2>
+          <h2 className="text-lg font-semibold text-slate-800">
+            {filterUnread ? 'Unread Notifications' : 'All Notifications'}
+          </h2>
           {unreadCount > 0 && (
             <p className="text-sm text-slate-500">{unreadCount} unread</p>
           )}
         </div>
-        {unreadCount > 0 && (
+        <div className="flex items-center gap-2">
           <Button
-            variant="outline"
+            variant={filterUnread ? "default" : "outline"}
             size="sm"
-            onClick={() => markAllAsReadMutation.mutate()}
-            disabled={markAllAsReadMutation.isPending}
-            className="gap-2"
+            onClick={() => setFilterUnread(!filterUnread)}
+            className={filterUnread ? "bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]" : ""}
           >
-            {markAllAsReadMutation.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <CheckCheck className="w-4 h-4" />
-            )}
-            Mark all as read
+            {filterUnread ? 'Show All' : 'Unread Only'}
           </Button>
-        )}
+          {unreadCount > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => markAllAsReadMutation.mutate()}
+              disabled={markAllAsReadMutation.isPending}
+              className="gap-2"
+            >
+              {markAllAsReadMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <CheckCheck className="w-4 h-4" />
+              )}
+              Mark all as read
+            </Button>
+          )}
+        </div>
       </div>
 
-      {notifications.length === 0 ? (
+      {displayedNotifications.length === 0 ? (
         <Card className="p-12 text-center">
           <Bell className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-          <p className="text-slate-500">No notifications yet</p>
+          <p className="text-slate-500">
+            {filterUnread ? 'No unread notifications' : 'No notifications yet'}
+          </p>
         </Card>
       ) : (
         <div className="space-y-2">
-          {notifications.map((notification, index) => {
+          {displayedNotifications.map((notification, index) => {
             const Icon = notificationIcons[notification.type] || Bell;
             const isUnread = !notification.readAt;
 
