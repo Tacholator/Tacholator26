@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
+import MobileBottomNav from '@/components/navigation/MobileBottomNav';
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -279,9 +280,16 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="lg:pl-64">
+      <main className="lg:pl-64 pb-20 lg:pb-0">
         {children}
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav 
+        userId={user?.id} 
+        currentPageName={currentPageName}
+        isInstructor={isInstructor}
+      />
 
       {/* Delete Account Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
