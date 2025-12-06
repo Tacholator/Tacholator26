@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Mobrage Brand Colors */
+    --primary-yellow: #F7B602;
+    --navy-blue: #071739;
+    --black: #000000;
+    --white: #FFFFFF;
+    
+    /* Tailwind CSS Variables */
+    --background: 0 0% 100%;
+    --foreground: 223 84% 13%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 223 84% 13%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 223 84% 13%;
+
+    /* Primary - Mobrage Yellow */
+    --primary: 45 98% 49%;
+    --primary-foreground: 223 84% 13%;
+
+    /* Secondary - Navy Blue */
+    --secondary: 223 84% 13%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Accent - Light Yellow */
+    --accent: 45 98% 95%;
+    --accent-foreground: 223 84% 13%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 45 98% 49%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 223 84% 13%;
+    --foreground: 0 0% 98%;
+
+    --card: 223 84% 13%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 223 84% 13%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 45 98% 49%;
+    --primary-foreground: 223 84% 13%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 45 98% 49%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Mobrage Warm Design Styles */
+.mobrage-button-primary {
+  background: #F7B602;
+  color: #071739;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.mobrage-button-primary:hover {
+  background: #d99f02;
+  box-shadow: 0 4px 12px rgba(247, 182, 2, 0.3);
+}
+
+.mobrage-button-secondary {
+  background: #FFFFFF;
+  color: #071739;
+  border: 1px solid #F7B602;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.mobrage-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-top: 3px solid #F7B602;
+}
+
+.mobrage-nav {
+  background: #071739;
+  color: #FFFFFF;
+}
+
+.mobrage-accent {
+  color: #F7B602;
+}
+
+.mobrage-text-primary {
+  color: #071739;
+}

@@ -104,15 +104,15 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen bg-slate-50">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-slate-100 px-6 pb-4">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[#071739] border-r border-[#071739] px-6 pb-4">
           {/* Logo */}
                       <div className="flex h-16 shrink-0 items-center gap-2">
                         <img 
                           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
                           alt="Mobrage" 
-                          className="w-10 h-10 rounded-xl object-cover"
-                        />
-                        <span className="font-bold text-xl text-slate-800">Mobrage Tacholator</span>
+                            className="w-10 h-10 rounded-xl object-cover"
+                          />
+                          <span className="font-bold text-xl text-white">Mobrage Tacholator</span>
                       </div>
 
           {/* Navigation */}
@@ -126,12 +126,12 @@ export default function Layout({ children, currentPageName }) {
                       to={createPageUrl(item.page)}
                       className={`group flex gap-x-3 rounded-xl p-3 text-sm font-medium transition-all duration-200 ${
                         isActive
-                          ? 'bg-teal-50 text-teal-700'
-                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                          ? 'bg-[#F7B602] text-[#071739]'
+                          : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
                       }`}
                     >
                       <item.icon className={`w-5 h-5 shrink-0 ${
-                        isActive ? 'text-teal-600' : 'text-slate-400 group-hover:text-slate-600'
+                        isActive ? 'text-[#071739]' : 'text-slate-300 group-hover:text-white'
                       }`} />
                       {item.name}
                     </Link>
@@ -142,20 +142,20 @@ export default function Layout({ children, currentPageName }) {
           </nav>
 
           {/* User Profile */}
-          <div className="border-t border-slate-100 pt-4">
+          <div className="border-t border-slate-700 pt-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-slate-50 transition-colors">
+                <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-[#071739]/80 transition-colors">
                   <Avatar className="h-9 w-9">
-                    <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white">
+                    <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739]">
                       {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 text-left">
-                    <p className="text-sm font-medium text-slate-700 truncate">
+                    <p className="text-sm font-medium text-white truncate">
                       {user?.firstName ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}` : user?.full_name || user?.email}
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-300">
                       {isInstructor ? 'Instructor' : 'Learner'}
                     </p>
                   </div>
@@ -185,10 +185,10 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden sticky top-0 z-40 flex h-16 items-center gap-x-4 bg-white border-b border-slate-100 px-4 shadow-sm">
+      <div className="lg:hidden sticky top-0 z-40 flex h-16 items-center gap-x-4 bg-[#071739] border-b border-[#071739] px-4 shadow-sm">
         <button
           onClick={() => setMobileMenuOpen(true)}
-          className="p-2 -m-2 text-slate-500"
+          className="p-2 -m-2 text-white"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -197,12 +197,12 @@ export default function Layout({ children, currentPageName }) {
                       src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
                       alt="Mobrage" 
                       className="w-8 h-8 rounded-lg object-cover"
-                    />
-                    <span className="font-bold text-lg text-slate-800">Mobrage Tacholator</span>
+                      />
+                      <span className="font-bold text-lg text-white">Mobrage Tacholator</span>
                               </div>
                     <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
-          <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-sm">
+                    <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-sm">
             {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
           </AvatarFallback>
         </Avatar>
@@ -225,20 +225,20 @@ export default function Layout({ children, currentPageName }) {
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed inset-y-0 left-0 z-50 w-72 bg-white lg:hidden"
-            >
+              className="fixed inset-y-0 left-0 z-50 w-72 bg-[#071739] lg:hidden"
+              >
               <div className="flex h-16 items-center justify-between px-6">
                 <div className="flex items-center gap-2">
                                       <img 
                                         src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/1dce92345_MobrageLearner.png" 
                                         alt="Mobrage" 
                                         className="w-8 h-8 rounded-lg object-cover"
-                                      />
-                                      <span className="font-bold text-lg text-slate-800">Mobrage Tacholator</span>
+                                        />
+                                        <span className="font-bold text-lg text-white">Mobrage Tacholator</span>
                                     </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 -m-2 text-slate-500"
+                  className="p-2 -m-2 text-white"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -253,20 +253,20 @@ export default function Layout({ children, currentPageName }) {
                       onClick={() => setMobileMenuOpen(false)}
                       className={`flex items-center gap-3 rounded-xl p-3 mb-1 text-sm font-medium transition-all ${
                         isActive
-                          ? 'bg-teal-50 text-teal-700'
-                          : 'text-slate-600 hover:bg-slate-50'
+                          ? 'bg-[#F7B602] text-[#071739]'
+                          : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
                       }`}
                     >
-                      <item.icon className={`w-5 h-5 ${isActive ? 'text-teal-600' : 'text-slate-400'}`} />
+                      <item.icon className={`w-5 h-5 ${isActive ? 'text-[#071739]' : 'text-slate-300'}`} />
                       {item.name}
                     </Link>
                   );
                 })}
               </nav>
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-100">
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700">
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-3 w-full p-3 rounded-xl text-rose-600 hover:bg-rose-50 transition-colors"
+                  className="flex items-center gap-3 w-full p-3 rounded-xl text-rose-400 hover:bg-[#071739]/80 transition-colors"
                 >
                   <LogOut className="w-5 h-5" />
                   Sign out
