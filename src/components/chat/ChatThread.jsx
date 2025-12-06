@@ -30,12 +30,7 @@ export default function ChatThread({
     setMessageText('');
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  // Enter key now creates new line - removed send on enter behavior
 
   if (!conversation) {
     return (
@@ -112,10 +107,9 @@ export default function ChatThread({
           <Textarea
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message... (Press Enter to send)"
+            placeholder="Type a message..."
             rows={2}
-            className="flex-1 resize-none"
+            className="flex-1 resize-none max-h-[40vh] overflow-y-auto"
           />
           <Button
             onClick={handleSend}
