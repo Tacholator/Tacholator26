@@ -37,7 +37,8 @@ import {
   Trash2,
   Settings,
   FolderOpen,
-  MessageCircle
+  MessageCircle,
+  Bell
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 
@@ -46,6 +47,7 @@ const instructorNav = [
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
   { name: 'Chats', icon: MessageCircle, page: 'InstructorChats' },
+  { name: 'Notifications', icon: Bell, page: 'InstructorNotifications' },
   { name: 'DVSA Skills', icon: GraduationCap, page: 'DVSASkills' },
   { name: 'Homework Library', icon: ClipboardList, page: 'HomeworkLibrary' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
@@ -58,6 +60,7 @@ const learnerNav = [
   { name: 'Lessons', icon: Calendar, page: 'LearnerLessons' },
   { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework' },
   { name: 'Chats', icon: MessageCircle, page: 'LearnerChats' },
+  { name: 'Notifications', icon: Bell, page: 'LearnerNotifications' },
   { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
 ];
 
