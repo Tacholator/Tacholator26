@@ -10,17 +10,19 @@ export default function ArrivalBanner({ notification, lesson }) {
   const queryClient = useQueryClient();
 
   const acknowledgeMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (option) => {
       const now = new Date().toISOString();
       await base44.entities.Notification.update(notification.id, {
         acknowledged: true,
         acknowledgedAt: now,
-        readAt: now
+        readAt: now,
+        acknowledgementOption: option
       });
       if (lesson) {
         await base44.entities.Lesson.update(lesson.id, {
           pupilAcknowledged: true,
-          pupilAcknowledgedAt: now
+          pupilAcknowledgedAt: now,
+          pupilAcknowledgementOption: option
         });
       }
     },
@@ -31,14 +33,15 @@ export default function ArrivalBanner({ notification, lesson }) {
   });
 
   if (notification.acknowledged) {
+    const responseText = notification.acknowledgementOption === 'on_my_way' ? "I'm on my way" : 'Got it';
     return (
       <Card className="bg-emerald-50 border-emerald-200 p-4 mb-6">
         <div className="flex items-center gap-3">
           <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-emerald-900">Arrival Acknowledged</p>
+            <p className="text-sm font-medium text-emerald-900">Response Sent</p>
             <p className="text-xs text-emerald-700">
-              You acknowledged your instructor's arrival at {moment(notification.acknowledgedAt).format('h:mm a')}
+              You responded "{responseText}" at {moment(notification.acknowledgedAt).format('h:mm a')}
             </p>
           </div>
         </div>
@@ -61,14 +64,25 @@ export default function ArrivalBanner({ notification, lesson }) {
             <Clock className="w-3 h-3" />
             {moment(notification.created_date).fromNow()}
           </div>
-          <Button
-            onClick={() => acknowledgeMutation.mutate()}
-            disabled={acknowledgeMutation.isPending}
-            className="bg-teal-600 hover:bg-teal-700"
-            size="sm"
-          >
-            {acknowledgeMutation.isPending ? 'Acknowledging...' : 'Acknowledge'}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => acknowledgeMutation.mutate('on_my_way')}
+              disabled={acknowledgeMutation.isPending}
+              className="bg-teal-600 hover:bg-teal-700"
+              size="sm"
+            >
+              {acknowledgeMutation.isPending ? 'Sending...' : "I'm on my way"}
+            </Button>
+            <Button
+              onClick={() => acknowledgeMutation.mutate('got_it')}
+              disabled={acknowledgeMutation.isPending}
+              variant="outline"
+              className="border-teal-600 text-teal-700 hover:bg-teal-50"
+              size="sm"
+            >
+              {acknowledgeMutation.isPending ? 'Sending...' : 'Got it'}
+            </Button>
+          </div>
         </div>
       </div>
     </Card>

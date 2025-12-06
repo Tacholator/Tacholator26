@@ -63,21 +63,11 @@ export default function NotificationBell({ userId }) {
       markAsReadMutation.mutate(notification.id);
     }
     
-    // For arrival notifications, handle acknowledgement
+    // For arrival notifications, navigate to dashboard where banner will show
     if (notification.type === 'lesson_arrival' && !notification.acknowledged) {
-      const now = new Date().toISOString();
-      await base44.entities.Notification.update(notification.id, {
-        acknowledged: true,
-        acknowledgedAt: now,
-        readAt: now
-      });
-      if (notification.linkTargetId) {
-        await base44.entities.Lesson.update(notification.linkTargetId, {
-          pupilAcknowledged: true,
-          pupilAcknowledgedAt: now
-        });
-      }
-      queryClient.invalidateQueries(['notifications']);
+      navigate(createPageUrl('LearnerDashboard'));
+      setOpen(false);
+      return;
     }
     
     if (notification.linkTarget) {

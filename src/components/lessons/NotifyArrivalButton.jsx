@@ -48,12 +48,14 @@ export default function NotifyArrivalButton({ lesson, pupil }) {
         {lesson.pupilAcknowledged ? (
           <div className="flex items-center gap-2 text-xs text-emerald-600">
             <CheckCircle2 className="w-3 h-3" />
-            <span>Acknowledged at {moment(lesson.pupilAcknowledgedAt).format('h:mm a')}</span>
+            <span>
+              Responded: {lesson.pupilAcknowledgementOption === 'on_my_way' ? "I'm on my way" : 'Got it'} at {moment(lesson.pupilAcknowledgedAt).format('h:mm a')}
+            </span>
           </div>
         ) : (
           <div className="flex items-center gap-2 text-xs text-amber-600">
             <Clock className="w-3 h-3" />
-            <span>Waiting for acknowledgement...</span>
+            <span>Waiting for pupil response...</span>
           </div>
         )}
       </div>
