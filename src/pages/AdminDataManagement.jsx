@@ -42,7 +42,10 @@ import {
   AlertTriangle,
   Eye,
   X,
-  Mail
+  Mail,
+  Link as LinkIcon,
+  Copy,
+  Check
 } from 'lucide-react';
 import moment from 'moment';
 
@@ -98,6 +101,7 @@ export default function AdminDataManagement() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSendingRequest, setIsSendingRequest] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch data for viewing
@@ -173,6 +177,13 @@ export default function AdminDataManagement() {
     }
   };
 
+  const handleCopyDeletionLink = () => {
+    const deletionLink = `${window.location.origin}${createPageUrl('AccountDeletionRequest')}`;
+    navigator.clipboard.writeText(deletionLink);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
+
   const getDisplayValue = (item, entityKey) => {
     switch (entityKey) {
       case 'Pupil':
@@ -215,37 +226,75 @@ export default function AdminDataManagement() {
           </div>
         </div>
 
-        <Card className="mb-6 border-0 shadow-sm bg-slate-50">
-          <CardContent className="p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h3 className="font-semibold text-slate-800 mb-1">Request Account Deletion</h3>
-                <p className="text-sm text-slate-600">
-                  If you'd like to permanently delete your Tacholator account and all associated data, send a request to the admin.
-                </p>
+        <div className="grid gap-4 mb-6">
+          <Card className="border-0 shadow-sm bg-blue-50">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-semibold text-slate-800 mb-1 flex items-center gap-2">
+                    <LinkIcon className="w-4 h-4" />
+                    Shareable Account Deletion Link
+                  </h3>
+                  <p className="text-sm text-slate-600 mb-2">
+                    Copy this link to share with users who want to request account deletion
+                  </p>
+                  <code className="text-xs bg-white px-2 py-1 rounded border text-slate-700">
+                    {window.location.origin}{createPageUrl('AccountDeletionRequest')}
+                  </code>
+                </div>
+                <Button
+                  onClick={handleCopyDeletionLink}
+                  variant="outline"
+                  className="gap-2 shrink-0"
+                >
+                  {linkCopied ? (
+                    <>
+                      <Check className="w-4 h-4 text-green-600" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      Copy Link
+                    </>
+                  )}
+                </Button>
               </div>
-              <Button
-                onClick={handleRequestAccountDeletion}
-                disabled={isSendingRequest || requestSent}
-                className="bg-rose-600 hover:bg-rose-700 text-white gap-2 shrink-0"
-              >
-                {isSendingRequest ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Sending...
-                  </>
-                ) : requestSent ? (
-                  'Request Sent!'
-                ) : (
-                  <>
-                    <Mail className="w-4 h-4" />
-                    Request Deletion
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm bg-slate-50">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-semibold text-slate-800 mb-1">Request Account Deletion</h3>
+                  <p className="text-sm text-slate-600">
+                    If you'd like to permanently delete your Tacholator account and all associated data, send a request to the admin.
+                  </p>
+                </div>
+                <Button
+                  onClick={handleRequestAccountDeletion}
+                  disabled={isSendingRequest || requestSent}
+                  className="bg-rose-600 hover:bg-rose-700 text-white gap-2 shrink-0"
+                >
+                  {isSendingRequest ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : requestSent ? (
+                    'Request Sent!'
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4" />
+                      Request Deletion
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="grid gap-4">
           {dataEntities.map((entity) => {
