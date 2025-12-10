@@ -41,7 +41,8 @@ import {
   Loader2,
   AlertTriangle,
   Eye,
-  X
+  X,
+  Mail
 } from 'lucide-react';
 import moment from 'moment';
 
@@ -95,6 +96,8 @@ export default function AdminDataManagement() {
   const [confirmDeleteSingle, setConfirmDeleteSingle] = useState(null);
   const [viewEntity, setViewEntity] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSendingRequest, setIsSendingRequest] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch data for viewing
@@ -148,6 +151,28 @@ export default function AdminDataManagement() {
     }
   };
 
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const handleRequestAccountDeletion = async () => {
+    setIsSendingRequest(true);
+    try {
+      await base44.integrations.Core.SendEmail({
+        to: 'fasobah@gmail.com',
+        subject: 'Account Deletion Request - Mobrage Tacholator',
+        body: `User ${user?.full_name || user?.email} (${user?.email}) has requested to delete their Tacholator account.\n\nUser ID: ${user?.id}\nRequest Date: ${moment().format('D MMM YYYY, h:mm a')}`
+      });
+      setRequestSent(true);
+      setTimeout(() => setRequestSent(false), 5000);
+    } catch (error) {
+      console.error('Failed to send deletion request:', error);
+    } finally {
+      setIsSendingRequest(false);
+    }
+  };
+
   const getDisplayValue = (item, entityKey) => {
     switch (entityKey) {
       case 'Pupil':
@@ -189,6 +214,38 @@ export default function AdminDataManagement() {
             <p className="text-sm text-amber-700">Deleting data is permanent and cannot be undone. Only use this to clear test data.</p>
           </div>
         </div>
+
+        <Card className="mb-6 border-0 shadow-sm bg-slate-50">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="font-semibold text-slate-800 mb-1">Request Account Deletion</h3>
+                <p className="text-sm text-slate-600">
+                  If you'd like to permanently delete your Tacholator account and all associated data, send a request to the admin.
+                </p>
+              </div>
+              <Button
+                onClick={handleRequestAccountDeletion}
+                disabled={isSendingRequest || requestSent}
+                className="bg-rose-600 hover:bg-rose-700 text-white gap-2 shrink-0"
+              >
+                {isSendingRequest ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : requestSent ? (
+                  'Request Sent!'
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4" />
+                    Request Deletion
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="grid gap-4">
           {dataEntities.map((entity) => {
