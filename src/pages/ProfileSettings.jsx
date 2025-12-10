@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, Loader2, User, Mail, Phone } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
@@ -184,6 +184,31 @@ export default function ProfileSettings() {
                   Save Changes
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Delete Account Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-6"
+        >
+          <Card className="border-0 shadow-sm border-rose-200">
+            <CardHeader>
+              <CardTitle className="text-lg text-rose-700">Delete Account</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-slate-600 mb-4">
+                Permanently delete your account and all associated data. This action cannot be undone.
+              </p>
+              <Link to={createPageUrl('AccountDeletionRequest')}>
+                <Button variant="outline" className="text-rose-600 border-rose-300 hover:bg-rose-50 gap-2">
+                  <Trash2 className="w-4 h-4" />
+                  Request Account Deletion
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </motion.div>
