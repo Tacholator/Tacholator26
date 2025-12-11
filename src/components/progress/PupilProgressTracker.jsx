@@ -143,9 +143,12 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   };
 
   const handleSaveProgress = (progressState) => {
+    const currentProgress = getProgressForSkill(selectedSkill.id);
+    // If clicking the same state, clear it
+    const newState = currentProgress?.progressState === progressState ? '' : progressState;
     updateProgressMutation.mutate({
       skillId: selectedSkill.id,
-      progressState
+      progressState: newState
     });
   };
 
