@@ -63,6 +63,8 @@ export default function PupilProfile() {
     eyeTestCheckDate: '',
     eyeTestCheckNotes: ''
   });
+  const [originalChecksData, setOriginalChecksData] = useState(null);
+  const [checksModified, setChecksModified] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -193,16 +195,26 @@ export default function PupilProfile() {
 
   React.useEffect(() => {
     if (pupil) {
-      setChecksData({
+      const savedData = {
         licenseChecked: pupil.licenseChecked || false,
         licenseCheckDate: pupil.licenseCheckDate || '',
         licenseCheckNotes: pupil.licenseCheckNotes || '',
         eyeTestChecked: pupil.eyeTestChecked || false,
         eyeTestCheckDate: pupil.eyeTestCheckDate || '',
         eyeTestCheckNotes: pupil.eyeTestCheckNotes || ''
-      });
+      };
+      setChecksData(savedData);
+      setOriginalChecksData(savedData);
+      setChecksModified(false);
     }
   }, [pupil]);
+
+  React.useEffect(() => {
+    if (originalChecksData) {
+      const isModified = JSON.stringify(checksData) !== JSON.stringify(originalChecksData);
+      setChecksModified(isModified);
+    }
+  }, [checksData, originalChecksData]);
 
   if (pupilLoading || !pupil) {
     return (
@@ -334,6 +346,21 @@ export default function PupilProfile() {
                   </div>
                 </div>
                 
+                {/* First Lesson Checks Status */}
+                <div className="flex items-center gap-2 text-sm">
+                  {pupil.licenseChecked && pupil.eyeTestChecked ? (
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-700">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span className="font-medium">First Lesson Checks Complete</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700">
+                      <CircleDashed className="w-4 h-4" />
+                      <span className="font-medium">Checks Pending</span>
+                    </div>
+                  )}
+                </div>
+
                 {/* Payment Info */}
                                       {(pupil.hourlyRate > 0 || pupil.bulkPaymentBalance !== 0) && (
                                         <div className="flex items-center gap-2 text-sm">
@@ -488,7 +515,7 @@ export default function PupilProfile() {
                 <div className="flex justify-end">
                   <Button
                     onClick={handleSaveChecks}
-                    disabled={saveChecksMutation.isPending}
+                    disabled={saveChecksMutation.isPending || !checksModified}
                     className="bg-teal-600 hover:bg-teal-700"
                   >
                     {saveChecksMutation.isPending ? (
