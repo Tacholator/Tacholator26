@@ -302,6 +302,56 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         ))}
       </Accordion>
 
+      {/* Test Routes Section */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-[#F7B602]" />
+            Test Routes
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(routeNumber => {
+              const route = testRoutes.find(r => r.routeNumber === routeNumber);
+              return (
+                <div 
+                  key={routeNumber}
+                  className={`p-4 border-2 rounded-lg min-h-[120px] cursor-pointer transition-colors ${
+                    isInstructor ? 'hover:border-[#F7B602]' : ''
+                  } ${route && (route.routeDetails || route.comments) ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
+                  onClick={() => {
+                    if (!isInstructor) return;
+                    setEditingRoute(routeNumber);
+                    setRouteData({
+                      routeDetails: route?.routeDetails || '',
+                      comments: route?.comments || ''
+                    });
+                  }}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-semibold text-slate-700">Route {routeNumber}</h4>
+                    {route && (route.routeDetails || route.comments) && <Check className="w-4 h-4 text-emerald-500" />}
+                  </div>
+                  {route && (route.routeDetails || route.comments) ? (
+                    <div className="space-y-2">
+                      {route.routeDetails && (
+                        <p className="text-sm text-slate-600">{route.routeDetails}</p>
+                      )}
+                      {route.comments && (
+                        <p className="text-xs text-slate-500 italic">{route.comments}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400">Click to add route details</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Mock Tests Section */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
@@ -319,7 +369,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                   key={test.id} 
                   className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
                     isInstructor ? 'hover:border-[#F7B602]' : ''
-                  } ${result ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
+                  } ${result && result.result ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
                   onClick={() => {
                     if (!isInstructor) return;
                     setEditingMockTest(test.id);
@@ -359,56 +409,6 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                     </div>
                   ) : (
                     <p className="text-sm text-slate-400">Not completed</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Test Routes Section */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-[#F7B602]" />
-            Test Routes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(routeNumber => {
-              const route = testRoutes.find(r => r.routeNumber === routeNumber);
-              return (
-                <div 
-                  key={routeNumber}
-                  className={`p-4 border-2 rounded-lg min-h-[120px] cursor-pointer transition-colors ${
-                    isInstructor ? 'hover:border-[#F7B602]' : ''
-                  } ${route ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
-                  onClick={() => {
-                    if (!isInstructor) return;
-                    setEditingRoute(routeNumber);
-                    setRouteData({
-                      routeDetails: route?.routeDetails || '',
-                      comments: route?.comments || ''
-                    });
-                  }}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-semibold text-slate-700">Route {routeNumber}</h4>
-                    {route && (route.routeDetails || route.comments) && <Check className="w-4 h-4 text-emerald-500" />}
-                  </div>
-                  {route && (route.routeDetails || route.comments) ? (
-                    <div className="space-y-2">
-                      {route.routeDetails && (
-                        <p className="text-sm text-slate-600">{route.routeDetails}</p>
-                      )}
-                      {route.comments && (
-                        <p className="text-xs text-slate-500 italic">{route.comments}</p>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-slate-400">Click to add route details</p>
                   )}
                 </div>
               );
