@@ -39,6 +39,9 @@ import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 
 
 
@@ -52,6 +55,14 @@ export default function PupilProfile() {
   const [selectedDiaryEntry, setSelectedDiaryEntry] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [showLessonModal, setShowLessonModal] = useState(false);
+  const [checksData, setChecksData] = useState({
+    licenseChecked: false,
+    licenseCheckDate: '',
+    licenseCheckNotes: '',
+    eyeTestChecked: false,
+    eyeTestCheckDate: '',
+    eyeTestCheckNotes: ''
+  });
 
   const queryClient = useQueryClient();
 
@@ -170,6 +181,28 @@ export default function PupilProfile() {
   const handleSavePupil = async (data) => {
     await updatePupilMutation.mutateAsync(data);
   };
+
+  const saveChecksMutation = useMutation({
+    mutationFn: (data) => base44.entities.Pupil.update(pupilId, data),
+    onSuccess: () => queryClient.invalidateQueries(['pupil', pupilId])
+  });
+
+  const handleSaveChecks = async () => {
+    await saveChecksMutation.mutateAsync(checksData);
+  };
+
+  React.useEffect(() => {
+    if (pupil) {
+      setChecksData({
+        licenseChecked: pupil.licenseChecked || false,
+        licenseCheckDate: pupil.licenseCheckDate || '',
+        licenseCheckNotes: pupil.licenseCheckNotes || '',
+        eyeTestChecked: pupil.eyeTestChecked || false,
+        eyeTestCheckDate: pupil.eyeTestCheckDate || '',
+        eyeTestCheckNotes: pupil.eyeTestCheckNotes || ''
+      });
+    }
+  }, [pupil]);
 
   if (pupilLoading || !pupil) {
     return (
@@ -353,7 +386,7 @@ export default function PupilProfile() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="bg-white border shadow-sm mb-6">
                           <TabsTrigger value="progress">Driving Progress</TabsTrigger>
-                          <TabsTrigger value="skills">Skills Tracker</TabsTrigger>
+                          <TabsTrigger value="checks">First Lesson Checks</TabsTrigger>
                           <TabsTrigger value="diary">Lesson Diary</TabsTrigger>
                           <TabsTrigger value="lessons">Lessons</TabsTrigger>
                           <TabsTrigger value="homework">Homework</TabsTrigger>
@@ -367,23 +400,109 @@ export default function PupilProfile() {
             />
           </TabsContent>
 
-          <TabsContent value="skills">
-            <div className="mb-4">
-              <Button 
-                onClick={() => setShowLessonModal(true)}
-                className="bg-teal-600 hover:bg-teal-700"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Book Next Lesson
-              </Button>
-            </div>
-            {skillsLoading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-              </div>
-            ) : (
-              <SkillsGrid skills={skills} onUpdateSkill={handleUpdateSkill} />
-            )}
+          <TabsContent value="checks">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle>First Lesson Checks</CardTitle>
+                <p className="text-sm text-slate-600">Record license and eye test checks from the first lesson</p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* License Check */}
+                <div className="p-4 border rounded-lg space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={checksData.licenseChecked}
+                        onCheckedChange={(checked) => setChecksData({ ...checksData, licenseChecked: checked })}
+                      />
+                      <div>
+                        <label className="font-medium text-slate-800">Provisional License Checked</label>
+                        <p className="text-xs text-slate-500">Verify and record license details</p>
+                      </div>
+                    </div>
+                    {checksData.licenseChecked && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+                  </div>
+                  
+                  {checksData.licenseChecked && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">Check Date</label>
+                        <Input
+                          type="date"
+                          value={checksData.licenseCheckDate}
+                          onChange={(e) => setChecksData({ ...checksData, licenseCheckDate: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">Notes</label>
+                        <Textarea
+                          value={checksData.licenseCheckNotes}
+                          onChange={(e) => setChecksData({ ...checksData, licenseCheckNotes: e.target.value })}
+                          placeholder="Add any notes about the license check..."
+                          rows={3}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Eye Test Check */}
+                <div className="p-4 border rounded-lg space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={checksData.eyeTestChecked}
+                        onCheckedChange={(checked) => setChecksData({ ...checksData, eyeTestChecked: checked })}
+                      />
+                      <div>
+                        <label className="font-medium text-slate-800">Eye Test Passed</label>
+                        <p className="text-xs text-slate-500">Verify pupil can read a number plate</p>
+                      </div>
+                    </div>
+                    {checksData.eyeTestChecked && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+                  </div>
+                  
+                  {checksData.eyeTestChecked && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">Check Date</label>
+                        <Input
+                          type="date"
+                          value={checksData.eyeTestCheckDate}
+                          onChange={(e) => setChecksData({ ...checksData, eyeTestCheckDate: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">Notes</label>
+                        <Textarea
+                          value={checksData.eyeTestCheckNotes}
+                          onChange={(e) => setChecksData({ ...checksData, eyeTestCheckNotes: e.target.value })}
+                          placeholder="Add any notes about the eye test..."
+                          rows={3}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleSaveChecks}
+                    disabled={saveChecksMutation.isPending}
+                    className="bg-teal-600 hover:bg-teal-700"
+                  >
+                    {saveChecksMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Checks'
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="diary">
@@ -409,6 +528,15 @@ export default function PupilProfile() {
           </TabsContent>
 
           <TabsContent value="lessons">
+            <div className="mb-4">
+              <Button 
+                onClick={() => setShowLessonModal(true)}
+                className="bg-teal-600 hover:bg-teal-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Book Next Lesson
+              </Button>
+            </div>
             <Card className="border-0 shadow-sm">
               <CardContent className="p-0">
                 <Table>
