@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -19,18 +20,34 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { progressStates, drivingSkillsSections, mockTests } from './drivingSkillsData';
-import { ChevronRight, Check, Loader2, Edit2, Award } from 'lucide-react';
+import { ChevronRight, Check, Loader2, Edit2, Award, CheckSquare, Square, MapPin } from 'lucide-react';
 import moment from 'moment';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function PupilProgressTracker({ pupilId, instructorId, isInstructor = true }) {
   const queryClient = useQueryClient();
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [notes, setNotes] = useState('');
-  const [mockResults, setMockResults] = useState({});
+  const [editingMockTest, setEditingMockTest] = useState(null);
+  const [mockTestData, setMockTestData] = useState({ result: '', instructorComments: '', pupilComments: '', testDate: '' });
+  const [editingRoute, setEditingRoute] = useState(null);
+  const [routeData, setRouteData] = useState({ routeDetails: '', comments: '' });
 
   const { data: progressData = [], isLoading } = useQuery({
     queryKey: ['drivingProgress', pupilId],
     queryFn: () => base44.entities.DrivingSkillProgress.filter({ pupilId }),
+    enabled: !!pupilId
+  });
+
+  const { data: mockTestResults = [] } = useQuery({
+    queryKey: ['mockTestResults', pupilId],
+    queryFn: () => base44.entities.MockTestResult.filter({ pupilId }),
+    enabled: !!pupilId
+  });
+
+  const { data: testRoutes = [] } = useQuery({
+    queryKey: ['testRoutes', pupilId],
+    queryFn: () => base44.entities.TestRoute.filter({ pupilId }, 'routeNumber'),
     enabled: !!pupilId
   });
 
@@ -64,6 +81,48 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
       queryClient.invalidateQueries(['drivingProgress']);
       setSelectedSkill(null);
       setNotes('');
+    }
+  });
+
+  const saveMockTestMutation = useMutation({
+    mutationFn: async ({ mockTestId, data }) => {
+      const existing = mockTestResults.find(r => r.mockTestId === mockTestId);
+      if (existing) {
+        return base44.entities.MockTestResult.update(existing.id, data);
+      } else {
+        return base44.entities.MockTestResult.create({
+          pupilId,
+          instructorId,
+          mockTestId,
+          ...data
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['mockTestResults']);
+      setEditingMockTest(null);
+      setMockTestData({ result: '', instructorComments: '', pupilComments: '', testDate: '' });
+    }
+  });
+
+  const saveRouteMutation = useMutation({
+    mutationFn: async ({ routeNumber, data }) => {
+      const existing = testRoutes.find(r => r.routeNumber === routeNumber);
+      if (existing) {
+        return base44.entities.TestRoute.update(existing.id, data);
+      } else {
+        return base44.entities.TestRoute.create({
+          pupilId,
+          instructorId,
+          routeNumber,
+          ...data
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['testRoutes']);
+      setEditingRoute(null);
+      setRouteData({ routeDetails: '', comments: '' });
     }
   });
 
@@ -253,12 +312,107 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {mockTests.map(test => (
-              <div key={test.id} className="p-4 border border-slate-200 rounded-lg">
-                <h4 className="font-medium text-slate-700 mb-2">{test.label}</h4>
-                <div className="text-sm text-slate-500">Coming soon...</div>
-              </div>
-            ))}
+            {mockTests.map(test => {
+              const result = mockTestResults.find(r => r.mockTestId === test.id);
+              return (
+                <div 
+                  key={test.id} 
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                    isInstructor ? 'hover:border-[#F7B602]' : ''
+                  } ${result ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
+                  onClick={() => {
+                    if (!isInstructor) return;
+                    setEditingMockTest(test.id);
+                    setMockTestData({
+                      result: result?.result || '',
+                      instructorComments: result?.instructorComments || '',
+                      pupilComments: result?.pupilComments || '',
+                      testDate: result?.testDate || moment().format('YYYY-MM-DD')
+                    });
+                  }}
+                >
+                  <h4 className="font-medium text-slate-700 mb-3">{test.label}</h4>
+                  {result ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        {result.result === 'pass' ? (
+                          <Badge className="bg-emerald-100 text-emerald-700">Pass</Badge>
+                        ) : (
+                          <Badge className="bg-rose-100 text-rose-700">Fail</Badge>
+                        )}
+                      </div>
+                      {result.testDate && (
+                        <p className="text-xs text-slate-500">{moment(result.testDate).format('D MMM YYYY')}</p>
+                      )}
+                      {result.instructorComments && (
+                        <p className="text-xs text-slate-600 mt-2">
+                          <span className="font-medium">Instructor: </span>
+                          {result.instructorComments}
+                        </p>
+                      )}
+                      {result.pupilComments && (
+                        <p className="text-xs text-slate-600 mt-1">
+                          <span className="font-medium">Pupil: </span>
+                          {result.pupilComments}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400">Not completed</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Test Routes Section */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-[#F7B602]" />
+            Test Routes
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(routeNumber => {
+              const route = testRoutes.find(r => r.routeNumber === routeNumber);
+              return (
+                <div 
+                  key={routeNumber}
+                  className={`p-4 border-2 rounded-lg min-h-[120px] cursor-pointer transition-colors ${
+                    isInstructor ? 'hover:border-[#F7B602]' : ''
+                  } ${route ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
+                  onClick={() => {
+                    if (!isInstructor) return;
+                    setEditingRoute(routeNumber);
+                    setRouteData({
+                      routeDetails: route?.routeDetails || '',
+                      comments: route?.comments || ''
+                    });
+                  }}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-semibold text-slate-700">Route {routeNumber}</h4>
+                    {route && <Check className="w-4 h-4 text-emerald-500" />}
+                  </div>
+                  {route ? (
+                    <div className="space-y-2">
+                      {route.routeDetails && (
+                        <p className="text-sm text-slate-600">{route.routeDetails}</p>
+                      )}
+                      {route.comments && (
+                        <p className="text-xs text-slate-500 italic">{route.comments}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400">Click to add route details</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -305,6 +459,139 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                 placeholder="Add any notes about this skill..."
                 rows={3}
               />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Mock Test Dialog */}
+      <Dialog open={!!editingMockTest} onOpenChange={() => setEditingMockTest(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Mock Test: {mockTests.find(t => t.id === editingMockTest)?.label}</DialogTitle>
+            <DialogDescription>
+              Record the mock test result and comments
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-3 block">Result</label>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setMockTestData({ ...mockTestData, result: 'pass' })}
+                  className={`flex-1 p-4 border-2 rounded-lg transition-colors ${
+                    mockTestData.result === 'pass' 
+                      ? 'border-emerald-500 bg-emerald-50' 
+                      : 'border-slate-200 hover:border-emerald-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    {mockTestData.result === 'pass' ? <CheckSquare className="w-5 h-5 text-emerald-600" /> : <Square className="w-5 h-5" />}
+                    <span className="font-medium">Pass</span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => setMockTestData({ ...mockTestData, result: 'fail' })}
+                  className={`flex-1 p-4 border-2 rounded-lg transition-colors ${
+                    mockTestData.result === 'fail' 
+                      ? 'border-rose-500 bg-rose-50' 
+                      : 'border-slate-200 hover:border-rose-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    {mockTestData.result === 'fail' ? <CheckSquare className="w-5 h-5 text-rose-600" /> : <Square className="w-5 h-5" />}
+                    <span className="font-medium">Fail</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">Test Date</label>
+              <Input
+                type="date"
+                value={mockTestData.testDate}
+                onChange={(e) => setMockTestData({ ...mockTestData, testDate: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">Instructor Comments</label>
+              <Textarea
+                value={mockTestData.instructorComments}
+                onChange={(e) => setMockTestData({ ...mockTestData, instructorComments: e.target.value })}
+                placeholder="Add instructor comments..."
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">Pupil Comments</label>
+              <Textarea
+                value={mockTestData.pupilComments}
+                onChange={(e) => setMockTestData({ ...mockTestData, pupilComments: e.target.value })}
+                placeholder="Add pupil comments..."
+                rows={3}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setEditingMockTest(null)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => saveMockTestMutation.mutate({ mockTestId: editingMockTest, data: mockTestData })}
+                disabled={!mockTestData.result || saveMockTestMutation.isPending}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              >
+                {saveMockTestMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Test Route Dialog */}
+      <Dialog open={!!editingRoute} onOpenChange={() => setEditingRoute(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Test Route {editingRoute}</DialogTitle>
+            <DialogDescription>
+              Add details about this test route
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">Route Details</label>
+              <Textarea
+                value={routeData.routeDetails}
+                onChange={(e) => setRouteData({ ...routeData, routeDetails: e.target.value })}
+                placeholder="Describe the route, key areas, directions..."
+                rows={4}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">Comments</label>
+              <Textarea
+                value={routeData.comments}
+                onChange={(e) => setRouteData({ ...routeData, comments: e.target.value })}
+                placeholder="Any additional notes or observations..."
+                rows={3}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setEditingRoute(null)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => saveRouteMutation.mutate({ routeNumber: editingRoute, data: routeData })}
+                disabled={saveRouteMutation.isPending}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              >
+                {saveRouteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
+              </Button>
             </div>
           </div>
         </DialogContent>
