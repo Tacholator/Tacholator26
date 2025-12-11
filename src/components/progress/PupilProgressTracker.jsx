@@ -396,7 +396,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                 >
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-semibold text-slate-700">Route {routeNumber}</h4>
-                    {route && <Check className="w-4 h-4 text-emerald-500" />}
+                    {route && (route.routeDetails || route.comments) && <Check className="w-4 h-4 text-emerald-500" />}
                   </div>
                   {route && (route.routeDetails || route.comments) ? (
                     <div className="space-y-2">
@@ -541,7 +541,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               </Button>
               <Button
                 onClick={() => saveMockTestMutation.mutate({ mockTestId: editingMockTest, data: mockTestData })}
-                disabled={!mockTestData.result || saveMockTestMutation.isPending}
+                disabled={saveMockTestMutation.isPending}
                 className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
               >
                 {saveMockTestMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
