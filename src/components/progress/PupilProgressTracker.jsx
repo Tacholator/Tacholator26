@@ -332,7 +332,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                   }}
                 >
                   <h4 className="font-medium text-slate-700 mb-3">{test.label}</h4>
-                  {result ? (
+                  {result && result.result ? (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         {result.result === 'pass' ? (
@@ -398,7 +398,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                     <h4 className="font-semibold text-slate-700">Route {routeNumber}</h4>
                     {route && <Check className="w-4 h-4 text-emerald-500" />}
                   </div>
-                  {route ? (
+                  {route && (route.routeDetails || route.comments) ? (
                     <div className="space-y-2">
                       {route.routeDetails && (
                         <p className="text-sm text-slate-600">{route.routeDetails}</p>
@@ -478,7 +478,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               <label className="text-sm font-medium text-slate-700 mb-3 block">Result</label>
               <div className="flex gap-4">
                 <button
-                  onClick={() => setMockTestData({ ...mockTestData, result: 'pass' })}
+                  onClick={() => setMockTestData({ ...mockTestData, result: mockTestData.result === 'pass' ? '' : 'pass' })}
                   className={`flex-1 p-4 border-2 rounded-lg transition-colors ${
                     mockTestData.result === 'pass' 
                       ? 'border-emerald-500 bg-emerald-50' 
@@ -491,7 +491,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                   </div>
                 </button>
                 <button
-                  onClick={() => setMockTestData({ ...mockTestData, result: 'fail' })}
+                  onClick={() => setMockTestData({ ...mockTestData, result: mockTestData.result === 'fail' ? '' : 'fail' })}
                   className={`flex-1 p-4 border-2 rounded-lg transition-colors ${
                     mockTestData.result === 'fail' 
                       ? 'border-rose-500 bg-rose-50' 
