@@ -195,6 +195,20 @@ export const drivingSkillsSections = [
     ]
   },
   {
+    id: "country_roads",
+    title: "Country roads",
+    topics: [
+      { id: "country_roads_core", label: "Country roads", type: "skill" }
+    ]
+  },
+  {
+    id: "traffic_lights",
+    title: "Traffic lights",
+    topics: [
+      { id: "traffic_lights_core", label: "Traffic lights", type: "skill" }
+    ]
+  },
+  {
     id: "manoeuvres",
     title: "Manoeuvres",
     topics: [
@@ -277,20 +291,6 @@ export const drivingSkillsSections = [
     title: "Show me, tell me questions",
     topics: [
       { id: "show_me_tell_me_core", label: "Show me, tell me questions", type: "skill" }
-    ]
-  },
-  {
-    id: "country_roads",
-    title: "Country roads",
-    topics: [
-      { id: "country_roads_core", label: "Country roads", type: "skill" }
-    ]
-  },
-  {
-    id: "traffic_lights",
-    title: "Traffic lights",
-    topics: [
-      { id: "traffic_lights_core", label: "Traffic lights", type: "skill" }
     ]
   }
 ];
