@@ -35,6 +35,7 @@ import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
+import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
@@ -351,11 +352,20 @@ export default function PupilProfile() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="bg-white border shadow-sm mb-6">
+                          <TabsTrigger value="progress">Driving Progress</TabsTrigger>
                           <TabsTrigger value="skills">Skills Tracker</TabsTrigger>
                           <TabsTrigger value="diary">Lesson Diary</TabsTrigger>
                           <TabsTrigger value="lessons">Lessons</TabsTrigger>
                           <TabsTrigger value="homework">Homework</TabsTrigger>
                         </TabsList>
+
+          <TabsContent value="progress">
+            <PupilProgressTracker
+              pupilId={pupilId}
+              instructorId={pupil.instructorId}
+              isInstructor={true}
+            />
+          </TabsContent>
 
           <TabsContent value="skills">
             <div className="mb-4">
