@@ -23,7 +23,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit } from 'lucide-react';
+import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye } from 'lucide-react';
 import { getSkillById, DVSA_SKILLS_DATA } from '@/components/dvsa/dvsaSkillsData';
 import StudyMaterial from '@/components/dvsa/StudyMaterial';
 import McqQuiz from '@/components/dvsa/McqQuiz';
@@ -268,6 +268,10 @@ export default function DVSASkillDetail() {
               <ClipboardCheck className="w-4 h-4" />
               Take Quiz
             </TabsTrigger>
+            <TabsTrigger value="viewQuestions" className="gap-2" disabled={!skill.mcqQuiz?.questions?.length}>
+              <Eye className="w-4 h-4" />
+              View Questions
+            </TabsTrigger>
             <TabsTrigger value="progress" className="gap-2">
               <Trophy className="w-4 h-4" />
               Pupil Progress
@@ -343,6 +347,46 @@ export default function DVSASkillDetail() {
                     disabled={!assignment}
                   />
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="viewQuestions">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle>Quiz Questions & Answers</CardTitle>
+                <p className="text-sm text-slate-600">Review all questions and correct answers</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {skill.mcqQuiz.questions.map((q, idx) => (
+                    <div key={q.questionId} className="p-4 bg-slate-50 rounded-lg">
+                      <div className="flex items-start gap-3 mb-3">
+                        <Badge className="bg-teal-100 text-teal-700 shrink-0">Q{idx + 1}</Badge>
+                        <h4 className="font-medium text-slate-800">{q.questionText}</h4>
+                      </div>
+                      <div className="space-y-2 ml-2">
+                        {q.options.map((option, optIdx) => (
+                          <div 
+                            key={optIdx}
+                            className={`p-3 rounded-lg border-2 ${
+                              optIdx === q.correctOptionIndex 
+                                ? 'border-emerald-500 bg-emerald-50' 
+                                : 'border-slate-200 bg-white'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-700">{option}</span>
+                              {optIdx === q.correctOptionIndex && (
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600 ml-auto" />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
