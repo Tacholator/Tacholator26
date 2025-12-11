@@ -230,6 +230,27 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     };
   };
 
+  const isSectionCompleted = (section) => {
+    const sectionSkills = [];
+    const extractSkills = (items) => {
+      items.forEach(item => {
+        if (item.type === 'skill') {
+          sectionSkills.push(item.id);
+        } else if (item.subtopics) {
+          extractSkills(item.subtopics);
+        }
+      });
+    };
+    extractSkills(section.topics);
+
+    if (sectionSkills.length === 0) return false;
+
+    return sectionSkills.every(skillId => {
+      const progress = getProgressForSkill(skillId);
+      return progress?.progressState === 'independent';
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -289,11 +310,17 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
             className="border-0 shadow-sm rounded-lg bg-white overflow-hidden"
           >
             <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-slate-50">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-1">
                 <div className="w-8 h-8 rounded-full bg-[#F7B602]/20 flex items-center justify-center text-[#071739] font-semibold text-sm">
                   {index + 1}
                 </div>
                 <span className="font-semibold text-slate-800">{section.title}</span>
+                {isSectionCompleted(section) && (
+                  <Badge className="bg-emerald-100 text-emerald-700 ml-2">
+                    <Check className="w-3 h-3 mr-1" />
+                    Completed
+                  </Badge>
+                )}
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-5 pb-4">
