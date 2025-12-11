@@ -21,6 +21,27 @@ export const progressStates = [
 
 export const drivingSkillsSections = [
   {
+    id: "legal_responsibilities",
+    title: "Legal responsibilities",
+    topics: [
+      { id: "legal_responsibilities_core", label: "Legal responsibilities", type: "skill" }
+    ]
+  },
+  {
+    id: "safety_checks",
+    title: "Safety checks",
+    topics: [
+      { id: "safety_checks_core", label: "Safety checks", type: "skill" }
+    ]
+  },
+  {
+    id: "security",
+    title: "Security",
+    topics: [
+      { id: "security_core", label: "Security", type: "skill" }
+    ]
+  },
+  {
     id: "cockpit_and_safety",
     title: "Cockpit & Safety Procedures",
     topics: [
@@ -199,6 +220,15 @@ export const drivingSkillsSections = [
     title: "Country roads",
     topics: [
       { id: "country_roads_core", label: "Country roads", type: "skill" }
+    ]
+  },
+  {
+    id: "driving_conditions",
+    title: "Driving conditions",
+    topics: [
+      { id: "driving_in_the_dark", label: "Driving in the dark", type: "skill" },
+      { id: "weather_conditions", label: "Weather conditions", type: "skill" },
+      { id: "passengers_and_loads", label: "Passengers and loads", type: "skill" }
     ]
   },
   {
