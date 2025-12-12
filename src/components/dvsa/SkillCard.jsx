@@ -19,9 +19,23 @@ export default function SkillCard({ skill, assignment, onClick }) {
     red: { bg: 'bg-slate-300', ring: 'ring-slate-100' }
   };
 
+  const cardColors = [
+    'bg-gradient-to-br from-rose-50 to-pink-50 border-rose-100',
+    'bg-gradient-to-br from-orange-50 to-amber-50 border-orange-100',
+    'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100',
+    'bg-gradient-to-br from-lime-50 to-green-50 border-lime-100',
+    'bg-gradient-to-br from-teal-50 to-cyan-50 border-teal-100',
+    'bg-gradient-to-br from-sky-50 to-blue-50 border-sky-100',
+    'bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100',
+    'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-100',
+    'bg-gradient-to-br from-pink-50 to-rose-50 border-pink-100',
+  ];
+
+  const cardColor = cardColors[(skill.skillNumber - 1) % cardColors.length];
+
   return (
     <Card 
-      className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer"
+      className={`border shadow-sm hover:shadow-md transition-all cursor-pointer ${cardColor}`}
       onClick={onClick}
     >
       <CardContent className="p-4">
@@ -29,7 +43,7 @@ export default function SkillCard({ skill, assignment, onClick }) {
           <div className={`w-3 h-3 rounded-full ${trafficLightStyles[trafficLight].bg} ring-4 ${trafficLightStyles[trafficLight].ring}`} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-400">#{skill.skillNumber}</span>
+              <span className="text-sm font-semibold text-slate-600">{skill.skillNumber}</span>
               <h3 className="font-semibold text-slate-800 truncate">{skill.skillTitle}</h3>
             </div>
             <p className="text-sm text-slate-500 truncate mt-0.5">{skill.shortDescription}</p>
