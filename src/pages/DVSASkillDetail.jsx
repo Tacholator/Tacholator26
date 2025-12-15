@@ -281,48 +281,10 @@ export default function DVSASkillDetail() {
           <TabsContent value="material">
             <Card className="border-0 shadow-sm">
               <CardContent className="p-6">
-                <div className="flex justify-end mb-4">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setIsEditingMaterial(!isEditingMaterial)}
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    {isEditingMaterial ? 'View Material' : 'Edit Material'}
-                  </Button>
+                <div className="text-center py-12 text-slate-400">
+                  <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>Study material coming soon</p>
                 </div>
-                
-                {isEditingMaterial ? (
-                  <MaterialEditor
-                    initialContent={customMaterial?.content || ''}
-                    initialTitle={customMaterial?.title || skill?.skillTitle || ''}
-                    initialDescription={customMaterial?.description || skill?.shortDescription || ''}
-                    initialVisibility={customMaterial?.isVisibleToPupils || false}
-                    lastSavedAt={customMaterial?.lastSavedAt}
-                    onSave={(data) => saveMaterialMutation.mutate(data)}
-                    isSaving={saveMaterialMutation.isPending}
-                  />
-                ) : materialContent ? (
-                  <StudyMaterial
-                    content={materialContent}
-                    onProgress={handleMaterialProgress}
-                    isComplete={assignment?.hasOpenedMaterial}
-                  />
-                ) : (
-                  <div className="text-center py-12 text-slate-400">
-                    <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>No learning material yet</p>
-                    <p className="text-sm mt-1">Click "Edit Material" to create your own content</p>
-                    <Button 
-                      variant="outline" 
-                      className="mt-4"
-                      onClick={() => setIsEditingMaterial(true)}
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Create Material
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </TabsContent>
