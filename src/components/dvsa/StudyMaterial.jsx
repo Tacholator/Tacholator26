@@ -77,7 +77,7 @@ export default function StudyMaterial({ content, onProgress, isComplete }) {
         ref={containerRef}
         className="max-h-[60vh] overflow-y-auto prose prose-slate max-w-none bg-white rounded-xl p-6 border"
       >
-        <ReactMarkdown>{content}</ReactMarkdown>
+        <div dangerouslySetInnerHTML={{ __html: content }} />
       </div>
     </div>
   );
