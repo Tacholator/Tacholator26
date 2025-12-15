@@ -281,10 +281,33 @@ export default function DVSASkillDetail() {
           <TabsContent value="material">
             <Card className="border-0 shadow-sm">
               <CardContent className="p-6">
-                <div className="text-center py-12 text-slate-400">
-                  <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Study material coming soon</p>
-                </div>
+                {user?.role === 'admin' ? (
+                  materialContent ? (
+                    <StudyMaterial
+                      content={materialContent}
+                      onProgress={handleMaterialProgress}
+                      isComplete={assignment?.hasOpenedMaterial}
+                    />
+                  ) : (
+                    <div className="text-center py-12 text-slate-400">
+                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>No learning material available yet</p>
+                    </div>
+                  )
+                ) : (
+                  assignment && materialContent ? (
+                    <StudyMaterial
+                      content={materialContent}
+                      onProgress={handleMaterialProgress}
+                      isComplete={assignment?.hasOpenedMaterial}
+                    />
+                  ) : (
+                    <div className="text-center py-12 text-slate-400">
+                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>This material has not been assigned to you yet</p>
+                    </div>
+                  )
+                )}
               </CardContent>
             </Card>
           </TabsContent>
