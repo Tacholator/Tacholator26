@@ -707,6 +707,140 @@ The movement should always be smooth, controlled and predictable.`
 Using the POM routine consistently ensures that every time you move off, you do so safely, confidently and in line with DVSA driving test standards.`
       }
     ]
+  },
+  8: {
+    title: 'Use of Mirrors',
+    sections: [
+      {
+        heading: '1. Use of Mirrors – Overview',
+        body: `Using mirrors correctly is essential for safe driving. Mirrors help you stay aware of your surroundings so you can make safe decisions without endangering yourself or other road users.
+
+Good mirror use allows you to:
+• Judge the speed and distance of traffic behind
+• Know when it is safe to change direction or speed
+• Avoid surprising or obstructing others
+• Anticipate hazards early
+
+Proper mirror use should become a natural part of your driving routine.`
+      },
+      {
+        heading: '2. Types of Mirrors',
+        body: `Most vehicles have three main mirrors, each giving a different view of what is happening around you.
+
+Interior Mirror (Main Rear-View Mirror)
+• Gives a clear view of the road directly behind the vehicle.
+• Provides an accurate sense of distance (not distorted).
+• Should be used before any change in speed or direction.
+
+Right Door Mirror
+• Shows traffic approaching from behind on your right.
+• Important before moving off, overtaking or changing lanes.
+
+Left Door Mirror
+• Shows traffic on your left, including cyclists and pedestrians.
+• Important before turning left, pulling in or moving towards the kerb.`
+      },
+      {
+        heading: '3. Mirrors and the MSM Routine',
+        body: `Mirror use forms the essential first step of the MSM (Mirror, Signal, Manoeuvre) routine.
+
+M – Mirrors
+You must check your mirrors before doing anything else.
+
+When to check mirrors:
+You must check your mirrors before any change in speed or direction, including:
+• Before moving off from the side of the road.
+• Before moving off in traffic or at traffic lights.
+• Before turning left or right.
+• Before changing lanes.
+• Before slowing down or braking.
+• Before overtaking or passing parked cars.
+• Before pulling over to stop.
+• Before joining or leaving roundabouts.
+
+Checking mirrors at the right time helps you understand what is happening behind and around you so you can plan safely.`
+      },
+      {
+        heading: '4. What You Are Checking For',
+        body: `When you check your mirrors, you are not just looking – you are judging:
+• Who is behind you.
+• How close they are.
+• How fast they are approaching.
+• Whether your planned action will affect them.
+
+Good mirror use helps you avoid forcing others to brake, swerve or react suddenly because of what you do.`
+      },
+      {
+        heading: '5. Situations Where You Must Use Mirrors',
+        body: `Correct and timely mirror checks are essential in many driving situations.
+
+Moving Off (from the side of the road)
+• Check the interior mirror, right door mirror and right blind spot before moving away.
+
+Moving Off in Traffic or at Traffic Lights
+• Check the interior mirror and right door mirror.
+• Make sure no motorcyclists or cyclists are filtering between lanes before you set off.
+
+Slowing Down
+• Check the interior mirror before braking.
+• Check the right mirror if you need to brake more firmly.
+
+Turning Left
+• Check the interior mirror and left mirror.
+• Look for cyclists, scooters and pedestrians on your left side.
+
+Turning Right
+• Check the interior mirror and right mirror.
+• Look for vehicles approaching quickly from behind that may try to overtake.
+
+Changing Lanes
+• Check the interior mirror.
+• Check the mirror on the side you want to move.
+• Check your blind spot before moving across.
+
+Overtaking
+• Check the interior mirror and right mirror.
+• Check your blind spot to ensure no one is overtaking you.
+
+Stopping or Pulling In
+• Check the interior mirror and left mirror.
+• Make sure you do not cut across cyclists or surprise drivers behind.`
+      },
+      {
+        heading: '6. Mirrors and Blind Spots',
+        body: `Mirrors do not show everything. There are areas around the car, known as blind spots, that you cannot see in any mirror.
+
+You must check your blind spots by turning your head to look over your shoulder when:
+• Moving off.
+• Overtaking.
+• Changing lanes.
+• Joining traffic.
+• Pulling over.
+
+Ignoring blind spots is dangerous and is a common serious fault on the driving test.`
+      },
+      {
+        heading: '7. Key Rules for Effective Mirror Use',
+        body: `To use mirrors effectively, remember these key rules:
+
+• Check mirrors early and in good time before any change in speed or direction.
+• Check mirrors regularly as part of your normal driving routine.
+• Always use mirrors before signalling or braking.
+• Use the correct mirror for the situation (left mirror for left movements, right mirror for right movements).
+• Be especially aware of fast-moving hazards such as motorcycles and cyclists.
+• Never rely on mirrors alone – always combine mirror use with blind spot checks where needed.`
+      },
+      {
+        heading: '8. Summary',
+        body: `Correct mirror use is a core part of safe driving. It helps you:
+• Make safer decisions.
+• Maintain awareness of traffic around you.
+• Avoid surprising other road users.
+• Meet DVSA driving test standards.
+
+You must check your mirrors before every change in speed or direction, especially before moving off – whether from the roadside or in traffic. Combined with blind spot checks, good mirror use keeps you and others safe on the road.`
+      }
+    ]
   }
 };
 
