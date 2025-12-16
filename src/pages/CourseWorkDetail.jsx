@@ -234,6 +234,60 @@ Tyres are vital for grip, braking and stability. Worn or damaged tyres are dange
 Completing these checks before every journey helps keep you, your passengers and other road users safe.`
       }
     ]
+  },
+  3: {
+    title: 'Security',
+    sections: [
+      {
+        heading: '1. Security Overview',
+        body: `Security involves protecting your vehicle, its contents and your own personal safety. By staying aware of potential risks and taking simple precautions, you can significantly reduce the chance of theft, damage or harm.`
+      },
+      {
+        heading: '2. Stay Alert at All Times',
+        body: `Remain aware of your surroundings whenever you are:
+• Approaching your vehicle
+• Getting in or out of the car
+• Stopped in traffic or at junctions
+
+Avoid distractions that reduce your awareness, such as unnecessary mobile phone use or wearing headphones that block out external sounds.`
+      },
+      {
+        heading: '3. Let Someone Know Your Plans',
+        body: `Where possible, tell a trusted person:
+• Where you are going
+• When you expect to arrive
+• When you plan to return
+
+This is especially important when driving alone, travelling at night or going to unfamiliar locations.`
+      },
+      {
+        heading: '4. Protect Your Belongings',
+        body: `Keep important or valuable items out of sight while you are in or away from the car. For example:
+• Store bags, electronic devices and documents in the glovebox, boot or under a seat
+• Avoid leaving items visible on seats or the dashboard
+
+A visible item can tempt opportunistic thieves, even if the vehicle is locked.`
+      },
+      {
+        heading: '5. Choose a Secure Place to Park',
+        body: `Whenever possible, choose a parking place that is:
+• Well lit
+• Busy and overlooked by nearby buildings
+• Covered by CCTV or security patrols
+
+Avoid leaving your car in isolated or poorly lit areas, particularly at night or for long periods of time.`
+      },
+      {
+        heading: '6. Use Additional Security Measures',
+        body: `You can reduce the risk of theft by fitting extra security devices, such as:
+• A steering wheel lock
+• An immobiliser
+• An alarm system
+• Vehicle tracking devices or window etching
+
+These measures make your vehicle less attractive to thieves and may help deter or detect crime.`
+      }
+    ]
   }
 };
 
