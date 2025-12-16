@@ -23,11 +23,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye } from 'lucide-react';
+import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote } from 'lucide-react';
 import { getSkillById, DVSA_SKILLS_DATA } from '@/components/dvsa/dvsaSkillsData';
 import StudyMaterial from '@/components/dvsa/StudyMaterial';
 import McqQuiz from '@/components/dvsa/McqQuiz';
-import MaterialEditor from '@/components/dvsa/MaterialEditor';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function DVSASkillDetail() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -39,7 +39,7 @@ export default function DVSASkillDetail() {
   const [selectedPupils, setSelectedPupils] = useState([]);
   const [assignComponents, setAssignComponents] = useState('both');
   const [materialProgress, setMaterialProgress] = useState({ scrollDepth: 0, timeSpent: 0 });
-  const [isEditingMaterial, setIsEditingMaterial] = useState(false);
+  const [instructorNotes, setInstructorNotes] = useState('');
 
   const queryClient = useQueryClient();
   const skill = getSkillById(skillId);
@@ -90,6 +90,16 @@ export default function DVSASkillDetail() {
     enabled: !!skillId
   });
 
+  const { data: skillNotes } = useQuery({
+    queryKey: ['skillNotes', skillId, user?.id],
+    queryFn: async () => {
+      if (!user || user.role !== 'admin') return null;
+      const notes = await base44.entities.SkillMaterial.filter({ skillId, instructorId: user.id });
+      return notes[0] || null;
+    },
+    enabled: !!skillId && !!user
+  });
+
   const selectedPupil = pupils.find(p => p.id === pupilIdParam);
 
   const createAssignmentMutation = useMutation({
@@ -111,27 +121,33 @@ export default function DVSASkillDetail() {
     onSuccess: () => queryClient.invalidateQueries(['skillAssignment', skillId, pupilIdParam])
   });
 
-  const saveMaterialMutation = useMutation({
-    mutationFn: async ({ content, title, description, isVisibleToPupils }) => {
+  const saveNotesMutation = useMutation({
+    mutationFn: async (notes) => {
       const data = { 
-        content, 
-        title, 
-        description,
-        isVisibleToPupils,
+        content: notes,
+        skillId,
+        instructorId: user.id,
+        title: `${skill.skillTitle} - Instructor Notes`,
         lastSavedAt: new Date().toISOString()
       };
-      if (customMaterial) {
-        return base44.entities.SkillMaterial.update(customMaterial.id, data);
+      if (skillNotes) {
+        return base44.entities.SkillMaterial.update(skillNotes.id, data);
       } else {
-        return base44.entities.SkillMaterial.create({ skillId, instructorId: user.id, ...data });
+        return base44.entities.SkillMaterial.create(data);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['skillMaterial', skillId]);
+      queryClient.invalidateQueries(['skillNotes', skillId, user?.id]);
     }
   });
 
-  const materialContent = customMaterial?.content || skill?.learningMaterial;
+  const materialContent = skill?.learningMaterial || '<p>Content for this skill will be added soon.</p>';
+  
+  React.useEffect(() => {
+    if (skillNotes?.content) {
+      setInstructorNotes(skillNotes.content);
+    }
+  }, [skillNotes]);
 
   const handleMaterialProgress = useCallback((progress) => {
     setMaterialProgress(progress);
@@ -211,66 +227,63 @@ export default function DVSASkillDetail() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        <Link to={createPageUrl('DVSASkills')}>
-          <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Skills
-          </Button>
-        </Link>
-
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border p-6 mb-6"
-        >
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <Badge className="bg-teal-100 text-teal-700">Skill #{skill.skillNumber}</Badge>
-                {assignment?.passedMcq && (
-                  <Badge className="bg-emerald-100 text-emerald-700">
-                    <CheckCircle2 className="w-3 h-3 mr-1" /> Passed
-                  </Badge>
-                )}
-              </div>
-              <h1 className="text-2xl font-bold text-slate-800">{skill.skillTitle}</h1>
-              <p className="text-slate-500 mt-1">{skill.shortDescription}</p>
-
-              {selectedPupil && (
-                <div className="mt-4 flex items-center gap-4">
-                  <Badge className="bg-slate-100 text-slate-700">
-                    <Users className="w-3 h-3 mr-1" />
-                    {selectedPupil.firstName} {selectedPupil.lastName}
-                  </Badge>
-                  {assignment && (
-                    <>
-                      {assignment.bestScore !== undefined && (
-                        <span className="text-sm text-slate-500">
-                          Best: {assignment.bestScore}/{skill.mcqQuiz?.totalQuestions || 10}
-                        </span>
-                      )}
-                      {assignment.numberOfAttempts > 0 && (
-                        <span className="text-sm text-slate-500">
-                          Attempts: {assignment.numberOfAttempts}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
+        <div className="flex items-center justify-between mb-6">
+          <Link to={createPageUrl('DVSASkills')}>
+            <Button variant="ghost" className="gap-2 text-slate-600 hover:text-slate-800">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Skills
+            </Button>
+          </Link>
+          {user?.role === 'admin' && (
             <Button 
               onClick={() => setShowAssignModal(true)}
-              className="bg-teal-600 hover:bg-teal-700"
+              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
             >
               <Send className="w-4 h-4 mr-2" />
               Assign to Pupils
             </Button>
+          )}
+        </div>
+
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <FileText className="w-8 h-8 text-[#071739]" />
+            <h1 className="text-3xl font-bold text-[#071739]">{skill.skillTitle}</h1>
           </div>
-        </motion.div>
+          <p className="text-slate-600 mb-1">{skill.shortDescription}</p>
+          <p className="text-slate-500 text-sm">Last updated: December 2025</p>
+        </div>
+
+        {selectedPupil && (
+          <div className="mb-6 flex items-center gap-4 p-4 bg-white rounded-lg border">
+            <Badge className="bg-slate-100 text-slate-700">
+              <Users className="w-3 h-3 mr-1" />
+              {selectedPupil.firstName} {selectedPupil.lastName}
+            </Badge>
+            {assignment?.passedMcq && (
+              <Badge className="bg-emerald-100 text-emerald-700">
+                <CheckCircle2 className="w-3 h-3 mr-1" /> Passed
+              </Badge>
+            )}
+            {assignment && (
+              <>
+                {assignment.bestScore !== undefined && (
+                  <span className="text-sm text-slate-500">
+                    Best: {assignment.bestScore}/{skill.mcqQuiz?.totalQuestions || 10}
+                  </span>
+                )}
+                {assignment.numberOfAttempts > 0 && (
+                  <span className="text-sm text-slate-500">
+                    Attempts: {assignment.numberOfAttempts}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-white border shadow-sm mb-6">
+          <TabsList className="bg-white border shadow-sm mb-6 w-full justify-start">
             <TabsTrigger value="material" className="gap-2">
               <BookOpen className="w-4 h-4" />
               Study Material
@@ -283,41 +296,35 @@ export default function DVSASkillDetail() {
               <Eye className="w-4 h-4" />
               View Questions
             </TabsTrigger>
-            <TabsTrigger value="progress" className="gap-2">
-              <Trophy className="w-4 h-4" />
-              Pupil Progress
-            </TabsTrigger>
+            {user?.role === 'admin' && (
+              <>
+                <TabsTrigger value="progress" className="gap-2">
+                  <Trophy className="w-4 h-4" />
+                  Pupil Progress
+                </TabsTrigger>
+                <TabsTrigger value="notes" className="gap-2">
+                  <StickyNote className="w-4 h-4" />
+                  My Notes
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
 
           <TabsContent value="material">
             <Card className="border-0 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-8">
                 {user?.role === 'admin' ? (
-                  materialContent ? (
-                    <StudyMaterial
-                      content={materialContent}
-                      onProgress={handleMaterialProgress}
-                      isComplete={assignment?.hasOpenedMaterial}
-                    />
-                  ) : (
-                    <div className="text-center py-12 text-slate-400">
-                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>No learning material yet</p>
-                    </div>
-                  )
+                  <StudyMaterial
+                    content={materialContent}
+                    onProgress={handleMaterialProgress}
+                    isComplete={assignment?.hasOpenedMaterial}
+                  />
                 ) : myAssignment ? (
-                  materialContent ? (
-                    <StudyMaterial
-                      content={materialContent}
-                      onProgress={handleMaterialProgress}
-                      isComplete={myAssignment.hasOpenedMaterial}
-                    />
-                  ) : (
-                    <div className="text-center py-12 text-slate-400">
-                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>No learning material available</p>
-                    </div>
-                  )
+                  <StudyMaterial
+                    content={materialContent}
+                    onProgress={handleMaterialProgress}
+                    isComplete={myAssignment.hasOpenedMaterial}
+                  />
                 ) : (
                   <div className="text-center py-12 text-slate-400">
                     <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
@@ -429,7 +436,42 @@ export default function DVSASkillDetail() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="notes">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle>Instructor Notes</CardTitle>
+                <p className="text-sm text-slate-600">Personal notes about this skill (only visible to you)</p>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  value={instructorNotes}
+                  onChange={(e) => setInstructorNotes(e.target.value)}
+                  placeholder="Add your personal notes about this skill..."
+                  className="min-h-[300px] mb-4"
+                />
+                <Button 
+                  onClick={() => saveNotesMutation.mutate(instructorNotes)}
+                  disabled={saveNotesMutation.isPending}
+                  className="bg-teal-600 hover:bg-teal-700"
+                >
+                  {saveNotesMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Notes'
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+
+        <p className="text-center text-sm text-slate-500 mt-6">
+          © {new Date().getFullYear()} Mobrage Driving Academy. All rights reserved.
+        </p>
       </div>
 
       <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
