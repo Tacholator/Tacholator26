@@ -135,25 +135,26 @@ export default function DVSASkillDetail() {
 
   const handleMaterialProgress = useCallback((progress) => {
     setMaterialProgress(progress);
-    if (assignment && progress.timeSpent > 0) {
-      const shouldUpdate = !assignment.hasOpenedMaterial || 
-        progress.scrollDepth > (assignment.scrollDepthPercentage || 0) ||
-        progress.timeSpent > (assignment.totalTimeSpentMs / 1000 || 0);
+    const activeAssignment = assignment || myAssignment;
+    if (activeAssignment && progress.timeSpent > 0) {
+      const shouldUpdate = !activeAssignment.hasOpenedMaterial || 
+        progress.scrollDepth > (activeAssignment.scrollDepthPercentage || 0) ||
+        progress.timeSpent > (activeAssignment.totalTimeSpentMs / 1000 || 0);
       
       if (shouldUpdate) {
         updateAssignmentMutation.mutate({
-          id: assignment.id,
+          id: activeAssignment.id,
           data: {
             hasOpenedMaterial: true,
-            materialOpenedAt: assignment.materialOpenedAt || new Date().toISOString(),
-            totalTimeSpentMs: Math.max(assignment.totalTimeSpentMs || 0, progress.timeSpent * 1000),
-            scrollDepthPercentage: Math.max(assignment.scrollDepthPercentage || 0, progress.scrollDepth),
-            status: assignment.status === 'not_started' ? 'in_progress' : assignment.status
+            materialOpenedAt: activeAssignment.materialOpenedAt || new Date().toISOString(),
+            totalTimeSpentMs: Math.max(activeAssignment.totalTimeSpentMs || 0, progress.timeSpent * 1000),
+            scrollDepthPercentage: Math.max(activeAssignment.scrollDepthPercentage || 0, progress.scrollDepth),
+            status: activeAssignment.status === 'not_started' ? 'in_progress' : activeAssignment.status
           }
         });
       }
     }
-  }, [assignment, updateAssignmentMutation]);
+  }, [assignment, myAssignment, updateAssignmentMutation]);
 
   const handleQuizComplete = async (result) => {
     if (!assignment) return;
