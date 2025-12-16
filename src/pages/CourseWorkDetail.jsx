@@ -288,6 +288,96 @@ Avoid leaving your car in isolated or poorly lit areas, particularly at night or
 These measures make your vehicle less attractive to thieves and may help deter or detect crime.`
       }
     ]
+  },
+  4: {
+    title: 'Cockpit Drill / DSSSM Routine',
+    sections: [
+      {
+        heading: '1. Cockpit Drill / DSSSM Overview',
+        body: `The Cockpit Drill, also known as the DSSSM Routine, is a set of essential safety checks that must be carried out every time you get into the car before driving. These checks ensure you are safe, comfortable and fully in control of the vehicle.
+
+DSSSM stands for:
+• D – Doors
+• S – Seat
+• S – Steering
+• S – Seatbelt
+• M – Mirrors
+
+Completing these checks before every journey helps reduce risks and ensures good driving habits.`
+      },
+      {
+        heading: '2. Doors',
+        body: `Make sure all doors are properly closed and secure before you begin your journey.
+
+You should:
+• Check visually that each door is shut
+• Listen for the click when closing
+• Look for any door-warning lights on the dashboard
+
+Loose or open doors can be dangerous and may distract you or harm passengers.`
+      },
+      {
+        heading: '3. Seat',
+        body: `Adjust your seat so you can reach all the controls comfortably and safely.
+
+Your seat position is correct when:
+• You can fully press the clutch without stretching
+• Your arms are slightly bent when holding the steering wheel
+• You are sitting upright with proper back support
+• You have a clear view of the road and mirrors
+
+A proper seating position improves comfort, control and reaction time.`
+      },
+      {
+        heading: '4. Steering',
+        body: `Check that the steering wheel is correctly positioned and secure.
+
+Ensure that:
+• You can turn the wheel fully without leaning forward
+• The wheel is firmly locked in place (if adjustable)
+• Nothing obstructs your view of the dashboard
+
+Smooth and comfortable steering control is essential for safe driving.`
+      },
+      {
+        heading: '5. Seatbelt',
+        body: `Seatbelts must be worn by the driver and all passengers before the vehicle moves.
+
+Check that your seatbelt:
+• Is not twisted
+• Clicks securely into place
+• Fits properly across your chest and hips
+
+Drivers are legally responsible for ensuring that children under 14 are properly restrained.`
+      },
+      {
+        heading: '6. Mirrors',
+        body: `Adjust all mirrors to maximise visibility and reduce blind spots before you move off.
+
+Interior Mirror:
+• Should provide a clear view directly through the rear window
+
+Right Door Mirror:
+• Should show the road behind and a small part of the vehicle's side
+
+Left Door Mirror:
+• Helps you see cyclists, pedestrians and approaching vehicles on the left
+
+Mirrors must never be adjusted while driving. Always set them before starting your journey.`
+      },
+      {
+        heading: '7. Summary',
+        body: `The Cockpit Drill and the DSSSM Routine follow the same essential checks. Before driving, always complete the following:
+
+1. Doors – Confirm all doors are securely closed
+2. Seat – Adjust for comfort, control and visibility
+3. Steering – Ensure correct position and free movement
+4. Seatbelt – Fasten securely and check passengers
+5. Mirrors – Adjust for maximum visibility
+
+Performing these checks every time you get into the vehicle ensures you start every journey safely and confidently.`
+      }
+    ]
   }
 };
 
