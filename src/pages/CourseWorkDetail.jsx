@@ -970,6 +970,237 @@ You should never signal before checking your mirrors. You must always know who m
 Correct use of signals helps other road users anticipate your intentions, reduces the risk of collisions and is essential for passing the driving test.`
       }
     ]
+  },
+  10: {
+    title: 'Junctions',
+    sections: [
+      {
+        heading: '1. Junctions – Overview',
+        body: `Junctions are places where roads meet. They are one of the most common hazards drivers face and require careful observation, judgement, speed control and positioning.
+
+Safe use of junctions relies on the MSPSL routine (Mirror, Signal, Position, Speed, Look) together with the LADA routine (Look, Assess, Decide, Act) when observing.`
+      },
+      {
+        heading: '2. Types of Junctions',
+        body: `There are several common types of junctions you will encounter:
+
+2.1 T-Junctions
+• One road meets another in a "T" shape.
+• You usually join a main road from a side road.
+• May be controlled by Give Way or Stop signs and markings.
+
+2.2 Crossroads
+• Two roads cross each other.
+• May be controlled (with lights or signs) or uncontrolled.
+• Watch for oncoming traffic turning right and drivers who may misunderstand priority.
+
+2.3 Roundabouts
+• Circular junctions where traffic flows clockwise in the UK.
+• Priority is normally given to traffic from the right.
+• Lane discipline, signalling and observation are essential.
+
+2.4 Staggered Junctions
+• Side roads do not line up directly opposite each other.
+• Follow lane markings carefully.
+• Give way and position as required to avoid confusion.
+
+2.5 Controlled Junctions
+• Have traffic lights, Stop signs, Give Way signs or marked lanes.
+• You must follow the signs, signals and road markings.
+
+2.6 Uncontrolled (Unmarked) Junctions
+• No signs or road markings to show priority.
+• Approach with extra caution.
+• No one has automatic priority – drivers must negotiate safely.`
+      },
+      {
+        heading: '3. MSPSL Routine for Junctions',
+        body: `The DVSA-approved routine for dealing with junctions is MSPSL:
+
+• M – Mirrors
+• S – Signal
+• P – Position
+• S – Speed
+• L – Look (using the LADA routine)
+
+This structure helps you plan your approach, communicate your intentions and handle the junction safely.`
+      },
+      {
+        heading: '4. Mirrors',
+        body: `Before you approach or turn at a junction, you must check your mirrors.
+
+• Check the interior mirror to see what is directly behind you.
+• Check the left door mirror when turning left.
+• Check the right door mirror when turning right.
+
+This helps you understand who is behind you, how close they are and whether your actions will affect them.`
+      },
+      {
+        heading: '5. Signal',
+        body: `Signal in good time so that other road users clearly understand your intentions.
+
+• Signal left when turning left.
+• Signal right when turning right.
+• Avoid signalling too early, especially when there are several side roads close together.
+
+A correct, well-timed signal helps others anticipate your actions and reduces the risk of confusion.`
+      },
+      {
+        heading: '6. Position',
+        body: `Correct positioning is essential for safe, clear junction use.
+
+Turning Left
+• Maintain your normal driving position: the centre of your lane.
+• Do not drift unnecessarily towards the kerb.
+• Stay in line with the flow of traffic.
+
+Turning Right
+• Position just left of the centre line of your road.
+• Use any marked right-turn lane where provided.
+• Leave room for oncoming traffic to pass safely.
+
+Emerging from a Side Road
+• Keep the car parallel to the kerb.
+• Approach the Give Way or Stop line with your wheels straight.
+• Do not steer into the new road until you are moving forward safely.`
+      },
+      {
+        heading: '7. Speed',
+        body: `You must approach junctions at a safe and controlled speed.
+
+• Slow down early using progressive braking.
+• Select the correct gear before turning (often 1st or 2nd gear depending on visibility and traffic).
+• Be able to stop if necessary for traffic, pedestrians or unexpected hazards.
+
+Entering a junction too fast is a common cause of loss of control and poor decision-making.`
+      },
+      {
+        heading: '8. Look – Using the LADA Routine',
+        body: `Instead of using a fixed pattern like "right–left–right", drivers should use the LADA routine:
+
+L – Look
+• Look in all directions that are relevant to the junction.
+• Prioritise the direction of greatest potential danger based on the road layout.
+• Scan for vehicles, cyclists, pedestrians and other hazards.
+
+A – Assess
+• Assess the speed and distance of approaching traffic.
+• Consider road conditions, visibility and any obstructions.
+• Assess whether vehicles are slowing, stopping or continuing.
+
+D – Decide
+• Decide whether it is safe to continue, to wait or to move forward slowly to gain a better view.
+• Choose an appropriate gap in traffic if you are emerging or turning across traffic.
+
+A – Act
+• Carry out your decision calmly and smoothly.
+• If it is safe, make the turn or emerge.
+• If not safe, continue to wait and reassess.
+
+LADA allows you to adapt your observations to each junction instead of relying on a rigid sequence.`
+      },
+      {
+        heading: '9. Turning Left at a Junction',
+        body: `When turning left at a junction:
+
+Approach
+• Check the interior and left door mirror.
+• Signal left in good time.
+• Maintain your normal driving position in the centre of your lane – do not hug the kerb.
+
+At the Junction
+• Reduce your speed early and select the correct gear.
+• Use LADA to look, assess, decide and act.
+• Watch for pedestrians crossing the road you are turning into and for cyclists on your left.
+
+Turning
+• Turn the steering wheel smoothly to follow the curve of the corner.
+• Do not swing wide into the opposite lane.
+• Adjust your speed as you join the new road and continue normal observations.`
+      },
+      {
+        heading: '10. Turning Right at a Junction',
+        body: `When turning right at a junction:
+
+Approach
+• Check mirrors and signal right.
+• Position the car just left of the centre line or in the right-turn lane if provided.
+
+At the Junction
+• Slow down and select the appropriate gear.
+• Use LADA to observe oncoming traffic, pedestrians and any vehicles behind that may attempt to overtake.
+
+Turning
+• Wait for a safe gap in oncoming traffic.
+• Turn without cutting across the path of oncoming vehicles.
+• Be aware of vehicles turning right from the opposite direction at crossroads.
+
+Always be prepared to abandon the turn if a situation changes unexpectedly.`
+      },
+      {
+        heading: '11. Emerging from a Junction',
+        body: `Emerging means joining a main road from a side road.
+
+Key points:
+• Use the full MSPSL routine on approach.
+• Use LADA for observation – look carefully in all relevant directions.
+• Judge the speed and distance of traffic on the major road.
+• Do not pull out if it causes other drivers to brake or change direction.
+• Use 1st gear and the "creep and peep" technique if visibility is restricted.
+
+Creep and peep means moving slowly forward while continuing to look until you can properly see into the new road.`
+      },
+      {
+        heading: '12. Priority at Junctions',
+        body: `Priority at junctions is determined by road signs, road markings, traffic lights and road layout.
+
+General principles:
+• Traffic on the main road usually has priority over side roads.
+• At roundabouts, priority is normally given to traffic coming from the right.
+• At Stop and Give Way signs, you must give priority to traffic on the major road.
+• At unmarked junctions, no one has automatic priority – all drivers must proceed with great care.
+
+Even if you appear to have priority, you must always be ready to slow down or stop if another road user makes a mistake.`
+      },
+      {
+        heading: '13. Pedestrians and Vulnerable Road Users',
+        body: `When dealing with junctions, you must always look out for pedestrians and other vulnerable road users.
+
+Be especially aware of:
+• Pedestrians crossing the road you are turning into.
+• People stepping off the pavement near the corner.
+• Children, elderly people and those with mobility difficulties.
+• Cyclists and motorcyclists who may be less visible.
+
+If pedestrians have started to cross the road you are turning into, you must give way.`
+      },
+      {
+        heading: '14. Common Hazards at Junctions',
+        body: `Common hazards you may encounter at junctions include:
+
+• Parked vehicles blocking your view.
+• Cyclists or motorcyclists in blind spots.
+• Vehicles turning without signalling.
+• Fast-moving traffic on the main road.
+• Tight, sharp corners and awkward layouts.
+• Poor weather or lighting conditions affecting visibility.
+
+Always approach junctions expecting the unexpected and be prepared to stop.`
+      },
+      {
+        heading: '15. Summary',
+        body: `Safe use of junctions requires:
+
+• Correct application of the MSPSL routine.
+• Flexible and effective observation using LADA (Look, Assess, Decide, Act) instead of a fixed "right–left–right" pattern.
+• Proper positioning, including maintaining the normal driving position (centre of your lane) when turning left.
+• Good speed control and early gear selection.
+• Clear understanding of priorities and road markings.
+• Constant awareness of pedestrians, cyclists and other vulnerable road users.
+
+By combining MSPSL with LADA, you can approach, assess and drive through junctions safely and confidently, in line with DVSA standards.`
+      }
+    ]
   }
 };
 
