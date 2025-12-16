@@ -1,3 +1,4 @@
+
 export const DVSA_SKILLS_DATA = [
   {
     skillId: '1_legal_responsibilities',
@@ -5,101 +6,63 @@ export const DVSA_SKILLS_DATA = [
     skillTitle: 'Legal responsibilities',
     shortDescription: 'Understanding the legal responsibilities of the driver and vehicle.',
     learningMaterial: `<h2>Legal Responsibilities – Overview</h2>
-    <p>To drive safely and legally in the UK, every driver must understand their responsibilities — both for themselves and for the vehicle they operate.</p>
+    <p>To drive safely and legally in the UK, every driver must understand their responsibilities for themselves and the vehicle they operate.</p>
 
     <p>This includes:</p>
     <ul>
       <li>Being fit to drive</li>
+      <li>Ensuring the vehicle is legal and roadworthy</li>
       <li>Avoiding distractions (such as mobile phones)</li>
-      <li>Ensuring the vehicle is roadworthy and legal</li>
-      <li>Having the correct licence and insurance</li>
       <li>Knowing what to do in the event of an accident</li>
+      <li>Following the rules in the Highway Code</li>
     </ul>
 
-    <p>The sections below break down your key legal responsibilities as a driver or learner driver.</p>
-
     <h3>1. Your Fitness to Drive</h3>
-    <p>You must always be in a safe physical and mental condition to drive. The law requires you to understand how your health, eyesight, alcohol, drugs, tiredness and mobile phone use can affect your driving.</p>
+    <p>You must always be in a safe physical and mental condition to drive. The law requires you to understand how your health, eyesight, alcohol, drugs, tiredness and distractions affect your driving.</p>
 
     <h4>1.1 Health</h4>
     <ul>
       <li>Some medical conditions must be reported to the DVLA.</li>
-      <li>You MUST NOT drive if a medical condition affects your ability to drive safely.</li>
-      <li>Failing to notify the DVLA can lead to:
-        <ul>
-          <li>A fine of up to £1,000</li>
-          <li>Possible prosecution if you are involved in a collision</li>
-        </ul>
-      </li>
+      <li>You must not drive if a condition affects your ability to drive safely.</li>
+      <li>Failing to notify the DVLA can lead to a fine of up to £1,000 and possible prosecution if you are involved in a collision.</li>
     </ul>
 
     <h4>1.2 Eyesight</h4>
     <ul>
       <li>You must be able to read a number plate from <strong>20 metres</strong>.</li>
       <li>If you need glasses or contact lenses to meet this standard, you must wear them whenever you drive.</li>
-      <li>Penalties for driving with poor eyesight may include:
-        <ul>
-          <li>Penalty points</li>
-          <li>Fines</li>
-          <li>Disqualification from driving</li>
-        </ul>
-      </li>
+      <li>Driving with poor eyesight can result in penalty points, fines or disqualification.</li>
     </ul>
 
     <h4>1.3 Alcohol</h4>
     <ul>
-      <li>There is a legal alcohol limit, but the safest option is not to drink at all if you plan to drive.</li>
-      <li>Penalties for drink driving can include:
-        <ul>
-          <li>Up to 6 months in prison</li>
-          <li>A driving ban (minimum 12 months)</li>
-          <li>Unlimited fines</li>
-        </ul>
-      </li>
+      <li>There is a legal limit for alcohol, but the safest option is not to drink at all if you plan to drive.</li>
+      <li>Penalties for drink driving can include up to 6 months in prison, a driving ban (minimum 12 months) and unlimited fines.</li>
     </ul>
 
     <h4>1.4 Drugs</h4>
     <ul>
       <li>You must never drive after taking drugs that impair your ability to drive.</li>
       <li>This includes illegal drugs and some prescription or over-the-counter medicines that cause drowsiness.</li>
-      <li>Penalties for drug driving can include:
-        <ul>
-          <li>Up to 6 months in prison</li>
-          <li>A driving ban</li>
-          <li>Unlimited fines</li>
-        </ul>
-      </li>
+      <li>Penalties for drug driving can include up to 6 months in prison, a driving ban and unlimited fines.</li>
     </ul>
 
     <h4>1.5 Tiredness</h4>
     <ul>
-      <li>Fatigue significantly increases the risk of collisions.</li>
-      <li>You should:
-        <ul>
-          <li>Avoid driving when tired</li>
-          <li>Take regular breaks</li>
-          <li>Rest at least every 2 hours on long journeys</li>
-        </ul>
-      </li>
+      <li>Tiredness significantly increases the risk of collisions.</li>
+      <li>You should avoid driving when tired and take regular breaks, ideally at least every 2 hours on long journeys.</li>
     </ul>
 
     <h4>1.6 Mobile Phones</h4>
     <ul>
-      <li>Using a handheld mobile phone while driving is illegal.</li>
+      <li>It is illegal to use a handheld mobile phone while driving.</li>
       <li>Even hands-free devices can distract you and slow your reaction time.</li>
-      <li>Penalties can include:
-        <ul>
-          <li>6 penalty points</li>
-          <li>A £200 fine</li>
-          <li>Possible disqualification (especially for new drivers)</li>
-        </ul>
-      </li>
+      <li>Penalties can include 6 penalty points, a £200 fine and possible disqualification, especially for new drivers.</li>
+      <li>These rules also apply to anyone supervising a learner driver.</li>
     </ul>
 
-    <p><strong>Important:</strong> These rules also apply to anyone supervising a learner driver.</p>
-
     <h3>2. Vehicle Legal Requirements</h3>
-    <p>Before you drive, you are legally responsible for making sure the vehicle is safe and legal to use on the road.</p>
+    <p>Before driving, you are legally responsible for making sure the vehicle is safe and legal to use on the road.</p>
 
     <h4>2.1 Vehicle Tax</h4>
     <ul>
@@ -114,25 +77,16 @@ export const DVSA_SKILLS_DATA = [
 
     <h4>2.3 Insurance</h4>
     <ul>
-      <li>You must have the correct insurance to drive that vehicle.</li>
-      <li>Driving without insurance can lead to:
-        <ul>
-          <li>6–8 penalty points</li>
-          <li>Unlimited fines</li>
-          <li>The vehicle being seized</li>
-        </ul>
-      </li>
+      <li>You must have the correct insurance to drive the vehicle.</li>
+      <li>Driving without insurance can lead to 6–8 penalty points, unlimited fines and the vehicle being seized.</li>
     </ul>
 
     <h4>2.4 Roadworthiness</h4>
-    <p>Your vehicle must be in a safe, roadworthy condition. This includes having:</p>
     <ul>
-      <li>Legal tyres</li>
-      <li>Effective brakes</li>
-      <li>Working lights</li>
-      <li>Safe steering and controls</li>
+      <li>Your vehicle must be in a safe, roadworthy condition.</li>
+      <li>This includes having legal tyres, effective brakes, working lights and safe steering.</li>
+      <li>Driving an unroadworthy vehicle is a criminal offence.</li>
     </ul>
-    <p>Driving an unroadworthy vehicle is a criminal offence.</p>
 
     <h4>2.5 L Plates / D Plates</h4>
     <ul>
@@ -141,71 +95,68 @@ export const DVSA_SKILLS_DATA = [
     </ul>
 
     <h3>3. Who Can Teach You to Drive?</h3>
-    <p>You must be properly supervised when driving as a learner.</p>
+    <p>Learners must be properly supervised when driving.</p>
 
-    <h4>3.1 Supervising Drivers</h4>
-    <p>Anyone supervising a learner driver must:</p>
+    <p><strong>Supervising drivers must:</strong></p>
     <ul>
-      <li>Be at least <strong>21 years old</strong></li>
-      <li>Have held a full driving licence for at least <strong>3 years</strong></li>
-      <li>Be qualified to drive the type of vehicle being used (e.g. manual or automatic)</li>
+      <li>Be at least 21 years old.</li>
+      <li>Have held a full driving licence for at least 3 years.</li>
+      <li>Be qualified to drive the type of vehicle being used (for example, manual or automatic).</li>
     </ul>
-    <p>They must also follow the same legal rules as the driver, including not using a handheld phone and being fit to supervise.</p>
 
-    <h4>3.2 Paid Driving Lessons</h4>
-    <p>Only the following may charge money for giving driving lessons:</p>
+    <p><strong>Paid driving lessons:</strong></p>
     <ul>
-      <li>Approved Driving Instructors (ADIs)</li>
-      <li>Trainee driving instructors who hold a valid trainee licence</li>
+      <li>Only Approved Driving Instructors (ADIs) or trainee driving instructors with a valid trainee licence may charge money for lessons.</li>
+      <li>Instructors must display their official ADI or trainee badge on the windscreen during lessons.</li>
+      <li>Receiving paid instruction from an unqualified person is illegal.</li>
     </ul>
-    <p>Instructors must display their official ADI or trainee badge on the windscreen during lessons.</p>
-    <p>Receiving paid instruction from an unqualified person is illegal.</p>
 
     <h3>4. Distractions and Mobile Phones</h3>
-    <p>Distractions are a major cause of collisions, and mobile phones are one of the biggest distractions for drivers.</p>
+    <p>Distractions are a major cause of collisions, and mobile phones are one of the most common distractions.</p>
 
     <h4>4.1 Mobile Phone Rules</h4>
     <ul>
-      <li>It is illegal to use a handheld phone while driving.</li>
-      <li>This includes texting, calling, using apps, or checking notifications.</li>
+      <li>It is illegal to use a handheld mobile phone while driving.</li>
+      <li>This includes making calls, texting, using apps or checking notifications.</li>
       <li>Even hands-free use can distract your attention from the road.</li>
     </ul>
 
     <h4>4.2 Best Practice</h4>
     <ul>
-      <li>Switch off your phone or put it on silent before starting your journey.</li>
-      <li>Put your phone out of reach to avoid temptation.</li>
+      <li>Switch off your phone or put it on silent before you start driving.</li>
+      <li>Place your phone out of reach to avoid temptation.</li>
     </ul>
 
     <h4>4.3 Supervisors</h4>
     <ul>
       <li>Supervising drivers must also follow mobile phone laws.</li>
-      <li>They share responsibility for the safety of the vehicle and the learner.</li>
+      <li>They share responsibility for the safety of the vehicle and the learner driver.</li>
     </ul>
 
     <h3>5. Accidents and Emergencies</h3>
-    <p>If you are involved in a collision, there are certain actions you are legally required to take.</p>
+    <p>If you are involved in a collision, there are specific legal duties you must follow.</p>
 
-    <h4>5.1 After a Collision You MUST:</h4>
+    <p><strong>After a collision you MUST:</strong></p>
     <ul>
-      <li>Stop at the scene</li>
-      <li>Provide your name and address</li>
-      <li>Provide your insurance details</li>
-      <li>Provide the vehicle owner's details (if different from the driver)</li>
+      <li>Stop at the scene.</li>
+      <li>Provide your name and address.</li>
+      <li>Provide your insurance details.</li>
+      <li>Provide the vehicle owner's details if different from the driver.</li>
     </ul>
-    <p>If details are not exchanged at the scene, you MUST report the incident to the police within <strong>24 hours</strong>.</p>
-    <p>Failing to stop or report an accident is a criminal offence.</p>
+
+    <p>If details are not exchanged at the scene, you must report the incident to the police within <strong>24 hours</strong>.</p>
+    <p>Failing to stop or failing to report an accident is a criminal offence.</p>
 
     <h3>6. Other Legal Responsibilities</h3>
     <p>As a driver or learner driver, you have several ongoing legal responsibilities.</p>
 
-    <p>You must:</p>
+    <p><strong>You must:</strong></p>
     <ul>
-      <li>Keep your driving licence details up to date (name and address)</li>
-      <li>Inform the DVLA about any medical condition that affects your ability to drive</li>
-      <li>Follow all relevant rules in the Highway Code</li>
-      <li>Maintain legal eyesight standards at all times</li>
-      <li>Make sure you hold the correct licence category for the vehicle you are driving</li>
+      <li>Keep your driving licence details up to date, including your name and address.</li>
+      <li>Maintain legal eyesight standards at all times.</li>
+      <li>Inform the DVLA of any medical condition that affects your ability to drive.</li>
+      <li>Follow all relevant rules set out in the Highway Code.</li>
+      <li>Make sure you hold the correct licence category for the vehicle you are driving.</li>
     </ul>
 
     <p>Understanding and following these legal responsibilities helps keep you, your passengers and other road users safe.</p>`,
