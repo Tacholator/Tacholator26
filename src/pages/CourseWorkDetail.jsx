@@ -378,6 +378,101 @@ Mirrors must never be adjusted while driving. Always set them before starting yo
 Performing these checks every time you get into the vehicle ensures you start every journey safely and confidently.`
       }
     ]
+  },
+  5: {
+    title: 'Main Car Controls',
+    sections: [
+      {
+        heading: '1. Main Car Controls – Overview',
+        body: `To drive safely and confidently, you must understand the purpose and correct use of the main controls in the car. These are divided into three groups:
+
+1. Foot Controls
+2. Hand Controls
+3. Ancillary Controls
+
+Each group plays an essential role in controlling the vehicle smoothly and safely.`
+      },
+      {
+        heading: '2. Foot Controls',
+        body: `Foot controls are operated using your feet and are found in the driver's footwell. Manual and automatic vehicles differ, but the essential functions remain similar.
+
+2.1 Accelerator (Gas Pedal)
+• Controls the speed of the car.
+• Press gently to increase speed; ease off to reduce speed.
+• Must be used smoothly for good control and fuel efficiency.
+
+2.2 Footbrake (Service Brake)
+• Slows the car down using the brake system.
+• Apply progressive pressure: press smoothly and release smoothly.
+• Harsh or sudden braking can cause skidding or discomfort to passengers.
+
+2.3 Clutch (Manual Cars Only)
+• Separates the engine from the wheels.
+• Allows you to change gear, stop without stalling, and move off smoothly.
+• Press fully down to disengage the engine; release gradually for a smooth take-off.
+
+Note: Automatic cars do not have a clutch pedal – they only have an accelerator and a brake.`
+      },
+      {
+        heading: '3. Hand Controls',
+        body: `Hand controls are operated using your hands while you maintain a safe grip on the steering wheel. They help you control the direction, speed, and communication with other road users.
+
+3.1 Steering Wheel
+• Controls the direction of the car.
+• Hold the wheel at the 9-and-3 or 10-and-2 positions for maximum control.
+• Use smooth movements; avoid harsh or jerky steering.
+
+3.2 Handbrake (Parking Brake)
+• Secures the car when it is stationary.
+• Used when parking, stopping on a hill, or in some temporary stop situations.
+• Prevents the vehicle from rolling.
+
+3.3 Gear Lever
+• In manual cars, used to select gears (1–5/6 and reverse).
+• In automatic cars, typically uses positions such as P (Park), R (Reverse), N (Neutral), and D (Drive).
+• Correct gear selection allows the car to move efficiently at different speeds.
+
+3.4 Indicators (Signal Stalk)
+• Used to signal direction changes (left or right) to other road users.
+• Must be used in good time before turning, changing lanes, or pulling over.
+
+3.5 Horn
+• Used to warn others of your presence.
+• Should only be used when necessary for safety and not in anger or as a greeting.
+• Must not be used unnecessarily, especially in built-up areas at night.`
+      },
+      {
+        heading: '4. Ancillary Controls',
+        body: `Ancillary controls support safety, visibility and comfort while driving. You must learn how to use them without losing control of the vehicle.
+
+4.1 Lights
+• Includes headlights, sidelights, brake lights, fog lights and sometimes daytime running lights.
+• Essential for driving at night, in poor weather, or in low visibility.
+• You should know how to switch between dipped and main beam and when each is appropriate.
+
+4.2 Wipers and Washers
+• Keep the windscreen and rear window clear of rain, dirt and spray.
+• Use the washers to spray cleaning fluid when the screen becomes dirty.
+• Adjust wiper speed according to the intensity of the rain.
+
+4.3 Demisters (Front and Rear)
+• Used to clear condensation or mist from windows.
+• Front demister uses the heater and ventilation controls to blow warm air onto the windscreen.
+• Rear demister uses an electric heating grid in the rear window.
+
+Clear visibility through all windows is both a safety requirement and a legal obligation.`
+      },
+      {
+        heading: '5. Summary',
+        body: `Understanding the main car controls is fundamental to becoming a safe and confident driver. By mastering:
+
+• Foot Controls (accelerator, footbrake, clutch in manual cars)
+• Hand Controls (steering wheel, handbrake, gear lever, indicators, horn)
+• Ancillary Controls (lights, wipers, demisters)
+
+you will be able to control the vehicle smoothly, respond safely to hazards, and meet DVSA driving test standards.`
+      }
+    ]
   }
 };
 
