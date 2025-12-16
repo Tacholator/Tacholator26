@@ -136,6 +136,104 @@ You must:
 Understanding and following these legal responsibilities helps keep you, your passengers and other road users safe.`
       }
     ]
+  },
+  2: {
+    title: 'Safety Checks – FLOWER',
+    sections: [
+      {
+        heading: '1. Safety Checks Before You Drive',
+        body: `Before you start the engine, it is essential that your car is in good working order. You should know what to check, how to check it and how often to do it.
+
+A simple way to remember the key safety checks is to think of the word FLOWER. Each letter stands for an important part of the vehicle that you should check before driving.`
+      },
+      {
+        heading: '2. FLOWER – Key Pre-Drive Checks',
+        body: `Use the acronym FLOWER to remember the main checks:
+
+• F – Fuel
+• L – Lights
+• O – Oil
+• W – Water / Screenwash / Coolant
+• E – Electrics
+• R – Rubber (Tyres)
+
+Each of these checks helps ensure your vehicle is safe, reliable and legal before you set off.`
+      },
+      {
+        heading: '3. F – Fuel',
+        body: `Think of a fuel pump icon to represent this check.
+
+Before every journey, ask yourself:
+• Do I have enough fuel for the whole journey?
+• If not, where will I refuel on the way?
+
+Running low on fuel can be dangerous, especially on motorways or in unfamiliar areas, so always plan ahead.`
+      },
+      {
+        heading: '4. L – Lights',
+        body: `Think of a headlight beam icon to represent your lights.
+
+You should check that:
+• All headlights, rear lights, brake lights and indicators are working.
+• Lights are clean so that other road users can see you clearly.
+
+You can walk around the car to check the lights or ask someone to help you. Using reflections in windows or mirrors can also help when checking on your own.`
+      },
+      {
+        heading: '5. O – Oil',
+        body: `Think of an oil can or oil drop icon for this check.
+
+You should know:
+• Where the engine oil dipstick is located.
+• How to check the engine oil level and top it up if needed.
+• Where and how to check the level of brake fluid.
+
+Low oil can cause serious engine damage, and low brake fluid can affect your braking performance, so these checks are extremely important.`
+      },
+      {
+        heading: '6. W – Water, Screenwash and Coolant',
+        body: `Think of a water droplet icon to represent this section.
+
+You should know:
+• Where the coolant reservoir is and how to check that the level is between the minimum and maximum marks.
+• Where the screenwash bottle is and how to ensure it is topped up.
+• How to check that wiper blades are in good condition and not damaged.
+
+Correct coolant levels help prevent the engine from overheating, while clean screenwash and working wipers keep your windscreen clear for good visibility.`
+      },
+      {
+        heading: '7. E – Electrics',
+        body: `Think of a battery symbol or lightning bolt for your electrical checks.
+
+You should:
+• Make sure the battery appears secure and in good condition.
+• Check that indicators, horn and other warning devices are working.
+• Look out for any warning lights on the dashboard that stay on after the engine starts.
+
+Good electrics are essential for safe communication with other road users and for the correct operation of safety systems.`
+      },
+      {
+        heading: '8. R – Rubber (Tyres)',
+        body: `Think of a tyre icon for this check.
+
+You should check:
+• Tyre pressure is at the correct level for your vehicle (check the vehicle handbook or door frame sticker).
+• Tread depth is at least the legal minimum of 1.6 mm across the central three-quarters of the tyre and around the full circumference.
+• Tyre condition for cuts, bulges, uneven wear or any visible damage.
+
+Tyres are vital for grip, braking and stability. Worn or damaged tyres are dangerous and illegal.`
+      },
+      {
+        heading: '9. Final Pre-Drive Checks',
+        body: `In addition to the FLOWER checks, you should always make sure your brakes and steering are working properly before you drive.
+
+• Press the brake pedal to confirm it feels firm and responsive.
+• Move the steering wheel slightly to ensure it turns smoothly.
+• Check for any unusual noises or warning lights.
+
+Completing these checks before every journey helps keep you, your passengers and other road users safe.`
+      }
+    ]
   }
 };
 
