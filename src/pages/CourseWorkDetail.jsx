@@ -1213,20 +1213,16 @@ export default function CourseWorkDetail() {
     const hasSeenHint = localStorage.getItem('audio_hint_seen');
     return !hasSeenHint && localStorage.getItem('enable_audio_reading') !== 'false';
   });
-  const [currentPlayingSection, setCurrentPlayingSection] = useState(null);
-
-  const handleSectionPlay = (sectionId) => {
-    // Pause any other playing audio
-    if (currentPlayingSection && currentPlayingSection !== sectionId) {
-      window.speechSynthesis.cancel();
-    }
-    setCurrentPlayingSection(sectionId);
-  };
 
   const dismissAudioHint = () => {
     setShowAudioHint(false);
     localStorage.setItem('audio_hint_seen', 'true');
   };
+
+  // Combine all section content into one text for audio
+  const fullContentText = content?.sections?.map(section => 
+    `${section.heading}. ${section.body}`
+  ).join('. ') || '';
 
   if (!content) {
     return (
@@ -1268,7 +1264,7 @@ export default function CourseWorkDetail() {
               <Volume2 className="w-5 h-5 text-[#071739] mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <p className="text-sm text-slate-700">
-                  You can tap the audio icon under each heading to listen to this content being read aloud.
+                  You can use the audio player below to listen to this content being read aloud.
                 </p>
               </div>
               <Button
@@ -1284,16 +1280,16 @@ export default function CourseWorkDetail() {
           </Card>
         )}
 
+        <SectionAudioPlayer 
+          text={fullContentText} 
+          sectionId="full-content"
+        />
+
         <Card className="border-0 shadow-sm mb-6">
           <CardContent className="p-8 space-y-8">
             {content.sections.map((section, index) => (
               <div key={index} id={`section-${index}`}>
                 <h2 className="text-xl font-bold text-[#071739] mb-4">{section.heading}</h2>
-                <SectionAudioPlayer 
-                  text={section.body} 
-                  sectionId={`section-${index}`}
-                  onPlay={handleSectionPlay}
-                />
                 <div className="text-slate-700 whitespace-pre-line leading-relaxed">
                   {section.body}
                 </div>
