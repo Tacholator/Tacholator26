@@ -841,6 +841,135 @@ Ignoring blind spots is dangerous and is a common serious fault on the driving t
 You must check your mirrors before every change in speed or direction, especially before moving off – whether from the roadside or in traffic. Combined with blind spot checks, good mirror use keeps you and others safe on the road.`
       }
     ]
+  },
+  9: {
+    title: 'Use of Signals',
+    sections: [
+      {
+        heading: '1. Use of Signals – Overview',
+        body: `Signals are an essential part of safe driving. They help you communicate your intentions clearly to other road users so they can predict your actions and respond safely.
+
+Using signals correctly prevents confusion, reduces the risk of collisions and helps keep traffic flowing smoothly.
+
+Signals must always be:
+• Timely
+• Clear
+• Necessary
+
+They must never mislead other road users.`
+      },
+      {
+        heading: '2. Purpose of Signals',
+        body: `Signals are used to:
+• Inform others of your intentions.
+• Give road users enough time to react.
+• Reduce the chance of misunderstanding.
+• Help keep traffic moving safely and smoothly.
+
+Effective signalling helps drivers, cyclists, pedestrians and other road users understand what you plan to do next.`
+      },
+      {
+        heading: '3. Types of Signals',
+        body: `There are several types of signals used in normal driving.
+
+3.1 Indicator Signals
+• Used for left and right turns, lane changes, pulling over and moving off.
+• Must be given in good time.
+• Must be cancelled after you complete the manoeuvre.
+• Should only be used when they help or inform other road users.
+
+3.2 Brake Signals
+• Your brake lights warn drivers behind that you are slowing down.
+• Use them progressively and in good time.
+• This is especially important when you need to slow down more quickly than normal.
+
+3.3 Hazard Warning Lights
+• Used to warn others of a temporary hazard or obstruction.
+• Examples include a breakdown, a stopped vehicle causing an obstruction, or an emergency situation.
+• Do not use hazard lights while moving, except on a motorway or dual carriageway to warn of sudden danger ahead.
+
+3.4 Hand Signals
+• Occasionally used if indicators are not working or to reinforce your intentions.
+• Drivers should understand common hand signals, although they are rarely needed in modern driving.`
+      },
+      {
+        heading: '4. The Golden Rule – Only Signal If It Benefits Others',
+        body: `A signal that is unnecessary or badly timed can be confusing or dangerous.
+
+Before signalling, ask yourself: "Does anyone need this signal?"
+• If yes, give a clear, timely signal.
+• If no, do not signal.
+
+Examples of misleading signals:
+• Signalling left when passing a side road, making others think you are turning.
+• Signalling too early before a junction, causing confusion.
+• Signalling after you have already started turning.
+• Signalling right when the road bends right but you are not turning.`
+      },
+      {
+        heading: '5. When You Must Use Signals',
+        body: `You should use signals whenever they will help other road users understand your intentions. This includes:
+
+• Before turning left or right
+  • Signal early enough to give others time to react.
+
+• Before changing lanes
+  • Signal and then check mirrors and blind spots before moving.
+
+• Before overtaking
+  • Signal right before you move out.
+  • Signal left after you have safely passed, if appropriate.
+
+• Before pulling over or stopping
+  • Signal left to show you are moving towards the kerb.
+
+• Before moving off
+  • Signal right if it will help or inform traffic behind.
+
+• At roundabouts
+  • Signal to show your chosen exit and to indicate lane changes.
+
+• When merging
+  • Signal to show your intention to join the flow of traffic.`
+      },
+      {
+        heading: '6. Timing of Signals',
+        body: `Signals must be:
+• Given in good time.
+• Clear and easy to understand.
+• Cancelled once the manoeuvre is complete.
+
+The correct timing depends on speed and situation:
+• At higher speeds (e.g. dual carriageways), signal earlier to give others more time.
+• In slow-moving urban traffic, signal slightly later but still in good time.
+• When moving off from the side of the road, signal only when you are actually ready to move, not while you are still preparing.
+
+A poorly timed signal can be just as dangerous as not signalling at all.`
+      },
+      {
+        heading: '7. Signals and the MSM Routine',
+        body: `Signals form the second step of the MSM (Mirror, Signal, Manoeuvre) routine.
+
+The correct order is:
+1. Mirrors – Check who is around you and whether it is safe.
+2. Signal – If it will benefit or inform other road users.
+3. Manoeuvre – Carry out your action (change speed, direction or position).
+
+You should never signal before checking your mirrors. You must always know who might be affected by your actions before you indicate.`
+      },
+      {
+        heading: '8. Summary',
+        body: `Good signalling is a key part of safe, responsible driving. To use signals correctly, you must ensure they are:
+
+• Necessary – Only give a signal if it benefits other road users.
+• Clear – Easy for others to see and understand.
+• Timed correctly – Neither too early nor too late.
+• Cancelled once finished – Avoid ongoing or misleading signals.
+• Used with MSM – Always check mirrors before signalling.
+
+Correct use of signals helps other road users anticipate your intentions, reduces the risk of collisions and is essential for passing the driving test.`
+      }
+    ]
   }
 };
 
