@@ -1390,7 +1390,7 @@ Use the two-second rule in good conditions:
 
 In poor conditions:
 - Double the gap in rain or when the road is wet.
-- Leave a much larger gap in snow, ice or fog.
+- Multiply by 10 in snow or ice.
 
 Following too closely reduces your time to react and greatly increases the risk of a collision.`
       },
