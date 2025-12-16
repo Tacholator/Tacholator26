@@ -1202,6 +1202,212 @@ Always approach junctions expecting the unexpected and be prepared to stop.`
 By combining MSPSL with LADA, you can approach, assess and drive through junctions safely and confidently, in line with DVSA standards.`
       }
     ]
+  },
+  11: {
+    title: 'Use of Speed',
+    sections: [
+      {
+        heading: '1. Use of Speed – Overview',
+        body: `Correct use of speed is essential for safe and responsible driving. Your choice of speed affects:
+- Your stopping distance.
+- Your ability to react to hazards.
+- How much control you have over the vehicle.
+- The safety of other road users.
+
+Drivers must always travel at a speed that is **safe, legal and appropriate** for the road, traffic and weather conditions.
+
+The speed limit is **not a target** – it is the maximum permitted in ideal conditions. You must use judgement to decide what speed is actually safe.`
+      },
+      {
+        heading: '2. The Three Golden Rules of Speed',
+        body: `**2.1 Safe Speed**
+- Travel at a speed that allows you to stop safely within the distance you can see to be clear.
+
+**2.2 Legal Speed**
+- Never exceed the posted speed limit.
+- Remember that limits vary by road type, vehicle type and local restrictions.
+
+**2.3 Appropriate Speed**
+- Even if the speed limit is high, conditions may require you to drive much slower.
+- Reduce speed for:
+  - Heavy traffic.
+  - Rain, fog, ice or snow.
+  - Poor visibility.
+  - Narrow or winding roads.
+  - Areas with pedestrians or cyclists.
+
+Good drivers constantly adjust their speed to suit the situation.`
+      },
+      {
+        heading: '3. Factors That Affect Your Speed Choice',
+        body: `Your speed should always reflect the conditions around you.
+
+**3.1 Road Conditions**
+- Wet, icy or muddy roads.
+- Poor or uneven road surfaces.
+- Sharp bends and narrow roads.
+- Roadworks and temporary road layouts.
+
+Slippery or uneven roads require slower speeds.
+
+**3.2 Visibility**
+- Fog, heavy rain or spray.
+- Darkness or low sun.
+- Blind summits and sharp bends.
+- Parked vehicles blocking your view.
+
+If you cannot see clearly, you must reduce speed.
+
+**3.3 Traffic Conditions**
+- Heavy or slow-moving traffic.
+- Pedestrians near or crossing the road.
+- Cyclists or motorcyclists nearby.
+- Large vehicles such as lorries or buses.
+- School zones or busy town centres.
+
+More hazards mean a lower, more cautious speed.
+
+**3.4 Vehicle Condition**
+- Tyre grip and tread depth.
+- Braking performance.
+- Weight of the vehicle and load.
+- Mechanical issues or defects.
+
+Poor vehicle condition reduces control and increases stopping distances.`
+      },
+      {
+        heading: '4. Speed Limits',
+        body: `Speed limits are set to promote safety based on road type, environment and typical hazards.
+
+**Common UK speed limits for cars (for guidance):**
+- **20 mph** – Residential streets, school areas and some busy urban roads.
+- **30 mph** – Most built-up areas with street lighting (unless signed otherwise).
+- **40 or 50 mph** – Some urban or suburban main roads.
+- **60 mph** – National speed limit on single carriageways.
+- **70 mph** – National speed limit on dual carriageways and motorways.
+
+Always look for:
+- Speed limit signs.
+- Changes in road type and environment.
+- Street lights (which often indicate a 30 mph limit unless otherwise signed).
+
+Remember: the correct speed may be **below** the limit if conditions require it.`
+      },
+      {
+        heading: '5. Stopping Distances and Reaction Time',
+        body: `Speed has a huge effect on how long it takes you to stop.
+
+**Stopping distance = Thinking distance + Braking distance**
+
+- **Thinking distance** is how far you travel while you react and move your foot to the brake.
+- **Braking distance** is how far you travel from when you start braking until the car stops.
+
+As speed increases:
+- Thinking distance increases in a straight line with speed.
+- Braking distance increases much more sharply (it can more than double).
+
+For example (approximate figures in good conditions):
+- At **30 mph**, typical stopping distance is around **23 metres**.
+- At **60 mph**, typical stopping distance is around **73 metres**.
+
+Wet, icy or poor road surfaces, worn tyres or poor brakes will all increase stopping distance.`
+      },
+      {
+        heading: '6. Speed and Hazard Perception',
+        body: `Safe drivers constantly scan for potential hazards and adjust their speed early.
+
+You should reduce speed when you see:
+- Pedestrians near or stepping onto the road.
+- Cyclists, especially near junctions or roundabouts.
+- Horses, agricultural vehicles or slow-moving traffic.
+- Children playing near the pavement.
+- Parked cars narrowing the road.
+- Pedestrian crossings or school markings ahead.
+- Busy junctions or roundabouts.
+
+Slowing down in good time gives you more time to observe, think and react safely.`
+      },
+      {
+        heading: '7. Speed When Approaching Hazards',
+        body: `You must reduce your speed when approaching hazards such as:
+- Junctions and roundabouts.
+- Bends and sharp corners.
+- Pedestrian crossings.
+- Traffic queues.
+- Narrow gaps or roadworks.
+- Hidden dips, crests or blind summits.
+
+Use a planned approach:
+- Check mirrors early.
+- Ease off the accelerator.
+- Apply progressive braking.
+- Select the correct gear before the hazard.
+
+If in doubt, slow down – it is safer to approach slightly too slowly than too fast.`
+      },
+      {
+        heading: '8. Acceleration and Smooth Driving',
+        body: `Smooth acceleration and speed control make driving safer, more comfortable and more economical.
+
+Good practice:
+- Accelerate gently and progressively.
+- Avoid harsh acceleration or sudden bursts of speed.
+- Keep your speed steady where possible.
+- Avoid frequent unnecessary braking by planning further ahead.
+
+Smooth driving:
+- Improves passenger comfort.
+- Reduces fuel consumption and wear on the vehicle.
+- Helps maintain better grip and stability, especially in poor weather.`
+      },
+      {
+        heading: '9. Speed on Different Road Types',
+        body: `Speed choice varies with the type of road you are using.
+
+**Urban Roads**
+- Many hazards such as pedestrians, cyclists, buses and parked cars.
+- Expect frequent stops, junctions and crossings.
+- Often safer to drive well below the limit, especially in busy or narrow streets.
+
+**Rural Roads**
+- May have higher limits but more hidden dangers.
+- Expect sharp bends, blind summits, animals, tractors and uneven surfaces.
+- It is often safer to drive well below the national speed limit.
+
+**Dual Carriageways and Motorways**
+- Designed for higher speeds.
+- You must maintain larger gaps to vehicles in front.
+- Stay within the speed limit and adjust speed for weather, visibility and traffic flow.`
+      },
+      {
+        heading: '10. Speed and Following Distance',
+        body: `Your speed is closely linked to how much space you need around your vehicle.
+
+Use the **two-second rule** in good conditions:
+- Watch the vehicle in front pass a fixed point (e.g. a sign or lamppost).
+- Say "Only a fool breaks the two-second rule" at a normal pace.
+- If you pass the same point before you finish the phrase, you are too close.
+
+In poor conditions:
+- **Double** the gap in rain or when the road is wet.
+- Leave a much larger gap in snow, ice or fog.
+
+Following too closely reduces your time to react and greatly increases the risk of a collision.`
+      },
+      {
+        heading: '11. Summary',
+        body: `Safe use of speed means:
+
+- Never exceeding the legal speed limit.
+- Always adjusting speed to match weather, traffic and road conditions.
+- Using smooth acceleration and controlled braking.
+- Leaving enough time and distance to react to hazards.
+- Reducing speed early when hazards increase, such as at junctions, crossings and bends.
+- Understanding that higher speed greatly increases stopping distance and the severity of collisions.
+
+A good driver always chooses **the right speed for the situation**, not simply the maximum allowed by the speed limit.`
+      }
+    ]
   }
 };
 
