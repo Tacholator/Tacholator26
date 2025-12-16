@@ -281,58 +281,10 @@ export default function DVSASkillDetail() {
           <TabsContent value="material">
             <Card className="border-0 shadow-sm">
               <CardContent className="p-6">
-                {user?.role === 'admin' ? (
-                  isEditingMaterial ? (
-                    <MaterialEditor
-                      initialContent={materialContent || ''}
-                      initialTitle={customMaterial?.title || skill.skillTitle}
-                      initialDescription={customMaterial?.description || skill.shortDescription}
-                      onSave={async ({ content, title, description, isVisibleToPupils }) => {
-                        await saveMaterialMutation.mutateAsync({ content, title, description, isVisibleToPupils });
-                        setIsEditingMaterial(false);
-                      }}
-                      onCancel={() => setIsEditingMaterial(false)}
-                    />
-                  ) : (
-                    <>
-                      <div className="flex justify-end mb-4">
-                        <Button 
-                          onClick={() => setIsEditingMaterial(true)}
-                          variant="outline"
-                          className="gap-2"
-                        >
-                          <Edit className="w-4 h-4" />
-                          Edit Material
-                        </Button>
-                      </div>
-                      {materialContent ? (
-                        <StudyMaterial
-                          content={materialContent}
-                          onProgress={handleMaterialProgress}
-                          isComplete={assignment?.hasOpenedMaterial}
-                        />
-                      ) : (
-                        <div className="text-center py-12 text-slate-400">
-                          <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                          <p>No learning material available yet</p>
-                        </div>
-                      )}
-                    </>
-                  )
-                ) : (
-                  assignment && materialContent ? (
-                    <StudyMaterial
-                      content={materialContent}
-                      onProgress={handleMaterialProgress}
-                      isComplete={assignment?.hasOpenedMaterial}
-                    />
-                  ) : (
-                    <div className="text-center py-12 text-slate-400">
-                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>This material has not been assigned to you yet</p>
-                    </div>
-                  )
-                )}
+                <div className="text-center py-12 text-slate-400">
+                  <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>Study material coming soon</p>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
