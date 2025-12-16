@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
@@ -26,6 +27,9 @@ export default function ProfileSettings() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(() => {
+    return localStorage.getItem('enable_audio_reading') !== 'false';
+  });
 
   useEffect(() => {
     if (user) {
@@ -51,6 +55,14 @@ export default function ProfileSettings() {
       setTimeout(() => setSaveSuccess(false), 3000);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleAudioToggle = (checked) => {
+    setAudioEnabled(checked);
+    localStorage.setItem('enable_audio_reading', checked.toString());
+    if (!checked) {
+      window.speechSynthesis.cancel();
     }
   };
 
@@ -188,11 +200,45 @@ export default function ProfileSettings() {
           </Card>
         </motion.div>
 
-        {/* Delete Account Section */}
+        {/* Accessibility Settings */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="mt-6"
+        >
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Volume2 className="w-5 h-5" />
+                Accessibility Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <Label htmlFor="audio-reading" className="text-base font-medium">
+                    Enable audio reading
+                  </Label>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Allow the app to read study content and course sections aloud
+                  </p>
+                </div>
+                <Switch
+                  id="audio-reading"
+                  checked={audioEnabled}
+                  onCheckedChange={handleAudioToggle}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Delete Account Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
           className="mt-6"
         >
           <Card className="border-0 shadow-sm border-rose-200">
