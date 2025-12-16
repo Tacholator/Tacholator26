@@ -42,7 +42,28 @@ const warmColors = [
   'bg-gradient-to-br from-red-100 to-red-200',
   'bg-gradient-to-br from-rose-100 to-rose-200',
   'bg-gradient-to-br from-yellow-100 to-yellow-200',
-  'bg-gradient-to-br from-amber-50 to-amber-150'
+  'bg-gradient-to-br from-amber-50 to-orange-100',
+  'bg-gradient-to-br from-peach-100 to-coral-100',
+  'bg-gradient-to-br from-orange-50 to-amber-100',
+  'bg-gradient-to-br from-red-50 to-rose-100',
+  'bg-gradient-to-br from-rose-50 to-pink-100',
+  'bg-gradient-to-br from-yellow-50 to-amber-100',
+  'bg-gradient-to-br from-amber-200 to-orange-300',
+  'bg-gradient-to-br from-orange-200 to-red-200',
+  'bg-gradient-to-br from-red-200 to-rose-300',
+  'bg-gradient-to-br from-rose-200 to-pink-200',
+  'bg-gradient-to-br from-yellow-200 to-orange-200',
+  'bg-gradient-to-br from-amber-100 to-yellow-200',
+  'bg-gradient-to-br from-orange-100 to-amber-300',
+  'bg-gradient-to-br from-red-100 to-orange-200',
+  'bg-gradient-to-br from-rose-100 to-red-200',
+  'bg-gradient-to-br from-yellow-100 to-orange-100',
+  'bg-gradient-to-br from-amber-200 to-yellow-300',
+  'bg-gradient-to-br from-orange-200 to-amber-200',
+  'bg-gradient-to-br from-red-200 to-orange-300',
+  'bg-gradient-to-br from-rose-200 to-red-300',
+  'bg-gradient-to-br from-yellow-200 to-amber-300',
+  'bg-gradient-to-br from-amber-300 to-orange-400'
 ];
 
 export default function CourseWork() {
@@ -58,7 +79,7 @@ export default function CourseWork() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/40 to-yellow-50/50 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <FileText className="w-8 h-8 text-[#071739]" />
@@ -70,7 +91,7 @@ export default function CourseWork() {
             <Card 
               key={item.id}
               onClick={() => handleCardClick(item.id)}
-              className={`${warmColors[index % warmColors.length]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105`}
+              className={`${warmColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105`}
             >
               <CardContent className="p-4 text-center w-full">
                 <div className="text-3xl font-bold text-slate-700 mb-2">{item.id}</div>
