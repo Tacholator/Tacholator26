@@ -29,7 +29,8 @@ import {
   X,
   Car,
   Trash2,
-  Settings
+  Settings,
+  FileText
 } from 'lucide-react';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
@@ -166,6 +167,12 @@ export default function Layout({ children, currentPageName }) {
                     <DropdownMenuItem className="text-slate-600 cursor-pointer">
                       <Settings className="w-4 h-4 mr-2" />
                       Profile Settings
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to={createPageUrl('TermsAndConditions')}>
+                    <DropdownMenuItem className="text-slate-600 cursor-pointer">
+                      <FileText className="w-4 h-4 mr-2" />
+                      Terms & Conditions
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />
