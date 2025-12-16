@@ -473,6 +473,131 @@ Clear visibility through all windows is both a safety requirement and a legal ob
 you will be able to control the vehicle smoothly, respond safely to hazards, and meet DVSA driving test standards.`
       }
     ]
+  },
+  6: {
+    title: 'Stopping Safely',
+    sections: [
+      {
+        heading: '1. Stopping Safely – Overview',
+        body: `Stopping safely is a fundamental driving skill. A safe stop must be controlled, legal and predictable, without causing danger or inconvenience to other road users.
+
+To stop safely, drivers use two key DVSA routines:
+• MSM – Mirror, Signal, Manoeuvre
+• PSL – Position, Speed, Look
+
+These routines work together to help you plan, carry out and complete every stop in a safe and professional way.`
+      },
+      {
+        heading: '2. MSM Routine (Mirror, Signal, Manoeuvre)',
+        body: `The MSM routine helps you decide when and how to stop safely.
+
+M – Mirrors
+Before you change speed or direction, check your mirrors:
+• Look in the interior mirror first.
+• Then check the door mirror on the side you intend to move towards.
+
+This allows you to see:
+• What is behind you.
+• How close following traffic is.
+• Whether it is safe to begin slowing down and moving towards the kerb.
+
+S – Signal
+Give a signal if it will benefit other road users such as drivers, cyclists or pedestrians.
+• Signal at the right time, not too early and not too late.
+• Avoid signalling so early that others are confused about where you intend to stop.
+
+M – Manoeuvre
+Once it is safe and you have signalled (if necessary), begin the manoeuvre:
+• Gradually position the car towards the left.
+• Reduce speed smoothly.
+• Prepare to stop in a safe place.
+
+The manoeuvre phase is supported by the PSL routine.`
+      },
+      {
+        heading: '3. PSL Routine (Position, Speed, Look)',
+        body: `The PSL routine helps you carry out the manoeuvre safely and under full control.
+
+P – Position
+• Move the car gradually and smoothly towards the left-hand side of the road.
+• Keep the car parallel to the kerb.
+• Avoid stopping too close to parked vehicles or blocking driveways.
+• Check the left mirror for cyclists before moving left.
+
+S – Speed
+• Reduce your speed using progressive, gentle braking.
+• Brake early and smoothly rather than harshly.
+• In a manual car, press the clutch pedal just before the car stops to prevent stalling.
+
+L – Look
+• Continue observing all around as you slow down.
+• Check mirrors again for traffic behind.
+• Look for pedestrians, cyclists or vehicles that may be affected.
+• Watch for hazards at the kerb, such as drains or uneven surfaces.
+
+Position, Speed and Look work together to make the stopping manoeuvre safe and controlled.`
+      },
+      {
+        heading: '4. Safe Stopping Procedure (MSM + PSL)',
+        body: `Bringing MSM and PSL together, a safe stopping procedure looks like this:
+
+1. Mirrors – Check interior mirror, then the appropriate door mirror.
+2. Signal – Signal if it will benefit other road users.
+3. Position – Move smoothly towards the kerb, staying parallel.
+4. Speed – Gently reduce speed using progressive braking.
+5. Look – Keep checking mirrors and surroundings as you approach the stopping point.
+6. Stop – Bring the car to a smooth, controlled halt in a safe position.
+7. Secure the car – Apply the handbrake, select neutral (or Park in an automatic), and cancel the signal.
+
+Following these steps helps you stop in a way that is safe, predictable and professional.`
+      },
+      {
+        heading: '5. What a Good Stopping Position Looks Like',
+        body: `A safe and correct stopping position means the car is:
+• Parallel to the kerb.
+• Close to the kerb, but not touching it.
+• In a place that does not block driveways or entrances.
+• Not too close to junctions, bends or pedestrian crossings.
+• Not forcing other drivers or cyclists to take sudden avoiding action.
+
+Driving examiners look for consistent, safe stopping positions that show good judgement and control.`
+      },
+      {
+        heading: '6. Securing the Vehicle',
+        body: `Once the vehicle has come to a complete stop, you must secure it so it cannot move unintentionally.
+
+To secure the car:
+• Apply the handbrake.
+• Select neutral in a manual car, or P (Park) in an automatic.
+• Cancel any indicator that is still on.
+• Remove your feet from the pedals and prepare for your next move.
+
+Securing the vehicle properly prevents roll-back, protects other road users and shows good driving practice.`
+      },
+      {
+        heading: '7. When You May Need to Stop',
+        body: `You will need to stop safely in many everyday situations, for example:
+• When asked by the examiner to pull over during a driving test.
+• When stopping behind or between parked vehicles.
+• When dealing with hazards or obstructions in the road.
+• When emergency vehicles need space to pass.
+• If you feel unwell, unsure or need time to regain focus.
+• To deal with passengers or adjust controls safely.
+
+In every case, you should apply the MSM and PSL routines before stopping.`
+      },
+      {
+        heading: '8. Summary',
+        body: `Safe stopping relies on:
+• MSM (Mirror, Signal, Manoeuvre) for planning and decision-making.
+• PSL (Position, Speed, Look) for carrying out the manoeuvre under full control.
+• Smooth, progressive braking.
+• Careful choice of a safe and legal stopping place.
+• Securing the vehicle correctly once stopped.
+
+By practising MSM and PSL every time you stop, you will develop safe habits that meet DVSA standards and help protect yourself and other road users.`
+      }
+    ]
   }
 };
 
