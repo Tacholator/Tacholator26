@@ -36,34 +36,34 @@ const courseWorkItems = [
   { id: 27, title: 'Test Preparation' }
 ];
 
-const warmColors = [
-  'bg-gradient-to-br from-amber-100 to-amber-200',
-  'bg-gradient-to-br from-orange-100 to-orange-200',
+const cardColors = [
+  'bg-gradient-to-br from-blue-100 to-blue-200',
+  'bg-gradient-to-br from-green-100 to-green-200',
+  'bg-gradient-to-br from-purple-100 to-purple-200',
   'bg-gradient-to-br from-red-100 to-red-200',
+  'bg-gradient-to-br from-indigo-100 to-indigo-200',
+  'bg-gradient-to-br from-teal-100 to-teal-200',
+  'bg-gradient-to-br from-pink-100 to-pink-200',
+  'bg-gradient-to-br from-orange-100 to-orange-200',
+  'bg-gradient-to-br from-cyan-100 to-cyan-200',
+  'bg-gradient-to-br from-violet-100 to-violet-200',
+  'bg-gradient-to-br from-emerald-100 to-emerald-200',
   'bg-gradient-to-br from-rose-100 to-rose-200',
-  'bg-gradient-to-br from-yellow-100 to-yellow-200',
-  'bg-gradient-to-br from-amber-50 to-orange-100',
-  'bg-gradient-to-br from-peach-100 to-coral-100',
-  'bg-gradient-to-br from-orange-50 to-amber-100',
-  'bg-gradient-to-br from-red-50 to-rose-100',
-  'bg-gradient-to-br from-rose-50 to-pink-100',
-  'bg-gradient-to-br from-yellow-50 to-amber-100',
-  'bg-gradient-to-br from-amber-200 to-orange-300',
-  'bg-gradient-to-br from-orange-200 to-red-200',
-  'bg-gradient-to-br from-red-200 to-rose-300',
-  'bg-gradient-to-br from-rose-200 to-pink-200',
-  'bg-gradient-to-br from-yellow-200 to-orange-200',
-  'bg-gradient-to-br from-amber-100 to-yellow-200',
-  'bg-gradient-to-br from-orange-100 to-amber-300',
-  'bg-gradient-to-br from-red-100 to-orange-200',
-  'bg-gradient-to-br from-rose-100 to-red-200',
-  'bg-gradient-to-br from-yellow-100 to-orange-100',
-  'bg-gradient-to-br from-amber-200 to-yellow-300',
-  'bg-gradient-to-br from-orange-200 to-amber-200',
-  'bg-gradient-to-br from-red-200 to-orange-300',
-  'bg-gradient-to-br from-rose-200 to-red-300',
-  'bg-gradient-to-br from-yellow-200 to-amber-300',
-  'bg-gradient-to-br from-amber-300 to-orange-400'
+  'bg-gradient-to-br from-sky-100 to-sky-200',
+  'bg-gradient-to-br from-lime-100 to-lime-200',
+  'bg-gradient-to-br from-fuchsia-100 to-fuchsia-200',
+  'bg-gradient-to-br from-amber-100 to-amber-200',
+  'bg-gradient-to-br from-slate-100 to-slate-200',
+  'bg-gradient-to-br from-blue-200 to-cyan-200',
+  'bg-gradient-to-br from-green-200 to-teal-200',
+  'bg-gradient-to-br from-purple-200 to-pink-200',
+  'bg-gradient-to-br from-red-200 to-orange-200',
+  'bg-gradient-to-br from-indigo-200 to-blue-300',
+  'bg-gradient-to-br from-teal-200 to-emerald-200',
+  'bg-gradient-to-br from-pink-200 to-rose-200',
+  'bg-gradient-to-br from-yellow-100 to-amber-200',
+  'bg-gradient-to-br from-gray-100 to-gray-200',
+  'bg-gradient-to-br from-cyan-200 to-sky-300'
 ];
 
 export default function CourseWork() {
@@ -79,7 +79,7 @@ export default function CourseWork() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/40 to-yellow-50/50 p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <FileText className="w-8 h-8 text-[#071739]" />
@@ -91,7 +91,7 @@ export default function CourseWork() {
             <Card 
               key={item.id}
               onClick={() => handleCardClick(item.id)}
-              className={`${warmColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105`}
+              className={`${cardColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105`}
             >
               <CardContent className="p-4 text-center w-full">
                 <div className="text-3xl font-bold text-slate-700 mb-2">{item.id}</div>
