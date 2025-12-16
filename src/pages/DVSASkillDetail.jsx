@@ -65,6 +65,16 @@ export default function DVSASkillDetail() {
     enabled: !!skillId && !!pupilIdParam
   });
 
+  const { data: myAssignment } = useQuery({
+    queryKey: ['mySkillAssignment', skillId, user?.id],
+    queryFn: async () => {
+      if (!user || user.role !== 'user') return null;
+      const assignments = await base44.entities.SkillAssignment.filter({ skillId, pupilId: user.id });
+      return assignments[0] || null;
+    },
+    enabled: !!skillId && !!user
+  });
+
   const { data: allAssignments = [] } = useQuery({
     queryKey: ['skillAssignmentsForSkill', skillId],
     queryFn: () => base44.entities.SkillAssignment.filter({ skillId }),
