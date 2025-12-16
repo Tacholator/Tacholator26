@@ -49,27 +49,11 @@ export default function StudyMaterial({ content, onProgress, isComplete }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Badge className="bg-slate-100 text-slate-600 gap-1">
-            <Clock className="w-3 h-3" />
-            {formatTime(timeSpent)}
-          </Badge>
-          <Badge className="bg-slate-100 text-slate-600 gap-1">
-            <BookOpen className="w-3 h-3" />
-            {scrollDepth}% read
-          </Badge>
-        </div>
-        {isComplete && (
+      {isComplete && (
+        <div className="flex justify-end">
           <Badge className="bg-emerald-100 text-emerald-700">
             <CheckCircle2 className="w-3 h-3 mr-1" /> Studied
           </Badge>
-        )}
-      </div>
-
-      {!canTakeQuiz && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700">
-          Read for at least 1 minute and scroll through the material to unlock the quiz.
         </div>
       )}
 
