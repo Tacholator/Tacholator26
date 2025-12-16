@@ -979,87 +979,104 @@ Correct use of signals helps other road users anticipate your intentions, reduce
         heading: '1. Junctions – Overview',
         body: `Junctions are places where roads meet. They are one of the most common hazards drivers face and require careful observation, judgement, speed control and positioning.
 
-  Safe use of junctions is based on the MSM routine (Mirror, Signal, Manoeuvre). For junctions, the manoeuvre part is expanded further into MSPSL (Mirror, Signal, Position, Speed, Look), and the LADA routine (Look, Assess, Decide, Act) is used to structure your observations.`
+  Safe use of junctions relies on:
+  • The MSM routine (Mirror, Signal, Manoeuvre) as the core driving routine.
+  • The MSPSL routine (Mirror, Signal, Position, Speed, Look) as the extended version used for junctions.
+  • The LADA routine (Look, Assess, Decide, Act) for effective observation and decision-making.`
       },
       {
-        heading: '2. Types of Junctions',
+        heading: '2. MSM Routine (Mirror, Signal, Manoeuvre)',
+        body: `The MSM routine is the foundation of safe driving and must be used for every planned change in speed, direction or position.
+
+  M – Mirror
+  • Check the interior mirror and relevant door mirror (left for left turns, right for right turns).
+  • This helps you understand who is behind you and how they might be affected.
+
+  S – Signal
+  • Signal in good time if it will help other road users.
+  • Make sure your signal is clear and not misleading.
+
+  M – Manoeuvre
+  • Carry out your planned action (such as turning, slowing down or changing position) only after checking mirrors and signalling.
+
+  At junctions, the manoeuvre stage is broken down further using the MSPSL routine so you can manage position, speed and observation more precisely.`
+      },
+      {
+        heading: '4. Types of Junctions',
         body: `There are several common types of junctions you will encounter:
 
-  2.1 T-Junctions
+        4.1 T-Junctions
   • One road meets another in a "T" shape.
   • You usually join a main road from a side road.
   • May be controlled by Give Way or Stop signs and markings.
 
-  2.2 Crossroads
+  4.2 Crossroads
   • Two roads cross each other.
   • May be controlled (with lights or signs) or uncontrolled.
   • Watch for oncoming traffic turning right and drivers who may misunderstand priority.
 
-  2.3 Roundabouts
+  4.3 Roundabouts
   • Circular junctions where traffic flows clockwise in the UK.
   • Priority is normally given to traffic from the right.
   • Lane discipline, signalling and observation are essential.
 
-  2.4 Staggered Junctions
+  4.4 Staggered Junctions
   • Side roads do not line up directly opposite each other.
   • Follow lane markings carefully.
   • Give way and position as required to avoid confusion.
 
-  2.5 Controlled Junctions
+  4.5 Controlled Junctions
   • Have traffic lights, Stop signs, Give Way signs or marked lanes.
   • You must follow the signs, signals and road markings.
 
-  2.6 Uncontrolled (Unmarked) Junctions
+  4.6 Uncontrolled (Unmarked) Junctions
   • No signs or road markings to show priority.
   • Approach with extra caution.
   • No one has automatic priority – drivers must negotiate safely.`
       },
       {
-        heading: '3. MSM and MSPSL Routines for Junctions',
-        body: `The basic driving routine for any change of direction is MSM:
+        heading: '3. MSPSL Routine for Junctions',
+        body: `For junctions, MSM is expanded into MSPSL to give you more detail on how to carry out the manoeuvre safely:
 
-  • M – Mirrors
-  • S – Signal
-  • M – Manoeuvre
+      • M – Mirrors
+      • S – Signal
+      • P – Position
+      • S – Speed
+      • L – Look (using the LADA routine)
 
-  At junctions, the Manoeuvre step is expanded into three parts to give more control. This creates the MSPSL routine:
+      Think of MSPSL as a more detailed version of MSM that you use whenever you are approaching, turning at or emerging from a junction.
 
-  • M – Mirrors
-  • S – Signal
-  • P – Position
-  • S – Speed
-  • L – Look
-
-  In other words, MSM gives you the overall sequence, and MSPSL breaks down the manoeuvre stage into Position, Speed and Look so that:
-  • You are in the correct position on the road.
-  • You approach at a safe speed with the right gear.
-  • You look properly using the LADA (Look, Assess, Decide, Act) routine before committing to the turn or emerging.`
+      MSM gives you the overall structure (Mirror, Signal, Manoeuvre), and MSPSL explains how to manage the Manoeuvre part step by step.`
       },
       {
-        heading: '4. Mirrors (M in MSM / MSPSL)',
-        body: `Before you approach or turn at a junction, the first step in both MSM and MSPSL is to check your mirrors.
+        heading: '5. Mirrors at Junctions (MSM – First Step)',
+        body: `The first step of MSM and MSPSL is always Mirrors.
 
-  • Check the interior mirror to see what is directly behind you.
-  • Check the left door mirror when turning left.
-  • Check the right door mirror when turning right.
+      Before you approach or turn at a junction, you must check your mirrors:
 
-  This helps you understand who is behind you, how close they are and whether your actions will affect them.`
+      • Check the interior mirror to see what is directly behind you.
+      • Check the left door mirror when turning left or moving towards the kerb.
+      • Check the right door mirror when turning right or moving towards the centre of the road.
+
+      This helps you understand who is behind you, how close they are and whether your actions will affect them.`
       },
       {
-        heading: '5. Signal (S in MSM / MSPSL)',
-        body: `The second step in both MSM and MSPSL is to signal.
+        heading: '6. Signal (MSM – Second Step)',
+        body: `The second step of MSM and MSPSL is Signal.
 
-  • Signal in good time so that other road users clearly understand your intentions.
-  • Signal left when turning left and right when turning right.
-  • Avoid signalling too early, especially when there are several side roads close together.
+      Signal in good time so that other road users clearly understand your intentions.
 
-  A correct, well-timed signal helps others anticipate your actions and reduces the risk of confusion.`
+      • Signal left when turning left.
+      • Signal right when turning right.
+      • Avoid signalling too early, especially when there are several side roads close together.
+
+      Always check mirrors before signalling, never the other way around.`
       },
       {
-        heading: '6. Position (P in MSPSL – part of Manoeuvre)',
-        body: `Position is the first part of the manoeuvre stage in MSPSL.
+        heading: '7. Position',
+        body: `Correct positioning is essential for safe, clear junction use.
 
-  Turning Left
+        Turning Left
   • Maintain your normal driving position: the centre of your lane.
   • Do not drift unnecessarily towards the kerb.
   • Stay in line with the flow of traffic.
@@ -1075,19 +1092,17 @@ Correct use of signals helps other road users anticipate your intentions, reduce
   • Do not steer into the new road until you are moving forward safely.`
       },
       {
-        heading: '7. Speed (S in MSPSL – part of Manoeuvre)',
-        body: `Speed is the second part of the manoeuvre stage in MSPSL.
-
-  • You must approach junctions at a safe and controlled speed.
+        heading: '8. Speed',
+        body: `You must approach junctions at a safe and controlled speed.
   • Slow down early using progressive braking.
   • Select the correct gear before turning (often 1st or 2nd gear depending on visibility and traffic).
-  • Always be able to stop if necessary for traffic, pedestrians or unexpected hazards.
+  • Be able to stop if necessary for traffic, pedestrians or unexpected hazards.
 
-  Controlling your speed properly at junctions gives you time to observe and make safe decisions.`
-      },
+  Entering a junction too fast is a common cause of loss of control and poor decision-making.`
+              },
       {
-        heading: '8. Look (L in MSPSL – part of Manoeuvre, using LADA)',
-        body: `The final part of the manoeuvre stage in MSPSL is Look. This is where you use the LADA routine:
+        heading: '9. Look – Using the LADA Routine',
+        body: `The final step in MSPSL is Look, which is carried out using the LADA routine (Look, Assess, Decide, Act).
 
   L – Look
   • Look in all directions that are relevant to the junction.
@@ -1111,74 +1126,62 @@ Correct use of signals helps other road users anticipate your intentions, reduce
   LADA allows you to adapt your observations to each junction instead of relying on a rigid "right–left–right" pattern.`
       },
       {
-        heading: '9. Turning Left at a Junction',
-        body: `When turning left at a junction, use MSM and the expanded MSPSL steps:
+        heading: '10. Turning Left at a Junction (Using MSM and MSPSL)',
+        body: `When turning left at a junction, use MSM and MSPSL together:
 
-  Mirrors
-  • Check the interior mirror and left door mirror.
+      Approach
+      • Mirror (MSM): Check the interior and left mirror.
+      • Signal (MSM): Signal left in good time.
+      • Position (MSPSL): Maintain your normal driving position in the centre of your lane – do not hug the kerb.
 
-  Signal
-  • Signal left in good time.
+      At the Junction
+      • Speed (MSPSL): Reduce your speed early and select the correct gear.
+      • Look (MSPSL using LADA): Look, assess, decide and act based on traffic, pedestrians and cyclists.
 
-  Position
-  • Maintain your normal driving position in the centre of your lane.
-  • Do not hug the kerb unnecessarily.
-
-  Speed
-  • Reduce your speed early and select the correct gear.
-
-  Look (LADA)
-  • Look for pedestrians crossing the road you are turning into.
-  • Look for cyclists on your left.
-  • Assess whether it is safe, decide on the right moment, then act by making the turn.
-
-  Turn the steering wheel smoothly to follow the curve of the corner and adjust your speed as you join the new road.`
+      Turning
+      • Turn the steering wheel smoothly to follow the curve of the corner.
+      • Do not swing wide into the opposite lane.
+      • Adjust your speed as you join the new road and continue normal observations.`
       },
-      {
-        heading: '10. Turning Right at a Junction',
-        body: `When turning right at a junction, again use MSM and MSPSL:
+  {
+    heading: '11. Turning Right at a Junction (Using MSM and MSPSL)',
+    body: `When turning right at a junction, you also use MSM and MSPSL:
 
-  Mirrors
-  • Check interior mirror and right door mirror.
+  Approach
+  • Mirror (MSM): Check interior and right mirror.
+  • Signal (MSM): Signal right in good time.
+  • Position (MSPSL): Position the car just left of the centre line, or in the right-turn lane if provided.
 
-  Signal
-  • Signal right in good time.
+  At the Junction
+  • Speed (MSPSL): Slow down and select the appropriate gear.
+  • Look (MSPSL using LADA): Use LADA to observe oncoming traffic, pedestrians and any vehicles behind that may attempt to overtake.
 
-  Position
-  • Position just left of the centre line or in the right-turn lane if one is marked.
-
-  Speed
-  • Slow down and select the appropriate gear.
-
-  Look (LADA)
-  • Look for oncoming traffic, pedestrians and any vehicles behind that may overtake.
-  • Assess the speed and distance of oncoming vehicles.
-  • Decide when there is a safe gap to turn.
-  • Act by making the turn smoothly without cutting across the path of oncoming traffic.
+  Turning
+  • Wait for a safe gap in oncoming traffic.
+  • Turn without cutting across the path of oncoming vehicles.
+  • Be aware of vehicles turning right from the opposite direction at crossroads.
 
   Always be prepared to abandon the turn if a situation changes unexpectedly.`
+              },
+      {
+        heading: '12. Emerging from a Junction (Using MSM and LADA)',
+        body: `Emerging means joining a main road from a side road and requires very accurate observation and judgement.
+
+      Approach
+      • Use the MSM routine: check mirrors, signal if needed and prepare to carry out the manoeuvre.
+      • Apply MSPSL to manage position and speed.
+
+      At the Junction
+      • Use LADA to look, assess, decide and act.
+      • Look carefully in all relevant directions, not in a fixed pattern.
+      • Judge the speed and distance of traffic on the main road.
+
+      Emerging
+      • Do not pull out if it would cause other drivers to brake or change direction.
+      • Use 1st gear and the "creep and peep" technique if visibility is restricted, moving forward slowly to widen your view while staying in control.`
       },
       {
-        heading: '11. Emerging from a Junction',
-        body: `Emerging means joining a main road from a side road, using MSM and the full MSPSL sequence.
-
-  Mirrors and Signal
-  • Check mirrors and signal as appropriate.
-
-  Position and Speed
-  • Position correctly at the give way or stop line.
-  • Approach at a very low speed, often using 1st gear.
-
-  Look (LADA)
-  • Look on both sides along the main road.
-  • Assess speeds and gaps in traffic.
-  • Decide whether it is safe to go or whether you need to wait or creep forward for a better view.
-  • Act only when it is clearly safe, using the "creep and peep" technique at blind junctions if needed.
-
-  Do not pull out if it causes other drivers to brake or change direction.`
-      },
-      {
-        heading: '12. Priority at Junctions',
+        heading: '13. Priority at Junctions',
         body: `Priority at junctions is determined by road signs, road markings, traffic lights and road layout.
 
   General principles:
@@ -1190,7 +1193,7 @@ Correct use of signals helps other road users anticipate your intentions, reduce
   Even if you appear to have priority, you must always be ready to slow down or stop if another road user makes a mistake.`
       },
       {
-        heading: '13. Pedestrians and Vulnerable Road Users',
+        heading: '14. Pedestrians and Vulnerable Road Users',
         body: `When dealing with junctions, you must always look out for pedestrians and other vulnerable road users.
 
   Be especially aware of:
@@ -1202,7 +1205,7 @@ Correct use of signals helps other road users anticipate your intentions, reduce
   If pedestrians have started to cross the road you are turning into, you must give way.`
       },
       {
-        heading: '14. Common Hazards at Junctions',
+        heading: '15. Common Hazards at Junctions',
         body: `Common hazards you may encounter at junctions include:
 
   • Parked vehicles blocking your view.
@@ -1215,10 +1218,11 @@ Correct use of signals helps other road users anticipate your intentions, reduce
   Always approach junctions expecting the unexpected and be prepared to stop.`
       },
       {
-        heading: '15. Summary',
+        heading: '16. Summary',
         body: `Safe use of junctions requires:
 
-  • Correct application of the MSM routine, expanded into MSPSL so that the manoeuvre stage is broken down into Position, Speed and Look.
+      • Correct application of the MSM routine (Mirror, Signal, Manoeuvre).
+      • Using the extended MSPSL routine (Mirror, Signal, Position, Speed, Look) for junctions.
   • Flexible and effective observation using LADA (Look, Assess, Decide, Act) instead of a fixed "right–left–right" pattern.
   • Proper positioning, including maintaining the normal driving position (centre of your lane) when turning left.
   • Good speed control and early gear selection.
