@@ -979,7 +979,7 @@ Correct use of signals helps other road users anticipate your intentions, reduce
         heading: '1. Junctions – Overview',
         body: `Junctions are places where roads meet. They are one of the most common hazards drivers face and require careful observation, judgement, speed control and positioning.
 
-Safe use of junctions relies on the MSPSL routine (Mirror, Signal, Position, Speed, Look) together with the LADA routine (Look, Assess, Decide, Act) when observing.`
+Safe use of junctions relies on the MSM/PSL routine (Mirror, Signal, Manoeuvre)(Position, Speed, Look). Simple known as MSPSL (Mirror, Signal, Position, Speed, Look) together with the LADA routine (Look, Assess, Decide, Act) when observing.`
       },
       {
         heading: '2. Types of Junctions',
