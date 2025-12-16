@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, FileText } from 'lucide-react';
+import { ArrowLeft, FileText, Volume2, X } from 'lucide-react';
+import SectionAudioPlayer from '@/components/learning/SectionAudioPlayer';
 
 const courseWorkContent = {
   1: {
@@ -1208,6 +1209,24 @@ export default function CourseWorkDetail() {
   const urlParams = new URLSearchParams(window.location.search);
   const itemId = parseInt(urlParams.get('id'));
   const content = courseWorkContent[itemId];
+  const [showAudioHint, setShowAudioHint] = useState(() => {
+    const hasSeenHint = localStorage.getItem('audio_hint_seen');
+    return !hasSeenHint && localStorage.getItem('enable_audio_reading') !== 'false';
+  });
+  const [currentPlayingSection, setCurrentPlayingSection] = useState(null);
+
+  const handleSectionPlay = (sectionId) => {
+    // Pause any other playing audio
+    if (currentPlayingSection && currentPlayingSection !== sectionId) {
+      window.speechSynthesis.cancel();
+    }
+    setCurrentPlayingSection(sectionId);
+  };
+
+  const dismissAudioHint = () => {
+    setShowAudioHint(false);
+    localStorage.setItem('audio_hint_seen', 'true');
+  };
 
   if (!content) {
     return (
@@ -1243,11 +1262,38 @@ export default function CourseWorkDetail() {
           <p className="text-slate-500 text-sm">Last updated: December 2025</p>
         </div>
 
+        {showAudioHint && (
+          <Card className="border-[#F7B602] bg-amber-50 mb-6">
+            <CardContent className="p-4 flex items-start gap-3">
+              <Volume2 className="w-5 h-5 text-[#071739] mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-slate-700">
+                  You can tap the audio icon under each heading to listen to this content being read aloud.
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={dismissAudioHint}
+                className="h-6 w-6 p-0 flex-shrink-0"
+                aria-label="Dismiss hint"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         <Card className="border-0 shadow-sm mb-6">
           <CardContent className="p-8 space-y-8">
             {content.sections.map((section, index) => (
-              <div key={index}>
+              <div key={index} id={`section-${index}`}>
                 <h2 className="text-xl font-bold text-[#071739] mb-4">{section.heading}</h2>
+                <SectionAudioPlayer 
+                  text={section.body} 
+                  sectionId={`section-${index}`}
+                  onPlay={handleSectionPlay}
+                />
                 <div className="text-slate-700 whitespace-pre-line leading-relaxed">
                   {section.body}
                 </div>
