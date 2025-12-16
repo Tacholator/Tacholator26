@@ -1590,6 +1590,202 @@ To do this well, you must:
 Good judgement and calm, considerate behaviour are essential for meeting and dealing with other traffic safely and for passing the DVSA practical test.`
       }
     ]
+  },
+  13: {
+    title: 'Crossroads',
+    sections: [
+      {
+        heading: '1. Crossroads – Overview',
+        body: `A crossroads is a junction where two roads cross each other. Crossroads can be controlled or uncontrolled, simple or complex, and they require strong observation, clear signalling, correct positioning and the use of both MSM and MSPSL routines.
+
+Because several streams of traffic can meet at the same point, crossroads are considered one of the more challenging junction types for learners.
+
+Safe driving at crossroads involves:
+- Knowing who has priority.
+- Using effective observation (LADA).
+- Placing the vehicle correctly.
+- Timing signals properly.
+- Judging safe gaps in traffic.`
+      },
+      {
+        heading: '2. Types of Crossroads',
+        body: `2.1 Controlled Crossroads
+- Controlled by traffic lights, Stop signs, Give Way signs or clear road markings.
+- You must obey signals and markings, even if other drivers do not.
+
+2.2 Uncontrolled (Unmarked) Crossroads
+- No signs or road markings to show priority.
+- No one has automatic priority.
+- Drivers must slow down, observe carefully and proceed only when it is clearly safe.
+
+2.3 Marked Priority Crossroads
+- Signs and markings show a major road and one or more minor roads.
+- Traffic on the major road normally has priority.
+- Drivers on minor roads must give way, as indicated by signs and lines.
+
+2.4 Staggered Crossroads
+- The side roads do not line up directly opposite each other.
+- May be staggered left–right or right–left.
+- Follow lane markings carefully and give way where required.
+- Take extra care not to cut across oncoming traffic when crossing from one side road to another.`
+      },
+      {
+        heading: '3. MSM and MSPSL at Crossroads',
+        body: `Crossroads require careful use of both MSM and MSPSL routines.
+
+MSM – Mirror, Signal, Manoeuvre
+- Use the MSM routine whenever you approach a crossroads, change lanes or turn left or right.
+- Mirrors: Check interior and appropriate door mirrors to see what is behind and alongside.
+- Signal: Signal in good time if it will help or inform others.
+- Manoeuvre: Carry out your intended action only when it is safe.
+
+MSPSL – Mirror, Signal, Position, Speed, Look
+- At crossroads, break the Manoeuvre stage into MSPSL for more detailed control:
+  - Mirror – Check mirrors on approach.
+  - Signal – Indicate your intentions early enough.
+  - Position – Move into the correct lane or position for going ahead, turning left or turning right.
+  - Speed – Slow down in good time and select the correct gear.
+  - Look – Use the LADA routine (Look, Assess, Decide, Act) to check all directions before proceeding.
+
+MSM gives you the overall structure; MSPSL helps you manage the details of the manoeuvre at crossroads.`
+      },
+      {
+        heading: '4. Observations at Crossroads – Using LADA',
+        body: `Crossroads require wider and more flexible observation than simple T-junctions because traffic can come from ahead, behind, both sides and diagonally.
+
+Use LADA – Look, Assess, Decide, Act:
+
+L – Look
+- Look in all directions that are relevant to the crossroads.
+- Do not rely on a fixed pattern – look where danger is greatest first.
+- Scan for:
+  - Oncoming traffic turning right.
+  - Vehicles emerging from minor roads.
+  - Pedestrians crossing in any direction.
+  - Cyclists and motorcyclists near the junction.
+
+A – Assess
+- Assess who has priority from the signs and markings.
+- Assess the speed and distance of approaching traffic.
+- Consider visibility, road layout and any obstructions.
+
+D – Decide
+- Decide whether it is safe to proceed, whether you should wait or whether you need to move slightly forward to improve your view (creep and peep).
+- Choose a safe gap in the traffic if you are crossing or turning.
+
+A – Act
+- Carry out your decision calmly and smoothly.
+- If it is safe, complete the turn or go ahead through the crossroads.
+- If not safe, hold back and reassess.
+
+LADA helps you adapt your observation to each specific crossroads rather than using a rigid fixed sequence.`
+      },
+      {
+        heading: '5. Turning Right at Crossroads',
+        body: `Right turns at crossroads can be challenging because your path often crosses the path of oncoming traffic.
+
+5.1 Offside-to-Offside Turning (Most Common and Safer)
+- The two right-turning vehicles turn behind each other.
+- This usually provides a clear view of oncoming traffic.
+- Commonly used where road markings or layout support this method.
+
+5.2 Nearside-to-Nearside Turning
+- The two right-turning vehicles turn in front of each other.
+- This may be required by markings or road design.
+- It can reduce your view of oncoming traffic and make judging other vehicles' movements more difficult.
+
+When turning right at crossroads:
+- Use MSM and MSPSL on approach.
+- Position correctly for the right turn.
+- Use LADA to observe oncoming traffic, vehicles opposite that are also turning, and pedestrians.
+- Do not commit to the turn until you are sure the path is clear and it is safe.`
+      },
+      {
+        heading: '6. Going Ahead at a Crossroad',
+        body: `Even when going straight ahead at a crossroads, you must not assume it is automatically safe.
+
+- Use MSM and MSPSL on approach.
+- Observe carefully using LADA:
+  - Look for vehicles emerging from side roads.
+  - Check for vehicles on the opposite side turning right across your path.
+  - Watch for pedestrians crossing either road.
+- Be ready to slow down or stop if another road user makes an unexpected move.
+
+Going straight ahead can still carry risk, especially at unmarked or complex crossroads.`
+      },
+      {
+        heading: '7. Turning Left at Crossroads',
+        body: `Turning left at a crossroads should still be treated with care.
+
+Approach
+- Use MSM: check mirrors and signal left in good time.
+- Maintain your normal driving position in the centre of your lane.
+
+At the Crossroad
+- Reduce your speed and select the correct gear.
+- Use LADA to look for:
+  - Pedestrians crossing the road you are turning into.
+  - Cyclists on your left.
+  - Vehicles on the major road.
+
+Turn
+- Turn into the new road without cutting the corner or drifting wide.
+- Check your mirrors after the turn and continue to adjust your speed as needed.`
+      },
+      {
+        heading: '8. Priority at Crossroads',
+        body: `Priority at crossroads depends on road signs, road markings, traffic lights and the layout of the roads.
+
+General rules:
+- Follow traffic lights, Stop signs and Give Way markings.
+- Traffic on the major road usually has priority over side roads.
+- At unmarked crossroads, no one has automatic priority – all drivers must proceed with great caution.
+- Never assume that other drivers will follow the rules.
+
+Even if you appear to have priority, you must always be prepared to slow down or stop if another road user behaves unexpectedly.`
+      },
+      {
+        heading: '9. Common Hazards at Crossroads',
+        body: `Common hazards at crossroads include:
+
+- Drivers failing to signal or signalling incorrectly.
+- Vehicles turning right across your path unexpectedly.
+- Cyclists and motorcyclists approaching from blind spots.
+- Pedestrians crossing diagonally across the junction.
+- Parked vehicles reducing visibility near the junction.
+- Vehicles emerging from minor roads without stopping.
+
+You must reduce your speed on approach, observe carefully and be ready to react to any of these hazards.`
+      },
+      {
+        heading: '10. Hesitation and Stalling at Crossroads',
+        body: `If you feel unsure at a crossroads, it is safer to wait and reassess.
+
+- Do not move into the junction unless you are sure it is safe.
+- If visibility is poor, use "creep and peep" to improve your view while staying in control.
+
+If the engine stalls:
+- Stay calm.
+- Apply the handbrake if necessary.
+- Restart the engine safely.
+- Reapply MSM and MSPSL before attempting to move off again.
+
+Examiners look for safe decisions more than speed of decision-making.`
+      },
+      {
+        heading: '11. Summary',
+        body: `Safe use of crossroads requires:
+
+- Correct use of MSM (Mirror, Signal, Manoeuvre) on approach.
+- Detailed control using MSPSL (Mirror, Signal, Position, Speed, Look).
+- Flexible and effective observation using LADA (Look, Assess, Decide, Act).
+- Understanding of different crossroads layouts and priority rules.
+- Careful judgement of gaps when turning right or crossing traffic.
+- Awareness of hazards from all directions.
+
+By applying MSM, MSPSL and LADA together, you can approach and drive through crossroads safely and confidently in line with DVSA standards.`
+      }
+    ]
   }
 };
 
