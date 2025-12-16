@@ -1408,6 +1408,188 @@ Following too closely reduces your time to react and greatly increases the risk 
 A good driver always chooses the right speed for the situation, not simply the maximum allowed by the speed limit.`
       }
     ]
+  },
+  12: {
+    title: 'Meeting and Dealing With Other Traffic',
+    sections: [
+      {
+        heading: '1. Meeting and Dealing With Other Traffic – Overview',
+        body: `When driving, you will regularly meet oncoming vehicles, overtake slower traffic, pass parked cars and negotiate narrow roads. Safe interaction with other road users is essential to avoid collisions, keep traffic flowing and demonstrate good judgement.
+
+Meeting traffic safely requires:
+- Good observation.
+- Anticipation.
+- Clear communication.
+- Correct positioning.
+- Appropriate use of speed.
+
+This is especially important on narrow roads, in busy urban areas, on rural lanes and wherever space is limited.`
+      },
+      {
+        heading: '2. Key Principles When Meeting Other Traffic',
+        body: `2.1 Be Prepared to Give Way
+- Even if you believe you have priority, you must be ready to slow down, move to the left or stop.
+- Cooperation keeps everyone safe and helps avoid confrontation.
+
+2.2 Use Good Observation
+- Look well ahead for oncoming vehicles and potential hazards.
+- Watch for parked cars narrowing the road.
+- Look for pedestrians, cyclists and animals.
+- Check for road narrowing signs, traffic calming measures and blind bends.
+
+2.3 Anticipate the Actions of Others
+- Expect vehicles to appear suddenly on narrow or rural roads.
+- Anticipate pedestrians stepping out from between parked cars.
+- Allow for cyclists wobbling or moving away from the kerb.
+- Be prepared for other drivers misjudging gaps or speed.
+
+2.4 Keep an Appropriate Speed
+- Avoid driving too fast for the conditions.
+- Drive slowly enough that you can stop safely if needed.
+- Slower speeds give you more time to think and react when meeting other traffic.`
+      },
+      {
+        heading: '3. Meeting Traffic on Narrow Roads',
+        body: `Narrow roads require extra care, patience and cooperation.
+
+3.1 Use Passing Places
+- On rural or single-track roads, use designated passing places to allow oncoming vehicles to pass.
+- Pull into a passing place on your left when safe.
+- If the passing place is on your right, wait opposite it rather than crossing the road.
+- Acknowledge other drivers who give way with a simple hand gesture or nod.
+
+3.2 Give Way if You Reach the Obstruction First
+- If parked vehicles or roadworks narrow the road, the driver who reaches the obstruction first should normally give way.
+- The driver with a clear path has priority, but both drivers should be prepared to cooperate.
+- Do not force your way through tight gaps.
+
+3.3 Priority Signs
+- Look for signs showing priority:
+  - "Priority over oncoming traffic".
+  - "Give priority to oncoming traffic".
+- Obey the signs, even if other drivers do not.
+- Always proceed with caution.`
+      },
+      {
+        heading: '4. Passing Parked Cars and Static Hazards',
+        body: `Parked vehicles and other static hazards often reduce road width and create potential conflicts with oncoming traffic.
+
+4.1 Use MSM and PSL
+- Mirrors: Check behind to see if anyone is following or overtaking.
+- Signal: Indicate if it will help or inform other road users.
+- Position: Move out gradually to give space from parked cars.
+- Speed: Slow down if visibility or space is limited.
+- Look: Scan ahead for oncoming vehicles, pedestrians and cyclists.
+
+4.2 Maintain a Safety Margin
+- Leave enough room from parked cars to allow for doors opening suddenly.
+- Watch for pedestrians, especially children, stepping out between vehicles.
+
+4.3 Avoid Forcing Oncoming Traffic to Brake
+- If oncoming traffic is approaching and there is not enough room for both, slow down or stop and let them pass first.
+- Be prepared to wait behind parked cars to create a safe passing gap.
+
+4.4 Watch for Vulnerable Road Users
+- Look for cyclists filtering between parked vehicles.
+- Look for people loading or unloading vehicles.
+- Take extra care near schools, shops and bus stops.`
+      },
+      {
+        heading: '5. Dealing With Oncoming Traffic',
+        body: `5.1 Judge the Space Early
+- Look well ahead to assess whether there is enough room for you and an oncoming vehicle to pass safely.
+- Decide early whether you need to slow, move left or stop.
+
+5.2 Adjust Your Position
+- Move closer to the left where safe to create more space between you and oncoming traffic.
+- Avoid driving too close to the kerb or drains.
+- Do not attempt to squeeze through gaps that are too small.
+
+5.3 Communicate Clearly
+- Use signals only when they are necessary and helpful.
+- Use gentle hand gestures or eye contact (where appropriate) to acknowledge other drivers.
+- Do not flash your headlights or wave people on if you are not sure it is safe – this can confuse or mislead other road users.
+
+Staying calm and patient will help you share the road safely.`
+      },
+      {
+        heading: '6. Overtaking and Passing Slower Traffic',
+        body: `Overtaking and passing slower traffic must be done with great care.
+
+6.1 Before Overtaking – MSM and LADA
+- Check mirrors to see what is behind.
+- Signal if it will help or inform others.
+- Use LADA (Look, Assess, Decide, Act):
+  - Look ahead for oncoming traffic and hazards.
+  - Assess whether the road is long and clear enough.
+  - Decide if it is safe to overtake.
+  - Act only when fully safe.
+
+6.2 Assess the Road Ahead
+- Do not overtake if there is:
+  - A bend ahead.
+  - A junction nearby.
+  - A hidden dip or hill crest.
+  - Oncoming traffic too close.
+  - Solid white lines or other restrictions.
+
+6.3 Overtake Only When Safe
+- Give plenty of space when passing another vehicle.
+- Complete the overtake smoothly.
+- Move back into lane only when you can see the vehicle you have overtaken in your interior mirror.
+
+6.4 Overtaking Cyclists
+- Allow at least 1.5 metres when overtaking cyclists at speeds up to 30 mph.
+- Leave more space at higher speeds.
+- Be patient and wait for a safe opportunity if the road is narrow.`
+      },
+      {
+        heading: '7. Dealing With Large Vehicles',
+        body: `Large vehicles such as buses and lorries need more room to manoeuvre and take longer to stop.
+
+7.1 Give Them Space
+- Do not cut in front of large vehicles after overtaking.
+- Leave extra stopping distance when following them.
+- Expect them to swing out wide, particularly when turning left.
+
+7.2 Be Cautious When Overtaking
+- Large vehicles can hide oncoming traffic from view.
+- You need a longer, completely clear stretch of road to overtake safely.
+- Never overtake near junctions, bends or hill crests.`
+      },
+      {
+        heading: '8. Meeting Pedestrians, Cyclists and Horses',
+        body: `Vulnerable road users require extra care, especially when road space is shared.
+
+8.1 Pedestrians
+- Slow down when pedestrians are close to the road.
+- Be prepared to stop if they step out unexpectedly.
+
+8.2 Cyclists
+- Give cyclists plenty of room when passing.
+- Do not squeeze past in narrow spaces.
+- Be patient, especially near junctions, roundabouts and on narrow roads.
+
+8.3 Horses
+- Pass horses very slowly and give them a wide berth.
+- Avoid revving the engine or sounding the horn.
+- Follow any signals given by the rider if safe to do so.`
+      },
+      {
+        heading: '9. Summary',
+        body: `Meeting and dealing with other traffic is about sharing the road safely and respectfully.
+
+To do this well, you must:
+- Observe early and look well ahead for hazards.
+- Adjust your speed to allow safe passing and stopping.
+- Use the MSM routine (Mirror, Signal, Manoeuvre) and LADA (Look, Assess, Decide, Act).
+- Cooperate with other drivers by giving way when necessary.
+- Maintain safe space around your vehicle, especially near parked cars and narrow roads.
+- Take extra care around vulnerable road users such as pedestrians, cyclists and horse riders.
+
+Good judgement and calm, considerate behaviour are essential for meeting and dealing with other traffic safely and for passing the DVSA practical test.`
+      }
+    ]
   }
 };
 
