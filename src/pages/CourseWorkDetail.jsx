@@ -1214,20 +1214,20 @@ By combining MSPSL with LADA, you can approach, assess and drive through junctio
 - How much control you have over the vehicle.
 - The safety of other road users.
 
-Drivers must always travel at a speed that is **safe, legal and appropriate** for the road, traffic and weather conditions.
+Drivers must always travel at a speed that is safe, legal and appropriate for the road, traffic and weather conditions.
 
-The speed limit is **not a target** – it is the maximum permitted in ideal conditions. You must use judgement to decide what speed is actually safe.`
+The speed limit is not a target – it is the maximum permitted in ideal conditions. You must use judgement to decide what speed is actually safe.`
       },
       {
         heading: '2. The Three Golden Rules of Speed',
-        body: `**2.1 Safe Speed**
+        body: `2.1 Safe Speed
 - Travel at a speed that allows you to stop safely within the distance you can see to be clear.
 
-**2.2 Legal Speed**
+2.2 Legal Speed
 - Never exceed the posted speed limit.
 - Remember that limits vary by road type, vehicle type and local restrictions.
 
-**2.3 Appropriate Speed**
+2.3 Appropriate Speed
 - Even if the speed limit is high, conditions may require you to drive much slower.
 - Reduce speed for:
   - Heavy traffic.
@@ -1242,7 +1242,7 @@ Good drivers constantly adjust their speed to suit the situation.`
         heading: '3. Factors That Affect Your Speed Choice',
         body: `Your speed should always reflect the conditions around you.
 
-**3.1 Road Conditions**
+3.1 Road Conditions
 - Wet, icy or muddy roads.
 - Poor or uneven road surfaces.
 - Sharp bends and narrow roads.
@@ -1250,7 +1250,7 @@ Good drivers constantly adjust their speed to suit the situation.`
 
 Slippery or uneven roads require slower speeds.
 
-**3.2 Visibility**
+3.2 Visibility
 - Fog, heavy rain or spray.
 - Darkness or low sun.
 - Blind summits and sharp bends.
@@ -1258,7 +1258,7 @@ Slippery or uneven roads require slower speeds.
 
 If you cannot see clearly, you must reduce speed.
 
-**3.3 Traffic Conditions**
+3.3 Traffic Conditions
 - Heavy or slow-moving traffic.
 - Pedestrians near or crossing the road.
 - Cyclists or motorcyclists nearby.
@@ -1267,7 +1267,7 @@ If you cannot see clearly, you must reduce speed.
 
 More hazards mean a lower, more cautious speed.
 
-**3.4 Vehicle Condition**
+3.4 Vehicle Condition
 - Tyre grip and tread depth.
 - Braking performance.
 - Weight of the vehicle and load.
@@ -1279,36 +1279,36 @@ Poor vehicle condition reduces control and increases stopping distances.`
         heading: '4. Speed Limits',
         body: `Speed limits are set to promote safety based on road type, environment and typical hazards.
 
-**Common UK speed limits for cars (for guidance):**
-- **20 mph** – Residential streets, school areas and some busy urban roads.
-- **30 mph** – Most built-up areas with street lighting (unless signed otherwise).
-- **40 or 50 mph** – Some urban or suburban main roads.
-- **60 mph** – National speed limit on single carriageways.
-- **70 mph** – National speed limit on dual carriageways and motorways.
+Common UK speed limits for cars (for guidance):
+- 20 mph – Residential streets, school areas and some busy urban roads.
+- 30 mph – Most built-up areas with street lighting (unless signed otherwise).
+- 40 or 50 mph – Some urban or suburban main roads.
+- 60 mph – National speed limit on single carriageways.
+- 70 mph – National speed limit on dual carriageways and motorways.
 
 Always look for:
 - Speed limit signs.
 - Changes in road type and environment.
 - Street lights (which often indicate a 30 mph limit unless otherwise signed).
 
-Remember: the correct speed may be **below** the limit if conditions require it.`
+Remember: the correct speed may be below the limit if conditions require it.`
       },
       {
         heading: '5. Stopping Distances and Reaction Time',
         body: `Speed has a huge effect on how long it takes you to stop.
 
-**Stopping distance = Thinking distance + Braking distance**
+Stopping distance = Thinking distance + Braking distance
 
-- **Thinking distance** is how far you travel while you react and move your foot to the brake.
-- **Braking distance** is how far you travel from when you start braking until the car stops.
+- Thinking distance is how far you travel while you react and move your foot to the brake.
+- Braking distance is how far you travel from when you start braking until the car stops.
 
 As speed increases:
 - Thinking distance increases in a straight line with speed.
 - Braking distance increases much more sharply (it can more than double).
 
 For example (approximate figures in good conditions):
-- At **30 mph**, typical stopping distance is around **23 metres**.
-- At **60 mph**, typical stopping distance is around **73 metres**.
+- At 30 mph, typical stopping distance is around 23 metres.
+- At 60 mph, typical stopping distance is around 73 metres.
 
 Wet, icy or poor road surfaces, worn tyres or poor brakes will all increase stopping distance.`
       },
@@ -1364,17 +1364,17 @@ Smooth driving:
         heading: '9. Speed on Different Road Types',
         body: `Speed choice varies with the type of road you are using.
 
-**Urban Roads**
+Urban Roads
 - Many hazards such as pedestrians, cyclists, buses and parked cars.
 - Expect frequent stops, junctions and crossings.
 - Often safer to drive well below the limit, especially in busy or narrow streets.
 
-**Rural Roads**
+Rural Roads
 - May have higher limits but more hidden dangers.
 - Expect sharp bends, blind summits, animals, tractors and uneven surfaces.
 - It is often safer to drive well below the national speed limit.
 
-**Dual Carriageways and Motorways**
+Dual Carriageways and Motorways
 - Designed for higher speeds.
 - You must maintain larger gaps to vehicles in front.
 - Stay within the speed limit and adjust speed for weather, visibility and traffic flow.`
@@ -1383,13 +1383,13 @@ Smooth driving:
         heading: '10. Speed and Following Distance',
         body: `Your speed is closely linked to how much space you need around your vehicle.
 
-Use the **two-second rule** in good conditions:
+Use the two-second rule in good conditions:
 - Watch the vehicle in front pass a fixed point (e.g. a sign or lamppost).
 - Say "Only a fool breaks the two-second rule" at a normal pace.
 - If you pass the same point before you finish the phrase, you are too close.
 
 In poor conditions:
-- **Double** the gap in rain or when the road is wet.
+- Double the gap in rain or when the road is wet.
 - Leave a much larger gap in snow, ice or fog.
 
 Following too closely reduces your time to react and greatly increases the risk of a collision.`
@@ -1405,7 +1405,7 @@ Following too closely reduces your time to react and greatly increases the risk 
 - Reducing speed early when hazards increase, such as at junctions, crossings and bends.
 - Understanding that higher speed greatly increases stopping distance and the severity of collisions.
 
-A good driver always chooses **the right speed for the situation**, not simply the maximum allowed by the speed limit.`
+A good driver always chooses the right speed for the situation, not simply the maximum allowed by the speed limit.`
       }
     ]
   }
