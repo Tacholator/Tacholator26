@@ -1786,6 +1786,224 @@ Examiners look for safe decisions more than speed of decision-making.`
 By applying MSM, MSPSL and LADA together, you can approach and drive through crossroads safely and confidently in line with DVSA standards.`
       }
     ]
+  },
+  14: {
+    title: 'Roundabouts',
+    sections: [
+      {
+        heading: '1. Roundabouts – Overview',
+        body: `Roundabouts allow traffic from multiple roads to merge, cross or change direction without necessarily stopping. They improve traffic flow and reduce the severity of collisions but require strong observation, lane discipline and correct use of signals.
+
+The key rule is:
+- Give priority to traffic approaching from your immediate right, unless road signs, traffic lights or markings indicate otherwise.
+
+Roundabouts vary in size and complexity, from mini roundabouts to large multi-lane or signal-controlled roundabouts. On all of them you must use MSM (Mirror, Signal, Manoeuvre), MSPSL (Mirror, Signal, Position, Speed, Look) and LADA (Look, Assess, Decide, Act).`
+      },
+      {
+        heading: '2. Priority at Roundabouts',
+        body: `2.1 Standard Priority Rule
+- Before you enter a roundabout, you normally give way to traffic approaching from your immediate right.
+- You should keep moving if the way is clear and it is safe to do so, rather than stopping unnecessarily.
+
+2.2 When Priority May Change
+In some cases, the usual rule changes:
+- There may be Give Way signs or lines on the roundabout itself, requiring traffic already on the roundabout to give way to entering traffic.
+- Traffic lights (sometimes part-time) may control priority.
+- Lane priority arrows or markings may give priority to certain lanes.
+
+Always obey:
+- Road signs.
+- Road markings.
+- Traffic signals.
+
+These override the normal "give way to the right" rule.`
+      },
+      {
+        heading: '3. MSM and MSPSL on Approach',
+        body: `Approaching a roundabout requires early planning and correct use of routines.
+
+MSM – Mirror, Signal, Manoeuvre
+- Mirror – Check interior and door mirrors early to see what is behind and alongside you.
+- Signal – Indicate your intentions if it will help other road users.
+- Manoeuvre – This is broken down further using MSPSL.
+
+MSPSL – Mirror, Signal, Position, Speed, Look
+- Mirror – Check again as you get closer.
+- Signal – Use the correct signal for your intended exit (see later sections).
+- Position – Choose the correct approach lane in good time and avoid straddling lanes.
+- Speed – Slow down progressively and select the right gear (often 2nd gear, sometimes 1st if very busy).
+- Look – Use the LADA routine to judge whether it is safe to enter.
+
+Always use MSM and MSPSL when approaching any roundabout.`
+      },
+      {
+        heading: '4. Approaching a Roundabout',
+        body: `On approach:
+- Look well ahead for advance warning signs showing the layout of the roundabout and the exits.
+- Use the sign and any lane diagrams or route numbers to select the most suitable lane.
+- Look for lane direction arrows on the road surface.
+
+Key points:
+- Get into the correct lane in good time.
+- Do not straddle lanes.
+- Avoid changing lanes at the last moment.
+- Where possible, look across the roundabout and identify the exit you intend to take so you can plan your path through safely.`
+      },
+      {
+        heading: '5. Observation at Roundabouts – LADA',
+        body: `Because traffic comes from several directions, strong and flexible observation is essential.
+
+Use LADA – Look, Assess, Decide, Act:
+
+L – Look
+- Look to the right to check for traffic already on the roundabout.
+- Look ahead for vehicles circulating or changing lanes.
+- Look left for vehicles or pedestrians near your entry and exit points.
+- Look across the roundabout to anticipate movements that may affect your exit.
+
+A – Assess
+- Assess the speed and distance of approaching traffic.
+- Assess the size of gaps.
+- Note lane markings and signals.
+- Look out for vulnerable road users (cyclists, motorcyclists, pedestrians).
+
+D – Decide
+- Decide whether it is safe to enter.
+- Decide if you need to adjust speed or wait.
+- Decide which lane you must be in to follow your route.
+
+A – Act
+- If safe, enter smoothly and maintain lane discipline.
+- If not safe, hold back at the give way line and reassess.
+
+Never rush the decision to enter a roundabout – it must always be based on careful observation and assessment.`
+      },
+      {
+        heading: '6. Lane Selection and General Procedure',
+        body: `Unless signs or road markings say otherwise, use these general rules:
+
+Turning Left (First Exit)
+- Signal left on approach.
+- Approach in the left-hand lane.
+- Keep in the left lane on the roundabout.
+- Maintain your left signal through the roundabout until you exit.
+
+Going Straight Ahead
+- No signal is normally required on approach.
+- Approach in the left-hand lane. If this is blocked, use the lane next to it if permitted.
+- Keep to your selected lane on the roundabout.
+- As you pass the exit just before the one you intend to take:
+  - Check your interior and left door mirrors.
+  - Signal left.
+- Exit smoothly.
+
+Turning Right or Going Full Circle
+- Signal right as you approach.
+- Approach in the right-hand lane.
+- Keep to that lane on the roundabout and maintain your right signal.
+- As you pass the exit just before the one you intend to take:
+  - Check your interior and left door mirrors.
+  - Signal left.
+- Move left only when it is safe and exit.
+
+More Than Three Lanes
+- Where there are more than three lanes, use the most appropriate lane for your intended exit based on signs and road markings.
+- Follow lane arrows and markings exactly.
+
+Important: When using the right-hand lane to go ahead or turn right, be especially aware of traffic in the lane to your left, as they may change lane or leave unexpectedly.`
+      },
+      {
+        heading: '7. Defensive Driving on Roundabouts',
+        body: `Defensive driving means anticipating errors by other road users and protecting yourself.
+
+On roundabouts:
+- Watch the vehicle in front carefully as you are about to enter.
+- Do not assume that the driver ahead will keep moving – they may stop suddenly while you are still looking to the right.
+- Many rear-end collisions occur because the following driver assumes the vehicle ahead will continue.
+- Make sure the vehicle in front has actually moved away and the space is clear before you commit to moving.
+
+Stay calm, patient and prepared to wait for a safer gap if needed.`
+      },
+      {
+        heading: '8. Hazards at Roundabouts',
+        body: `Roundabouts can be particularly hazardous. While negotiating them, take extra care to watch for:
+
+- Pedestrians: crossings are often located near the entrances and exits. Even where there are no formal crossings, pedestrians may try to cross the road at the junction.
+- Cyclists and horse riders: they may stay in the left lane even when turning right. Allow them plenty of room and do not cut across their path.
+- Motorcyclists and cyclists: they can be difficult to see, especially when they are in blind spots or moving between lanes.
+- Long vehicles: because of their length, they may take a different line or straddle lanes on approach and while going round. Watch their signals and allow for the path of the rear of the vehicle.
+- All vehicles: be prepared for others to cross your path when leaving by the next exit. Always look for signals and position changes.
+- Road surface: road surfaces can be polished and slippery, especially when wet. Avoid harsh braking or sharp acceleration while on the roundabout.`
+      },
+      {
+        heading: '9. Mini Roundabouts',
+        body: `Mini roundabouts should be approached in the same way as larger roundabouts:
+- Slow down.
+- Be prepared to give way to traffic from the right.
+
+However, mini roundabouts give you less time and space to signal and manoeuvre.
+
+Key points:
+- Vehicles coming towards you may want to turn right – you must give way to them if they are on your right.
+- Make sure any vehicle already on the roundabout is actually leaving it before you join.
+- Beware of drivers using the mini roundabout to perform a U-turn.
+- You must drive around the central markings unless you are driving a large vehicle or towing a trailer that cannot do so.
+- Try to avoid making a U-turn yourself, but be aware others may do this.
+
+Always treat mini roundabouts with extra care and reduce your speed accordingly.`
+      },
+      {
+        heading: '10. Double Mini Roundabouts',
+        body: `At double mini roundabouts, two or more mini roundabouts are placed close together.
+
+- Treat each mini roundabout separately.
+- At each one, give way to traffic from your right.
+- Take careful all-round observation before entering each roundabout.
+- Look well ahead for direction signs to help you position correctly and choose the correct lane.
+
+Because decisions must be made quickly, you must stay calm, plan ahead and use LADA at each stage.`
+      },
+      {
+        heading: '11. Spiral Roundabouts',
+        body: `Spiral roundabouts differ from standard roundabouts because the lanes spiral outwards and each lane is usually marked for a specific exit.
+
+On spiral roundabouts:
+- Make sure you are in the correct lane before you enter the roundabout.
+- Follow the lane arrows and road markings to your exit – do not cut across lanes.
+- Be aware that some drivers may try to move into your lane unexpectedly.
+
+If you need to change lanes:
+- Check mirrors and blind spots carefully.
+- Signal if it will help or inform others.
+- Change lane smoothly only when it is clearly safe.
+
+If you follow the spiral lanes and markings correctly, they will guide you safely to the appropriate exit.`
+      },
+      {
+        heading: '12. Multiple Roundabout Systems',
+        body: `At some complex junctions, a large roundabout may incorporate a series of mini roundabouts at the intersections.
+
+- Each mini roundabout follows the normal rules, with traffic travelling clockwise.
+- Traffic moving around the central route may appear to flow differently depending on the design.
+- Lanes, signs and road markings give directions, but these junctions require a high level of care and concentration.
+
+Look for direction signs well in advance, choose the correct lane early and use MSM, MSPSL and LADA throughout.`
+      },
+      {
+        heading: '13. Summary',
+        body: `To use roundabouts safely and confidently you must:
+
+- Apply MSM and MSPSL on every approach.
+- Use LADA (Look, Assess, Decide, Act) for all observation and decision-making.
+- Get into the correct lane in good time and avoid last-minute changes.
+- Give way to traffic from the right unless signs, markings or signals say otherwise.
+- Signal correctly on approach and when exiting.
+- Maintain lane discipline and adjust your speed to the flow of traffic.
+- Take extra care around pedestrians, cyclists, motorcyclists, horse riders and large vehicles.
+
+Roundabouts are a key part of everyday driving and a major focus of the DVSA practical test. Mastering them shows that you can plan ahead, cooperate with others and drive safely in complex traffic situations.`
+      }
+    ]
   }
 };
 
