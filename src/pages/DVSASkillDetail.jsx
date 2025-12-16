@@ -291,10 +291,39 @@ export default function DVSASkillDetail() {
           <TabsContent value="material">
             <Card className="border-0 shadow-sm">
               <CardContent className="p-6">
-                <div className="text-center py-12 text-slate-400">
-                  <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Study material coming soon</p>
-                </div>
+                {user?.role === 'admin' ? (
+                  materialContent ? (
+                    <StudyMaterial
+                      content={materialContent}
+                      onProgress={handleMaterialProgress}
+                      isComplete={assignment?.hasOpenedMaterial}
+                    />
+                  ) : (
+                    <div className="text-center py-12 text-slate-400">
+                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>No learning material yet</p>
+                    </div>
+                  )
+                ) : myAssignment ? (
+                  materialContent ? (
+                    <StudyMaterial
+                      content={materialContent}
+                      onProgress={handleMaterialProgress}
+                      isComplete={myAssignment.hasOpenedMaterial}
+                    />
+                  ) : (
+                    <div className="text-center py-12 text-slate-400">
+                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>No learning material available</p>
+                    </div>
+                  )
+                ) : (
+                  <div className="text-center py-12 text-slate-400">
+                    <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>This skill has not been assigned to you yet</p>
+                    <p className="text-sm mt-1">Contact your instructor to get access</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
