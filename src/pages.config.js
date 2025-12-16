@@ -22,6 +22,7 @@ import LearnerNotifications from './pages/LearnerNotifications';
 import AccountDeletionRequest from './pages/AccountDeletionRequest';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import CourseWork from './pages/CourseWork';
 import __Layout from './Layout.jsx';
 
 
@@ -50,6 +51,7 @@ export const PAGES = {
     "AccountDeletionRequest": AccountDeletionRequest,
     "TermsAndConditions": TermsAndConditions,
     "PrivacyPolicy": PrivacyPolicy,
+    "CourseWork": CourseWork,
 }
 
 export const pagesConfig = {

@@ -7,7 +7,8 @@ import {
   Users,
   GraduationCap,
   BookOpen,
-  FolderOpen
+  FolderOpen,
+  FileText
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -52,6 +53,7 @@ export const instructorOnlyLinks = [
 
 // Learner-only navigation items
 export const learnerOnlyLinks = [
+  { name: 'Course Work', icon: FileText, page: 'CourseWork' },
   { name: 'DVSA Skills', icon: BookOpen, page: 'LearnerSkills' },
   { name: 'Progress', icon: GraduationCap, page: 'LearnerProgress' },
   { name: 'Lessons', icon: Calendar, page: 'LearnerLessons' },
