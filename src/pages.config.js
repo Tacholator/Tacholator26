@@ -20,6 +20,7 @@ import LearnerChats from './pages/LearnerChats';
 import InstructorNotifications from './pages/InstructorNotifications';
 import LearnerNotifications from './pages/LearnerNotifications';
 import AccountDeletionRequest from './pages/AccountDeletionRequest';
+import TermsAndConditions from './pages/TermsAndConditions';
 import __Layout from './Layout.jsx';
 
 
@@ -46,6 +47,7 @@ export const PAGES = {
     "InstructorNotifications": InstructorNotifications,
     "LearnerNotifications": LearnerNotifications,
     "AccountDeletionRequest": AccountDeletionRequest,
+    "TermsAndConditions": TermsAndConditions,
 }
 
 export const pagesConfig = {
