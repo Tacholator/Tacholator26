@@ -1,6 +1,8 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileText } from 'lucide-react';
 
@@ -44,10 +46,16 @@ const warmColors = [
 ];
 
 export default function CourseWork() {
+  const navigate = useNavigate();
+  
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
+
+  const handleCardClick = (itemId) => {
+    navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
@@ -61,7 +69,8 @@ export default function CourseWork() {
           {courseWorkItems.map((item, index) => (
             <Card 
               key={item.id}
-              className={`${warmColors[index % warmColors.length]} border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer aspect-square flex items-center justify-center`}
+              onClick={() => handleCardClick(item.id)}
+              className={`${warmColors[index % warmColors.length]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105`}
             >
               <CardContent className="p-4 text-center w-full">
                 <div className="text-3xl font-bold text-slate-700 mb-2">{item.id}</div>
