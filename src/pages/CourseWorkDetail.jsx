@@ -598,6 +598,115 @@ In every case, you should apply the MSM and PSL routines before stopping.`
 By practising MSM and PSL every time you stop, you will develop safe habits that meet DVSA standards and help protect yourself and other road users.`
       }
     ]
+  },
+  7: {
+    title: 'Moving Off Safely – POM Routine',
+    sections: [
+      {
+        heading: '1. Moving Off Safely – Overview',
+        body: `Moving off safely means joining the traffic flow smoothly, confidently and without causing danger or inconvenience to other road users.
+
+The DVSA-approved routine for moving off is:
+
+POM – Prepare, Observe, Move
+
+This routine ensures the car is ready, all around observations are completed, and the movement itself is smooth and safe.`
+      },
+      {
+        heading: '2. P – Prepare',
+        body: `Prepare the vehicle so it is ready to move without hesitation.
+
+Manual Car:
+• Press the clutch pedal fully down.
+• Select 1st gear.
+• Apply a small amount of gas.
+• Raise the clutch to the bite point.
+• Make sure the car feels ready to move (slight engine sound change, no juddering).
+
+Automatic Car:
+• Keep your foot firmly on the brake.
+• Select D (Drive).
+• Apply gentle pressure to the accelerator if needed.
+
+The goal in the Prepare stage is to have the car fully ready so that when you release the handbrake, it moves forward smoothly and under control.`
+      },
+      {
+        heading: '3. O – Observe (6-Point Observation Check)',
+        body: `Observation is the most important part of moving off. Before you move, you must check all around the vehicle to make sure it is completely safe.
+
+Use this 6-point observation check in the following order:
+
+1. Left Blind Spot
+   • Look over your left shoulder.
+   • Check for cyclists, pedestrians or vehicles that may not appear in your mirrors.
+
+2. Left Door Mirror
+   • Check for cyclists, pedestrians or any traffic approaching on the inside.
+
+3. Ahead (Front Window)
+   • Look through the windscreen.
+   • Check for hazards, pedestrians, oncoming vehicles and changing road or traffic conditions.
+
+4. Interior Mirror
+   • Check what is directly behind you.
+   • Judge whether moving off may cause anyone to slow down or change direction.
+
+5. Right Door Mirror
+   • Look for approaching vehicles, motorbikes or cyclists coming from behind on your right.
+
+6. Right Blind Spot (Most Important)
+   • Look over your right shoulder into the blind spot.
+   • Check carefully for cyclists, motorcyclists or other vehicles that are not visible in your mirrors.
+
+If you see any road user who may be affected by your movement, you must wait until it is clearly safe.
+
+Failing to check the right blind spot before moving off is a serious fault in the driving test.`
+      },
+      {
+        heading: '4. M – Move',
+        body: `Once the car is prepared and you have completed the 6-point observation check, you can move off.
+
+Manual Car:
+• Release the handbrake smoothly.
+• Add slightly more gas as the car begins to move.
+• Raise the clutch gradually to avoid stalling.
+• Steer gently away from the kerb and into a normal driving position.
+
+Automatic Car:
+• Release the handbrake.
+• Apply gentle pressure to the accelerator.
+• Steer smoothly into the correct road position.
+
+After moving off:
+• Build up speed gradually to match the flow of traffic.
+• Cancel your signal (if used).
+• Check your mirrors again as part of normal driving.
+• Position your vehicle correctly in the lane.
+
+The movement should always be smooth, controlled and predictable.`
+      },
+      {
+        heading: '5. Summary – POM for Moving Off',
+        body: `To move off safely every time, follow the POM routine:
+
+• P – Prepare
+  • Get the car ready (gear, gas, bite point in a manual; Drive selected in an automatic).
+
+• O – Observe
+  • Complete a full 6-point observation check in this order:
+    1. Left blind spot
+    2. Left door mirror
+    3. Ahead
+    4. Interior mirror
+    5. Right door mirror
+    6. Right blind spot
+
+• M – Move
+  • Move away smoothly, under full control, without affecting other road users.
+
+Using the POM routine consistently ensures that every time you move off, you do so safely, confidently and in line with DVSA driving test standards.`
+      }
+    ]
   }
 };
 
