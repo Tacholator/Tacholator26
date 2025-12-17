@@ -2190,107 +2190,194 @@ Dual carriageways demand confidence, awareness and cooperation with other road u
     sections: [
       {
         heading: '1. Country Roads – Overview',
-        body: `Country roads are often narrow, winding roads found in rural areas. They may have high speed limits, limited visibility, and fewer road markings, which means drivers must rely heavily on observation, anticipation, and positioning. Although they can appear quiet, country roads can be unpredictable and hazardous.`
+        body: `Country roads are often narrow, winding and unpredictable. Although speed limits may be higher than in built-up areas, country roads usually contain more hidden hazards and require a high level of anticipation, observation and control.
+
+Driving safely on country roads depends on:
+• Good planning.
+• Accurate observation.
+• Correct positioning.
+• Appropriate use of speed.
+• Smooth vehicle control.
+
+Always remember: the national speed limit does not mean it is safe to drive at that speed.`
       },
       {
-        heading: '2. Speed Limits on Country Roads',
-        body: `Single carriageway country roads: 60 mph unless signs indicate otherwise
-Dual carriageway country roads: 70 mph unless signs indicate otherwise
+        heading: '2. Key Characteristics of Country Roads',
+        body: `Country roads commonly include:
+• Narrow lanes with little or no road markings.
+• Sharp bends and blind corners.
+• Hedges, trees or walls restricting visibility.
+• Changes in road width.
+• Uneven or poor road surfaces.
+• Limited lighting or no street lighting.
+• Agricultural traffic and animals.
 
-The speed limit is a maximum, not a target. You must always drive at a speed suitable for the road, weather, traffic, and visibility.`
+Because visibility is often limited, you must be able to stop safely within the distance you can see to be clear.`
       },
       {
-        heading: '3. Key Characteristics of Country Roads',
-        body: `Narrow lanes, sometimes only wide enough for one vehicle
-Sharp bends and blind corners
-Limited or no street lighting
-Uneven road surfaces, potholes, or mud
-Hedges, trees, and walls close to the carriageway
-Few road signs or road markings`
+        heading: '3. Speed on Country Roads',
+        body: `3.1 Speed Limits
+• Many country roads have the national speed limit (often 60 mph for cars) unless signs show otherwise.
+• This is the maximum legal speed, not a target.
+
+3.2 Choosing the Right Speed
+Reduce speed when:
+• Visibility is limited.
+• Roads are narrow or winding.
+• There are bends, hills or dips.
+• Weather conditions are poor.
+• You are meeting oncoming traffic.
+• Pedestrians, cyclists or animals are present.
+
+Always adjust your speed so you can stop safely.`
       },
       {
-        heading: '4. Meeting Oncoming Traffic',
-        body: `Slow down early when you see oncoming vehicles
-Use passing places where provided
-Give way courteously when it is safe to do so
-Be prepared to stop if necessary
-Do not assume the other driver will give way
+        heading: '4. Positioning on Country Roads',
+        body: `4.1 Normal Driving Position
+• Keep to the left-hand side of the road but not too close to the verge or edge.
+• Maintain a position that gives you good visibility and a safety margin.
 
-Patience and cooperation are essential on narrow country roads.`
+4.2 Approaching Bends
+• On right-hand bends, position slightly away from the centre line to reduce the risk of conflict with oncoming vehicles.
+• On left-hand bends, you may position slightly more towards the centre of your lane to improve your view, without crossing the centre line.
+• Slow down before the bend, not during it.
+
+Correct positioning improves visibility and reduces risk.`
       },
       {
-        heading: '5. Bends and Corners',
-        body: `Many country road incidents happen on bends due to limited visibility and incorrect speed.
+        heading: '5. Observation and Anticipation (Using LADA)',
+        body: `Country roads require constant scanning and anticipation.
 
-Reduce speed before entering the bend
-Position slightly to the left to improve your view ahead
-Keep well within your lane and do not cut corners
-Be prepared for oncoming vehicles, cyclists, animals, mud, or debris
+L – Look
+Look well ahead for:
+• Oncoming vehicles.
+• Sharp bends and junctions.
+• Hidden dips or crests.
+• Mud, water or gravel on the road.
+• Animals or farm vehicles.
+• Pedestrians or cyclists.
 
-Never cross the centre line or assume the road ahead is clear.`
+A – Assess
+Assess:
+• How much you can see and whether you can stop safely.
+• Road width and surface grip.
+• Speed of oncoming traffic.
+• Safe places to pull in if needed.
+
+D – Decide
+Decide whether to:
+• Reduce speed.
+• Adjust position.
+• Stop or give way.
+• Use a passing place.
+
+A – Act
+Act smoothly and early:
+• Brake progressively.
+• Steer gently.
+• Use passing places calmly when needed.`
       },
       {
-        heading: '6. Overtaking on Country Roads',
-        body: `Overtaking should be rare on country roads and must only be attempted when it is clearly safe and legal.
+        heading: '6. Meeting Oncoming Traffic',
+        body: `Many country roads are too narrow for two vehicles to pass easily.
 
-Only overtake when you can clearly see the road ahead is clear
-Never overtake near bends, junctions, hills, dips, or where visibility is restricted
-Watch for slow-moving vehicles such as tractors and farm machinery
-Be aware of hidden junctions, field entrances, and driveways
+Key points:
+• Slow down early.
+• Be prepared to stop.
+• Use passing places to allow vehicles to pass.
+• If a passing place is on your left, pull in when safe.
+• If a passing place is on your right, wait opposite it rather than crossing the road.
+• Avoid mounting verges unless unavoidable.
+
+Cooperation and patience are essential.`
+      },
+      {
+        heading: '7. Passing Parked or Slow-Moving Vehicles',
+        body: `When passing parked vehicles or slow-moving traffic:
+• Check mirrors.
+• Reduce speed.
+• Allow extra space.
+• Be ready to stop if oncoming traffic appears.
+
+Watch for:
+• Parked vehicles near farm entrances.
+• Tractors and agricultural machinery.
+• Horses, cyclists and pedestrians.
+
+Never force your way through a tight gap.`
+      },
+      {
+        heading: '8. Bends, Hills and Blind Spots',
+        body: `8.1 Bends
+• Reduce speed before entering.
+• Stay in your lane.
+• Expect oncoming vehicles to take more space on bends.
+
+8.2 Hills and Crests
+• Slow down as visibility reduces.
+• Be prepared for vehicles, cyclists, animals or hazards just beyond the crest.
+
+Never overtake where you cannot see clearly ahead.`
+      },
+      {
+        heading: '9. Overtaking on Country Roads',
+        body: `Overtaking on country roads is often risky due to limited visibility.
+
+Only overtake if:
+• The road ahead is long, straight and completely clear.
+• There are no bends, junctions, dips or crests ahead.
+• Road markings allow overtaking.
+• You can complete the manoeuvre safely and quickly.
 
 If in doubt, do not overtake.`
       },
       {
-        heading: '7. Junctions on Country Roads',
-        body: `Some junctions are poorly marked, hidden, or have limited visibility
-Reduce speed early and look well ahead
-Expect vehicles to appear suddenly from side roads and entrances
-Take extra care when turning right or emerging onto a faster road`
-      },
-      {
-        heading: '8. Vulnerable Road Users',
-        body: `Cyclists
-Horse riders
-Pedestrians
-Farm vehicles
-Animals, including livestock and wildlife
+        heading: '10. Dealing With Animals',
+        body: `Animals may appear suddenly on country roads.
 
-Slow down early, give plenty of space, and be prepared to stop.`
-      },
-      {
-        heading: '9. Weather and Road Conditions',
-        body: `Rain can cause mud, flooding, and reduced grip
-Ice and frost are common in shaded areas
-Fallen leaves can make the road surface slippery
-Fog can significantly reduce visibility
+Be prepared for:
+• Livestock crossing the road.
+• Horses being ridden or led.
+• Wildlife such as deer, sheep or farm animals.
 
-Increase your following distance and adjust your speed to match conditions.`
+If you see animals:
+• Slow down.
+• Be prepared to stop.
+• Do not sound the horn aggressively.
+• Pass slowly and give plenty of space.`
       },
       {
-        heading: '10. Use of Headlights and Horn',
-        body: `Use dipped headlights in poor visibility
-At night, dip headlights early on bends to avoid dazzling others
-Use the horn briefly on narrow bends if visibility is very limited where appropriate`
+        heading: '11. Road Surface Hazards',
+        body: `Country roads may contain hazards that reduce grip, including:
+• Mud from farm vehicles.
+• Wet leaves.
+• Loose gravel.
+• Standing water.
+• Ice in shaded areas.
+
+Brake and steer gently to avoid skidding. Harsh braking or sharp steering on poor surfaces increases the risk of losing control.`
       },
       {
-        heading: '11. Common Learner Mistakes',
-        body: `Driving too fast for the road and conditions
-Poor positioning on bends
-Late braking and harsh braking
-Assuming the road is clear because it looks quiet
-Failing to anticipate hidden hazards`
-      },
-      {
-        heading: '12. Key Safety Tips',
-        body: `Plan well ahead and read the road early
-Drive at a speed that allows you to stop safely within the distance you can see
-Stay alert and expect the unexpected
-Keep a safe following distance
-Be patient and courteous with other road users`
+        heading: '12. Weather and Light Conditions',
+        body: `Weather and light conditions can affect country roads more severely:
+• Fog can appear suddenly.
+• Roads dry slowly after rain.
+• Ice forms earlier and lasts longer on rural roads.
+• Poor lighting makes hazards harder to see.
+
+Adjust your speed and use lights appropriately. Always drive so you can stop safely within the distance you can see to be clear.`
       },
       {
         heading: '13. Summary',
-        body: `Country roads require calm, controlled, and observant driving. By reducing speed, improving anticipation, and respecting the unpredictable nature of rural roads, drivers can travel safely and confidently.`
+        body: `Safe driving on country roads requires:
+• Constant observation and anticipation using LADA.
+• Appropriate speed for visibility and conditions.
+• Correct positioning to improve visibility and safety.
+• Smooth steering and progressive braking.
+• Patience and cooperation when meeting oncoming traffic.
+• Awareness of animals, pedestrians, cyclists and farm vehicles.
+
+Country roads demand skill, judgement and restraint. Driving safely here is an important part of becoming a confident, responsible driver and is commonly assessed during the DVSA practical test.`
       }
     ]
   }
