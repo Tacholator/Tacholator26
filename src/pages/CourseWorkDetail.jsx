@@ -2030,72 +2030,70 @@ Avoid unnecessary use of the right-hand lane, also known as lane hogging
 Some dual carriageways have three or more lanes. Unless signs state otherwise, apply motorway-style lane discipline.`
       },
       {
-        heading: '4. Joining a Dual Carriageway',
-        body: `Use the slip road or acceleration lane to build up speed
-Match your speed to the traffic already on the carriageway
-Give way to traffic on the main carriageway
-Look early for a safe gap to merge
-Do not stop on the slip road unless absolutely necessary
+        heading: '4. Emerging into a Side Road (Turning Left and Right)',
+        body: `When emerging from a side road onto a dual carriageway, good observation and judgement are essential due to higher traffic speeds.
 
-Use the MSM / PSL routine on approach: Mirrors, Signal, Manoeuvre or Position, Speed, and Look.`
-      },
-      {
-        heading: '5. Leaving a Dual Carriageway',
-        body: `Check mirrors early and signal in good time
-Move into the left-hand lane well before your exit
-Reduce speed after entering the slip road, not before
-Be aware of reduced speed limits on exit roads`
-      },
-      {
-        heading: '6. Overtaking Safely',
-        body: `Check mirrors and blind spots before changing lanes
-Signal clearly and in good time
-Only overtake when you can complete the manoeuvre safely
-Do not exceed the speed limit while overtaking
-Be aware of faster vehicles approaching from behind
+Use the MSM / PSL routine before moving off
+Assess the speed and distance of approaching traffic carefully
+Turning left: join the left-hand carriageway when there is a safe gap
+Turning right: cross the near carriageway only when it is safe and, if provided, wait safely in the central reservation before joining the opposite carriageway
+Never assume approaching vehicles are travelling at the speed limit
 
-Avoid aggressive driving, weaving between lanes, or frequent unnecessary lane changes.`
+Do not rush your decision. If the gap is not sufficient, wait until it is safe to proceed.`
       },
       {
-        heading: '7. Central Reservation Rules',
-        body: `Do not cross or stop on the central reservation
-Only use designated turning gaps where permitted
-In an emergency, stop on the left-hand side where possible
+        heading: '5. After Joining the Carriageway',
+        body: `Build up speed progressively to match the flow of traffic
+Remain in the left-hand lane unless overtaking
+Check mirrors regularly to maintain awareness of surrounding traffic
+Maintain a safe following distance from the vehicle ahead
+Be prepared for faster-moving vehicles approaching from behind
 
-Crossing a central reservation illegally is extremely dangerous and can result in serious collisions.`
+Confidence and smooth acceleration help ensure you integrate safely with traffic already on the dual carriageway.`
       },
       {
-        heading: '8. Pedestrians, Cyclists, and Slow-Moving Vehicles',
-        body: `Some dual carriageways prohibit pedestrians and cyclists
-Learner drivers, cyclists, and agricultural vehicles may be restricted on certain routes
-Always observe and comply with road signs`
+        heading: '6. Leaving the Dual Carriageway (Turning Left with No Slip Road)',
+        body: `Some dual carriageways require drivers to turn left directly into a side road without the use of a slip road.
+
+Check mirrors early and signal left in good time
+Position your vehicle correctly in the left-hand lane
+Reduce speed smoothly while remaining aware of traffic behind
+Turn only when it is safe and avoid sudden braking
+Watch for pedestrians, cyclists, or vehicles waiting to emerge
+
+Early signalling and gradual speed reduction help other road users anticipate your actions.`
       },
       {
-        heading: '9. Hazards to Watch For',
-        body: `Vehicles joining suddenly from slip roads
-Sudden congestion, braking, or roadworks
+        heading: '7. Leaving the Dual Carriageway (Turning Right)',
+        body: `Turning right off a dual carriageway is a higher-risk manoeuvre and must only be carried out where road markings and signs permit.
+
+Check mirrors early and signal right clearly
+Move into the right-hand lane or designated turning lane where provided
+Position safely at the turning point and wait for a suitable gap in oncoming traffic
+If a central reservation is provided, use it as a safe waiting area where permitted
+Complete the turn smoothly without causing other traffic to brake or swerve
+
+Never attempt a right turn across a dual carriageway unless it is clearly allowed and safe to do so.`
+      },
+      {
+        heading: '8. Hazards to Watch For',
+        body: `High approach speeds from other vehicles
+Sudden congestion or roadworks
 Strong crosswinds on exposed roads
-Broken-down vehicles on the carriageway or hard shoulder
+Vehicles stopping unexpectedly to turn
 Changing or variable speed limits`
       },
       {
-        heading: '10. Common Learner Mistakes',
-        body: `Confusing dual carriageways with motorways
-Driving too slowly when joining
-Staying in the right-hand lane unnecessarily
-Poor mirror checks when changing lanes
-Braking too early before exits`
+        heading: '9. Common Learner Mistakes',
+        body: `Misjudging the speed of approaching traffic
+Hesitating for too long or moving off too quickly
+Poor lane positioning after joining
+Late signalling when leaving the carriageway
+Attempting unsafe right turns`
       },
       {
-        heading: '11. Key Safety Tips',
-        body: `Plan well ahead and read the road early
-Maintain safe following distances, increasing in wet or poor conditions
-Stay calm and confident at higher speeds
-Drive according to road and traffic conditions, not just the speed limit`
-      },
-      {
-        heading: '12. Summary',
-        body: `Dual carriageways allow for faster and smoother traffic flow but require good planning, strong observation skills, and proper lane discipline. With correct positioning, effective mirror use, and confidence at speed, they can be driven safely and comfortably.`
+        heading: '10. Summary',
+        body: `Driving on dual carriageways requires strong observation, accurate judgement, and good lane discipline. By planning ahead, using correct positioning, and following the MSM / PSL routine, drivers can join, travel on, and leave dual carriageways safely and confidently.`
       }
     ]
   }
