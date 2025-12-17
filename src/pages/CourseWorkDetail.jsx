@@ -2031,12 +2031,12 @@ Some dual carriageways have three or more lanes. Unless signs state otherwise, a
       },
       {
         heading: '4. Emerging into a Side Road (Turning Left and Right)',
-        body: `When emerging from a side road onto a dual carriageway, good observation and judgement are essential due to higher traffic speeds.
+        body: `When emerging from a side road onto a dual carriageway, careful observation and accurate judgement are essential due to higher traffic speeds.
 
 Use the MSM / PSL routine before moving off
 Assess the speed and distance of approaching traffic carefully
-Turning left: join the left-hand carriageway when there is a safe gap
-Turning right: cross the near carriageway only when it is safe and, if provided, wait safely in the central reservation before joining the opposite carriageway
+Turning left: join the left-hand carriageway only when there is a safe gap
+Turning right: cross the near carriageway only when safe and, if provided, wait safely in the central reservation before joining the opposite carriageway
 Never assume approaching vehicles are travelling at the speed limit
 
 Do not rush your decision. If the gap is not sufficient, wait until it is safe to proceed.`
@@ -2049,38 +2049,38 @@ Check mirrors regularly to maintain awareness of surrounding traffic
 Maintain a safe following distance from the vehicle ahead
 Be prepared for faster-moving vehicles approaching from behind
 
-Confidence and smooth acceleration help ensure you integrate safely with traffic already on the dual carriageway.`
+Smooth acceleration and good mirror use help you integrate safely with traffic already travelling on the dual carriageway.`
       },
       {
         heading: '6. Leaving the Dual Carriageway (Turning Left with No Slip Road)',
         body: `Some dual carriageways require drivers to turn left directly into a side road without the use of a slip road.
 
 Check mirrors early and signal left in good time
-Position your vehicle correctly in the left-hand lane
+Position correctly in the left-hand lane
 Reduce speed smoothly while remaining aware of traffic behind
-Turn only when it is safe and avoid sudden braking
+Avoid sudden braking on the main carriageway
 Watch for pedestrians, cyclists, or vehicles waiting to emerge
 
-Early signalling and gradual speed reduction help other road users anticipate your actions.`
+Early signalling and controlled speed reduction allow other road users to anticipate your actions.`
       },
       {
         heading: '7. Leaving the Dual Carriageway (Turning Right)',
-        body: `Turning right off a dual carriageway is a higher-risk manoeuvre and must only be carried out where road markings and signs permit.
+        body: `Turning right off a dual carriageway is a higher-risk manoeuvre and must only be carried out where signs and road markings permit.
 
 Check mirrors early and signal right clearly
 Move into the right-hand lane or designated turning lane where provided
 Position safely at the turning point and wait for a suitable gap in oncoming traffic
-If a central reservation is provided, use it as a safe waiting area where permitted
+Use the central reservation as a safe waiting area where permitted
 Complete the turn smoothly without causing other traffic to brake or swerve
 
-Never attempt a right turn across a dual carriageway unless it is clearly allowed and safe to do so.`
+Never attempt a right turn across a dual carriageway unless it is clearly allowed and can be completed safely.`
       },
       {
         heading: '8. Hazards to Watch For',
         body: `High approach speeds from other vehicles
+Vehicles joining or leaving unexpectedly
 Sudden congestion or roadworks
-Strong crosswinds on exposed roads
-Vehicles stopping unexpectedly to turn
+Strong crosswinds on exposed sections
 Changing or variable speed limits`
       },
       {
@@ -2088,7 +2088,7 @@ Changing or variable speed limits`
         body: `Misjudging the speed of approaching traffic
 Hesitating for too long or moving off too quickly
 Poor lane positioning after joining
-Late signalling when leaving the carriageway
+Late or unclear signalling when leaving
 Attempting unsafe right turns`
       },
       {
