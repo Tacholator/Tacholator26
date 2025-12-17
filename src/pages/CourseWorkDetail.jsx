@@ -3436,6 +3436,158 @@ These errors usually come from lack of forward planning and limited scanning.`
 Planning skills turn driving from a reactive task into a controlled, confident process. Mastering them is essential for safe everyday driving and for success in the DVSA practical driving test.`
       }
     ]
+  },
+  24: {
+    title: 'Independent Driving',
+    sections: [
+      {
+        heading: '1. Independent Driving – Overview',
+        body: `Independent driving tests your ability to drive safely and confidently without step-by-step guidance. It shows that you can make your own decisions, follow directions and deal with real-world driving situations while maintaining good control, observation and planning.
+
+Independent driving is a key part of the DVSA practical driving test and reflects everyday driving after you pass.`
+      },
+      {
+        heading: '2. What Independent Driving Means',
+        body: `Independent driving does not mean:
+• Driving without rules.
+• Driving without observation.
+• Driving quickly or taking risks.
+
+Independent driving does mean:
+• Following directions independently.
+• Making your own safe decisions.
+• Staying calm if you make a mistake.
+• Driving safely without constant instruction.
+
+You are assessed on driving ability, not navigation skills.`
+      },
+      {
+        heading: '3. How Independent Driving Is Assessed',
+        body: `During the DVSA practical test:
+• Independent driving lasts for about 20 minutes.
+• You will be asked to follow either:
+  - A sat-nav, or
+  - Traffic signs, or
+  - Verbal directions.
+
+The examiner will not give detailed driving instructions unless safety requires it.`
+      },
+      {
+        heading: '4. Following a Sat-Nav',
+        body: `When using a sat-nav:
+• Follow directions calmly and safely.
+• Keep looking at the road, not the screen.
+• Listen carefully to spoken instructions.
+• Position yourself early where possible.
+
+If directions are unclear:
+• Prioritise safety.
+• Continue safely until the next opportunity.
+
+You are not penalised for missing a turn if you drive safely.`
+      },
+      {
+        heading: '5. Following Road Signs',
+        body: `When following signs:
+• Read signs early.
+• Identify the correct lane in good time.
+• Follow route numbers and place names.
+• Stay calm in busy areas.
+
+Signs may change quickly, so forward planning and early lane selection are essential.`
+      },
+      {
+        heading: '6. Planning and Observation During Independent Driving',
+        body: `Good independent driving relies on:
+• Looking well ahead.
+• Anticipating hazards.
+• Planning speed and position early.
+• Using mirrors regularly.
+
+Use LADA (Look, Assess, Decide, Act) to support safe decision-making, especially when traffic conditions change.`
+      },
+      {
+        heading: '7. Lane Discipline and Positioning',
+        body: `During independent driving:
+• Choose the correct lane early.
+• Follow road markings and lane arrows.
+• Avoid late or unsafe lane changes.
+• If unsure, stay in a safe lane and continue.
+
+Taking a safe route is always better than making a risky move to follow directions.`
+      },
+      {
+        heading: '8. What If You Make a Mistake?',
+        body: `Making a mistake does not automatically mean failing the test.
+
+If you:
+• Miss a turn.
+• Choose the wrong lane.
+• Take the wrong exit.
+
+You should:
+• Stay calm.
+• Continue safely.
+• Follow the road ahead.
+• Avoid stopping suddenly or turning dangerously.
+
+The examiner will adjust the route if needed.`
+      },
+      {
+        heading: '9. Common Faults During Independent Driving',
+        body: `Common faults include:
+• Poor lane discipline.
+• Late decisions.
+• Hesitation at junctions.
+• Poor observation.
+• Focusing too much on directions and missing hazards.
+
+Remember: driving safely is more important than following directions perfectly.`
+      },
+      {
+        heading: '10. Independent Driving and Safety',
+        body: `Safety is always the priority:
+• Obey traffic signs and road markings.
+• Follow speed limits.
+• Give way when required.
+• Watch for pedestrians, cyclists and motorcyclists.
+
+If directions conflict with road signs, road markings or safety, always follow the rules of the road.`
+      },
+      {
+        heading: '11. Independent Driving and Confidence',
+        body: `Independent driving tests your confidence as well as skill.
+
+Confidence comes from:
+• Good preparation.
+• Strong planning skills.
+• Effective observation.
+• Calm decision-making.
+
+Driving independently shows you are ready to drive without instructor support.`
+      },
+      {
+        heading: '12. Independent Driving in Everyday Life',
+        body: `After passing your test, independent driving is how you will drive every day:
+• Following sat-navs.
+• Navigating new routes.
+• Dealing with unexpected changes.
+• Making safe decisions alone.
+
+This part of the test prepares you for real-world driving.`
+      },
+      {
+        heading: '13. Summary',
+        body: `Successful independent driving requires:
+• Calm, confident decision-making.
+• Good observation and planning.
+• Safe lane choice and positioning.
+• Willingness to continue safely if you make a mistake.
+• Prioritising safety over directions.
+
+Independent driving shows the examiner that you can drive safely on your own. Staying calm, planning ahead and focusing on safety are the keys to success in this part of the DVSA practical driving test.`
+      }
+    ]
   }
 };
 
