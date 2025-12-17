@@ -2881,6 +2881,128 @@ Stopping, checking and correcting is always better than continuing unsafely.`
 Manoeuvres demonstrate your ability to control the car precisely and safely. Mastering them builds confidence and is a key step toward passing the DVSA practical driving test and driving independently.`
       }
     ]
+  },
+  20: {
+    title: 'Emergency Stop',
+    sections: [
+      {
+        heading: '1. Emergency Stop – Overview',
+        body: `The emergency stop tests your ability to react quickly, safely and under control when an unexpected hazard appears. It demonstrates how effectively you can stop the vehicle promptly while maintaining full control and awareness of what is happening around you.
+
+During the DVSA practical driving test, the examiner may ask you to carry out an emergency stop to assess your reactions, braking technique and observation skills.`
+      },
+      {
+        heading: '2. Purpose of the Emergency Stop',
+        body: `The emergency stop is designed to:
+• Test your reaction time.
+• Assess your braking control.
+• Check your ability to keep the vehicle under control.
+• Ensure you can stop safely in a genuine emergency.
+
+It represents sudden hazards such as:
+• A child running into the road.
+• A vehicle stopping suddenly.
+• An object appearing unexpectedly in your path.`
+      },
+      {
+        heading: '3. When You May Be Asked to Perform an Emergency Stop',
+        body: `During the driving test:
+• You will usually be told in advance that an emergency stop may be required.
+• The examiner will check that it is safe before giving the signal.
+• You must react only when the examiner gives the clear signal, usually a verbal command combined with a hand signal.
+
+Do not anticipate or practise the stop unless instructed.`
+      },
+      {
+        heading: '4. Emergency Stop Procedure',
+        body: `4.1 React Immediately
+• Brake firmly and progressively.
+• Keep both hands on the steering wheel.
+• Keep the vehicle travelling in a straight line.
+• In a manual car, press the clutch down fully just before the vehicle stops.
+
+Do not worry about stalling – stopping safely is the priority.
+
+4.2 Bringing the Vehicle to a Stop
+• Stop the vehicle as quickly as possible while remaining in full control.
+• Avoid steering sharply or swerving.
+• If your car has ABS, the brake pedal may vibrate – keep firm pressure applied.`
+      },
+      {
+        heading: '5. After the Vehicle Has Stopped',
+        body: `Once the vehicle has stopped:
+• Apply the handbrake.
+• Select neutral.
+• Stay calm and assess the situation.
+
+The examiner will then instruct you when to move off again.`
+      },
+      {
+        heading: '6. Moving Off After an Emergency Stop',
+        body: `Before moving off again:
+• Check all around, including mirrors and blind spots.
+• Look for pedestrians, cyclists or vehicles that may have stopped behind you.
+• Signal if necessary.
+• Rejoin traffic safely using MSM (Mirror, Signal, Manoeuvre).
+
+Do not rush – treat this as a normal move-off situation.`
+      },
+      {
+        heading: '7. Use of Observation',
+        body: `Although the emergency stop focuses on reaction, observation remains important:
+• Be aware of traffic behind before moving off again.
+• Watch for pedestrians or cyclists near the vehicle.
+• Check that the road is clear and safe before rejoining traffic.
+
+Poor observation after stopping can result in driving faults.`
+      },
+      {
+        heading: '8. Common Faults During an Emergency Stop',
+        body: `Common mistakes include:
+• Delayed reaction to the examiner's signal.
+• Not braking firmly enough.
+• Losing steering control.
+• Forgetting to apply the handbrake after stopping.
+• Failing to check properly before moving off again.
+
+Focus on safety, control and awareness rather than speed alone.`
+      },
+      {
+        heading: '9. Manual vs Automatic Vehicles',
+        body: `Manual Vehicles
+• Brake firmly.
+• Press the clutch down fully just before stopping to prevent stalling.
+
+Automatic Vehicles
+• Brake firmly.
+• No clutch control is required.
+
+While the process is simpler in an automatic vehicle, control and observation are equally important.`
+      },
+      {
+        heading: '10. Safety Over Smoothness',
+        body: `An emergency stop is not intended to be smooth or comfortable – it is intended to be effective.
+
+Examiners are looking for:
+• A quick reaction.
+• Firm, controlled braking.
+• Stable steering.
+• A safe, complete stop.
+• Correct observation before moving off again.`
+      },
+      {
+        heading: '11. Summary',
+        body: `A safe emergency stop requires:
+• Immediate reaction to the examiner's signal.
+• Firm, progressive braking.
+• Keeping the vehicle straight and under control.
+• Correct use of the clutch in a manual vehicle.
+• Applying the handbrake once stopped.
+• Effective observation before moving off again.
+
+The emergency stop shows your ability to react to danger and control the vehicle safely. Performing it confidently and correctly is an important part of becoming a responsible driver and succeeding in the DVSA practical driving test.`
+      }
+    ]
   }
 };
 
