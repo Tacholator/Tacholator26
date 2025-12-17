@@ -2380,6 +2380,176 @@ Adjust your speed and use lights appropriately. Always drive so you can stop saf
 Country roads demand skill, judgement and restraint. Driving safely here is an important part of becoming a confident, responsible driver and is commonly assessed during the DVSA practical test.`
       }
     ]
+  },
+  17: {
+    title: 'Driving Conditions',
+    sections: [
+      {
+        heading: '1. Driving Conditions – Overview',
+        body: `Driving conditions can change quickly and significantly affect how safely a vehicle can be driven. Weather, light levels, road surface conditions and traffic levels all influence visibility, grip and stopping distances.
+
+Safe drivers adjust their speed, positioning, observation and vehicle control to suit the conditions rather than relying on speed limits alone.`
+      },
+      {
+        heading: '2. Why Driving Conditions Matter',
+        body: `Poor or changing driving conditions can:
+• Reduce visibility.
+• Reduce tyre grip.
+• Increase stopping distances.
+• Increase driver workload and fatigue.
+
+Adapting to conditions is a key part of safe, defensive driving and is commonly assessed during the DVSA practical driving test.`
+      },
+      {
+        heading: '3. Wet Weather (Rain)',
+        body: `Rain affects both grip and visibility.
+
+Key risks
+• Longer stopping distances.
+• Reduced tyre grip (higher risk of skidding and aquaplaning).
+• Spray from other vehicles reducing visibility.
+
+Safe driving practices
+• Reduce speed.
+• Increase following distance.
+• Use headlights when visibility is reduced.
+• Avoid harsh braking and sudden steering.
+• Take extra care on bends, roundabouts and painted road markings.`
+      },
+      {
+        heading: '4. Fog',
+        body: `Fog reduces visibility and makes it harder for other drivers to see you.
+
+Key risks
+• Very limited forward visibility.
+• Difficulty judging speed and distance.
+• Increased risk of rear-end collisions.
+
+Safe driving practices
+• Reduce speed significantly.
+• Use dipped headlights.
+• Use fog lights only when visibility is seriously reduced, and switch them off when conditions improve.
+• Keep a larger following distance.
+• Use road markings and reflectors as guidance.`
+      },
+      {
+        heading: '5. Ice, Snow and Frost',
+        body: `Cold conditions greatly reduce tyre grip.
+
+Key risks
+• Very long stopping distances.
+• Loss of steering control.
+• Slipping when braking or accelerating.
+
+Safe driving practices
+• Drive slowly and smoothly.
+• Use gentle steering, braking and acceleration.
+• Increase following distance significantly.
+• Brake early and lightly.
+• Avoid sudden manoeuvres.
+• Be especially cautious on bridges, shaded areas and country roads.
+
+If conditions are severe, consider whether the journey is necessary.`
+      },
+      {
+        heading: '6. Strong Winds',
+        body: `Strong winds can affect vehicle stability, especially on exposed roads and bridges.
+
+Key risks
+• Sudden gusts pushing the vehicle sideways.
+• Increased danger when overtaking or being overtaken.
+• Greater risk for high-sided vehicles.
+
+Safe driving practices
+• Reduce speed.
+• Keep both hands on the steering wheel.
+• Be prepared for sudden gusts.
+• Take extra care when passing cyclists, motorcyclists and high-sided vehicles.`
+      },
+      {
+        heading: '7. Bright Sun and Glare',
+        body: `Bright sun, especially when low in the sky, can reduce visibility and temporarily blind drivers.
+
+Key risks
+• Reduced visibility of hazards, signs, signals and pedestrians.
+• Difficulty judging distance.
+
+Safe driving practices
+• Reduce speed.
+• Use sun visors or sunglasses.
+• Increase following distance.
+• Be ready for hazards hidden by glare.`
+      },
+      {
+        heading: '8. Darkness and Night Driving',
+        body: `Driving at night reduces visibility and can increase fatigue.
+
+Key risks
+• Reduced ability to judge speed and distance.
+• Higher fatigue levels.
+• Pedestrians, cyclists and animals are harder to see.
+
+Safe driving practices
+• Use headlights correctly and dip for oncoming traffic.
+• Drive at a speed that allows you to stop within the distance lit by your headlights.
+• Keep lights and windows clean.
+• Stay alert for unlit or poorly lit road users.`
+      },
+      {
+        heading: '9. Poor Road Surface Conditions',
+        body: `Road surfaces can change due to weather, wear or contamination.
+
+Common hazards
+• Wet leaves.
+• Mud or gravel.
+• Standing water.
+• Oil or diesel spills.
+• Painted road markings becoming slippery when wet.
+
+Safe driving practices
+• Reduce speed.
+• Brake earlier and more gently.
+• Avoid sudden steering inputs.
+• Increase observation and anticipation.`
+      },
+      {
+        heading: '10. Heavy Traffic Conditions',
+        body: `Traffic congestion changes how you plan and react.
+
+Key risks
+• Reduced space between vehicles.
+• Stop-start driving.
+• Increased impatience from road users.
+
+Safe driving practices
+• Maintain safe following distances.
+• Anticipate traffic flow.
+• Avoid harsh braking.
+• Stay calm and patient.
+• Use MSM regularly when speed or position changes.`
+      },
+      {
+        heading: '11. Adjusting Your Driving Techniques',
+        body: `In all driving conditions, you should adjust:
+• Speed – to match visibility and grip.
+• Following distance – increase when conditions worsen.
+• Observation – look further ahead and wider.
+• Control – brake, steer and accelerate smoothly.
+
+Using LADA (Look, Assess, Decide, Act) helps you respond safely to changing conditions.`
+      },
+      {
+        heading: '12. Summary',
+        body: `Safe driving in different conditions requires:
+• Understanding how conditions affect grip and visibility.
+• Early adjustment of speed and following distance.
+• Smooth, controlled steering, braking and acceleration.
+• Effective observation and anticipation.
+• Willingness to slow down or delay a journey when conditions are poor.
+
+Driving conditions change, but safe drivers change their driving to match. Adapting effectively is essential for everyday safety and success in the DVSA practical driving test.`
+      }
+    ]
   }
 };
 
