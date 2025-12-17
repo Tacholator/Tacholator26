@@ -3137,6 +3137,151 @@ Failing to give way to pedestrians when required is likely to be a serious fault
 Pedestrian crossings exist to protect vulnerable road users. Treating them with respect and care is essential for safe driving and for passing the DVSA practical driving test.`
       }
     ]
+  },
+  22: {
+    title: 'Making Progress',
+    sections: [
+      {
+        heading: '1. Making Progress – Overview',
+        body: `Making progress means driving at an appropriate speed for the road, traffic and conditions, without being hesitant or unnecessarily slow. It is about balancing safety and efficiency, ensuring you do not delay other road users while still maintaining full control of the vehicle.
+
+The DVSA expects drivers to make safe, positive progress whenever conditions allow.`
+      },
+      {
+        heading: '2. What Making Progress Means',
+        body: `Making progress does not mean:
+• Driving as fast as possible.
+• Exceeding speed limits.
+• Taking risks.
+
+Making progress does mean:
+• Driving close to the speed limit when safe and appropriate.
+• Using opportunities to proceed when it is safe.
+• Avoiding unnecessary hesitation.
+• Keeping traffic flowing.
+
+Safe progress shows confidence, awareness and good judgement.`
+      },
+      {
+        heading: '3. Why Making Progress Is Important',
+        body: `Poor progress can:
+• Frustrate other road users.
+• Increase the risk of unsafe overtaking by others.
+• Cause unnecessary congestion.
+• Lead to faults on the driving test.
+
+Driving too slowly or hesitating without reason can be marked as a driving fault or, in some situations, a serious fault.`
+      },
+      {
+        heading: '4. Speed and Progress',
+        body: `4.1 Appropriate Speed
+• Drive at a speed suitable for the road, traffic, weather and visibility.
+• Use speed limits as a guide, not a target.
+• Increase speed smoothly when conditions improve.
+
+4.2 Avoiding Excessive Caution
+Being overly cautious can be unsafe. Examples include:
+• Stopping unnecessarily at clear junctions.
+• Hesitating too long at roundabouts.
+• Driving well below the speed limit with no clear reason.
+
+Confidence comes from good observation and decision-making.`
+      },
+      {
+        heading: '5. Observation and Planning',
+        body: `Good progress depends on looking ahead and planning early.
+
+Key points:
+• Scan well ahead for hazards.
+• Anticipate traffic flow.
+• Identify safe gaps early.
+• Decide in advance whether you can proceed.
+
+Using LADA (Look, Assess, Decide, Act) helps you act positively without rushing.`
+      },
+      {
+        heading: '6. Making Progress at Junctions',
+        body: `At junctions:
+• Use MSM and MSPSL.
+• Look early for safe gaps.
+• Commit confidently when it is safe.
+• Avoid stopping if the junction is clearly open.
+
+Hesitating after a safe gap appears can cause faults and confuse other drivers.`
+      },
+      {
+        heading: '7. Making Progress on Open Roads',
+        body: `On clear, open roads:
+• Build speed smoothly up to an appropriate limit.
+• Use higher gears when suitable.
+• Maintain a steady speed.
+• Avoid unnecessary braking.
+
+Driving confidently on open roads demonstrates good vehicle control and awareness.`
+      },
+      {
+        heading: '8. Making Progress in Traffic',
+        body: `In heavier traffic:
+• Keep up with the flow where safe.
+• Avoid leaving large unnecessary gaps.
+• Move off promptly when traffic moves.
+• Maintain safe following distances.
+
+Progress should never compromise safety.`
+      },
+      {
+        heading: '9. Making Progress at Roundabouts',
+        body: `At roundabouts:
+• Look early for gaps.
+• Match your speed to circulating traffic where safe.
+• Enter when safe without hesitation.
+• Avoid stopping unnecessarily when the way is clear.
+
+Well-timed entry improves traffic flow and safety.`
+      },
+      {
+        heading: '10. When NOT to Prioritise Progress',
+        body: `Do not prioritise progress when:
+• Visibility is poor.
+• Road conditions are dangerous.
+• Pedestrians, cyclists or vulnerable road users are present.
+• You are unsure or visibility is restricted.
+
+Safety always comes before progress.`
+      },
+      {
+        heading: '11. Making Progress and the DVSA Test',
+        body: `Examiners expect you to:
+• Drive at an appropriate speed.
+• Avoid unnecessary hesitation.
+• Take safe opportunities.
+• Keep traffic flowing where possible.
+
+Failing to make progress is a common test fault, but rushing or taking risks is worse.`
+      },
+      {
+        heading: '12. Common Faults Related to Progress',
+        body: `Common issues include:
+• Driving too slowly for no clear reason.
+• Hesitating at clear junctions.
+• Over-braking on open roads.
+• Not moving off promptly.
+• Missing safe gaps.
+
+These faults often come from poor observation or lack of confidence.`
+      },
+      {
+        heading: '13. Summary',
+        body: `Safe making progress requires:
+• Good observation and planning.
+• Appropriate speed for conditions.
+• Confident, timely decision-making.
+• Effective use of MSM, MSPSL and LADA.
+• Balancing safety with efficiency.
+
+Making progress shows that you can drive safely, confidently and cooperatively with other road users. It is a key skill for everyday driving and an important assessment area in the DVSA practical driving test.`
+      }
+    ]
   }
 };
 
