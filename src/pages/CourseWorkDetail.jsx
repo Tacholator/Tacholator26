@@ -3588,6 +3588,147 @@ This part of the test prepares you for real-world driving.`
 Independent driving shows the examiner that you can drive safely on your own. Staying calm, planning ahead and focusing on safety are the keys to success in this part of the DVSA practical driving test.`
       }
     ]
+  },
+  25: {
+    title: 'Show Me, Tell Me Questions',
+    sections: [
+      {
+        heading: '1. Show Me, Tell Me – Overview',
+        body: `The Show Me, Tell Me questions are part of the DVSA practical driving test and are designed to check your basic vehicle safety knowledge. They assess whether you understand how to carry out simple safety checks and whether you can operate essential vehicle controls safely.
+
+You will be asked:
+• One "Tell Me" question before you start driving.
+• One "Show Me" question while you are driving.
+
+Answering a question incorrectly results in one driving fault, not an automatic fail.`
+      },
+      {
+        heading: '2. Purpose of Show Me, Tell Me Questions',
+        body: `These questions are used to:
+• Check your knowledge of vehicle safety.
+• Ensure you understand basic maintenance and safety checks.
+• Confirm you can operate essential vehicle controls safely.
+
+You are not expected to be a mechanic. You only need to understand basic safety checks and controls.`
+      },
+      {
+        heading: '3. "Tell Me" Questions (Before Driving)',
+        body: `Tell Me questions are asked before you begin driving. You will be asked to explain how you would carry out a safety check. You do not need to physically demonstrate it.`
+      },
+      {
+        heading: '4. Tell Me Questions and Answers',
+        body: `Tell Me Question 1
+Tell me how you'd check that the brakes are working before starting a journey.
+Answer: Brakes should feel firm, not spongy. If testing while moving off, the vehicle should not pull to one side.
+
+Tell Me Question 2
+Tell me where you'd find the information for the recommended tyre pressures for this car and how tyre pressures should be checked.
+Answer: The information is in the manufacturer's handbook or on a sticker (often inside the door frame or fuel flap). Tyre pressures should be checked when tyres are cold using a reliable pressure gauge.
+
+Tell Me Question 3
+Tell me how you'd check the tyres to make sure they have sufficient tread depth and that their general condition is safe.
+Answer: Tyres must have at least 1.6mm of tread across the central three-quarters of the tyre and around the entire circumference. There should be no cuts, bulges or damage.
+
+Tell Me Question 4
+Tell me how you'd check that the headlights and tail lights are working.
+Answer: Turn on the lights and check visually, or ask someone to help check from outside the vehicle.
+
+Tell Me Question 5
+Tell me how you'd know if there was a problem with your anti-lock braking system (ABS).
+Answer: An ABS warning light would illuminate on the dashboard if there is a fault.
+
+Tell Me Question 6
+Tell me how you'd check the engine oil level.
+Answer: Park on level ground, turn off the engine, wait for it to cool, then use the dipstick to check the oil level is between the minimum and maximum markings.
+
+Tell Me Question 7
+Tell me how you'd check the engine coolant level.
+Answer: Check the coolant level against the markings on the expansion tank when the engine is cold. Never remove the cap when the engine is hot.
+
+Tell Me Question 8
+Tell me how you'd check the brake fluid level.
+Answer: Check the brake fluid reservoir and ensure the level is between the minimum and maximum markings.
+
+Tell Me Question 9
+Tell me how you'd check the power-assisted steering is working.
+Answer: Apply gentle pressure to the steering wheel after starting the engine. The steering should become lighter as the engine starts.
+
+Tell Me Question 10
+Tell me how you'd check that the horn is working.
+Answer: Press the horn briefly while stationary to confirm it works.`
+      },
+      {
+        heading: '5. "Show Me" Questions (While Driving)',
+        body: `Show Me questions are asked while you are driving. The examiner will say "When it's safe to do so..." and you must demonstrate how to operate a control.
+
+Only carry out the action when it is safe and you can maintain full control of the vehicle.`
+      },
+      {
+        heading: '6. Show Me Questions and Answers',
+        body: `Show Me Question 1
+When it's safe to do so, can you show me how you'd wash and clean the rear windscreen?
+Answer: Operate the rear windscreen washer control.
+
+Show Me Question 2
+When it's safe to do so, can you show me how you'd wash and clean the front windscreen?
+Answer: Operate the front windscreen washer control.
+
+Show Me Question 3
+When it's safe to do so, can you show me how you'd switch on your dipped headlights?
+Answer: Operate the headlight control to dipped beam.
+
+Show Me Question 4
+When it's safe to do so, can you show me how you'd set the rear demister?
+Answer: Switch on the rear window demister using the dashboard control.
+
+Show Me Question 5
+When it's safe to do so, can you show me how you'd operate the horn?
+Answer: Press the horn briefly.
+
+Show Me Question 6
+When it's safe to do so, can you show me how you'd open and close the side window?
+Answer: Operate the electric window control.`
+      },
+      {
+        heading: '7. Safety During "Show Me" Questions',
+        body: `While answering Show Me questions:
+• Keep full control of the vehicle.
+• Check mirrors if needed.
+• Only operate controls when it is safe.
+• Do not rush.
+
+If you are unsure, it is acceptable to wait and respond when it becomes safe.`
+      },
+      {
+        heading: '8. Common Mistakes',
+        body: `Common mistakes include:
+• Giving incorrect information.
+• Forgetting safety precautions.
+• Operating controls without checking it is safe.
+• Panicking or rushing.
+
+One incorrect answer usually results in only one driving fault.`
+      },
+      {
+        heading: '9. Show Me, Tell Me and the DVSA Test',
+        body: `Examiners are checking:
+• Knowledge, not perfection.
+• Calm, confident responses.
+• Safe control of the vehicle.
+
+Preparing for these questions helps you feel more confident on test day and supports safer everyday driving.`
+      },
+      {
+        heading: '10. Summary',
+        body: `Show Me, Tell Me questions require:
+• Basic vehicle safety knowledge.
+• Clear explanations.
+• Safe operation of controls.
+• Calm, confident responses.
+
+Learning these checks will improve your confidence and ensure you understand essential safety steps needed for safe driving.`
+      }
+    ]
   }
 };
 
