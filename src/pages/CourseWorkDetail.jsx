@@ -2010,90 +2010,178 @@ Roundabouts are a key part of everyday driving and a major focus of the DVSA pra
     sections: [
       {
         heading: '1. Dual Carriageways – Overview',
-        body: `A dual carriageway is a road where traffic travelling in opposite directions is separated by a central reservation, such as a barrier, grass verge, or crash barrier. Each direction usually has two or more lanes. A dual carriageway is defined by the presence of a central reservation, not by the number of lanes.`
+        body: `A dual carriageway is a road where traffic travelling in opposite directions is separated by a central reservation. This separation allows traffic to move at higher speeds, but it also means decisions must be made earlier and with greater awareness.
+
+Dual carriageways can include:
+• Two or more lanes in each direction.
+• Slip roads for joining and leaving.
+• Central barriers or grassed reservations.
+• Traffic lights, roundabouts or junctions.
+
+Driving safely on dual carriageways requires good planning, correct lane discipline, effective observation and confident speed control.`
       },
       {
-        heading: '2. Speed Limits',
-        body: `Cars and motorcycles: 70 mph unless signs indicate otherwise
-Cars towing trailers and vans over 7.5 tonnes: 60 mph
-Built-up areas: 30 mph unless a different speed limit is signed
+        heading: '2. Key Characteristics of Dual Carriageways',
+        body: `Dual carriageways typically have:
+• A central reservation separating traffic in opposite directions.
+• Higher speed limits than many single carriageways.
+• Slip roads for joining and leaving (in many cases).
+• Faster-moving traffic and larger speed differences between vehicles.
 
-Always check road signs, especially when entering towns, roadworks, or temporary speed restriction zones.`
+Always drive to the conditions, not just the speed limit.`
       },
       {
-        heading: '3. Lane Discipline',
-        body: `Keep to the left-hand lane unless overtaking
-Use right-hand lanes only for overtaking
-Return to the left lane once overtaking is complete and safe
-Avoid unnecessary use of the right-hand lane, also known as lane hogging
+        heading: '3. Speed Limits on Dual Carriageways',
+        body: `For cars, the national speed limit on a dual carriageway is usually:
+• 70 mph, unless signs show a lower limit.
 
-Some dual carriageways have three or more lanes. Unless signs state otherwise, apply motorway-style lane discipline.`
+Lower limits may apply:
+• Near roadworks.
+• In poor weather.
+• At busy junctions or urban sections.
+• For certain vehicles (e.g. some vans, towing vehicles and lorries).
+
+Always obey speed limit signs and choose a speed that is safe for traffic, road and weather conditions.`
       },
       {
-        heading: '4. Emerging into a Side Road (Turning Left and Right)',
-        body: `When emerging from a side road onto a dual carriageway, careful observation and accurate judgement are essential due to higher traffic speeds.
+        heading: '4. Joining a Dual Carriageway (Using a Slip Road)',
+        body: `Most dual carriageways are joined via a slip road.
 
-Use the MSM / PSL routine before moving off
-Assess the speed and distance of approaching traffic carefully
-Turning left: join the left-hand carriageway only when there is a safe gap
-Turning right: cross the near carriageway only when safe and, if provided, wait safely in the central reservation before joining the opposite carriageway
-Never assume approaching vehicles are travelling at the speed limit
+4.1 On the Slip Road
+• Use MSM and MSPSL early.
+• Accelerate positively to match the speed of traffic on the dual carriageway.
+• Use the full length of the slip road if needed.
+• Check mirrors frequently.
 
-Do not rush your decision. If the gap is not sufficient, wait until it is safe to proceed.`
+4.2 Observation and Judgement (Using LADA)
+• Look for a suitable gap in the traffic.
+• Assess the speed and distance of vehicles in the left lane.
+• Decide whether to speed up or slow slightly to fit into a safe gap.
+• Act smoothly when safe.
+
+Traffic already on the dual carriageway normally has priority.
+
+4.3 Merging
+• Signal right if it will help other drivers.
+• Merge smoothly without forcing others to brake or change lanes.
+• Do not stop on the slip road unless absolutely necessary.`
       },
       {
-        heading: '5. After Joining the Carriageway',
-        body: `Build up speed progressively to match the flow of traffic
-Remain in the left-hand lane unless overtaking
-Check mirrors regularly to maintain awareness of surrounding traffic
-Maintain a safe following distance from the vehicle ahead
-Be prepared for faster-moving vehicles approaching from behind
+        heading: '5. Joining from a Side Road (No Slip Road)',
+        body: `Some dual carriageways have junctions where you join directly from a side road.
 
-Smooth acceleration and good mirror use help you integrate safely with traffic already travelling on the dual carriageway.`
+Key points:
+• Use MSM and MSPSL.
+• Stop at the give way or stop line if required.
+• Judge traffic speed carefully – vehicles may approach very quickly.
+• Use LADA to assess both directions and both carriageways.
+• Only emerge when there is a large, safe gap.
+
+Never assume traffic will slow down for you.`
       },
       {
-        heading: '6. Leaving the Dual Carriageway (Turning Left with No Slip Road)',
-        body: `Some dual carriageways require drivers to turn left directly into a side road without the use of a slip road.
+        heading: '6. Lane Discipline on Dual Carriageways',
+        body: `6.1 Normal Driving Position
+• Drive in the left-hand lane unless overtaking.
 
-Check mirrors early and signal left in good time
-Position correctly in the left-hand lane
-Reduce speed smoothly while remaining aware of traffic behind
-Avoid sudden braking on the main carriageway
-Watch for pedestrians, cyclists, or vehicles waiting to emerge
+6.2 Overtaking
+• Use the right-hand lane(s) for overtaking.
+• Return to the left lane once you have safely passed.
+• Do not stay in the right lane unnecessarily.
 
-Early signalling and controlled speed reduction allow other road users to anticipate your actions.`
+6.3 Lane Changes
+• Apply MSM:
+  • Mirrors: check interior and door mirror.
+  • Signal: if it benefits other road users.
+  • Manoeuvre: move smoothly when safe.
+
+Always check blind spots, especially at higher speeds.`
       },
       {
-        heading: '7. Leaving the Dual Carriageway (Turning Right)',
-        body: `Turning right off a dual carriageway is a higher-risk manoeuvre and must only be carried out where signs and road markings permit.
+        heading: '7. Driving at Higher Speeds',
+        body: `Higher speeds reduce reaction time and increase stopping distances.
 
-Check mirrors early and signal right clearly
-Move into the right-hand lane or designated turning lane where provided
-Position safely at the turning point and wait for a suitable gap in oncoming traffic
-Use the central reservation as a safe waiting area where permitted
-Complete the turn smoothly without causing other traffic to brake or swerve
+Safe driving at speed includes:
+• Maintaining a safe following distance (at least 2 seconds).
+• Increasing distance in rain, fog or poor conditions.
+• Scanning well ahead for hazards.
+• Avoiding harsh braking and sudden steering.
 
-Never attempt a right turn across a dual carriageway unless it is clearly allowed and can be completed safely.`
+Smooth, early decisions are essential on dual carriageways.`
       },
       {
-        heading: '8. Hazards to Watch For',
-        body: `High approach speeds from other vehicles
-Vehicles joining or leaving unexpectedly
-Sudden congestion or roadworks
-Strong crosswinds on exposed sections
-Changing or variable speed limits`
+        heading: '8. Leaving a Dual Carriageway (Using a Slip Road)',
+        body: `8.1 Planning to Leave
+• Look well ahead for direction signs.
+• Move into the correct lane early.
+• Check mirrors and signal left.
+
+8.2 On the Exit Slip Road
+• Do not slow down on the main carriageway.
+• Reduce speed only after you have entered the slip road.
+• Be prepared for lower speed limits, sharp bends, traffic lights or roundabouts.
+
+Leaving too late or braking on the main carriageway can be dangerous, so plan early.`
       },
       {
-        heading: '9. Common Learner Mistakes',
-        body: `Misjudging the speed of approaching traffic
-Hesitating for too long or moving off too quickly
-Poor lane positioning after joining
-Late or unclear signalling when leaving
-Attempting unsafe right turns`
+        heading: '9. Leaving a Dual Carriageway (No Slip Road)',
+        body: `Some exits require turning directly off the dual carriageway without a slip road.
+
+Key points:
+• Use MSM and MSPSL.
+• Signal early.
+• Position correctly for the turn.
+• Reduce speed gradually and in good time.
+• Be aware that vehicles behind may not expect you to slow.
+
+Take extra care because traffic behind may be travelling at higher speeds.`
       },
       {
-        heading: '10. Summary',
-        body: `Driving on dual carriageways requires strong observation, accurate judgement, and good lane discipline. By planning ahead, using correct positioning, and following the MSM / PSL routine, drivers can join, travel on, and leave dual carriageways safely and confidently.`
+        heading: '10. Turning Right on a Dual Carriageway',
+        body: `Right turns across a dual carriageway are hazardous and less common.
+
+If required:
+• Use designated gaps in the central reservation.
+• Cross one carriageway at a time.
+• Stop in the central reservation if needed and safe.
+• Use LADA before crossing each lane.
+
+Never rush a right turn. Wait for safe gaps in both directions and do not force other vehicles to slow down.`
+      },
+      {
+        heading: '11. Hazards on Dual Carriageways',
+        body: `Be alert for:
+• Fast-moving traffic and vehicles travelling at different speeds.
+• Vehicles joining and leaving suddenly via slip roads.
+• Lane closures, roadworks and temporary speed limits.
+• Breakdowns and vehicles stopped on the hard shoulder.
+• Poor weather affecting visibility and grip.
+• Driver fatigue on long journeys.
+
+Early observation and anticipation reduce risk.`
+      },
+      {
+        heading: '12. Breakdowns and Emergencies',
+        body: `If you break down on a dual carriageway:
+• Move onto the hard shoulder if there is one.
+• Stop as far left as possible.
+• Switch on hazard warning lights.
+• Exit the vehicle safely if necessary and keep well away from the carriageway.
+
+Follow any local guidance and call for assistance. Your priority is to keep yourself and passengers safe.`
+      },
+      {
+        heading: '13. Summary',
+        body: `Safe driving on dual carriageways requires:
+• Good planning and early observation.
+• Correct use of MSM, MSPSL and LADA.
+• Matching speed when joining.
+• Strong lane discipline and safe overtaking.
+• Leaving safely using slip roads and planning early.
+• Maintaining safe following distances.
+• Anticipating hazards at higher speeds.
+
+Dual carriageways demand confidence, awareness and cooperation with other road users. Mastering them is essential for safe everyday driving and success in the DVSA practical test.`
       }
     ]
   },
