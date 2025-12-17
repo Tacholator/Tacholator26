@@ -2004,6 +2004,100 @@ Look for direction signs well in advance, choose the correct lane early and use 
 Roundabouts are a key part of everyday driving and a major focus of the DVSA practical test. Mastering them shows that you can plan ahead, cooperate with others and drive safely in complex traffic situations.`
       }
     ]
+  },
+  15: {
+    title: 'Dual Carriageways',
+    sections: [
+      {
+        heading: '1. Dual Carriageways – Overview',
+        body: `A dual carriageway is a road where traffic travelling in opposite directions is separated by a central reservation, such as a barrier, grass verge, or crash barrier. Each direction usually has two or more lanes. A dual carriageway is defined by the presence of a central reservation, not by the number of lanes.`
+      },
+      {
+        heading: '2. Speed Limits',
+        body: `Cars and motorcycles: 70 mph unless signs indicate otherwise
+Cars towing trailers and vans over 7.5 tonnes: 60 mph
+Built-up areas: 30 mph unless a different speed limit is signed
+
+Always check road signs, especially when entering towns, roadworks, or temporary speed restriction zones.`
+      },
+      {
+        heading: '3. Lane Discipline',
+        body: `Keep to the left-hand lane unless overtaking
+Use right-hand lanes only for overtaking
+Return to the left lane once overtaking is complete and safe
+Avoid unnecessary use of the right-hand lane, also known as lane hogging
+
+Some dual carriageways have three or more lanes. Unless signs state otherwise, apply motorway-style lane discipline.`
+      },
+      {
+        heading: '4. Joining a Dual Carriageway',
+        body: `Use the slip road or acceleration lane to build up speed
+Match your speed to the traffic already on the carriageway
+Give way to traffic on the main carriageway
+Look early for a safe gap to merge
+Do not stop on the slip road unless absolutely necessary
+
+Use the MSM / PSL routine on approach: Mirrors, Signal, Manoeuvre or Position, Speed, and Look.`
+      },
+      {
+        heading: '5. Leaving a Dual Carriageway',
+        body: `Check mirrors early and signal in good time
+Move into the left-hand lane well before your exit
+Reduce speed after entering the slip road, not before
+Be aware of reduced speed limits on exit roads`
+      },
+      {
+        heading: '6. Overtaking Safely',
+        body: `Check mirrors and blind spots before changing lanes
+Signal clearly and in good time
+Only overtake when you can complete the manoeuvre safely
+Do not exceed the speed limit while overtaking
+Be aware of faster vehicles approaching from behind
+
+Avoid aggressive driving, weaving between lanes, or frequent unnecessary lane changes.`
+      },
+      {
+        heading: '7. Central Reservation Rules',
+        body: `Do not cross or stop on the central reservation
+Only use designated turning gaps where permitted
+In an emergency, stop on the left-hand side where possible
+
+Crossing a central reservation illegally is extremely dangerous and can result in serious collisions.`
+      },
+      {
+        heading: '8. Pedestrians, Cyclists, and Slow-Moving Vehicles',
+        body: `Some dual carriageways prohibit pedestrians and cyclists
+Learner drivers, cyclists, and agricultural vehicles may be restricted on certain routes
+Always observe and comply with road signs`
+      },
+      {
+        heading: '9. Hazards to Watch For',
+        body: `Vehicles joining suddenly from slip roads
+Sudden congestion, braking, or roadworks
+Strong crosswinds on exposed roads
+Broken-down vehicles on the carriageway or hard shoulder
+Changing or variable speed limits`
+      },
+      {
+        heading: '10. Common Learner Mistakes',
+        body: `Confusing dual carriageways with motorways
+Driving too slowly when joining
+Staying in the right-hand lane unnecessarily
+Poor mirror checks when changing lanes
+Braking too early before exits`
+      },
+      {
+        heading: '11. Key Safety Tips',
+        body: `Plan well ahead and read the road early
+Maintain safe following distances, increasing in wet or poor conditions
+Stay calm and confident at higher speeds
+Drive according to road and traffic conditions, not just the speed limit`
+      },
+      {
+        heading: '12. Summary',
+        body: `Dual carriageways allow for faster and smoother traffic flow but require good planning, strong observation skills, and proper lane discipline. With correct positioning, effective mirror use, and confidence at speed, they can be driven safely and comfortably.`
+      }
+    ]
   }
 };
 
