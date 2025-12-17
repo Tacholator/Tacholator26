@@ -3003,6 +3003,140 @@ Examiners are looking for:
 The emergency stop shows your ability to react to danger and control the vehicle safely. Performing it confidently and correctly is an important part of becoming a responsible driver and succeeding in the DVSA practical driving test.`
       }
     ]
+  },
+  21: {
+    title: 'Pedestrian Crossings',
+    sections: [
+      {
+        heading: '1. Pedestrian Crossings – Overview',
+        body: `Pedestrian crossings are designed to allow people to cross the road safely. As a driver, you must understand the different types of crossings, know when to stop, and recognise your legal responsibilities towards pedestrians and other vulnerable road users.
+
+Pedestrian awareness and correct behaviour at crossings are closely assessed during the DVSA practical driving test.`
+      },
+      {
+        heading: '2. Purpose of Pedestrian Crossings',
+        body: `Pedestrian crossings are used to:
+• Provide safe places for people to cross the road.
+• Reduce collisions involving pedestrians.
+• Manage traffic flow in busy areas.
+• Protect vulnerable road users.
+
+Drivers must always be prepared to slow down or stop near pedestrian crossings.`
+      },
+      {
+        heading: '3. General Rules at Pedestrian Crossings',
+        body: `At all pedestrian crossings:
+• Approach with caution.
+• Look well ahead for pedestrians waiting to cross.
+• Be prepared to stop.
+• Never overtake the vehicle nearest to the crossing.
+• Do not block the crossing or zig-zag markings.
+
+Always prioritise pedestrian safety.`
+      },
+      {
+        heading: '4. Zebra Crossings',
+        body: `Zebra crossings are identified by black and white stripes and flashing amber beacons.
+
+Driver responsibilities:
+• You must give way when a pedestrian is waiting to cross or has stepped onto the crossing.
+• Slow down and be ready to stop.
+• Stop before the crossing and allow pedestrians to cross fully.
+• Remain stopped until the crossing is completely clear.
+
+Do not wave pedestrians across or signal other drivers to proceed.`
+      },
+      {
+        heading: '5. Pelican Crossings',
+        body: `Pelican crossings are controlled by traffic lights.
+
+When the light is red
+• Stop behind the stop line.
+
+Flashing amber
+• You may proceed only if the crossing is clear of pedestrians.
+• You must wait if pedestrians are still crossing.
+
+Always check carefully before moving off.`
+      },
+      {
+        heading: '6. Puffin Crossings',
+        body: `Puffin crossings use sensors to detect pedestrians.
+
+Key points:
+• Pedestrians may still be crossing even if the signal changes.
+• There is no flashing amber phase.
+
+Driver responsibilities:
+• Stop when the light is red.
+• Check the crossing carefully before moving off.
+• Be patient, especially with slower pedestrians.`
+      },
+      {
+        heading: '7. Toucan Crossings',
+        body: `Toucan crossings allow both pedestrians and cyclists to cross.
+
+Key points:
+• Treat them the same as puffin crossings.
+• Watch for cyclists crossing at speed.
+• Do not assume the crossing will clear quickly.
+
+Always check carefully before moving off.`
+      },
+      {
+        heading: '8. Pedestrian Crossings at Traffic Lights and Junctions',
+        body: `Some pedestrian crossings form part of a traffic-light controlled junction.
+
+Driver responsibilities:
+• Obey traffic lights and filter arrows.
+• Allow pedestrians to finish crossing even if the lights change.
+• Do not block the crossing when waiting in traffic.
+
+Always ensure the crossing is clear before moving off.`
+      },
+      {
+        heading: '9. Pedestrians Near Side Roads and Junction Mouths',
+        body: `Pedestrians may cross side roads and junction mouths even where there is no marked crossing.
+
+Key points:
+• When turning into or out of a side road, check for pedestrians crossing or waiting to cross.
+• Give way where required and proceed only when safe.
+
+Always check carefully before turning left or right.`
+      },
+      {
+        heading: '10. Common Hazards at Pedestrian Crossings',
+        body: `Be especially aware of:
+• Children running onto crossings.
+• Elderly or disabled pedestrians crossing slowly.
+• Pedestrians stepping out from behind parked vehicles.
+• Cyclists crossing at toucan crossings.
+• Pedestrians starting to cross late.
+
+Approach crossings at a speed that allows you to stop safely.`
+      },
+      {
+        heading: '11. Pedestrian Crossings and the DVSA Test',
+        body: `During the DVSA practical test, examiners expect you to:
+• Anticipate pedestrian crossings early.
+• Slow down and stop smoothly when required.
+• Give pedestrians priority where required.
+• Show patience, awareness and control.
+
+Failing to give way to pedestrians when required is likely to be a serious fault.`
+      },
+      {
+        heading: '12. Summary',
+        body: `Safe use of pedestrian crossings requires:
+• Early observation and anticipation.
+• Understanding the different crossing types.
+• Willingness to slow down or stop.
+• Giving pedestrians priority where required.
+• Patience and courtesy.
+
+Pedestrian crossings exist to protect vulnerable road users. Treating them with respect and care is essential for safe driving and for passing the DVSA practical driving test.`
+      }
+    ]
   }
 };
 
