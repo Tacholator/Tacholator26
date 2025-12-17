@@ -2713,6 +2713,174 @@ Stay alert and do not assume others will always obey signals or lane markings.`
 Traffic lights help manage risk, but safe driving depends on your observation, planning and control. Correct behaviour at traffic lights is essential for everyday driving and success in the DVSA practical driving test.`
       }
     ]
+  },
+  19: {
+    title: 'Manoeuvres',
+    sections: [
+      {
+        heading: '1. Manoeuvres – Overview',
+        body: `Manoeuvres are low-speed driving tasks that test your ability to control the vehicle accurately, observe effectively and make safe decisions in confined spaces. They require good planning, precise steering, smooth control and strong all-round observation.
+
+Manoeuvres are assessed during the DVSA practical driving test and are also essential everyday driving skills for parking, turning and positioning the vehicle safely.`
+      },
+      {
+        heading: '2. Key Principles of Manoeuvres',
+        body: `All manoeuvres follow the same core principles:
+
+• Observation – constant, effective all-round checks.
+• Control – smooth use of steering, clutch, brake and accelerator (or brake control in automatic cars).
+• Accuracy – correct positioning and alignment.
+• Safety – stopping if anyone is at risk.
+
+There is no time pressure. Examiners want to see safe, controlled and accurate driving, not speed.`
+      },
+      {
+        heading: '3. Observation (360° Awareness)',
+        body: `Before and during any manoeuvre you must maintain strong all-round observation:
+• Check all mirrors.
+• Check blind spots.
+• Look over both shoulders where necessary.
+• Continue checking throughout the manoeuvre.
+
+If a pedestrian, cyclist or vehicle appears:
+• Stop immediately.
+• Reassess using LADA.
+• Only continue when it is safe.
+
+Inadequate observation is one of the most common reasons for test faults during manoeuvres.`
+      },
+      {
+        heading: '4. Low-Speed Control',
+        body: `Good low-speed control is essential for safe manoeuvres.
+
+Key techniques:
+• Keep speed at walking pace or slower.
+• Use smooth clutch control (manual) or gentle brake control (automatic).
+• Avoid harsh acceleration or sudden braking.
+• Use slow, controlled steering.
+
+If you lose control or your steering becomes messy, stop, re-check and correct safely.`
+      },
+      {
+        heading: '5. The Main Manoeuvres',
+        body: `During the DVSA practical driving test, you may be asked to complete one manoeuvre.
+
+Common manoeuvres include:
+• Parallel park.
+• Bay parking (forward or reverse).
+• Pulling up on the right and reversing.
+
+The focus is always safety, control and effective observation.`
+      },
+      {
+        heading: '6. Parallel Park',
+        body: `Parallel parking tests your observation, steering accuracy, distance judgement and vehicle control.
+
+Key points:
+• Start alongside the parked vehicle.
+• Reverse slowly and accurately into the space.
+• Finish close to and parallel with the kerb.
+• Avoid touching the kerb.
+• Aim to complete within around two car lengths.
+
+Keep checking all around throughout, and stop if anyone approaches.`
+      },
+      {
+        heading: '7. Bay Parking (Forward and Reverse)',
+        body: `Bay parking can be completed forwards or backwards.
+
+7.1 Forward Bay Parking
+• Observe carefully before turning in.
+• Steer accurately.
+• Finish centred in the bay.
+
+7.2 Reverse Bay Parking
+• Strong emphasis on observation.
+• Often gives better control and an easier, safer exit.
+
+Key points for both:
+• Check mirrors and blind spots before moving.
+• Keep speed very slow.
+• Stay within the lines.
+• Correct position safely if needed.`
+      },
+      {
+        heading: '8. Pulling Up on the Right and Reversing',
+        body: `This manoeuvre tests your ability to reverse in a straight line, control speed and steering, and maintain awareness of traffic.
+
+Key points:
+• Pull up safely on the right-hand side of the road.
+• Check all around before reversing.
+• Reverse slowly for about two car lengths.
+• Keep reasonably close to the kerb.
+• Stop if traffic approaches.
+• Rejoin traffic safely when finished (use MSM).
+
+Keep checking all around and be prepared to pause to let other road users pass.`
+      },
+      {
+        heading: '9. Using MSM and LADA During Manoeuvres',
+        body: `MSM – Mirror, Signal, Manoeuvre
+• Mirror: Check surroundings before moving.
+• Signal: Use a signal if it will help or inform others.
+• Manoeuvre: Carry out the manoeuvre slowly and safely.
+
+LADA – Look, Assess, Decide, Act
+• Look: Check all directions.
+• Assess: Identify who may be affected.
+• Decide: Whether to continue or stop.
+• Act: Move only when safe.
+
+Using MSM and LADA together supports safe, calm decision-making.`
+      },
+      {
+        heading: '10. Correcting Mistakes',
+        body: `You are allowed to correct your position during a manoeuvre.
+
+Key points:
+• Stop first.
+• Re-check all around.
+• Correct slowly.
+• Do not rush.
+
+Examiners prefer a safe correction rather than continuing with poor control or poor positioning.`
+      },
+      {
+        heading: '11. Common Faults During Manoeuvres',
+        body: `Common mistakes include:
+• Inadequate observation.
+• Moving too fast.
+• Poor steering control.
+• Touching the kerb.
+• Finishing too far from the kerb or outside bay lines.
+• Failing to stop for pedestrians or vehicles.
+
+Most faults can be avoided by slowing down, checking more often and being willing to stop and reassess.`
+      },
+      {
+        heading: '12. Safety Over Perfection',
+        body: `Manoeuvres do not need to be perfect.
+
+Examiners are looking for:
+• Safety.
+• Control.
+• Awareness.
+• Calm decision-making.
+
+Stopping, checking and correcting is always better than continuing unsafely.`
+      },
+      {
+        heading: '13. Summary',
+        body: `Successful manoeuvres require:
+• Constant observation.
+• Excellent low-speed control.
+• Accurate steering.
+• Safe use of MSM and LADA.
+• Willingness to stop and reassess.
+
+Manoeuvres demonstrate your ability to control the car precisely and safely. Mastering them builds confidence and is a key step toward passing the DVSA practical driving test and driving independently.`
+      }
+    ]
   }
 };
 
