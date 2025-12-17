@@ -2550,6 +2550,169 @@ Using LADA (Look, Assess, Decide, Act) helps you respond safely to changing cond
 Driving conditions change, but safe drivers change their driving to match. Adapting effectively is essential for everyday safety and success in the DVSA practical driving test.`
       }
     ]
+  },
+  18: {
+    title: 'Traffic Lights',
+    sections: [
+      {
+        heading: '1. Traffic Lights – Overview',
+        body: `Traffic lights control the flow of vehicles, cyclists and pedestrians at junctions, crossings and other busy areas. Correct use of traffic lights helps prevent collisions, reduce congestion and keep traffic moving safely.
+
+Drivers must understand the meaning of each signal and how to approach, stop, move off and deal with traffic-light controlled junctions using safe observation and anticipation.`
+      },
+      {
+        heading: '2. Purpose of Traffic Lights',
+        body: `Traffic lights are used to:
+• Control traffic flow at busy junctions.
+• Reduce the risk of collisions.
+• Manage pedestrian and cyclist crossings.
+• Improve safety where roads intersect or merge.
+
+Obeying traffic lights is a legal requirement and a key area assessed during the DVSA practical driving test.`
+      },
+      {
+        heading: '3. The Standard Traffic Light Sequence',
+        body: `Traffic lights follow a fixed sequence:
+
+Red
+• Stop behind the stop line.
+• Do not proceed unless directed by a green filter arrow.
+
+Red and Amber
+• Get ready to move off.
+• Do not move until the green light shows.
+
+Green
+• You may proceed if the way is clear.
+• Give way to pedestrians still crossing and to traffic where required (for example, when turning right).
+
+Amber
+• Stop unless you are so close to the stop line that stopping suddenly would be unsafe.
+• Do not accelerate to "beat" the red light.`
+      },
+      {
+        heading: '4. Approaching Traffic Lights (Using MSM and MSPSL)',
+        body: `Always plan your approach to traffic lights.
+
+MSM – Mirror, Signal, Manoeuvre
+• Check mirrors early.
+• Signal if you are changing lanes or turning.
+
+MSPSL – Mirror, Signal, Position, Speed, Look
+• Position: Choose the correct lane in good time and follow lane arrows.
+• Speed: Reduce speed early and smoothly.
+• Look: Observe the traffic lights, road markings, pedestrians and other road users.
+
+Avoid harsh braking and sudden lane changes. Good planning helps you stop or proceed smoothly and safely.`
+      },
+      {
+        heading: '5. Stopping at Traffic Lights',
+        body: `When stopping at traffic lights:
+• Stop behind the stop line.
+• Keep a safe distance from the vehicle in front.
+• Apply the handbrake if stationary for a longer period.
+• Select neutral when appropriate.
+
+Remain alert while waiting, as traffic conditions and signals can change quickly.`
+      },
+      {
+        heading: '6. Moving Off from Traffic Lights',
+        body: `Before moving off when the light changes to green:
+• Check mirrors.
+• Look for pedestrians still crossing.
+• Watch for cyclists filtering through traffic.
+• Be aware of vehicles that may jump the red light.
+
+Move off smoothly and confidently only when the way is clear.`
+      },
+      {
+        heading: '7. Traffic Light Controlled Junctions',
+        body: `At junctions controlled by traffic lights:
+• Follow lane markings and directional arrows.
+• Do not block the junction if traffic ahead has stopped.
+• Be aware of vehicles turning across your path.
+• Use LADA (Look, Assess, Decide, Act) to judge when it is safe to proceed.
+
+Always ensure your exit is clear before entering the junction.`
+      },
+      {
+        heading: '8. Filter Arrows',
+        body: `Some traffic lights include green filter arrows.
+
+Green Filter Arrow
+• You may proceed in the direction of the arrow only.
+• Other traffic must wait.
+
+No Filter Arrow
+• You may still turn when the main green light is on, but you must give way to oncoming traffic and pedestrians.
+
+Filter arrows and lane arrows override normal priority rules. Always follow them carefully.`
+      },
+      {
+        heading: '9. Pedestrian Crossings at Traffic Lights',
+        body: `Pedestrian crossings controlled by traffic lights may include pelican, puffin and toucan crossings.
+
+Driver responsibilities:
+• Stop when the light is red.
+• Allow pedestrians already on the crossing to finish crossing when the light changes.
+• Watch for pedestrians who may start crossing late.
+
+Never try to rush pedestrians. Be patient and prepared to wait.`
+      },
+      {
+        heading: '10. Cyclists and Motorcyclists at Traffic Lights',
+        body: `Be alert for:
+• Cyclists filtering through traffic.
+• Advanced Stop Lines (ASLs) and cycle boxes.
+• Motorcyclists accelerating quickly when lights change.
+
+Do not stop in cycle boxes unless unavoidable. Always check mirrors before moving off and watch for blind spots.`
+      },
+      {
+        heading: '11. Box Junctions with Traffic Lights',
+        body: `Yellow box junctions are often used alongside traffic lights.
+
+Rules:
+• Do not enter the box unless your exit is clear.
+• You may enter to turn right if your exit is blocked by oncoming traffic or other right-turning traffic.
+• Stopping in a box junction without a valid reason is an offence.
+
+Plan ahead and anticipate traffic flow to avoid blocking the junction.`
+      },
+      {
+        heading: '12. Traffic Lights Out of Order',
+        body: `If traffic lights are not working:
+• Treat the junction as an uncontrolled junction.
+• Proceed with extreme caution.
+• Use LADA to assess who is moving, who is waiting and where the safe gaps are.
+• Follow any temporary signs, signals or police instructions.
+
+Never assume others will give way. Move only when it is clearly safe.`
+      },
+      {
+        heading: '13. Common Hazards at Traffic Lights',
+        body: `Be prepared for:
+• Vehicles jumping amber or red lights.
+• Sudden braking by vehicles ahead.
+• Pedestrians crossing late.
+• Cyclists filtering into blind spots.
+• Drivers changing lanes at the last moment.
+
+Stay alert and do not assume others will always obey signals or lane markings.`
+      },
+      {
+        heading: '14. Summary',
+        body: `Safe use of traffic lights requires:
+• Understanding the traffic light sequence.
+• Correct use of MSM and MSPSL on approach.
+• Smooth stopping and moving off.
+• Awareness of pedestrians, cyclists and motorcyclists.
+• Correct response to filter arrows and lane markings.
+• Anticipation of hazards at controlled junctions.
+
+Traffic lights help manage risk, but safe driving depends on your observation, planning and control. Correct behaviour at traffic lights is essential for everyday driving and success in the DVSA practical driving test.`
+      }
+    ]
   }
 };
 
