@@ -3282,6 +3282,160 @@ These faults often come from poor observation or lack of confidence.`
 Making progress shows that you can drive safely, confidently and cooperatively with other road users. It is a key skill for everyday driving and an important assessment area in the DVSA practical driving test.`
       }
     ]
+  },
+  23: {
+    title: 'Planning Skills',
+    sections: [
+      {
+        heading: '1. Planning Skills – Overview',
+        body: `Planning skills involve looking ahead, anticipating hazards and preparing early so you can drive smoothly, safely and confidently. Good planning reduces sudden braking, harsh steering and hesitation, and allows you to make timely, safe decisions.
+
+Effective planning is a core skill expected by the DVSA and underpins almost every aspect of safe driving.`
+      },
+      {
+        heading: '2. What Planning Skills Mean',
+        body: `Planning skills are about:
+• Thinking ahead, not just reacting.
+• Anticipating what might happen next.
+• Preparing the vehicle and your actions early.
+• Making smooth, well-timed decisions.
+
+Good planning helps you stay in control and avoid last-minute actions.`
+      },
+      {
+        heading: '3. Why Planning Skills Are Important',
+        body: `Poor planning can lead to:
+• Sudden braking or steering.
+• Missed hazards.
+• Hesitation or rushed decisions.
+• Increased stress and reduced safety.
+• Driving faults during the test.
+
+Good planning improves:
+• Safety.
+• Comfort.
+• Traffic flow.
+• Confidence.`
+      },
+      {
+        heading: '4. Looking Ahead and Scanning',
+        body: `Planning starts with effective observation.
+
+Key points:
+• Look well ahead, not just at the vehicle in front.
+• Scan the road environment, not one single point.
+• Check mirrors regularly.
+• Look for signs, markings and changes in road layout.
+
+The further you look ahead, the more time you have to plan.`
+      },
+      {
+        heading: '5. Anticipation of Hazards',
+        body: `Planning means anticipating potential hazards before they develop.
+
+Examples include:
+• Junctions ahead.
+• Pedestrian crossings.
+• Parked vehicles.
+• Cyclists and motorcyclists.
+• Changes in speed limits.
+• Traffic lights or roundabouts.
+• Bends, crests and narrow roads.
+
+A helpful habit is asking yourself: "What might happen next?"`
+      },
+      {
+        heading: '6. Using LADA for Planning',
+        body: `Planning works best when using LADA (Look, Assess, Decide, Act):
+
+• Look: Observe the road ahead and around you.
+• Assess: Identify possible hazards and how they may affect you.
+• Decide: Decide early whether to slow, change position, stop or proceed.
+• Act: Act smoothly and in good time.
+
+LADA supports calm, confident decisions instead of rushed reactions.`
+      },
+      {
+        heading: '7. Planning Speed and Position',
+        body: `Good planning allows you to:
+• Adjust speed early.
+• Select the correct lane in advance.
+• Choose safe road positions.
+• Avoid harsh braking.
+
+Examples:
+• Slowing before a bend, not during it.
+• Selecting the correct lane well before a junction.
+• Reducing speed early near pedestrian crossings.`
+      },
+      {
+        heading: '8. Planning at Junctions and Roundabouts',
+        body: `At junctions and roundabouts:
+• Look early for signs and lane markings.
+• Decide lane choice in advance.
+• Identify safe gaps early.
+• Be ready to move smoothly when safe.
+
+Late decisions often cause hesitation, missed opportunities or unsafe manoeuvres.`
+      },
+      {
+        heading: '9. Planning in Traffic',
+        body: `In traffic:
+• Anticipate braking by vehicles ahead.
+• Watch brake lights further ahead, not just the car directly in front.
+• Maintain a steady speed where possible.
+• Avoid unnecessary stop-start driving.
+
+Good planning reduces stress and improves passenger comfort.`
+      },
+      {
+        heading: '10. Planning for Vulnerable Road Users',
+        body: `Always plan with vulnerable road users in mind:
+• Pedestrians.
+• Cyclists.
+• Motorcyclists.
+• Horse riders.
+
+Expect unpredictable behaviour and allow extra space and time. Early planning helps you respond safely without sudden actions.`
+      },
+      {
+        heading: '11. Planning Skills and the DVSA Test',
+        body: `Examiners look for evidence that you:
+• Anticipate hazards early.
+• Choose correct lanes in good time.
+• Adjust speed smoothly.
+• Avoid last-minute actions.
+• Drive calmly and confidently.
+
+Poor planning often results in faults such as:
+• Late lane changes.
+• Harsh braking.
+• Hesitation.
+• Missed hazards.`
+      },
+      {
+        heading: '12. Common Planning Errors',
+        body: `Common mistakes include:
+• Looking too close to the vehicle ahead.
+• Reacting late to hazards.
+• Leaving lane changes too late.
+• Braking harshly instead of early.
+• Failing to anticipate pedestrian or cyclist movements.
+
+These errors usually come from lack of forward planning and limited scanning.`
+      },
+      {
+        heading: '13. Summary',
+        body: `Good planning skills require:
+• Looking well ahead.
+• Anticipating hazards early.
+• Using LADA effectively.
+• Adjusting speed and position in good time.
+• Making smooth, timely decisions.
+
+Planning skills turn driving from a reactive task into a controlled, confident process. Mastering them is essential for safe everyday driving and for success in the DVSA practical driving test.`
+      }
+    ]
   }
 };
 
