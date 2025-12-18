@@ -1358,5 +1358,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  11: { // Use of Speed
+    id: "use_of_speed_mcq_v1",
+    title: "Use of Speed – Practice Questions",
+    description: "Test your understanding of choosing a safe, legal and appropriate speed, including the golden rules of speed, stopping distances, hazard perception, and following distances.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "uos_q1",
+        type: "multiple_choice",
+        question: "Why is correct use of speed essential for safe driving?",
+        options: [
+          "It improves engine performance",
+          "It affects stopping distance, reaction time and vehicle control",
+          "It allows you to overtake more easily",
+          "It reduces journey time"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "uos_q2",
+        type: "multiple_choice",
+        question: "What does it mean when we say \"the speed limit is not a target\"?",
+        options: [
+          "You should always drive below the limit",
+          "You should aim to reach the limit quickly",
+          "The limit is the maximum in ideal conditions, not always the safest speed",
+          "Speed limits only apply in towns"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "uos_q3",
+        type: "multiple_choice",
+        question: "Which of the following is one of the three golden rules of speed?",
+        options: [
+          "Comfortable speed",
+          "Fast speed",
+          "Safe speed",
+          "Competitive speed"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "uos_q4",
+        type: "multiple_choice",
+        question: "When should you drive below the speed limit?",
+        options: [
+          "Only during driving tests",
+          "Only at night",
+          "When conditions such as weather, traffic or visibility require it",
+          "Never – the limit is always safe"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "uos_q5",
+        type: "multiple_choice",
+        question: "Which factor would require you to reduce your speed?",
+        options: [
+          "A straight, empty road in daylight",
+          "Wet or icy road surfaces",
+          "A new vehicle with good brakes",
+          "A clear motorway"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "uos_q6",
+        type: "multiple_choice",
+        question: "What happens to stopping distance as speed increases?",
+        options: [
+          "It stays the same",
+          "It decreases",
+          "It increases slightly",
+          "It increases significantly, especially braking distance"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "uos_q7",
+        type: "multiple_choice",
+        question: "What is the correct formula for stopping distance?",
+        options: [
+          "Speed + braking",
+          "Thinking distance + braking distance",
+          "Reaction time × speed",
+          "Speed ÷ distance"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "uos_q8",
+        type: "multiple_choice",
+        question: "Why should you reduce speed when approaching hazards?",
+        options: [
+          "To save fuel",
+          "To avoid using the brakes",
+          "To give yourself more time to observe and react",
+          "To warn other drivers"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "uos_q9",
+        type: "multiple_choice",
+        question: "What is good practice for smooth and safe acceleration?",
+        options: [
+          "Accelerate hard to reach speed quickly",
+          "Use sudden bursts of speed",
+          "Accelerate gently and progressively",
+          "Keep changing speed"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "uos_q10",
+        type: "multiple_choice",
+        question: "What following distance should you use in good conditions?",
+        options: [
+          "One second",
+          "Two seconds",
+          "Five seconds",
+          "Ten seconds"
+        ],
+        correct_answer_index: 1
+      }
+    ]
   }
 };
