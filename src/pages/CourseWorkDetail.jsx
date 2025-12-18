@@ -4288,11 +4288,11 @@ export default function CourseWorkDetail() {
           
           <div className="grid gap-6 md:grid-cols-2">
             <Link to={createPageUrl('CourseWorkDetail') + '?id=1&subcard=study'}>
-              <Card className="hover:shadow-lg transition-all cursor-pointer h-full border-t-4 border-t-blue-500 hover:border-t-blue-600">
+              <Card className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 bg-blue-100 rounded-lg">
-                      <FileText className="w-6 h-6 text-blue-600" />
+                    <div className="p-3 bg-orange-200 rounded-lg">
+                      <FileText className="w-6 h-6 text-orange-700" />
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-[#071739] mb-2">Study Material</h3>
@@ -4306,11 +4306,11 @@ export default function CourseWorkDetail() {
             </Link>
             
             <Link to={createPageUrl('CourseWorkDetail') + '?id=1&subcard=practice'}>
-              <Card className="hover:shadow-lg transition-all cursor-pointer h-full border-t-4 border-t-green-500 hover:border-t-green-600">
+              <Card className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 bg-green-100 rounded-lg">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    <div className="p-3 bg-rose-200 rounded-lg">
+                      <CheckCircle className="w-6 h-6 text-rose-700" />
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-[#071739] mb-2">Practice Questions</h3>
