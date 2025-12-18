@@ -50,6 +50,7 @@ export const instructorOnlyLinks = [
   { name: 'Pupils', icon: Users, page: 'PupilList' },
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
   { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
+  { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
   { name: 'DVSA Skills', icon: GraduationCap, page: 'DVSASkills' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources' }
 ];

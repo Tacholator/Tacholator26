@@ -4455,7 +4455,7 @@ export default function CourseWorkDetail() {
           </div>
           
           {questionPack ? (
-            <McqQuiz questionPack={questionPack} />
+            <McqQuiz questionPack={questionPack} topicId={itemId} />
           ) : (
             <Card className="border-l-4 border-l-amber-500">
               <CardContent className="p-8 text-center">
