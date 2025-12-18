@@ -2718,5 +2718,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  21: { // Pedestrian Crossings
+    id: "pedestrian_crossings_mcq_v2",
+    title: "Pedestrian Crossings – Practice Questions",
+    description: "Practice questions covering all types of pedestrian crossings, including zebra, pelican, puffin and toucan crossings, legal responsibilities, common hazards and DVSA test expectations. Correct answers are deliberately balanced across A, B, C and D.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "pc_q1",
+        type: "multiple_choice",
+        question: "What is the main purpose of pedestrian crossings?",
+        options: [
+          "To provide safe places for people to cross the road",
+          "To improve traffic speed",
+          "To replace traffic lights",
+          "To allow drivers priority"
+        ],
+        correct_answer_index: 0
+      },
+      {
+        id: "pc_q2",
+        type: "multiple_choice",
+        question: "What should drivers always be prepared to do when approaching a pedestrian crossing?",
+        options: [
+          "Accelerate to clear the crossing",
+          "Sound the horn",
+          "Change lanes early",
+          "Slow down or stop"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "pc_q3",
+        type: "multiple_choice",
+        question: "What must you never do near a pedestrian crossing?",
+        options: [
+          "Check mirrors",
+          "Stop smoothly",
+          "Overtake the vehicle nearest the crossing",
+          "Look well ahead"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "pc_q4",
+        type: "multiple_choice",
+        question: "At a zebra crossing, when must you give way?",
+        options: [
+          "Only when traffic behind stops",
+          "When a pedestrian is waiting to cross or has stepped onto the crossing",
+          "Only when the lights are flashing",
+          "Only during busy periods"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "pc_q5",
+        type: "multiple_choice",
+        question: "What should you do at a pelican crossing when the amber light is flashing?",
+        options: [
+          "Sound the horn and move off",
+          "Always stop regardless",
+          "Proceed quickly",
+          "Proceed only if the crossing is clear of pedestrians"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "pc_q6",
+        type: "multiple_choice",
+        question: "Why do puffin crossings require extra care from drivers?",
+        options: [
+          "They allow cyclists only",
+          "They have no road markings",
+          "They use flashing amber lights",
+          "Pedestrians may still be crossing even if the signal changes"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "pc_q7",
+        type: "multiple_choice",
+        question: "Who is permitted to use a toucan crossing?",
+        options: [
+          "Pedestrians only",
+          "Cyclists only",
+          "Motorcyclists",
+          "Pedestrians and cyclists"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "pc_q8",
+        type: "multiple_choice",
+        question: "What must you do if pedestrians are still crossing when traffic lights change?",
+        options: [
+          "Allow them to finish crossing",
+          "Proceed carefully",
+          "Flash your headlights",
+          "Sound the horn"
+        ],
+        correct_answer_index: 0
+      },
+      {
+        id: "pc_q9",
+        type: "multiple_choice",
+        question: "What should you do when turning into a side road if pedestrians are crossing?",
+        options: [
+          "Continue if you have priority",
+          "Accelerate through quickly",
+          "Ignore them if there is no marked crossing",
+          "Give way and proceed only when it is safe"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "pc_q10",
+        type: "multiple_choice",
+        question: "What is the likely outcome on the DVSA driving test if you fail to give way to pedestrians when required?",
+        options: [
+          "A verbal warning only",
+          "No fault if traffic is light",
+          "A minor fault",
+          "A serious fault"
+        ],
+        correct_answer_index: 3
+      }
+    ]
   }
 };
