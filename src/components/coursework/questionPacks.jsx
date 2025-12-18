@@ -1222,5 +1222,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  10: { // Junctions
+    id: "junctions_mcq_v1",
+    title: "Junctions – Practice Questions",
+    description: "Test your understanding of junctions, including types of junctions, the MSPSL routine, the LADA observation method, correct positioning, speed control, priority rules, and pedestrian awareness.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "jn_q1",
+        type: "multiple_choice",
+        question: "Why are junctions considered one of the most common driving hazards?",
+        options: [
+          "They require high speeds",
+          "They involve complex vehicle controls",
+          "They require careful observation, judgement, speed and positioning",
+          "They are always poorly marked"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "jn_q2",
+        type: "multiple_choice",
+        question: "Which routines are used together when dealing with junctions?",
+        options: [
+          "MSM and POM",
+          "MSPSL and LADA",
+          "PSL and MSPS",
+          "LADA and POM"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "jn_q3",
+        type: "multiple_choice",
+        question: "What does MSPSL stand for?",
+        options: [
+          "Mirror, Speed, Position, Signal, Look",
+          "Manoeuvre, Signal, Position, Speed, Look",
+          "Mirror, Signal, Position, Speed, Look",
+          "Mirror, Signal, Plan, Stop, Look"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "jn_q4",
+        type: "multiple_choice",
+        question: "Which type of junction usually requires you to give way when joining a main road?",
+        options: [
+          "Crossroads",
+          "Roundabout",
+          "T-junction",
+          "Unmarked junction"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "jn_q5",
+        type: "multiple_choice",
+        question: "How should you position the car when turning left at a junction?",
+        options: [
+          "Close to the kerb",
+          "Just left of the centre line",
+          "In the centre of your lane",
+          "In the opposite lane"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "jn_q6",
+        type: "multiple_choice",
+        question: "What is the correct positioning when turning right at a junction?",
+        options: [
+          "Close to the kerb",
+          "In the centre of the road",
+          "Just left of the centre line or in a right-turn lane",
+          "On the pavement edge"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "jn_q7",
+        type: "multiple_choice",
+        question: "What does the L in the LADA routine stand for?",
+        options: [
+          "Lane",
+          "Look",
+          "Limit",
+          "Light"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "jn_q8",
+        type: "multiple_choice",
+        question: "What should you do if visibility is restricted when emerging from a junction?",
+        options: [
+          "Accelerate quickly",
+          "Rely on other drivers stopping",
+          "Use the creep and peep technique",
+          "Sound the horn"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "jn_q9",
+        type: "multiple_choice",
+        question: "At an unmarked junction, who has priority?",
+        options: [
+          "Traffic from the left",
+          "Traffic from the right",
+          "Vehicles on the wider road",
+          "No one has automatic priority"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "jn_q10",
+        type: "multiple_choice",
+        question: "What must you do if pedestrians have started crossing the road you are turning into?",
+        options: [
+          "Continue if they are far away",
+          "Sound the horn",
+          "Give way to the pedestrians",
+          "Turn quickly before they reach your path"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
