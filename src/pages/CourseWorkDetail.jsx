@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -4247,6 +4247,7 @@ Learners may use their own car, but it must fully comply with DVSA requirements.
 };
 
 export default function CourseWorkDetail() {
+  const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const itemId = parseInt(urlParams.get('id'));
   const subcard = urlParams.get('subcard');
@@ -4287,41 +4288,43 @@ export default function CourseWorkDetail() {
           </div>
           
           <div className="grid gap-6 md:grid-cols-2">
-            <div onClick={() => window.location.href = createPageUrl('CourseWorkDetail') + '?id=1&subcard=study'}>
-              <Card className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-orange-200 rounded-lg">
-                      <FileText className="w-6 h-6 text-orange-700" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#071739] mb-2">Study Material</h3>
-                      <p className="text-slate-600">
-                        Learn about legal responsibilities, documentation, and regulations for driving
-                      </p>
-                    </div>
+            <Card 
+              onClick={() => navigate(createPageUrl('CourseWorkDetail') + '?id=1&subcard=study')}
+              className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50"
+            >
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-orange-200 rounded-lg">
+                    <FileText className="w-6 h-6 text-orange-700" />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-[#071739] mb-2">Study Material</h3>
+                    <p className="text-slate-600">
+                      Learn about legal responsibilities, documentation, and regulations for driving
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             
-            <div onClick={() => window.location.href = createPageUrl('CourseWorkDetail') + '?id=1&subcard=practice'}>
-              <Card className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-rose-200 rounded-lg">
-                      <CheckCircle className="w-6 h-6 text-rose-700" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#071739] mb-2">Practice Questions</h3>
-                      <p className="text-slate-600">
-                        Test your knowledge with practice questions and assessments
-                      </p>
-                    </div>
+            <Card 
+              onClick={() => navigate(createPageUrl('CourseWorkDetail') + '?id=1&subcard=practice')}
+              className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50"
+            >
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-rose-200 rounded-lg">
+                    <CheckCircle className="w-6 h-6 text-rose-700" />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-[#071739] mb-2">Practice Questions</h3>
+                    <p className="text-slate-600">
+                      Test your knowledge with practice questions and assessments
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
