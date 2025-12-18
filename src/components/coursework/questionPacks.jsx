@@ -1902,5 +1902,141 @@ export const questionPacks = {
         correct_answer_index: 1
       }
     ]
+  },
+  15: { // Dual Carriageways
+    id: "dual_carriageways_mcq_v1",
+    title: "Dual Carriageways – Practice Questions",
+    description: "Test your understanding of driving safely on dual carriageways, including speed limits, joining and leaving using slip roads, lane discipline, higher-speed driving, hazards and emergency procedures.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "dc_q1",
+        type: "multiple_choice",
+        question: "What defines a dual carriageway?",
+        options: [
+          "A road with one lane in each direction",
+          "A road where traffic in opposite directions is separated by a central reservation",
+          "A road with traffic lights only",
+          "A road used only for high-speed vehicles"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "dc_q2",
+        type: "multiple_choice",
+        question: "What is the usual national speed limit for cars on a dual carriageway?",
+        options: [
+          "50 mph",
+          "60 mph",
+          "70 mph",
+          "80 mph"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q3",
+        type: "multiple_choice",
+        question: "What should you do when joining a dual carriageway using a slip road?",
+        options: [
+          "Stop and wait for traffic to clear",
+          "Accelerate to match the speed of traffic on the dual carriageway",
+          "Join at a low speed and accelerate later",
+          "Sound the horn to warn other drivers"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "dc_q4",
+        type: "multiple_choice",
+        question: "Who normally has priority when you are joining a dual carriageway?",
+        options: [
+          "Vehicles joining from the slip road",
+          "Vehicles in the right-hand lane",
+          "Vehicles already on the dual carriageway",
+          "The fastest vehicle"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q5",
+        type: "multiple_choice",
+        question: "What is the correct normal driving position on a dual carriageway?",
+        options: [
+          "Any lane that is free",
+          "The right-hand lane",
+          "The left-hand lane unless overtaking",
+          "The middle lane"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q6",
+        type: "multiple_choice",
+        question: "When should you return to the left lane after overtaking?",
+        options: [
+          "As soon as you pass the vehicle's front bumper",
+          "When traffic behind flashes headlights",
+          "Once you have safely passed and it is clear",
+          "Only when the road narrows"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q7",
+        type: "multiple_choice",
+        question: "Why is planning early especially important on dual carriageways?",
+        options: [
+          "Vehicles travel more slowly",
+          "There are more pedestrians",
+          "Higher speeds reduce reaction time",
+          "Lane markings are unclear"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q8",
+        type: "multiple_choice",
+        question: "When should you slow down if leaving a dual carriageway using a slip road?",
+        options: [
+          "On the main carriageway",
+          "Before signalling",
+          "Only after entering the slip road",
+          "As soon as you see the exit sign"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q9",
+        type: "multiple_choice",
+        question: "What makes right turns across a dual carriageway particularly hazardous?",
+        options: [
+          "Lack of road markings",
+          "High speed and multiple lanes of traffic",
+          "Poor lighting",
+          "Frequent pedestrians"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "dc_q10",
+        type: "multiple_choice",
+        question: "What should you do if you break down on a dual carriageway?",
+        options: [
+          "Stop in the nearest live lane",
+          "Turn off all lights",
+          "Move onto the hard shoulder and switch on hazard lights",
+          "Remain seated in the vehicle in traffic"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
