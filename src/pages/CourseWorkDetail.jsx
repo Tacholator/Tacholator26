@@ -4267,8 +4267,12 @@ export default function CourseWorkDetail() {
     `${section.heading}. ${section.body}`
   ).join('. ') || '';
 
-  // Handle Legal Responsibilities sub-cards
-  if (itemId === 1 && !subcard) {
+  // Cards that should NOT have sub-cards
+  const excludedCards = [25, 28]; // Show Me Tell Me (25), Test Preparation (28)
+  const shouldHaveSubcards = itemId && !excludedCards.includes(itemId);
+
+  // Handle sub-card selection screen (for all cards except excluded ones)
+  if (shouldHaveSubcards && !subcard && content) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
@@ -4282,14 +4286,14 @@ export default function CourseWorkDetail() {
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <FileText className="w-8 h-8 text-[#071739]" />
-              <h1 className="text-3xl font-bold text-[#071739]">Legal Responsibilities</h1>
+              <h1 className="text-3xl font-bold text-[#071739]">{content.title}</h1>
             </div>
             <p className="text-slate-500 text-sm">Choose a section below</p>
           </div>
           
           <div className="grid gap-6 md:grid-cols-2">
             <Card 
-              onClick={() => navigate(createPageUrl('CourseWorkDetail') + '?id=1&subcard=study')}
+              onClick={() => navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}&subcard=study`)}
               className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50"
             >
               <CardContent className="p-6">
@@ -4300,7 +4304,7 @@ export default function CourseWorkDetail() {
                   <div>
                     <h3 className="text-xl font-semibold text-[#071739] mb-2">Study Material</h3>
                     <p className="text-slate-600">
-                      Learn about legal responsibilities, documentation, and regulations for driving
+                      Learn the key concepts, techniques and knowledge for {content.title.toLowerCase()}
                     </p>
                   </div>
                 </div>
@@ -4308,7 +4312,7 @@ export default function CourseWorkDetail() {
             </Card>
             
             <Card 
-              onClick={() => navigate(createPageUrl('CourseWorkDetail') + '?id=1&subcard=practice')}
+              onClick={() => navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}&subcard=practice`)}
               className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50"
             >
               <CardContent className="p-6">
@@ -4331,15 +4335,15 @@ export default function CourseWorkDetail() {
     );
   }
 
-  // Handle Practice Questions sub-card
-  if (itemId === 1 && subcard === 'practice') {
+  // Handle Practice Questions sub-card (for all cards with sub-cards)
+  if (shouldHaveSubcards && subcard === 'practice' && content) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
-          <Link to={createPageUrl('CourseWorkDetail') + '?id=1'}>
+          <Link to={createPageUrl('CourseWorkDetail') + `?id=${itemId}`}>
             <Button variant="ghost" className="gap-2 text-slate-600 hover:text-slate-800 mb-6">
               <ArrowLeft className="w-4 h-4" />
-              Back to Legal Responsibilities
+              Back to {content.title}
             </Button>
           </Link>
           
@@ -4348,7 +4352,7 @@ export default function CourseWorkDetail() {
               <CheckCircle className="w-8 h-8 text-[#071739]" />
               <h1 className="text-3xl font-bold text-[#071739]">Practice Questions</h1>
             </div>
-            <p className="text-slate-500 text-sm">Legal Responsibilities</p>
+            <p className="text-slate-500 text-sm">{content.title}</p>
           </div>
           
           <Card className="border-l-4 border-l-amber-500">
@@ -4384,12 +4388,12 @@ export default function CourseWorkDetail() {
   }
 
   // Determine back link for sub-cards
-  const backLink = (itemId === 1 && subcard === 'study') 
-    ? createPageUrl('CourseWorkDetail') + '?id=1'
+  const backLink = (shouldHaveSubcards && subcard === 'study') 
+    ? createPageUrl('CourseWorkDetail') + `?id=${itemId}`
     : createPageUrl('CourseWork');
   
-  const backText = (itemId === 1 && subcard === 'study')
-    ? 'Back to Legal Responsibilities'
+  const backText = (shouldHaveSubcards && subcard === 'study')
+    ? `Back to ${content.title}`
     : 'Back to Course Work';
 
   return (
