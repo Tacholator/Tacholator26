@@ -814,5 +814,141 @@ export const questionPacks = {
         correct_answer_index: 1
       }
     ]
+  },
+  7: { // Moving Off Safely (POM)
+    id: "moving_off_mcq_v1",
+    title: "Moving Off Safely – Practice Questions",
+    description: "Test your understanding of moving off safely using the DVSA POM routine (Prepare, Observe, Move), including correct preparation, the 6-point observation check, and smooth, controlled movement.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "mo_q1",
+        type: "multiple_choice",
+        question: "What does moving off safely aim to achieve?",
+        options: [
+          "Leaving the kerb as quickly as possible",
+          "Joining traffic smoothly without causing danger or inconvenience",
+          "Increasing speed rapidly",
+          "Avoiding the use of mirrors"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mo_q2",
+        type: "multiple_choice",
+        question: "What does the DVSA-approved routine POM stand for?",
+        options: [
+          "Prepare, Observe, Manoeuvre",
+          "Position, Observe, Move",
+          "Prepare, Observe, Move",
+          "Plan, Observe, Manoeuvre"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mo_q3",
+        type: "multiple_choice",
+        question: "What is the main purpose of the Prepare stage?",
+        options: [
+          "To check mirrors",
+          "To make sure the car is fully ready to move smoothly",
+          "To look for hazards",
+          "To steer away from the kerb"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mo_q4",
+        type: "multiple_choice",
+        question: "Which action is part of preparing to move off in a manual car?",
+        options: [
+          "Selecting neutral",
+          "Raising the clutch to the bite point",
+          "Applying the handbrake firmly",
+          "Steering away from the kerb"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mo_q5",
+        type: "multiple_choice",
+        question: "What must a driver do when preparing to move off in an automatic car?",
+        options: [
+          "Press the clutch pedal",
+          "Select 1st gear",
+          "Keep the foot on the brake and select Drive",
+          "Use the handbrake only"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mo_q6",
+        type: "multiple_choice",
+        question: "Which stage of POM is the most important for safety?",
+        options: [
+          "Prepare",
+          "Observe",
+          "Move",
+          "Position"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mo_q7",
+        type: "multiple_choice",
+        question: "What is the correct order of the 6-point observation check?",
+        options: [
+          "Interior mirror → Ahead → Door mirrors → Blind spots",
+          "Left blind spot → Left mirror → Ahead → Interior mirror → Right mirror → Right blind spot",
+          "Ahead → Interior mirror → Door mirrors → Blind spots",
+          "Right blind spot → Right mirror → Interior mirror → Ahead → Left mirror → Left blind spot"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mo_q8",
+        type: "multiple_choice",
+        question: "Why is checking the right blind spot especially important?",
+        options: [
+          "It shows traffic ahead",
+          "It helps with steering control",
+          "It is where cyclists and motorcyclists may be hidden",
+          "It improves fuel efficiency"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mo_q9",
+        type: "multiple_choice",
+        question: "What should you do if a road user may be affected when you are about to move off?",
+        options: [
+          "Move off quickly",
+          "Sound the horn",
+          "Wait until it is clearly safe",
+          "Signal and move immediately"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mo_q10",
+        type: "multiple_choice",
+        question: "After moving off, what should you do next?",
+        options: [
+          "Stop again immediately",
+          "Cancel any signal and check mirrors",
+          "Accelerate hard",
+          "Apply the handbrake"
+        ],
+        correct_answer_index: 1
+      }
+    ]
   }
 };
