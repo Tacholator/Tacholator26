@@ -3126,5 +3126,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  24: { // Independent Driving
+    id: "independent_driving_mcq_v1",
+    title: "Independent Driving – Practice Questions",
+    description: "MCQs covering decision-making, following directions, lane discipline and safety during independent driving. Correct answers are evenly distributed across A, B, C and D.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "id_q1",
+        type: "multiple_choice",
+        question: "What is the main purpose of independent driving on the DVSA practical test?",
+        options: [
+          "To test your navigation accuracy",
+          "To see how fast you can follow directions",
+          "To assess your ability to drive safely without step-by-step instruction",
+          "To check your memory of routes"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "id_q2",
+        type: "multiple_choice",
+        question: "Independent driving does NOT mean:",
+        options: [
+          "Driving without following road rules",
+          "Making your own safe decisions",
+          "Staying calm and focused",
+          "Driving safely without constant instruction"
+        ],
+        correct_answer_index: 0
+      },
+      {
+        id: "id_q3",
+        type: "multiple_choice",
+        question: "How long does independent driving usually last during the DVSA practical test?",
+        options: [
+          "About 10 minutes",
+          "About 15 minutes",
+          "About 20 minutes",
+          "The entire test"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "id_q4",
+        type: "multiple_choice",
+        question: "When following a sat-nav during independent driving, where should your main focus be?",
+        options: [
+          "On the sat-nav screen",
+          "On listening for instructions only",
+          "On adjusting settings frequently",
+          "On the road and surrounding hazards"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "id_q5",
+        type: "multiple_choice",
+        question: "What should you do if you miss a turn while driving independently?",
+        options: [
+          "Stop immediately and ask for help",
+          "Turn around as soon as possible",
+          "Stay calm and continue driving safely",
+          "Speed up to rejoin the route"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "id_q6",
+        type: "multiple_choice",
+        question: "When following road signs, what is most important?",
+        options: [
+          "Reading signs late to avoid confusion",
+          "Changing lanes at the last moment",
+          "Ignoring lane arrows if unsure",
+          "Reading signs early and selecting lanes in good time"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "id_q7",
+        type: "multiple_choice",
+        question: "Which routine best supports safe decision-making during independent driving?",
+        options: [
+          "MSM only",
+          "PSL only",
+          "LADA (Look, Assess, Decide, Act)",
+          "POM only"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "id_q8",
+        type: "multiple_choice",
+        question: "If you are unsure which lane to take during independent driving, what is the safest option?",
+        options: [
+          "Make a quick lane change",
+          "Stop and wait for instructions",
+          "Use hazard lights and slow down",
+          "Stay in a safe lane and continue"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "id_q9",
+        type: "multiple_choice",
+        question: "Which of the following is a common fault during independent driving?",
+        options: [
+          "Driving confidently",
+          "Good mirror use",
+          "Poor lane discipline",
+          "Calm decision-making"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "id_q10",
+        type: "multiple_choice",
+        question: "If directions conflict with road signs or safety, what should you do?",
+        options: [
+          "Follow the directions anyway",
+          "Stop and ask the examiner",
+          "Ignore road signs",
+          "Follow road signs and prioritise safety"
+        ],
+        correct_answer_index: 3
+      }
+    ]
   }
 };
