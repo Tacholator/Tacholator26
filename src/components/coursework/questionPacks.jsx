@@ -3398,5 +3398,141 @@ export const questionPacks = {
         correct_answer_index: 3
       }
     ]
+  },
+  27: { // Eco-Safe Driving
+    id: "eco_safe_driving_mcq_v1",
+    title: "Eco-Safe Driving – Practice Questions",
+    description: "MCQs covering fuel-efficient, environmentally responsible and safe driving techniques. Correct answers are evenly distributed across A, B, C and D.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "eco_q1",
+        type: "multiple_choice",
+        question: "What is eco-safe driving?",
+        options: [
+          "Driving as fast as possible to reduce journey time",
+          "Driving in a way that reduces fuel use, emissions and risk",
+          "Using eco mode only on motorways",
+          "Avoiding braking whenever possible"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "eco_q2",
+        type: "multiple_choice",
+        question: "Which driving behaviour helps improve fuel efficiency?",
+        options: [
+          "Harsh acceleration from junctions",
+          "Driving in low gears at high speed",
+          "Smooth acceleration and early gear changes",
+          "Revving the engine before moving off"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "eco_q3",
+        type: "multiple_choice",
+        question: "How does looking well ahead help eco-safe driving?",
+        options: [
+          "It allows you to drive faster",
+          "It reduces the need for mirrors",
+          "It helps you brake later",
+          "It helps you plan early and avoid unnecessary braking"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "eco_q4",
+        type: "multiple_choice",
+        question: "What is the most fuel-efficient way to use the accelerator?",
+        options: [
+          "Pressing it hard and quickly",
+          "Using steady, progressive pressure",
+          "Accelerating sharply then easing off",
+          "Constantly varying pressure"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "eco_q5",
+        type: "multiple_choice",
+        question: "Which of the following increases fuel consumption?",
+        options: [
+          "Maintaining a steady speed",
+          "Anticipating hazards early",
+          "Unnecessary idling and aggressive driving",
+          "Keeping tyres correctly inflated"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "eco_q6",
+        type: "multiple_choice",
+        question: "When is it appropriate to switch the engine off to save fuel?",
+        options: [
+          "When stopped briefly in traffic",
+          "When waiting for a short pause at lights",
+          "Whenever you slow down",
+          "When stopped for longer periods, where safe to do so"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "eco_q7",
+        type: "multiple_choice",
+        question: "How does correct tyre pressure support eco-safe driving?",
+        options: [
+          "It improves grip but increases fuel use",
+          "It reduces rolling resistance and improves efficiency",
+          "It only affects braking distance",
+          "It has no effect on fuel consumption"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "eco_q8",
+        type: "multiple_choice",
+        question: "What role does speed play in eco-safe driving?",
+        options: [
+          "Higher speed always saves fuel",
+          "Speed has no impact on emissions",
+          "Moderate, steady speeds reduce fuel use and emissions",
+          "Driving slowly in all situations is best"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "eco_q9",
+        type: "multiple_choice",
+        question: "How can planning routes help eco-safe driving?",
+        options: [
+          "By choosing the longest route",
+          "By avoiding the use of sat-nav",
+          "By using roads with the highest speed limits",
+          "By avoiding congestion and unnecessary stops"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "eco_q10",
+        type: "multiple_choice",
+        question: "Why is eco-safe driving also considered safer driving?",
+        options: [
+          "It removes the need for braking",
+          "It encourages smooth, planned and controlled driving",
+          "It allows closer following distances",
+          "It focuses only on fuel savings"
+        ],
+        correct_answer_index: 1
+      }
+    ]
   }
 };
