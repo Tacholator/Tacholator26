@@ -542,5 +542,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  5: { // Main Car Controls
+    id: "main_car_controls_mcq_v1",
+    title: "Main Car Controls – Practice Questions",
+    description: "Test your understanding of the main car controls: foot controls, hand controls, and ancillary controls, and how they support safe, smooth driving.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "mcc_q1",
+        type: "multiple_choice",
+        question: "Why is it important to understand the main car controls?",
+        options: [
+          "To improve navigation skills",
+          "To drive safely and confidently",
+          "To reduce insurance costs",
+          "To pass the theory test only"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mcc_q2",
+        type: "multiple_choice",
+        question: "How are the main car controls divided?",
+        options: [
+          "Primary, secondary and emergency controls",
+          "Interior, exterior and engine controls",
+          "Foot controls, hand controls and ancillary controls",
+          "Manual and automatic controls"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mcc_q3",
+        type: "multiple_choice",
+        question: "What is the main function of the accelerator?",
+        options: [
+          "To stop the car",
+          "To control steering direction",
+          "To control the speed of the car",
+          "To change gears"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mcc_q4",
+        type: "multiple_choice",
+        question: "How should the footbrake be applied for good control?",
+        options: [
+          "Press hard and quickly",
+          "Press suddenly and release sharply",
+          "Apply progressive pressure smoothly",
+          "Pump the brake repeatedly"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mcc_q5",
+        type: "multiple_choice",
+        question: "What is the purpose of the clutch in a manual car?",
+        options: [
+          "To slow the vehicle",
+          "To steer the car",
+          "To separate the engine from the wheels",
+          "To hold the car stationary"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mcc_q6",
+        type: "multiple_choice",
+        question: "Which foot controls are found in an automatic car?",
+        options: [
+          "Accelerator, brake and clutch",
+          "Accelerator and clutch only",
+          "Brake and clutch only",
+          "Accelerator and brake only"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "mcc_q7",
+        type: "multiple_choice",
+        question: "What is the correct hand position on the steering wheel for maximum control?",
+        options: [
+          "12-and-6",
+          "8-and-4",
+          "9-and-3 or 10-and-2",
+          "Any comfortable position"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mcc_q8",
+        type: "multiple_choice",
+        question: "What is the main purpose of the handbrake?",
+        options: [
+          "To slow the car while moving",
+          "To prevent the car from rolling when stationary",
+          "To change gears",
+          "To improve steering control"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mcc_q9",
+        type: "multiple_choice",
+        question: "When should indicators be used?",
+        options: [
+          "After completing a turn",
+          "Only on motorways",
+          "In good time before turning or changing lanes",
+          "Only when other vehicles are nearby"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mcc_q10",
+        type: "multiple_choice",
+        question: "Why are demisters important?",
+        options: [
+          "They improve fuel efficiency",
+          "They reduce engine temperature",
+          "They clear mist and ensure good visibility",
+          "They improve passenger comfort only"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
