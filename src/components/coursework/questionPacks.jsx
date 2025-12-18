@@ -3262,5 +3262,141 @@ export const questionPacks = {
         correct_answer_index: 3
       }
     ]
+  },
+  26: { // Hazard Perception
+    id: "hazard_perception_mcq_v1",
+    title: "Hazard Perception – Practice Questions",
+    description: "MCQs covering identification of hazards, anticipation, use of LADA, and safe responses. Correct answers are evenly distributed across A, B, C and D.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "hp_q1",
+        type: "multiple_choice",
+        question: "What is hazard perception?",
+        options: [
+          "Reacting quickly when danger appears",
+          "Identifying developing dangers early and responding safely",
+          "Driving slowly at all times",
+          "Watching only the vehicle directly ahead"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "hp_q2",
+        type: "multiple_choice",
+        question: "Which of the following best describes a hazard?",
+        options: [
+          "Anything that could cause you to change speed, direction or stop",
+          "Only moving vehicles",
+          "Only pedestrians and cyclists",
+          "Anything that forces an emergency stop"
+        ],
+        correct_answer_index: 0
+      },
+      {
+        id: "hp_q3",
+        type: "multiple_choice",
+        question: "Which example shows a potential hazard rather than a developing hazard?",
+        options: [
+          "A cyclist swerving into your lane",
+          "A pedestrian stepping into the road",
+          "A car braking sharply ahead",
+          "A pedestrian walking near the kerb"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "hp_q4",
+        type: "multiple_choice",
+        question: "Why is good hazard perception important?",
+        options: [
+          "It allows you to drive faster",
+          "It removes the need to brake",
+          "It gives you more time to react and stay safe",
+          "It means you never need to stop"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "hp_q5",
+        type: "multiple_choice",
+        question: "What is the best way to improve hazard perception?",
+        options: [
+          "Focusing only on the road markings",
+          "Looking well ahead and scanning continuously",
+          "Driving closer to other vehicles",
+          "Relying on other drivers to react first"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "hp_q6",
+        type: "multiple_choice",
+        question: "In the LADA routine, what does the letter 'A' stand for in the final step?",
+        options: [
+          "Avoid",
+          "Anticipate",
+          "Act",
+          "Adjust"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "hp_q7",
+        type: "multiple_choice",
+        question: "Which situation is most likely to create a developing hazard?",
+        options: [
+          "A bend ahead with clear visibility",
+          "A parked car with no one nearby",
+          "A clear straight road",
+          "A vehicle pulling out from a side road"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "hp_q8",
+        type: "multiple_choice",
+        question: "How does speed affect hazard perception?",
+        options: [
+          "Higher speed gives you more reaction time",
+          "Speed has no effect on reaction time",
+          "Higher speed reduces the time available to react",
+          "Lower speed always causes hesitation faults"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "hp_q9",
+        type: "multiple_choice",
+        question: "What is commonly expected by examiners during hazard perception on the practical test?",
+        options: [
+          "Sudden braking when hazards appear",
+          "Early anticipation and smooth adjustments",
+          "Driving very slowly at all times",
+          "Ignoring minor hazards"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "hp_q10",
+        type: "multiple_choice",
+        question: "Which is a common mistake in hazard perception?",
+        options: [
+          "Looking well ahead",
+          "Adjusting speed early",
+          "Using mirrors regularly",
+          "Focusing too close to the front of the car"
+        ],
+        correct_answer_index: 3
+      }
+    ]
   }
 };
