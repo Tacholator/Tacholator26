@@ -406,5 +406,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  4: { // Cockpit Procedures (DSSSM)
+    id: "cockpit_procedures_mcq_v1",
+    title: "Cockpit Drill / DSSSM – Practice Questions",
+    description: "Test your understanding of the Cockpit Drill (DSSSM): Doors, Seat, Steering, Seatbelt, and Mirrors. Build safe routines before every journey.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "cp_q1",
+        type: "multiple_choice",
+        question: "What is the purpose of the Cockpit Drill (DSSSM)?",
+        options: [
+          "To improve fuel efficiency",
+          "To ensure the vehicle engine is warmed up",
+          "To ensure the driver is safe, comfortable and in control",
+          "To check traffic conditions"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "cp_q2",
+        type: "multiple_choice",
+        question: "What does the letter D in DSSSM stand for?",
+        options: [
+          "Dashboard",
+          "Doors",
+          "Drive",
+          "Distance"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "cp_q3",
+        type: "multiple_choice",
+        question: "Why must all doors be securely closed before driving?",
+        options: [
+          "To improve fuel economy",
+          "To reduce engine noise",
+          "Open or loose doors can be dangerous and distracting",
+          "To prevent the car alarm from sounding"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "cp_q4",
+        type: "multiple_choice",
+        question: "Which is a sign that a door may not be properly closed?",
+        options: [
+          "The steering feels heavy",
+          "A door-warning light on the dashboard",
+          "The fuel gauge drops",
+          "The mirrors move"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "cp_q5",
+        type: "multiple_choice",
+        question: "When is your seating position correct?",
+        options: [
+          "When your arms are fully straight",
+          "When you sit low and reclined",
+          "When you can fully press the clutch without stretching",
+          "When your head touches the roof"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "cp_q6",
+        type: "multiple_choice",
+        question: "Why is correct seat adjustment important?",
+        options: [
+          "It improves comfort, control and reaction time",
+          "It reduces tyre wear",
+          "It increases engine power",
+          "It helps navigation"
+        ],
+        correct_answer_index: 0
+      },
+      {
+        id: "cp_q7",
+        type: "multiple_choice",
+        question: "What should you check when adjusting the steering wheel?",
+        options: [
+          "That it improves radio access",
+          "That you can turn it fully without leaning forward",
+          "That it blocks dashboard lights",
+          "That it rests on your legs"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "cp_q8",
+        type: "multiple_choice",
+        question: "What must be checked about your seatbelt before moving off?",
+        options: [
+          "That it looks clean",
+          "That it is loose for comfort",
+          "That it is not twisted and clicks securely into place",
+          "That it is worn only on long journeys"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "cp_q9",
+        type: "multiple_choice",
+        question: "Who is legally responsible for ensuring children under 14 wear seatbelts?",
+        options: [
+          "The children themselves",
+          "The front passenger",
+          "The vehicle owner",
+          "The driver"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "cp_q10",
+        type: "multiple_choice",
+        question: "When should mirrors be adjusted?",
+        options: [
+          "While driving at low speed",
+          "While waiting at traffic lights",
+          "Before starting the journey",
+          "After moving off"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
