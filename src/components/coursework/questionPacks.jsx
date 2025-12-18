@@ -2582,5 +2582,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  20: { // Emergency Stop
+    id: "emergency_stop_mcq_v1",
+    title: "Emergency Stop – Practice Questions",
+    description: "Practice questions covering the emergency stop procedure, including reaction to the examiner's signal, braking control, clutch use in manual vehicles, post-stop safety checks and moving off safely, in line with DVSA standards.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "es_q1",
+        type: "multiple_choice",
+        question: "What is the main purpose of the emergency stop?",
+        options: [
+          "To test smooth braking",
+          "To test fuel efficiency",
+          "To test reaction time, control and safe stopping",
+          "To test parking skills"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "es_q2",
+        type: "multiple_choice",
+        question: "During the DVSA driving test, when will you be asked to perform an emergency stop?",
+        options: [
+          "At a fixed point in the test",
+          "Whenever you feel it is necessary",
+          "Only when the examiner gives a clear signal",
+          "Without any warning"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "es_q3",
+        type: "multiple_choice",
+        question: "What type of hazard does the emergency stop represent?",
+        options: [
+          "Planned stops at junctions",
+          "Gradual slowing in traffic",
+          "Sudden and unexpected hazards",
+          "Normal stopping situations"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "es_q4",
+        type: "multiple_choice",
+        question: "What should you do immediately when the examiner gives the emergency stop signal?",
+        options: [
+          "Signal left",
+          "Brake firmly and keep control",
+          "Change down gears",
+          "Steer towards the kerb"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "es_q5",
+        type: "multiple_choice",
+        question: "In a manual car, when should you press the clutch during an emergency stop?",
+        options: [
+          "As soon as you start braking",
+          "Halfway through braking",
+          "Just before the vehicle stops",
+          "After the vehicle has stopped"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "es_q6",
+        type: "multiple_choice",
+        question: "What should you do if the brake pedal vibrates during an emergency stop?",
+        options: [
+          "Release the brake",
+          "Pump the brake",
+          "Apply more steering",
+          "Keep firm pressure on the brake"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "es_q7",
+        type: "multiple_choice",
+        question: "What must you do after the vehicle has come to a complete stop?",
+        options: [
+          "Immediately move off again",
+          "Apply the handbrake and select neutral",
+          "Switch off the engine",
+          "Sound the horn"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "es_q8",
+        type: "multiple_choice",
+        question: "Before moving off again after an emergency stop, what must you do?",
+        options: [
+          "Accelerate quickly",
+          "Check mirrors and blind spots",
+          "Release the handbrake immediately",
+          "Move off without signalling"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "es_q9",
+        type: "multiple_choice",
+        question: "Which of the following is a common fault during an emergency stop?",
+        options: [
+          "Braking too firmly",
+          "Checking mirrors before moving off",
+          "Delayed reaction to the examiner's signal",
+          "Applying the handbrake"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "es_q10",
+        type: "multiple_choice",
+        question: "What are examiners mainly looking for during an emergency stop?",
+        options: [
+          "Comfort for passengers",
+          "Perfect smoothness",
+          "Quick reaction and full control",
+          "Minimal braking distance only"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
