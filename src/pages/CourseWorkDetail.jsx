@@ -3924,6 +3924,154 @@ Poor hazard perception can lead to serious or dangerous faults.`
 Hazard perception turns driving from reacting at the last second into planning ahead safely. Mastering this skill is essential for passing both the DVSA tests and for becoming a safe, confident driver for life.`
       }
     ]
+  },
+  27: {
+    title: 'Eco-Safe Driving',
+    sections: [
+      {
+        heading: '1. Eco-Safe Driving – Overview',
+        body: `Eco-safe driving is about driving in a way that is fuel-efficient, environmentally friendly, and safe. It focuses on smooth control, good planning and anticipation to reduce fuel consumption, lower emissions, and improve overall road safety.
+
+Eco-safe driving benefits:
+• You (lower fuel and running costs).
+• Other road users (smoother, safer driving).
+• The environment (reduced emissions and pollution).`
+      },
+      {
+        heading: '2. What Eco-Safe Driving Means',
+        body: `Eco-safe driving does not mean:
+• Driving too slowly.
+• Obstructing traffic.
+• Ignoring road conditions.
+
+Eco-safe driving does mean:
+• Driving smoothly and progressively.
+• Anticipating hazards early.
+• Avoiding unnecessary acceleration and braking.
+• Maintaining good vehicle control.
+
+Eco-safe driving combines efficiency and safety.`
+      },
+      {
+        heading: '3. Why Eco-Safe Driving Is Important',
+        body: `Eco-safe driving helps to:
+• Reduce fuel consumption.
+• Lower CO₂ emissions.
+• Reduce wear and tear on the vehicle.
+• Improve passenger comfort.
+• Reduce driver stress.
+
+Many eco-safe driving techniques also support good hazard perception and planning.`
+      },
+      {
+        heading: '4. Smooth Use of Controls',
+        body: `4.1 Acceleration
+• Accelerate smoothly and progressively.
+• Avoid harsh or sudden acceleration.
+• Build speed gradually.
+
+4.2 Braking
+• Brake gently and early.
+• Avoid late, heavy braking.
+• Use engine braking where appropriate.
+
+Smooth control improves safety and saves fuel.`
+      },
+      {
+        heading: '5. Gear Use and Engine Efficiency',
+        body: `5.1 Manual Vehicles
+• Change up gears early when appropriate.
+• Use higher gears at lower engine speeds.
+• Avoid over-revving.
+
+5.2 Automatic Vehicles
+• Apply gentle accelerator pressure.
+• Allow the gearbox to change smoothly.
+• Avoid sudden kick-down unless necessary.
+
+Using the correct gear reduces fuel use and emissions.`
+      },
+      {
+        heading: '6. Planning and Anticipation',
+        body: `Eco-safe driving relies heavily on good planning.
+
+Key planning habits:
+• Look well ahead.
+• Anticipate traffic flow.
+• Adjust speed early.
+• Avoid unnecessary stopping.
+
+Using LADA (Look, Assess, Decide, Act) helps maintain smooth progress and reduces last-minute braking.`
+      },
+      {
+        heading: '7. Maintaining Safe and Steady Speed',
+        body: `To drive efficiently and safely:
+• Drive at an appropriate, steady speed where safe.
+• Avoid frequent speeding up and slowing down.
+• Use cruise control where appropriate (if fitted).
+
+Steady driving uses less fuel and reduces emissions.`
+      },
+      {
+        heading: '8. Eco-Safe Driving in Traffic',
+        body: `In traffic:
+• Keep a safe following distance.
+• Anticipate traffic lights and queues.
+• Move off smoothly.
+• Avoid stop-start driving where possible.
+
+Smooth traffic flow reduces fuel use, improves comfort and helps reduce stress.`
+      },
+      {
+        heading: '9. Vehicle Condition and Eco-Safe Driving',
+        body: `A well-maintained vehicle supports eco-safe driving:
+• Correct tyre pressures improve fuel efficiency.
+• Regular servicing keeps the engine efficient.
+• Removing unnecessary weight improves economy.
+
+Simple checks can make a noticeable difference to fuel use and safety.`
+      },
+      {
+        heading: '10. Eco-Safe Driving and Hazard Perception',
+        body: `Eco-safe driving supports stronger hazard perception:
+• Early anticipation reduces sudden reactions.
+• Smooth braking increases control.
+• Better planning gives more time to respond.
+
+Eco-safe driving and safe driving go hand-in-hand.`
+      },
+      {
+        heading: '11. Eco-Safe Driving and the DVSA Test',
+        body: `During the DVSA practical test, examiners look for:
+• Smooth acceleration and braking.
+• Good planning and anticipation.
+• Safe, steady progress.
+• Correct gear selection.
+
+Eco-safe driving techniques support positive test results and help demonstrate good driving habits.`
+      },
+      {
+        heading: '12. Common Eco-Safe Driving Mistakes',
+        body: `Common errors include:
+• Accelerating too harshly.
+• Braking late and heavily.
+• Driving in low gears unnecessarily.
+• Poor planning leading to stop-start driving.
+
+Most mistakes come from reacting late rather than planning early.`
+      },
+      {
+        heading: '13. Summary',
+        body: `Eco-safe driving requires:
+• Smooth use of controls.
+• Good planning and anticipation.
+• Correct gear use.
+• Steady, appropriate speed.
+• Awareness of fuel efficiency and safety.
+
+Eco-safe driving is not just about saving fuel—it promotes safer, calmer and more responsible driving. Mastering this skill helps protect the environment, reduce driving costs, and improve safety for everyone on the road.`
+      }
+    ]
   }
 };
 
