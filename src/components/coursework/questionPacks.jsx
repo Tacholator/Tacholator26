@@ -1696,7 +1696,7 @@ export const questionPacks = {
       {
         id: "cr_q5",
         type: "multiple_choice",
-        question: "What observation method should be used at crossroads instead of a fixed "right–left–right" pattern?",
+        question: "What observation method should be used at crossroads instead of a fixed \"right–left–right\" pattern?",
         options: [
           "MSM",
           "PSL",
