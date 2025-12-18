@@ -2310,5 +2310,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  18: { // Traffic Lights
+    id: "traffic_lights_mcq_v1",
+    title: "Traffic Lights – Practice Questions",
+    description: "Practice questions covering the correct use of traffic lights, including signal sequences, approaching and stopping safely, moving off, filter arrows, pedestrian and cyclist awareness, box junctions and dealing with lights that are out of order.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "tl_q1",
+        type: "multiple_choice",
+        question: "What is the main purpose of traffic lights?",
+        options: [
+          "To reduce fuel consumption",
+          "To control traffic flow and reduce collisions",
+          "To replace road signs",
+          "To slow down all traffic"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "tl_q2",
+        type: "multiple_choice",
+        question: "What must you do when the traffic light is red?",
+        options: [
+          "Slow down and prepare to go",
+          "Stop only if pedestrians are present",
+          "Stop behind the stop line",
+          "Proceed if the junction looks clear"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "tl_q3",
+        type: "multiple_choice",
+        question: "What does the red and amber light together mean?",
+        options: [
+          "Stop immediately",
+          "Proceed with caution",
+          "Get ready to move off, but do not move yet",
+          "Prepare to stop"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "tl_q4",
+        type: "multiple_choice",
+        question: "When the traffic light is green, when must you still give way?",
+        options: [
+          "When travelling straight ahead",
+          "When turning right or when pedestrians are still crossing",
+          "Only to cyclists",
+          "Never – green means full priority"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "tl_q5",
+        type: "multiple_choice",
+        question: "What should you do when the light turns amber?",
+        options: [
+          "Accelerate to beat the red light",
+          "Stop unless stopping suddenly would be unsafe",
+          "Always continue through",
+          "Sound the horn and proceed"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "tl_q6",
+        type: "multiple_choice",
+        question: "What routines should be used when approaching traffic lights?",
+        options: [
+          "POM only",
+          "MSM and MSPSL",
+          "LADA only",
+          "PSL only"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "tl_q7",
+        type: "multiple_choice",
+        question: "Before moving off when the light turns green, what should you check?",
+        options: [
+          "Only the accelerator",
+          "The speed limit sign",
+          "Mirrors, pedestrians and cyclists",
+          "The traffic lights behind you"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "tl_q8",
+        type: "multiple_choice",
+        question: "What does a green filter arrow mean?",
+        options: [
+          "You must wait for all traffic to stop",
+          "You may proceed only in the direction of the arrow",
+          "You can go in any direction",
+          "It has the same meaning as a normal green light"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "tl_q9",
+        type: "multiple_choice",
+        question: "When may you enter a yellow box junction?",
+        options: [
+          "Whenever the light is green",
+          "If traffic ahead might move",
+          "Only if your exit is clear (except when turning right)",
+          "If other vehicles are already stopped inside"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "tl_q10",
+        type: "multiple_choice",
+        question: "What should you do if traffic lights are out of order?",
+        options: [
+          "Treat them as green lights",
+          "Follow the vehicle in front",
+          "Treat the junction as uncontrolled and use LADA",
+          "Proceed quickly to avoid congestion"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
