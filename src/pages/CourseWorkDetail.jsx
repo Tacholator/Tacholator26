@@ -4287,7 +4287,7 @@ export default function CourseWorkDetail() {
           </div>
           
           <div className="grid gap-6 md:grid-cols-2">
-            <Link to={createPageUrl('CourseWorkDetail') + '?id=1&subcard=study'}>
+            <div onClick={() => window.location.href = createPageUrl('CourseWorkDetail') + '?id=1&subcard=study'}>
               <Card className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
@@ -4303,9 +4303,9 @@ export default function CourseWorkDetail() {
                   </div>
                 </CardContent>
               </Card>
-            </Link>
+            </div>
             
-            <Link to={createPageUrl('CourseWorkDetail') + '?id=1&subcard=practice'}>
+            <div onClick={() => window.location.href = createPageUrl('CourseWorkDetail') + '?id=1&subcard=practice'}>
               <Card className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
@@ -4321,7 +4321,7 @@ export default function CourseWorkDetail() {
                   </div>
                 </CardContent>
               </Card>
-            </Link>
+            </div>
           </div>
         </div>
       </div>
