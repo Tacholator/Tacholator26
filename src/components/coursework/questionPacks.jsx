@@ -2038,5 +2038,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  16: { // Country Roads
+    id: "country_roads_mcq_v1",
+    title: "Country Roads – Practice Questions",
+    description: "Test your understanding of driving safely on country roads, including speed choice, positioning, use of LADA, meeting oncoming traffic, dealing with bends, animals, surface hazards and poor visibility.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "crd_q1",
+        type: "multiple_choice",
+        question: "Why can country roads be more hazardous than built-up roads?",
+        options: [
+          "They always have higher speed limits",
+          "They have fewer traffic lights",
+          "They often contain hidden hazards and limited visibility",
+          "They are used mainly by slow vehicles"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "crd_q2",
+        type: "multiple_choice",
+        question: "What does the national speed limit on a country road represent?",
+        options: [
+          "A recommended cruising speed",
+          "The safest speed in all conditions",
+          "The maximum legal speed, not a target",
+          "The speed required to keep traffic flowing"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "crd_q3",
+        type: "multiple_choice",
+        question: "Which factor should make you reduce speed on a country road?",
+        options: [
+          "Clear visibility and dry conditions",
+          "Wide lanes with good markings",
+          "Sharp bends and blind corners",
+          "Straight road with no traffic"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "crd_q4",
+        type: "multiple_choice",
+        question: "What is the correct normal driving position on country roads?",
+        options: [
+          "Close to the centre line",
+          "As close to the verge as possible",
+          "Left-hand side with a safety margin from the edge",
+          "In the middle of the road"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "crd_q5",
+        type: "multiple_choice",
+        question: "When approaching a bend on a country road, what should you do?",
+        options: [
+          "Brake while steering through the bend",
+          "Increase speed to clear the bend quickly",
+          "Slow down before the bend",
+          "Move into the opposite lane for a better view"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "crd_q6",
+        type: "multiple_choice",
+        question: "What observation method is recommended for driving on country roads?",
+        options: [
+          "MSM",
+          "PSL",
+          "POM",
+          "LADA"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "crd_q7",
+        type: "multiple_choice",
+        question: "If a passing place is on your right on a narrow country road, what should you do?",
+        options: [
+          "Cross the road and use it",
+          "Ignore it and continue",
+          "Wait opposite it and allow the other vehicle to pass",
+          "Reverse into it"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "crd_q8",
+        type: "multiple_choice",
+        question: "When should you overtake on a country road?",
+        options: [
+          "Whenever traffic is slow",
+          "On bends if visibility seems clear",
+          "Only when the road ahead is long, straight and completely clear",
+          "Near junctions if no traffic is visible"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "crd_q9",
+        type: "multiple_choice",
+        question: "How should you react if animals appear on a country road?",
+        options: [
+          "Sound the horn aggressively",
+          "Accelerate to pass quickly",
+          "Slow down and be prepared to stop",
+          "Drive close to them to encourage movement"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "crd_q10",
+        type: "multiple_choice",
+        question: "Which road surface hazard is common on country roads?",
+        options: [
+          "Painted lane markings",
+          "Mud, wet leaves and loose gravel",
+          "Speed humps",
+          "Pedestrian crossings"
+        ],
+        correct_answer_index: 1
+      }
+    ]
   }
 };
