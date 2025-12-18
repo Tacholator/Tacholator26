@@ -1766,5 +1766,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  14: { // Roundabouts
+    id: "roundabouts_mcq_v1",
+    title: "Roundabouts – Practice Questions",
+    description: "Test your understanding of roundabouts, including priority rules, use of MSM, MSPSL and LADA routines, lane discipline, signalling, mini and spiral roundabouts, and dealing with hazards and vulnerable road users.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "rb_q1",
+        type: "multiple_choice",
+        question: "What is the main priority rule at most roundabouts?",
+        options: [
+          "Give way to traffic on your left",
+          "Give way to traffic approaching from your immediate right",
+          "Give way to traffic already waiting",
+          "Give way to larger vehicles only"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "rb_q2",
+        type: "multiple_choice",
+        question: "When does the normal \"give way to the right\" rule change at a roundabout?",
+        options: [
+          "At night",
+          "In heavy traffic",
+          "When signs, markings or traffic lights indicate otherwise",
+          "On mini roundabouts only"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "rb_q3",
+        type: "multiple_choice",
+        question: "Which routines should always be used when approaching a roundabout?",
+        options: [
+          "POM and PSL",
+          "MSM, MSPSL and LADA",
+          "MSM only",
+          "LADA only"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "rb_q4",
+        type: "multiple_choice",
+        question: "What is the correct approach lane for turning left (first exit) at a standard roundabout?",
+        options: [
+          "Right-hand lane",
+          "Any available lane",
+          "Left-hand lane",
+          "Middle lane"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "rb_q5",
+        type: "multiple_choice",
+        question: "When going straight ahead at a roundabout, when should you normally signal left?",
+        options: [
+          "On approach",
+          "As soon as you enter",
+          "After passing the exit just before the one you intend to take",
+          "Only after leaving the roundabout"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "rb_q6",
+        type: "multiple_choice",
+        question: "What should you do if the vehicle in front stops suddenly at a roundabout?",
+        options: [
+          "Continue because you have priority",
+          "Sound the horn",
+          "Be prepared to stop and reassess before moving",
+          "Move into another lane immediately"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "rb_q7",
+        type: "multiple_choice",
+        question: "Why is defensive driving important at roundabouts?",
+        options: [
+          "Drivers always follow the rules",
+          "Vehicles always move at the same speed",
+          "Other drivers may stop, change lanes or make mistakes unexpectedly",
+          "Signals are optional"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "rb_q8",
+        type: "multiple_choice",
+        question: "What is a key hazard to watch for on roundabouts?",
+        options: [
+          "Only cars",
+          "Only pedestrians",
+          "Cyclists, motorcyclists and large vehicles",
+          "Traffic lights"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "rb_q9",
+        type: "multiple_choice",
+        question: "How should you treat mini roundabouts?",
+        options: [
+          "Ignore priority rules",
+          "Drive straight over the centre marking",
+          "Give way to traffic from the right and reduce speed",
+          "Always stop before entering"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "rb_q10",
+        type: "multiple_choice",
+        question: "On spiral roundabouts, how should you reach your exit safely?",
+        options: [
+          "Change lanes whenever it feels safe",
+          "Follow lane arrows and markings without cutting across lanes",
+          "Signal continuously",
+          "Stay in the left lane at all times"
+        ],
+        correct_answer_index: 1
+      }
+    ]
   }
 };
