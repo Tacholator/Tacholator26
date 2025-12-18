@@ -950,5 +950,141 @@ export const questionPacks = {
         correct_answer_index: 1
       }
     ]
+  },
+  8: { // Use of Mirrors
+    id: "use_of_mirrors_mcq_v1",
+    title: "Use of Mirrors – Practice Questions",
+    description: "Test your understanding of correct mirror use, including types of mirrors, when to check them, how they fit into the MSM routine, and the importance of blind spot checks.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "um_q1",
+        type: "multiple_choice",
+        question: "Why is correct mirror use essential when driving?",
+        options: [
+          "To reduce fuel consumption",
+          "To stay aware of surroundings and make safe decisions",
+          "To improve engine performance",
+          "To avoid using indicators"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "um_q2",
+        type: "multiple_choice",
+        question: "What is one key benefit of good mirror use?",
+        options: [
+          "It allows faster driving",
+          "It helps judge the speed and distance of traffic behind",
+          "It removes the need to signal",
+          "It replaces blind spot checks"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "um_q3",
+        type: "multiple_choice",
+        question: "Which mirror gives the most accurate sense of distance?",
+        options: [
+          "Left door mirror",
+          "Right door mirror",
+          "Interior mirror",
+          "All mirrors give the same view"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "um_q4",
+        type: "multiple_choice",
+        question: "When should you check your mirrors?",
+        options: [
+          "Only when turning",
+          "Only when moving off",
+          "Before any change in speed or direction",
+          "Only in heavy traffic"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "um_q5",
+        type: "multiple_choice",
+        question: "Mirror use forms which part of the MSM routine?",
+        options: [
+          "Signal",
+          "Manoeuvre",
+          "Mirrors",
+          "Move"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "um_q6",
+        type: "multiple_choice",
+        question: "What should you judge when checking your mirrors?",
+        options: [
+          "Road surface only",
+          "Who is behind you, how close they are and how fast they are approaching",
+          "Engine speed",
+          "Weather conditions"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "um_q7",
+        type: "multiple_choice",
+        question: "Which mirrors should be checked before turning left?",
+        options: [
+          "Interior mirror only",
+          "Interior mirror and right mirror",
+          "Interior mirror and left mirror",
+          "Left mirror only"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "um_q8",
+        type: "multiple_choice",
+        question: "What should you do before braking firmly?",
+        options: [
+          "Check the left mirror only",
+          "Check the interior mirror",
+          "Sound the horn",
+          "Signal immediately"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "um_q9",
+        type: "multiple_choice",
+        question: "Why must blind spot checks be used as well as mirrors?",
+        options: [
+          "Mirrors are optional",
+          "Blind spots are fully visible in mirrors",
+          "Mirrors do not show all areas around the vehicle",
+          "Blind spot checks replace mirror checks"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "um_q10",
+        type: "multiple_choice",
+        question: "When should you check your blind spot?",
+        options: [
+          "Only on motorways",
+          "When moving off, overtaking or changing lanes",
+          "Only when parking",
+          "Only at night"
+        ],
+        correct_answer_index: 1
+      }
+    ]
   }
 };
