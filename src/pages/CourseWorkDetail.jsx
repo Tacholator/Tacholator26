@@ -4072,6 +4072,177 @@ Most mistakes come from reacting late rather than planning early.`
 Eco-safe driving is not just about saving fuel—it promotes safer, calmer and more responsible driving. Mastering this skill helps protect the environment, reduce driving costs, and improve safety for everyone on the road.`
       }
     ]
+  },
+  28: {
+    title: 'Test Preparation',
+    sections: [
+      {
+        heading: '1. Test Preparation – Overview',
+        body: `Test preparation is about ensuring you are physically, mentally and practically ready for your driving test. Good preparation builds confidence, reduces nerves and allows you to demonstrate safe, controlled and confident driving on test day.
+
+Effective preparation is not about last-minute cramming—it is about consistent practice, understanding test standards, and being well organised.`
+      },
+      {
+        heading: '2. Understanding the Driving Test',
+        body: `Before test day, you should clearly understand:
+• The structure of the DVSA practical driving test.
+• What the examiner is assessing.
+• Common fault areas.
+• The standard expected of a safe driver.
+
+Knowing what to expect helps reduce anxiety and improves performance.`
+      },
+      {
+        heading: '3. Key Skills to Revise Before the Test',
+        body: `In the lead-up to your test, focus on:
+• Observation and hazard perception.
+• Junctions and roundabouts.
+• Manoeuvres.
+• Making progress.
+• Use of mirrors and signals.
+• Independent driving.
+• Eco-safe driving techniques.
+
+Revisiting weaker areas early prevents last-minute stress.`
+      },
+      {
+        heading: '4. Mock Tests and Practice Drives',
+        body: `Mock tests are one of the most effective ways to prepare.
+
+Benefits of mock tests:
+• Simulate real test conditions.
+• Identify weak areas.
+• Build familiarity with test routes.
+• Improve confidence and consistency.
+
+Treat mock tests seriously and reflect on feedback afterwards.`
+      },
+      {
+        heading: '5. Mental Preparation and Nerves',
+        body: `Feeling nervous is completely normal.
+
+How to manage nerves:
+• Arrive early and give yourself time to relax.
+• Take deep breaths before starting.
+• Focus on driving safely, not passing.
+• Remember that one small mistake does not mean failure.
+
+Confidence comes from preparation, not perfection.`
+      },
+      {
+        heading: '6. Vehicle Checks Before Test Day',
+        body: `Before your test, ensure:
+• The vehicle is roadworthy.
+• All lights, indicators and signals work.
+• Tyres are legal and correctly inflated.
+• Windscreen, mirrors and number plates are clean.
+• There are no warning lights illuminated.
+
+Your instructor will usually help carry out these checks.`
+      },
+      {
+        heading: '7. Using Your Own Car for the Driving Test (DVSA Rules)',
+        body: `Learners are allowed to use their own car for the DVSA driving test, provided it meets all DVSA legal and safety requirements.
+
+Your car must:
+• Be roadworthy and legal.
+• Have a valid MOT (if the vehicle is over 3 years old).
+• Be properly insured for a driving test.
+• Have no dashboard warning lights illuminated.
+• Be free from dangerous faults.
+
+If your vehicle does not meet these requirements, the test may not go ahead.`
+      },
+      {
+        heading: '8. DVSA Requirements for a Test Vehicle',
+        body: `The DVSA considers a car suitable for the test only if it meets required safety standards.
+
+8.1 Mandatory requirements
+• L plates (or D plates in Wales) clearly displayed on the front and rear.
+• A working speedometer.
+• A rear-view mirror for the examiner.
+• A proper passenger seat with head restraint.
+• Seatbelts in good working order.
+• No cracks or damage that obstruct the driver's view.
+
+8.2 Vehicle restrictions (examples of issues that can cause refusal)
+• Dashboard warning lights showing (for example, airbag, engine, ABS).
+• Space-saver spare tyres fitted.
+• Aftermarket modifications that affect safety.
+• Vehicles with poor rear visibility or features that make the vehicle unsuitable.
+
+If the vehicle is deemed unsafe or unsuitable, the examiner may refuse to carry out the test.`
+      },
+      {
+        heading: '9. Show Me, Tell Me Preparation',
+        body: `Revise:
+• Common Tell Me questions (explaining safety checks).
+• Common Show Me questions (operating controls safely while driving).
+
+Answer calmly and clearly. If unsure during a Show Me question, wait until it is safe.`
+      },
+      {
+        heading: '10. What to Bring on Test Day',
+        body: `Make sure you bring:
+• Your provisional driving licence.
+• Any glasses or contact lenses required for driving.
+• Your test confirmation (if requested).
+• Suitable footwear.
+
+Being organised avoids unnecessary stress.`
+      },
+      {
+        heading: '11. On the Day of the Test',
+        body: `On test day:
+• Eat something light.
+• Stay hydrated.
+• Arrive on time.
+• Listen carefully to the examiner.
+• Ask for directions to be repeated if needed.
+
+Drive as you have been taught—calmly and safely.`
+      },
+      {
+        heading: '12. During the Test',
+        body: `Remember:
+• The examiner is assessing safety, not perfection.
+• Take your time and plan ahead.
+• Use MSM and LADA.
+• Correct mistakes safely if needed.
+• Focus on the road, not the result.
+
+Safety always comes first.`
+      },
+      {
+        heading: '13. If Something Goes Wrong',
+        body: `If you:
+• Stall the car.
+• Miss a turn.
+• Choose the wrong lane.
+
+Stay calm, recover safely and continue. Many candidates pass despite small mistakes.`
+      },
+      {
+        heading: '14. After the Test',
+        body: `Regardless of the outcome:
+• Listen carefully to feedback.
+• Use it to improve your driving.
+• Remember that learning continues after passing.
+
+A driving test is one step in becoming a safe, confident driver.`
+      },
+      {
+        heading: '15. Summary',
+        body: `Effective test preparation includes:
+• Understanding the test format.
+• Revising key driving skills.
+• Practising under test conditions.
+• Preparing mentally and physically.
+• Ensuring the test vehicle meets DVSA standards.
+
+Learners may use their own car, but it must fully comply with DVSA requirements. Proper preparation increases confidence, reduces nerves, and gives you the best chance to demonstrate safe, competent driving on test day.`
+      }
+    ]
   }
 };
 
