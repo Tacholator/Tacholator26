@@ -2854,5 +2854,141 @@ export const questionPacks = {
         correct_answer_index: 3
       }
     ]
+  },
+  22: { // Making Progress
+    id: "making_progress_mcq_v1",
+    title: "Making Progress – Practice Questions",
+    description: "Practice questions focusing on appropriate speed, avoiding hesitation, planning ahead and balancing safety with efficiency. Correct answers are deliberately distributed across A, B, C and D.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "mp_q1",
+        type: "multiple_choice",
+        question: "What does making progress mean?",
+        options: [
+          "Driving at an appropriate speed without unnecessary hesitation",
+          "Driving as fast as possible",
+          "Always driving at the speed limit",
+          "Overtaking whenever possible"
+        ],
+        correct_answer_index: 0
+      },
+      {
+        id: "mp_q2",
+        type: "multiple_choice",
+        question: "Which of the following is NOT part of making progress?",
+        options: [
+          "Keeping traffic flowing",
+          "Exceeding speed limits when safe",
+          "Using safe opportunities to proceed",
+          "Driving close to the speed limit when appropriate"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mp_q3",
+        type: "multiple_choice",
+        question: "Why can poor progress be dangerous?",
+        options: [
+          "It improves fuel efficiency",
+          "It increases engine wear",
+          "It may frustrate others and encourage unsafe overtaking",
+          "It reduces observation requirements"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mp_q4",
+        type: "multiple_choice",
+        question: "What should you do when conditions improve on an open road?",
+        options: [
+          "Stay at the same low speed",
+          "Increase speed smoothly to an appropriate level",
+          "Brake frequently to stay cautious",
+          "Pull over to reassess"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mp_q5",
+        type: "multiple_choice",
+        question: "Which is an example of unnecessary hesitation?",
+        options: [
+          "Waiting for a pedestrian to cross",
+          "Slowing down in poor visibility",
+          "Stopping at a clear junction with no hazards",
+          "Reducing speed near cyclists"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mp_q6",
+        type: "multiple_choice",
+        question: "How does good observation help with making progress?",
+        options: [
+          "It removes the need to slow down",
+          "It allows earlier planning and confident decisions",
+          "It guarantees priority at junctions",
+          "It means you can ignore other traffic"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mp_q7",
+        type: "multiple_choice",
+        question: "What should you do at a clear junction when a safe gap appears?",
+        options: [
+          "Wait longer to be extra cautious",
+          "Move forward slowly without checking",
+          "Commit confidently and proceed when safe",
+          "Stop completely even if the road is clear"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mp_q8",
+        type: "multiple_choice",
+        question: "When driving in heavier traffic, what best demonstrates good progress?",
+        options: [
+          "Leaving very large gaps at all times",
+          "Accelerating harshly to get ahead",
+          "Ignoring following distances",
+          "Keeping up with the flow where it is safe"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "mp_q9",
+        type: "multiple_choice",
+        question: "At roundabouts, what helps traffic flow safely?",
+        options: [
+          "Stopping whenever another vehicle is nearby",
+          "Entering without looking to the right",
+          "Waiting for a completely empty roundabout",
+          "Looking early for gaps and entering when safe"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "mp_q10",
+        type: "multiple_choice",
+        question: "When should you NOT prioritise making progress?",
+        options: [
+          "When visibility is poor or conditions are dangerous",
+          "When the speed limit is high",
+          "When traffic is light",
+          "When driving on open roads"
+        ],
+        correct_answer_index: 0
+      }
+    ]
   }
 };
