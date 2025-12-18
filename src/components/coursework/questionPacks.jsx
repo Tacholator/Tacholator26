@@ -1176,7 +1176,7 @@ export const questionPacks = {
       {
         id: "us_q7",
         type: "multiple_choice",
-        question: "What is the "golden rule" of using signals?",
+        question: "What is the \"golden rule\" of using signals?",
         options: [
           "Always signal, even if no one is around",
           "Signal early in every situation",
