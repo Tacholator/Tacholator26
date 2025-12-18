@@ -2446,5 +2446,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  19: { // Manoeuvres
+    id: "manoeuvres_mcq_v1",
+    title: "Manoeuvres – Practice Questions",
+    description: "Practice questions covering low-speed manoeuvres, including observation, control, accuracy, use of MSM and LADA, parallel parking, bay parking and pulling up on the right and reversing, in line with DVSA standards.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "man_q1",
+        type: "multiple_choice",
+        question: "What are manoeuvres designed to test?",
+        options: [
+          "High-speed driving skills",
+          "Navigation and route planning",
+          "Low-speed control, observation and accuracy",
+          "Fuel-efficient driving"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "man_q2",
+        type: "multiple_choice",
+        question: "Which principle is essential for all manoeuvres?",
+        options: [
+          "Speed",
+          "Observation",
+          "Overtaking",
+          "Signalling early"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "man_q3",
+        type: "multiple_choice",
+        question: "What should you do if a pedestrian or vehicle appears during a manoeuvre?",
+        options: [
+          "Continue quickly to finish",
+          "Sound the horn",
+          "Stop, reassess and continue only when safe",
+          "Reverse faster to clear the area"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "man_q4",
+        type: "multiple_choice",
+        question: "What is the correct speed for most manoeuvres?",
+        options: [
+          "At the speed limit",
+          "Fast enough to avoid holding traffic",
+          "Walking pace or slower",
+          "As fast as control allows"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "man_q5",
+        type: "multiple_choice",
+        question: "Which manoeuvre may be asked during the DVSA practical test?",
+        options: [
+          "Emergency stop",
+          "Three-point turn",
+          "Parallel park",
+          "Hill start only"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "man_q6",
+        type: "multiple_choice",
+        question: "What is a key requirement when parallel parking?",
+        options: [
+          "Touching the kerb slightly is acceptable",
+          "Finishing far from the kerb",
+          "Staying parallel and close to the kerb",
+          "Completing as quickly as possible"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "man_q7",
+        type: "multiple_choice",
+        question: "Why is reverse bay parking often recommended?",
+        options: [
+          "It is quicker",
+          "It uses less steering",
+          "It gives better control and a safer exit",
+          "It requires fewer observations"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "man_q8",
+        type: "multiple_choice",
+        question: "During the 'pull up on the right and reverse' manoeuvre, how far do you normally reverse?",
+        options: [
+          "About one car length",
+          "About two car lengths",
+          "Until traffic appears",
+          "Until you reach a junction"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "man_q9",
+        type: "multiple_choice",
+        question: "What routines help support safe decision-making during manoeuvres?",
+        options: [
+          "POM only",
+          "PSL only",
+          "MSM and LADA",
+          "MSPSL only"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "man_q10",
+        type: "multiple_choice",
+        question: "What should you do if your position is incorrect during a manoeuvre?",
+        options: [
+          "Continue and hope for the best",
+          "Accelerate to finish quickly",
+          "Stop, re-check and correct safely",
+          "Abandon the manoeuvre"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
