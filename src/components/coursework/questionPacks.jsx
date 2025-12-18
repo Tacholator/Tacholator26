@@ -270,5 +270,141 @@ export const questionPacks = {
         correct_answer_index: 1
       }
     ]
+  },
+  3: { // Vehicle Security
+    id: "vehicle_security_mcq_v1",
+    title: "Vehicle Security – Practice Questions",
+    description: "Test your understanding of vehicle and personal security, including staying alert, protecting belongings, choosing safer parking, and using additional security measures.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "vs_q1",
+        type: "multiple_choice",
+        question: "What does vehicle security involve?",
+        options: [
+          "Driving faster to avoid danger",
+          "Protecting your vehicle, its contents and your personal safety",
+          "Locking the car only at night",
+          "Parking as close as possible to your destination"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "vs_q2",
+        type: "multiple_choice",
+        question: "When should you remain especially alert to your surroundings?",
+        options: [
+          "Only when driving on motorways",
+          "Only when parking at home",
+          "When approaching, entering or leaving your vehicle",
+          "Only during daylight hours"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "vs_q3",
+        type: "multiple_choice",
+        question: "Which behaviour can reduce your awareness and personal safety?",
+        options: [
+          "Checking mirrors regularly",
+          "Wearing headphones that block outside sounds",
+          "Observing traffic at junctions",
+          "Keeping doors locked"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "vs_q4",
+        type: "multiple_choice",
+        question: "Why is it a good idea to let someone know your travel plans?",
+        options: [
+          "It is required by law",
+          "It helps them plan their journey",
+          "It improves fuel efficiency",
+          "It increases personal safety, especially when driving alone"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "vs_q5",
+        type: "multiple_choice",
+        question: "When is it especially important to tell someone where you are going?",
+        options: [
+          "When driving short distances",
+          "When travelling alone, at night or to unfamiliar places",
+          "Only during bad weather",
+          "When driving with passengers"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "vs_q6",
+        type: "multiple_choice",
+        question: "How should valuable items be stored in your vehicle?",
+        options: [
+          "On the dashboard",
+          "On the back seat",
+          "Out of sight, such as in the boot or glovebox",
+          "Hung from the mirror"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "vs_q7",
+        type: "multiple_choice",
+        question: "Why should items not be left visible inside a parked car?",
+        options: [
+          "They can damage the interior",
+          "They may fall while driving",
+          "They can tempt opportunistic thieves",
+          "They reduce fuel economy"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "vs_q8",
+        type: "multiple_choice",
+        question: "Which is the safest place to park your vehicle?",
+        options: [
+          "An isolated area with no lighting",
+          "A quiet road away from buildings",
+          "A well-lit, busy area overlooked by buildings",
+          "Anywhere as long as the car is locked"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "vs_q9",
+        type: "multiple_choice",
+        question: "Which of the following is an example of an additional vehicle security measure?",
+        options: [
+          "Sat-nav",
+          "Steering wheel lock",
+          "Air conditioning",
+          "Electric windows"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "vs_q10",
+        type: "multiple_choice",
+        question: "Why do extra security devices reduce the risk of vehicle theft?",
+        options: [
+          "They make the car faster",
+          "They improve engine performance",
+          "They make the vehicle less attractive to thieves",
+          "They lower insurance automatically"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
