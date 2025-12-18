@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, FileText, Volume2, X, CheckCircle, AlertCircle } from 'lucide-react';
 import SectionAudioPlayer from '@/components/learning/SectionAudioPlayer';
+import McqQuiz from '@/components/coursework/McqQuiz';
+import { questionPacks } from '@/components/coursework/questionPacks';
 
 const courseWorkContent = {
   1: {
@@ -4337,6 +4339,8 @@ export default function CourseWorkDetail() {
 
   // Handle Practice Questions sub-card (for all cards with sub-cards)
   if (shouldHaveSubcards && subcard === 'practice' && content) {
+    const questionPack = questionPacks[itemId];
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
@@ -4355,17 +4359,21 @@ export default function CourseWorkDetail() {
             <p className="text-slate-500 text-sm">{content.title}</p>
           </div>
           
-          <Card className="border-l-4 border-l-amber-500">
-            <CardContent className="p-8 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-4">
-                <AlertCircle className="w-8 h-8 text-amber-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">Coming Soon</h3>
-              <p className="text-slate-600">
-                Practice questions will appear here once assigned
-              </p>
-            </CardContent>
-          </Card>
+          {questionPack ? (
+            <McqQuiz questionPack={questionPack} />
+          ) : (
+            <Card className="border-l-4 border-l-amber-500">
+              <CardContent className="p-8 text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-4">
+                  <AlertCircle className="w-8 h-8 text-amber-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-700 mb-2">Coming Soon</h3>
+                <p className="text-slate-600">
+                  Practice questions will appear here once assigned
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     );
