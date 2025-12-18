@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, FileText, Volume2, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, FileText, Volume2, X, CheckCircle, AlertCircle, Lock } from 'lucide-react';
 import SectionAudioPlayer from '@/components/learning/SectionAudioPlayer';
 import McqQuiz from '@/components/coursework/McqQuiz';
 import { questionPacks } from '@/components/coursework/questionPacks';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
+import LockedContentDialog from '@/components/coursework/LockedContentDialog';
 
 const courseWorkContent = {
   1: {
@@ -4258,6 +4262,36 @@ export default function CourseWorkDetail() {
     const hasSeenHint = localStorage.getItem('audio_hint_seen');
     return !hasSeenHint && localStorage.getItem('enable_audio_reading') !== 'false';
   });
+  const [showLockedDialog, setShowLockedDialog] = useState(false);
+
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const { data: pupil } = useQuery({
+    queryKey: ['currentPupil', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      return pupils.length > 0 ? pupils[0] : null;
+    },
+    enabled: !!user?.id && user?.role === 'user'
+  });
+
+  const { data: accessList = [] } = useQuery({
+    queryKey: ['pupilTopicAccess', pupil?.id],
+    queryFn: () => base44.entities.PupilTopicAccess.filter({ pupilId: pupil.id }),
+    enabled: !!pupil?.id
+  });
+
+  const isInstructor = user?.role === 'admin';
+  const currentTopic = courseWorkTopics.find(t => t.id === itemId);
+  const topicIdStr = currentTopic?.topicId;
+  
+  const access = accessList.find(a => a.topicId === topicIdStr && !a.revokedAt);
+  const hasStudyAccess = isInstructor || (access?.grantStudyMaterial === true);
+  const hasMcqAccess = isInstructor || (access?.grantPracticeQuestions === true);
 
   const dismissAudioHint = () => {
     setShowAudioHint(false);
@@ -4272,6 +4306,18 @@ export default function CourseWorkDetail() {
   // Cards that should NOT have sub-cards
   const excludedCards = [25, 28]; // Show Me Tell Me (25), Test Preparation (28)
   const shouldHaveSubcards = itemId && !excludedCards.includes(itemId);
+
+  const handleSubcardClick = (type) => {
+    if (type === 'study' && !hasStudyAccess) {
+      setShowLockedDialog(true);
+      return;
+    }
+    if (type === 'practice' && !hasMcqAccess) {
+      setShowLockedDialog(true);
+      return;
+    }
+    navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}&subcard=${type}`);
+  };
 
   // Handle sub-card selection screen (for all cards except excluded ones)
   if (shouldHaveSubcards && !subcard && content) {
@@ -4295,43 +4341,65 @@ export default function CourseWorkDetail() {
           
           <div className="grid gap-6 md:grid-cols-2">
             <Card 
-              onClick={() => navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}&subcard=study`)}
-              className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50"
+              onClick={() => handleSubcardClick('study')}
+              className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 relative ${!hasStudyAccess ? 'opacity-75' : ''}`}
             >
+              {!hasStudyAccess && !isInstructor && (
+                <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow-sm">
+                  <Lock className="w-5 h-5 text-amber-600" />
+                </div>
+              )}
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-orange-200 rounded-lg">
                     <FileText className="w-6 h-6 text-orange-700" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-xl font-semibold text-[#071739] mb-2">Study Material</h3>
                     <p className="text-slate-600">
                       Learn the key concepts, techniques and knowledge for {content.title.toLowerCase()}
                     </p>
+                    {!hasStudyAccess && !isInstructor && (
+                      <p className="text-sm text-amber-600 mt-2 font-medium">
+                        🔒 Ask your instructor for access
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
             
             <Card 
-              onClick={() => navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}&subcard=practice`)}
-              className="hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50"
+              onClick={() => handleSubcardClick('practice')}
+              className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50 relative ${!hasMcqAccess ? 'opacity-75' : ''}`}
             >
+              {!hasMcqAccess && !isInstructor && (
+                <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow-sm">
+                  <Lock className="w-5 h-5 text-amber-600" />
+                </div>
+              )}
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-rose-200 rounded-lg">
                     <CheckCircle className="w-6 h-6 text-rose-700" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-xl font-semibold text-[#071739] mb-2">Practice Questions</h3>
                     <p className="text-slate-600">
                       Test your knowledge with practice questions and assessments
                     </p>
+                    {!hasMcqAccess && !isInstructor && (
+                      <p className="text-sm text-amber-600 mt-2 font-medium">
+                        🔒 Ask your instructor for access
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
+
+          <LockedContentDialog open={showLockedDialog} onOpenChange={setShowLockedDialog} />
         </div>
       </div>
     );
@@ -4339,6 +4407,33 @@ export default function CourseWorkDetail() {
 
   // Handle Practice Questions sub-card (for all cards with sub-cards)
   if (shouldHaveSubcards && subcard === 'practice' && content) {
+    // Check access for learners
+    if (!hasMcqAccess && !isInstructor) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
+          <div className="max-w-4xl mx-auto">
+            <Link to={createPageUrl('CourseWork')}>
+              <Button variant="ghost" className="gap-2 text-slate-600 hover:text-slate-800 mb-6">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Course Work
+              </Button>
+            </Link>
+            <Card className="border-l-4 border-l-amber-500">
+              <CardContent className="p-8 text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-4">
+                  <Lock className="w-8 h-8 text-amber-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-700 mb-2">Locked Content</h3>
+                <p className="text-slate-600">
+                  This content is locked until your instructor assigns it to you. Please ask your instructor to grant you access to this topic's Practice Questions.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      );
+    }
+
     const questionPack = questionPacks[itemId];
     
     return (
@@ -4390,6 +4485,33 @@ export default function CourseWorkDetail() {
             </Button>
           </Link>
           <p className="text-slate-500 text-center">Content not available yet</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check access for study material
+  if (shouldHaveSubcards && subcard === 'study' && !hasStudyAccess && !isInstructor) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
+        <div className="max-w-4xl mx-auto">
+          <Link to={createPageUrl('CourseWork')}>
+            <Button variant="ghost" className="gap-2 text-slate-600 hover:text-slate-800 mb-6">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Course Work
+            </Button>
+          </Link>
+          <Card className="border-l-4 border-l-amber-500">
+            <CardContent className="p-8 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-4">
+                <Lock className="w-8 h-8 text-amber-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">Locked Content</h3>
+              <p className="text-slate-600">
+                This content is locked until your instructor assigns it to you. Please ask your instructor to grant you access to this topic's Study Material.
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -4465,6 +4587,8 @@ export default function CourseWorkDetail() {
         <p className="text-center text-sm text-slate-500">
           © {new Date().getFullYear()} Mobrage Driving Academy. All rights reserved.
         </p>
+
+        <LockedContentDialog open={showLockedDialog} onOpenChange={setShowLockedDialog} />
       </div>
     </div>
   );
