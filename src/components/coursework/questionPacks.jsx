@@ -1086,5 +1086,141 @@ export const questionPacks = {
         correct_answer_index: 1
       }
     ]
+  },
+  9: { // Use of Signals
+    id: "use_of_signals_mcq_v1",
+    title: "Use of Signals – Practice Questions",
+    description: "Test your understanding of correct signalling, including purpose, types of signals, timing, the golden rule of signalling, and correct use within the MSM routine.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "us_q1",
+        type: "multiple_choice",
+        question: "What is the main purpose of using signals when driving?",
+        options: [
+          "To improve fuel efficiency",
+          "To communicate intentions clearly to other road users",
+          "To show confidence",
+          "To replace mirror checks"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "us_q2",
+        type: "multiple_choice",
+        question: "Signals must always be which of the following?",
+        options: [
+          "Frequent, loud and obvious",
+          "Early, constant and repeated",
+          "Timely, clear and necessary",
+          "Automatic and continuous"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "us_q3",
+        type: "multiple_choice",
+        question: "Why should signals never mislead other road users?",
+        options: [
+          "It may delay your journey",
+          "It can cause confusion and increase collision risk",
+          "It wastes fuel",
+          "It damages the indicators"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "us_q4",
+        type: "multiple_choice",
+        question: "When should indicator signals be cancelled?",
+        options: [
+          "After checking mirrors",
+          "After completing the manoeuvre",
+          "When traffic is clear",
+          "Only at junctions"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "us_q5",
+        type: "multiple_choice",
+        question: "What is the main function of brake lights?",
+        options: [
+          "To warn pedestrians",
+          "To signal lane changes",
+          "To warn drivers behind that you are slowing down",
+          "To improve night visibility"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "us_q6",
+        type: "multiple_choice",
+        question: "When may hazard warning lights be used while moving?",
+        options: [
+          "At any time in heavy traffic",
+          "In built-up areas at night",
+          "On a motorway or dual carriageway to warn of sudden danger ahead",
+          "When overtaking slowly"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "us_q7",
+        type: "multiple_choice",
+        question: "What is the "golden rule" of using signals?",
+        options: [
+          "Always signal, even if no one is around",
+          "Signal early in every situation",
+          "Only signal if it benefits other road users",
+          "Signal after starting the manoeuvre"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "us_q8",
+        type: "multiple_choice",
+        question: "Which of the following is an example of a misleading signal?",
+        options: [
+          "Signalling right before overtaking",
+          "Cancelling a signal after turning",
+          "Signalling left when passing a side road",
+          "Signalling at a roundabout exit"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "us_q9",
+        type: "multiple_choice",
+        question: "In the MSM routine, when should you signal?",
+        options: [
+          "Before checking mirrors",
+          "After starting the manoeuvre",
+          "After checking mirrors and before manoeuvring",
+          "At the same time as steering"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "us_q10",
+        type: "multiple_choice",
+        question: "How should signal timing change at higher speeds?",
+        options: [
+          "Signals should be given later",
+          "Signals should be avoided",
+          "Signals should be given earlier to allow more reaction time",
+          "Signals should be held on continuously"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
