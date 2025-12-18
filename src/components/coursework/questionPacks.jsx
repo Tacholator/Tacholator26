@@ -1494,5 +1494,141 @@ export const questionPacks = {
         correct_answer_index: 1
       }
     ]
+  },
+  12: { // Meeting Traffic
+    id: "meeting_traffic_mcq_v1",
+    title: "Meeting and Dealing With Other Traffic – Practice Questions",
+    description: "Test your understanding of meeting oncoming vehicles, passing parked cars, using passing places, overtaking safely, and protecting vulnerable road users using routines like MSM/PSL and LADA.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "mt_q1",
+        type: "multiple_choice",
+        question: "Why is safe interaction with other traffic essential?",
+        options: [
+          "To reduce journey time",
+          "To demonstrate confidence",
+          "To avoid collisions and keep traffic flowing",
+          "To avoid using mirrors"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mt_q2",
+        type: "multiple_choice",
+        question: "Which of the following is a key requirement when meeting other traffic?",
+        options: [
+          "High speed",
+          "Aggressive positioning",
+          "Good observation and anticipation",
+          "Frequent use of the horn"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mt_q3",
+        type: "multiple_choice",
+        question: "What should you do even if you believe you have priority?",
+        options: [
+          "Continue without slowing",
+          "Force your way through",
+          "Be prepared to slow down or give way",
+          "Flash your headlights"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mt_q4",
+        type: "multiple_choice",
+        question: "Why is anticipation important when meeting other traffic?",
+        options: [
+          "It allows faster driving",
+          "It reduces fuel use",
+          "It helps you prepare for others' unexpected actions",
+          "It removes the need to brake"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mt_q5",
+        type: "multiple_choice",
+        question: "How should you use passing places on narrow roads?",
+        options: [
+          "Always use the one closest to you",
+          "Pull into a passing place on your left when safe",
+          "Cross the road to reach a passing place",
+          "Ignore passing places if you have priority"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "mt_q6",
+        type: "multiple_choice",
+        question: "If parked vehicles narrow the road, who should normally give way?",
+        options: [
+          "The larger vehicle",
+          "The faster vehicle",
+          "The driver who reaches the obstruction first",
+          "The driver on the main road"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mt_q7",
+        type: "multiple_choice",
+        question: "What should you do if there is not enough space for you and oncoming traffic?",
+        options: [
+          "Accelerate through the gap",
+          "Sound the horn",
+          "Slow down or stop and let the other vehicle pass",
+          "Drive closer to the kerb"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mt_q8",
+        type: "multiple_choice",
+        question: "What routine should you use when passing parked cars?",
+        options: [
+          "POM only",
+          "LADA only",
+          "MSM and PSL",
+          "MSPSL only"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mt_q9",
+        type: "multiple_choice",
+        question: "What is the minimum recommended passing distance when overtaking a cyclist at speeds up to 30 mph?",
+        options: [
+          "0.5 metres",
+          "1.0 metre",
+          "1.5 metres",
+          "2.5 metres"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "mt_q10",
+        type: "multiple_choice",
+        question: "How should you behave when passing horses on the road?",
+        options: [
+          "Pass quickly to avoid delay",
+          "Sound the horn to warn them",
+          "Pass very slowly and give a wide berth",
+          "Rev the engine to be noticed"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
