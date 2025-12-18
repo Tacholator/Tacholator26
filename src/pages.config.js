@@ -24,6 +24,7 @@ import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import CourseWork from './pages/CourseWork';
 import CourseWorkDetail from './pages/CourseWorkDetail';
+import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
 import __Layout from './Layout.jsx';
 
 
@@ -54,6 +55,7 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "CourseWork": CourseWork,
     "CourseWorkDetail": CourseWorkDetail,
+    "InstructorTopicAssignment": InstructorTopicAssignment,
 }
 
 export const pagesConfig = {

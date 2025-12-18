@@ -4,38 +4,8 @@ import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileText } from 'lucide-react';
-
-const courseWorkItems = [
-  { id: 1, title: 'Legal Responsibilities' },
-  { id: 2, title: 'Safety Checks' },
-  { id: 3, title: 'Vehicle Security' },
-  { id: 4, title: 'Cockpit Procedures' },
-  { id: 5, title: 'Main Car Controls' },
-  { id: 6, title: 'Stopping Techniques' },
-  { id: 7, title: 'Moving Off' },
-  { id: 8, title: 'Use of Mirrors' },
-  { id: 9, title: 'Signaling' },
-  { id: 10, title: 'Junctions' },
-  { id: 11, title: 'Use of Speed' },
-  { id: 12, title: 'Meeting Traffic' },
-  { id: 13, title: 'Crossroads' },
-  { id: 14, title: 'Roundabouts' },
-  { id: 15, title: 'Dual Carriageways' },
-  { id: 16, title: 'Country Roads' },
-  { id: 17, title: 'Driving Conditions' },
-  { id: 18, title: 'Traffic Lights' },
-  { id: 19, title: 'Manoeuvres' },
-  { id: 20, title: 'Emergency Stop' },
-  { id: 21, title: 'Pedestrian Crossings' },
-  { id: 22, title: 'Making Progress' },
-  { id: 23, title: 'Planning Skills' },
-  { id: 24, title: 'Independent Driving' },
-  { id: 25, title: 'Show Me Tell Me' },
-  { id: 26, title: 'Hazard Perception' },
-  { id: 27, title: 'Eco-Safe Driving' },
-  { id: 28, title: 'Test Preparation' }
-];
+import { FileText, Lock } from 'lucide-react';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 const cardColors = [
   'bg-gradient-to-br from-blue-100 to-blue-200',
@@ -75,6 +45,31 @@ export default function CourseWork() {
     queryFn: () => base44.auth.me()
   });
 
+  const { data: pupil } = useQuery({
+    queryKey: ['currentPupil', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      return pupils.length > 0 ? pupils[0] : null;
+    },
+    enabled: !!user?.id && user?.role === 'user'
+  });
+
+  const { data: accessList = [] } = useQuery({
+    queryKey: ['pupilTopicAccess', pupil?.id],
+    queryFn: () => base44.entities.PupilTopicAccess.filter({ pupilId: pupil.id }),
+    enabled: !!pupil?.id
+  });
+
+  const isInstructor = user?.role === 'admin';
+
+  const hasAccess = (topicId, type) => {
+    if (isInstructor) return true;
+    const access = accessList.find(a => a.topicId === courseWorkTopics.find(t => t.id === topicId)?.topicId && !a.revokedAt);
+    if (!access) return false;
+    return type === 'study' ? access.grantStudyMaterial : access.grantPracticeQuestions;
+  };
+
   const handleCardClick = (itemId) => {
     navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}`);
   };
@@ -87,19 +82,55 @@ export default function CourseWork() {
           <h1 className="text-3xl font-bold text-[#071739]">Course Work</h1>
         </div>
 
+        {!isInstructor && (
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <Lock className="w-5 h-5 text-blue-600 mt-0.5" />
+              <div>
+                <p className="font-medium text-blue-900">Content Access</p>
+                <p className="text-sm text-blue-700 mt-1">
+                  Topics with a lock icon require your instructor to assign access. Once assigned, you can view study materials and practice questions.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isInstructor && (
+          <div className="mb-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-indigo-900">Instructor Mode</p>
+                <p className="text-sm text-indigo-700 mt-1">All topics are unlocked for you. Manage pupil access via Pupil Profiles.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {courseWorkItems.map((item, index) => (
-            <Card 
-              key={item.id}
-              onClick={() => handleCardClick(item.id)}
-              className={`${cardColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105`}
-            >
-              <CardContent className="p-4 text-center w-full">
-                <div className="text-3xl font-bold text-slate-700 mb-2">{item.id}</div>
-                <div className="text-sm font-medium text-slate-600 leading-tight">{item.title}</div>
-              </CardContent>
-            </Card>
-          ))}
+          {courseWorkTopics.map((item, index) => {
+            const hasStudyAccess = hasAccess(item.id, 'study');
+            const hasMcqAccess = hasAccess(item.id, 'mcq');
+            const isLocked = !isInstructor && !hasStudyAccess && !hasMcqAccess;
+
+            return (
+              <Card 
+                key={item.id}
+                onClick={() => handleCardClick(item.id)}
+                className={`${cardColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105 relative`}
+              >
+                {isLocked && (
+                  <div className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm">
+                    <Lock className="w-4 h-4 text-slate-600" />
+                  </div>
+                )}
+                <CardContent className="p-4 text-center w-full">
+                  <div className="text-3xl font-bold text-slate-700 mb-2">{item.id}</div>
+                  <div className="text-sm font-medium text-slate-600 leading-tight">{item.title}</div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </div>
