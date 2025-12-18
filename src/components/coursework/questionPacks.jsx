@@ -1630,5 +1630,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  13: { // Crossroads
+    id: "crossroads_mcq_v1",
+    title: "Crossroads – Practice Questions",
+    description: "Test your understanding of crossroads, including types of crossroads, priority, use of MSM and MSPSL routines, flexible observation using LADA, safe right/left turns, going ahead safely, and handling limited visibility.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "cr_q1",
+        type: "multiple_choice",
+        question: "Why are crossroads considered more challenging than many other junctions?",
+        options: [
+          "They always have traffic lights",
+          "Several streams of traffic can meet at the same point",
+          "They are usually unmarked",
+          "They require higher speeds"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "cr_q2",
+        type: "multiple_choice",
+        question: "Which routines should be used together when dealing with crossroads?",
+        options: [
+          "POM and LADA",
+          "MSM and POM",
+          "MSM and MSPSL",
+          "PSL and POM"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "cr_q3",
+        type: "multiple_choice",
+        question: "What does MSPSL stand for?",
+        options: [
+          "Mirror, Speed, Position, Signal, Look",
+          "Manoeuvre, Signal, Position, Speed, Look",
+          "Mirror, Signal, Position, Speed, Look",
+          "Mirror, Signal, Plan, Stop, Look"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "cr_q4",
+        type: "multiple_choice",
+        question: "At an uncontrolled (unmarked) crossroads, who has priority?",
+        options: [
+          "Traffic from the right",
+          "Traffic on the wider road",
+          "Vehicles going straight ahead",
+          "No one has automatic priority"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "cr_q5",
+        type: "multiple_choice",
+        question: "What observation method should be used at crossroads instead of a fixed "right–left–right" pattern?",
+        options: [
+          "MSM",
+          "PSL",
+          "POM",
+          "LADA"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "cr_q6",
+        type: "multiple_choice",
+        question: "What does the A in LADA stand for?",
+        options: [
+          "Act",
+          "Assess",
+          "Anticipate",
+          "Accelerate"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "cr_q7",
+        type: "multiple_choice",
+        question: "Which right-turn method at crossroads is usually safer and more common?",
+        options: [
+          "Nearside-to-nearside",
+          "Offside-to-offside",
+          "Turning across the centre line",
+          "Cutting the corner"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "cr_q8",
+        type: "multiple_choice",
+        question: "When going straight ahead at a crossroads, what should you do?",
+        options: [
+          "Assume it is safe if you have priority",
+          "Maintain speed without checking",
+          "Use MSM and MSPSL with careful observation",
+          "Only check the road ahead"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "cr_q9",
+        type: "multiple_choice",
+        question: "What should you do if visibility is poor at a crossroads?",
+        options: [
+          "Accelerate to clear the junction quickly",
+          "Sound the horn",
+          "Use the \"creep and peep\" technique",
+          "Rely on other drivers stopping"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "cr_q10",
+        type: "multiple_choice",
+        question: "What should you do if you feel unsure when deciding whether to proceed at a crossroads?",
+        options: [
+          "Move forward quickly",
+          "Commit to the manoeuvre",
+          "Wait and reassess until it is clearly safe",
+          "Follow the vehicle in front"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
