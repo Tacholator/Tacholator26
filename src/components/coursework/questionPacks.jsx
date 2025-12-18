@@ -2990,5 +2990,141 @@ export const questionPacks = {
         correct_answer_index: 0
       }
     ]
+  },
+  23: { // Planning Skills
+    id: "planning_skills_mcq_v1",
+    title: "Planning Skills – Practice Questions",
+    description: "MCQs covering anticipation, forward planning, hazard awareness and smooth decision-making. Correct answers are evenly distributed across A, B, C and D.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "ps_q1",
+        type: "multiple_choice",
+        question: "What do planning skills mainly involve?",
+        options: [
+          "Reacting quickly to hazards",
+          "Thinking ahead and preparing early",
+          "Driving faster to avoid problems",
+          "Relying on other drivers' actions"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "ps_q2",
+        type: "multiple_choice",
+        question: "Why are good planning skills important?",
+        options: [
+          "They reduce fuel costs only",
+          "They eliminate the need for mirrors",
+          "They improve safety, comfort and confidence",
+          "They allow higher speeds in all conditions"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ps_q3",
+        type: "multiple_choice",
+        question: "What is a common result of poor planning?",
+        options: [
+          "Smoother braking",
+          "Earlier decision-making",
+          "Reduced stress",
+          "Sudden braking or hesitation"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "ps_q4",
+        type: "multiple_choice",
+        question: "When scanning the road ahead, where should your focus be?",
+        options: [
+          "Only the vehicle directly in front",
+          "Mainly on your speedometer",
+          "Well ahead and across the road environment",
+          "Just the left-hand side of the road"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ps_q5",
+        type: "multiple_choice",
+        question: "Which question best supports good anticipation?",
+        options: [
+          "Who has priority here?",
+          "What might happen next?",
+          "How fast can I go?",
+          "Can I overtake now?"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "ps_q6",
+        type: "multiple_choice",
+        question: "What does the 'Decide' stage of LADA involve?",
+        options: [
+          "Observing hazards",
+          "Choosing an early, safe course of action",
+          "Reacting at the last moment",
+          "Accelerating away from danger"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "ps_q7",
+        type: "multiple_choice",
+        question: "Which is an example of good speed planning?",
+        options: [
+          "Braking sharply while entering a bend",
+          "Maintaining speed regardless of hazards",
+          "Slowing down before a bend",
+          "Accelerating through junctions"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ps_q8",
+        type: "multiple_choice",
+        question: "At junctions and roundabouts, good planning helps you to:",
+        options: [
+          "Change lanes at the last second",
+          "Avoid mirror checks",
+          "Stop every time",
+          "Select lanes and gaps early"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "ps_q9",
+        type: "multiple_choice",
+        question: "How does planning help in heavy traffic?",
+        options: [
+          "By encouraging rapid acceleration",
+          "By reducing stop-start driving",
+          "By removing the need to slow down",
+          "By increasing close following"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "ps_q10",
+        type: "multiple_choice",
+        question: "What are examiners mainly looking for regarding planning skills?",
+        options: [
+          "Quick reactions at the last moment",
+          "Perfect speed control at all times",
+          "Anticipation and smooth, timely decisions",
+          "Aggressive use of opportunities"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
