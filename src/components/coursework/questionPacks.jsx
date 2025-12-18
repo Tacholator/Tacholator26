@@ -678,5 +678,141 @@ export const questionPacks = {
         correct_answer_index: 2
       }
     ]
+  },
+  6: { // Stopping Safely
+    id: "stopping_safely_mcq_v1",
+    title: "Stopping Safely – Practice Questions",
+    description: "Test your understanding of stopping safely using DVSA routines MSM (Mirror, Signal, Manoeuvre) and PSL (Position, Speed, Look), including choosing a safe stopping position and securing the vehicle.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "ss_q1",
+        type: "multiple_choice",
+        question: "What is the main aim of stopping safely?",
+        options: [
+          "To stop as quickly as possible",
+          "To stop without using mirrors",
+          "To stop in a controlled, legal and predictable way",
+          "To stop close to other vehicles"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ss_q2",
+        type: "multiple_choice",
+        question: "Which two DVSA routines are used together to stop safely?",
+        options: [
+          "MSPS and LADA",
+          "MSM and PSL",
+          "POM and MSPS",
+          "LADA and PSL"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "ss_q3",
+        type: "multiple_choice",
+        question: "What does the M stand for in the MSM routine?",
+        options: [
+          "Manoeuvre",
+          "Move",
+          "Mirrors",
+          "Maintain speed"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ss_q4",
+        type: "multiple_choice",
+        question: "Which mirrors should be checked first when planning to stop?",
+        options: [
+          "Door mirror only",
+          "Interior mirror first, then the relevant door mirror",
+          "Both door mirrors together",
+          "Interior mirror only"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "ss_q5",
+        type: "multiple_choice",
+        question: "When should you signal before stopping?",
+        options: [
+          "Every time you stop",
+          "Only when pedestrians are nearby",
+          "If it will benefit other road users",
+          "After you have stopped"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ss_q6",
+        type: "multiple_choice",
+        question: "What does the P in the PSL routine stand for?",
+        options: [
+          "Prepare",
+          "Pedal",
+          "Position",
+          "Parallel"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ss_q7",
+        type: "multiple_choice",
+        question: "How should speed be reduced when stopping safely?",
+        options: [
+          "By braking sharply at the last moment",
+          "By coasting in neutral",
+          "By using progressive, gentle braking",
+          "By using the handbrake"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ss_q8",
+        type: "multiple_choice",
+        question: "What should you check during the Look phase of PSL?",
+        options: [
+          "Only the speedometer",
+          "Only the road ahead",
+          "Mirrors and surroundings for pedestrians, cyclists and hazards",
+          "The dashboard warning lights"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ss_q9",
+        type: "multiple_choice",
+        question: "What is a good stopping position?",
+        options: [
+          "Touching the kerb",
+          "Blocking a driveway",
+          "Parallel to the kerb and not causing obstruction",
+          "As close as possible to a junction"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "ss_q10",
+        type: "multiple_choice",
+        question: "What must you do after the car has stopped to secure it?",
+        options: [
+          "Leave the engine running",
+          "Apply the handbrake and select neutral or Park",
+          "Keep your foot on the brake",
+          "Turn the steering wheel sharply"
+        ],
+        correct_answer_index: 1
+      }
+    ]
   }
 };
