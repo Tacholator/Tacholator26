@@ -2174,5 +2174,141 @@ export const questionPacks = {
         correct_answer_index: 1
       }
     ]
+  },
+  17: { // Driving Conditions
+    id: "driving_conditions_mcq_v1",
+    title: "Driving Conditions – Practice Questions",
+    description: "Practice questions covering how different driving conditions affect visibility, grip, stopping distances and driver judgement, including rain, fog, ice, snow, wind, glare, darkness, poor road surfaces and heavy traffic.",
+    settings: {
+      total_questions: 10,
+      pass_mark: 8,
+      allow_retries: true,
+      shuffle_questions: true,
+      shuffle_options: true,
+      show_correct_answers_after_submission: true,
+      time_limit_minutes: null
+    },
+    questions: [
+      {
+        id: "dc_q1",
+        type: "multiple_choice",
+        question: "Why do driving conditions matter?",
+        options: [
+          "They only affect fuel consumption",
+          "They influence visibility, grip and stopping distance",
+          "They only matter on motorways",
+          "They only affect inexperienced drivers"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "dc_q2",
+        type: "multiple_choice",
+        question: "What should a safe driver do when driving conditions change?",
+        options: [
+          "Continue driving at the speed limit",
+          "Rely on road signs to decide speed",
+          "Adjust speed, positioning and observation",
+          "Drive faster to reduce journey time"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q3",
+        type: "multiple_choice",
+        question: "Which risk is commonly associated with wet weather?",
+        options: [
+          "Reduced engine performance",
+          "Shorter stopping distances",
+          "Increased tyre grip",
+          "Longer stopping distances"
+        ],
+        correct_answer_index: 3
+      },
+      {
+        id: "dc_q4",
+        type: "multiple_choice",
+        question: "What is a safe driving practice in heavy rain?",
+        options: [
+          "Brake sharply to stay in control",
+          "Reduce speed and increase following distance",
+          "Use fog lights at all times",
+          "Drive closer to the vehicle in front"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "dc_q5",
+        type: "multiple_choice",
+        question: "When should fog lights be used?",
+        options: [
+          "Whenever it is raining",
+          "At night on all roads",
+          "Only when visibility is seriously reduced",
+          "Whenever dipped headlights are on"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q6",
+        type: "multiple_choice",
+        question: "Why are ice and snow particularly dangerous?",
+        options: [
+          "They reduce engine power",
+          "They increase traffic levels",
+          "They greatly reduce tyre grip",
+          "They improve braking performance"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q7",
+        type: "multiple_choice",
+        question: "How should you drive in icy or snowy conditions?",
+        options: [
+          "Accelerate quickly to maintain momentum",
+          "Brake late and firmly",
+          "Drive slowly with smooth steering and braking",
+          "Use cruise control"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q8",
+        type: "multiple_choice",
+        question: "What risk does strong wind create?",
+        options: [
+          "Reduced fuel efficiency",
+          "Sudden sideways movement of the vehicle",
+          "Improved vehicle stability",
+          "Shorter stopping distances"
+        ],
+        correct_answer_index: 1
+      },
+      {
+        id: "dc_q9",
+        type: "multiple_choice",
+        question: "What is a key danger of driving in bright sun or glare?",
+        options: [
+          "Engine overheating",
+          "Reduced grip",
+          "Difficulty seeing hazards clearly",
+          "Increased tyre wear"
+        ],
+        correct_answer_index: 2
+      },
+      {
+        id: "dc_q10",
+        type: "multiple_choice",
+        question: "What technique helps drivers respond safely to changing driving conditions?",
+        options: [
+          "MSM only",
+          "POM routine",
+          "LADA (Look, Assess, Decide, Act)",
+          "Cruise control"
+        ],
+        correct_answer_index: 2
+      }
+    ]
   }
 };
