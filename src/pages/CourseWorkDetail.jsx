@@ -3729,6 +3729,201 @@ Safety always comes before demonstrating a control.`
 Learning these questions builds confidence, improves safety awareness and helps you approach the DVSA driving test calmly and prepared.`
       }
     ]
+  },
+  26: {
+    title: 'Hazard Perception',
+    sections: [
+      {
+        heading: '1. Hazard Perception – Overview',
+        body: `Hazard perception is the ability to identify developing dangers early, assess how they may affect you, and respond safely in good time. It is one of the most important skills for safe driving and is tested both in the theory test and the practical driving test.
+
+Good hazard perception allows you to plan ahead, avoid sudden reactions, and keep yourself and others safe.`
+      },
+      {
+        heading: '2. What Is a Hazard?',
+        body: `A hazard is anything that could cause you to:
+• Change speed.
+• Change direction.
+• Stop.
+
+Hazards can be:
+• Static (parked vehicles, roadworks, junctions).
+• Moving (vehicles, cyclists, pedestrians, animals).
+• Environmental (weather, road surface, visibility).`
+      },
+      {
+        heading: '3. Potential vs Developing Hazards',
+        body: `3.1 Potential Hazard
+A potential hazard is something that could become dangerous.
+Examples:
+• A pedestrian walking near the kerb.
+• A car parked with brake lights on.
+• A junction ahead.
+• A bend or crest.
+
+3.2 Developing Hazard
+A developing hazard is something that is about to cause danger and requires action.
+Examples:
+• A pedestrian stepping into the road.
+• A vehicle pulling out.
+• A car braking suddenly.
+• A cyclist swerving to avoid an obstacle.
+
+Good drivers spot potential hazards early so they are ready when they develop.`
+      },
+      {
+        heading: '4. Why Hazard Perception Is Important',
+        body: `Poor hazard perception can lead to:
+• Late braking.
+• Sudden steering.
+• Near misses or collisions.
+• Driving faults or serious faults on test.
+
+Good hazard perception:
+• Gives you more time to react.
+• Keeps driving smooth and controlled.
+• Reduces stress.
+• Improves safety for everyone.`
+      },
+      {
+        heading: '5. How to Improve Hazard Perception',
+        body: `5.1 Look Well Ahead
+• Do not focus only on the vehicle in front.
+• Scan the road ahead, pavements and junctions.
+• Look through bends and beyond crests.
+
+5.2 Scan Continuously
+• Move your eyes regularly.
+• Check mirrors often.
+• Look left and right at junctions.
+
+5.3 Ask Yourself
+• What could happen next?
+• Where is the danger coming from?
+• What might others do unexpectedly?`
+      },
+      {
+        heading: '6. Using LADA for Hazard Perception',
+        body: `Hazard perception works best when using LADA:
+
+Look
+• Observe the road, pavements, mirrors and surroundings.
+
+Assess
+• Identify possible hazards and judge how serious they are.
+
+Decide
+• Decide whether you need to slow, change position, cover the brake, or stop.
+
+Act
+• Take smooth, early action to stay safe.
+
+Using LADA prevents rushed or panicked reactions.`
+      },
+      {
+        heading: '7. Common Hazard Situations',
+        body: `7.1 Pedestrians
+• Children near schools.
+• People distracted by phones.
+• Pedestrians stepping out from between parked cars.
+
+7.2 Cyclists and Motorcyclists
+• Filtering through traffic.
+• Swerving to avoid potholes.
+• Difficult to see in blind spots.
+
+7.3 Junctions
+• Vehicles emerging unexpectedly.
+• Poor visibility.
+• Drivers misjudging gaps.
+
+7.4 Parked Vehicles
+• Doors opening.
+• Vehicles pulling away.
+• Reduced road width.
+
+7.5 Weather Conditions
+• Rain reducing grip.
+• Fog reducing visibility.
+• Ice on shaded roads.`
+      },
+      {
+        heading: '8. Hazard Perception in Different Environments',
+        body: `8.1 Built-Up Areas
+• High pedestrian activity.
+• Frequent junctions.
+• Parked vehicles.
+
+8.2 Country Roads
+• Bends and blind crests.
+• Animals or farm vehicles.
+• Narrow roads.
+
+8.3 Dual Carriageways and Motorways
+• Higher speeds.
+• Vehicles joining or leaving.
+• Sudden lane changes.
+
+Each environment requires different levels of anticipation and planning.`
+      },
+      {
+        heading: '9. Hazard Perception and Speed',
+        body: `Speed affects hazard perception:
+• The faster you drive, the less time you have to react.
+• Higher speeds increase stopping distances.
+
+Good hazard perception includes:
+• Adjusting speed early.
+• Slowing down before hazards.
+• Avoiding last-second braking.`
+      },
+      {
+        heading: '10. Hazard Perception on the DVSA Tests',
+        body: `10.1 Theory Test
+• You must click when you see a developing hazard.
+• Clicking too early or too late can reduce your score.
+• Multiple clicks during the developing hazard window are acceptable.
+
+10.2 Practical Test
+Examiners look for:
+• Early anticipation.
+• Smooth adjustments.
+• Safe responses.
+• No sudden or late reactions.
+
+Poor hazard perception can lead to serious or dangerous faults.`
+      },
+      {
+        heading: '11. Common Hazard Perception Mistakes',
+        body: `Common errors include:
+• Looking too close to the front of the car.
+• Focusing on one hazard and missing another.
+• Reacting too late.
+• Driving at an inappropriate speed for conditions.
+• Assuming others will follow the rules.`
+      },
+      {
+        heading: '12. Key Tips for Strong Hazard Perception',
+        body: `Key tips:
+• Look as far ahead as possible.
+• Expect the unexpected.
+• Slow down early.
+• Keep space around your vehicle.
+• Use mirrors regularly.
+• Stay calm and observant.`
+      },
+      {
+        heading: '13. Summary',
+        body: `Good hazard perception requires:
+• Continuous observation.
+• Early anticipation of danger.
+• Effective use of LADA.
+• Smooth, timely responses.
+• Adjusting speed and position early.
+
+Hazard perception turns driving from reacting at the last second into planning ahead safely. Mastering this skill is essential for passing both the DVSA tests and for becoming a safe, confident driver for life.`
+      }
+    ]
   }
 };
 
