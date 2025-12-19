@@ -57,7 +57,7 @@ export const instructorOnlyLinks = [
 // Learner-only navigation items
 export const learnerOnlyLinks = [
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
-  { name: 'Progress', icon: GraduationCap, page: 'LearnerProgress' },
+  { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress' },
   { name: 'Lessons', icon: Calendar, page: 'LearnerLessons' },
   { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' }
 ];
