@@ -223,18 +223,17 @@ export default function CourseWork() {
             );
           })}
         </div>
-        </div>
-        </div>
+      </div>
 
-        <CourseWorkAssignmentModal
+      <CourseWorkAssignmentModal
         open={assignmentModalOpen}
         onClose={() => {
-        setAssignmentModalOpen(false);
-        setSelectedTopic(null);
+          setAssignmentModalOpen(false);
+          setSelectedTopic(null);
         }}
         topic={selectedTopic}
         onAssign={handleAssignHomework}
-        />
-        </div>
-        );
-        }
+      />
+    </div>
+  );
+}
