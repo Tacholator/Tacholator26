@@ -22,7 +22,8 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Search, Trash2, Edit, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, Loader2, Library, Copy } from 'lucide-react';
+import { Plus, Search, Trash2, Edit, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, Loader2, Library, Copy, ClipboardList } from 'lucide-react';
+import moment from 'moment';
 import HomeworkFormatForm from '@/components/homework/HomeworkFormatForm';
 
 const FORMAT_OPTIONS = [
@@ -60,6 +61,21 @@ export default function HomeworkLibrary() {
     enabled: !!user?.id
   });
 
+  const { data: assignedHomework = [], isLoading: isLoadingHomework } = useQuery({
+    queryKey: ['assignedHomework', user?.id],
+    queryFn: async () => {
+      const items = await base44.entities.HomeworkItem.filter({ instructorId: user.id }, '-created_date');
+      return items;
+    },
+    enabled: !!user?.id
+  });
+
+  const { data: pupils = [] } = useQuery({
+    queryKey: ['pupils'],
+    queryFn: () => base44.entities.Pupil.list(),
+    enabled: !!user?.id
+  });
+
   const createMutation = useMutation({
     mutationFn: (data) => editingTemplate
       ? base44.entities.HomeworkTemplate.update(editingTemplate.id, data)
@@ -83,6 +99,11 @@ export default function HomeworkLibrary() {
       templateName: `${template.templateName} (Copy)`
     }),
     onSuccess: () => queryClient.invalidateQueries(['homeworkTemplates'])
+  });
+
+  const deleteHomeworkMutation = useMutation({
+    mutationFn: (id) => base44.entities.HomeworkItem.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['assignedHomework'])
   });
 
   const resetForm = () => {
@@ -118,6 +139,11 @@ export default function HomeworkLibrary() {
     return matchesSearch && matchesFormat;
   });
 
+  const getPupilName = (pupilId) => {
+    const pupil = pupils.find(p => p.id === pupilId);
+    return pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
@@ -127,7 +153,7 @@ export default function HomeworkLibrary() {
               <Library className="w-8 h-8 text-teal-600" />
               Homework Library
             </h1>
-            <p className="text-slate-500 mt-1">Reusable homework templates</p>
+            <p className="text-slate-500 mt-1">Manage homework templates and assignments</p>
           </div>
           <Button
             onClick={() => { resetForm(); setShowModal(true); }}
@@ -137,6 +163,68 @@ export default function HomeworkLibrary() {
             Create Template
           </Button>
         </div>
+
+        {/* Assigned Homework Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-slate-800 mb-4">Assigned Homework</h2>
+          {isLoadingHomework ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+            </div>
+          ) : assignedHomework.length === 0 ? (
+            <Card className="border-dashed">
+              <CardContent className="py-8 text-center text-slate-400">
+                <ClipboardList className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No homework assigned yet</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {assignedHomework.map((item) => (
+                <Card key={item.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold text-slate-800 truncate">{item.title}</h3>
+                          <Badge className={
+                            item.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
+                            item.status === 'Viewed' ? 'bg-blue-100 text-blue-700' :
+                            'bg-amber-100 text-amber-700'
+                          }>
+                            {item.status}
+                          </Badge>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                          <span>Assigned to: <span className="font-medium">{getPupilName(item.pupilId)}</span></span>
+                          {item.dueDate && (
+                            <>
+                              <span>•</span>
+                              <span>Due: {moment(item.dueDate).format('D MMM YYYY')}</span>
+                            </>
+                          )}
+                          <span>•</span>
+                          <span>{moment(item.created_date).format('D MMM YYYY')}</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => deleteHomeworkMutation.mutate(item.id)}
+                        className="p-2 text-slate-400 hover:text-rose-500 transition-colors"
+                        title="Delete assignment"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Templates Section */}
+        <div>
+          <h2 className="text-xl font-semibold text-slate-800 mb-4">Homework Templates</h2>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
@@ -161,6 +249,7 @@ export default function HomeworkLibrary() {
           </Select>
         </div>
 
+          </div>
         {isLoading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
