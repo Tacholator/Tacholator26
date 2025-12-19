@@ -314,6 +314,7 @@ export default function HomeworkLibrary() {
         )}
         </div>
       </div>
+      </div>
 
       <Dialog open={showModal} onOpenChange={() => { setShowModal(false); resetForm(); }}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
