@@ -155,11 +155,9 @@ export default function CourseWork() {
     navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}`);
   };
 
-  const handleAssignHomework = async ({ includeStudyMaterial, includePracticeQuestions, dueDate, instructions }) => {
-    const activePupilIds = allPupils.filter(p => p.status === 'Active').map(p => p.id);
-    
+  const handleAssignHomework = async ({ includeStudyMaterial, includePracticeQuestions, dueDate, instructions, pupilIds }) => {
     await assignHomeworkMutation.mutateAsync({
-      pupilIds: activePupilIds,
+      pupilIds,
       topicId: selectedTopic.id,
       includeStudyMaterial,
       includePracticeQuestions,
@@ -254,6 +252,7 @@ export default function CourseWork() {
           setSelectedTopic(null);
         }}
         topic={selectedTopic}
+        pupils={allPupils}
         onAssign={handleAssignHomework}
       />
     </div>
