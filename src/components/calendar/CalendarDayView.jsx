@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
 import { motion } from 'framer-motion';
 
-const PIXELS_PER_MINUTE = 1.6;
+const PIXELS_PER_MINUTE = 2;
 const SLOT_MINUTES = 30;
 const DAY_START_HOUR = 0;
 const DAY_END_HOUR = 24;
