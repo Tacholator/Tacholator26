@@ -1,11 +1,13 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileText, Lock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FileText, Lock, UserPlus } from 'lucide-react';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
+import CourseWorkAssignmentModal from '@/components/homework/CourseWorkAssignmentModal';
 
 const cardColors = [
   'bg-gradient-to-br from-blue-100 to-blue-200',
@@ -39,6 +41,9 @@ const cardColors = [
 
 export default function CourseWork() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [assignmentModalOpen, setAssignmentModalOpen] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState(null);
   
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -61,7 +66,53 @@ export default function CourseWork() {
     enabled: !!pupil?.id
   });
 
+  const { data: allPupils = [] } = useQuery({
+    queryKey: ['pupils'],
+    queryFn: () => base44.entities.Pupil.list(),
+    enabled: user?.role === 'admin'
+  });
+
   const isInstructor = user?.role === 'admin';
+
+  const assignHomeworkMutation = useMutation({
+    mutationFn: async ({ pupilIds, topicId, includeStudyMaterial, includePracticeQuestions, dueDate, instructions }) => {
+      const topic = courseWorkTopics.find(t => t.id === topicId);
+      const homeworkItems = [];
+
+      for (const pupilId of pupilIds) {
+        if (includeStudyMaterial) {
+          homeworkItems.push({
+            pupilId,
+            instructorId: user.id,
+            title: `Study: ${topic.title}`,
+            description: instructions || `Complete the study material for ${topic.title}`,
+            formatType: 'link',
+            formatPayload: { url: createPageUrl('CourseWorkDetail') + `?id=${topicId}&subcard=study` },
+            dueDate: dueDate || null,
+            status: 'Pending'
+          });
+        }
+
+        if (includePracticeQuestions) {
+          homeworkItems.push({
+            pupilId,
+            instructorId: user.id,
+            title: `Practice: ${topic.title}`,
+            description: instructions || `Complete the practice questions for ${topic.title}`,
+            formatType: 'link',
+            formatPayload: { url: createPageUrl('CourseWorkDetail') + `?id=${topicId}&subcard=mcq` },
+            dueDate: dueDate || null,
+            status: 'Pending'
+          });
+        }
+      }
+
+      return base44.entities.HomeworkItem.bulkCreate(homeworkItems);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['homework']);
+    }
+  });
 
   const hasAccess = (topicId, type) => {
     if (isInstructor) return true;
@@ -70,8 +121,32 @@ export default function CourseWork() {
     return type === 'study' ? access.grantStudyMaterial : access.grantPracticeQuestions;
   };
 
-  const handleCardClick = (itemId) => {
+  const handleCardClick = (itemId, event) => {
+    // Check if clicking on the assign button
+    if (event.target.closest('.assign-button')) {
+      event.stopPropagation();
+      const topic = courseWorkTopics.find(t => t.id === itemId);
+      setSelectedTopic(topic);
+      setAssignmentModalOpen(true);
+      return;
+    }
     navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}`);
+  };
+
+  const handleAssignHomework = async ({ includeStudyMaterial, includePracticeQuestions, dueDate, instructions }) => {
+    const activePupilIds = allPupils.filter(p => p.status === 'Active').map(p => p.id);
+    
+    await assignHomeworkMutation.mutateAsync({
+      pupilIds: activePupilIds,
+      topicId: selectedTopic.id,
+      includeStudyMaterial,
+      includePracticeQuestions,
+      dueDate,
+      instructions
+    });
+
+    setAssignmentModalOpen(false);
+    setSelectedTopic(null);
   };
 
   return (
@@ -116,12 +191,28 @@ export default function CourseWork() {
             return (
               <Card 
                 key={item.id}
-                onClick={() => handleCardClick(item.id)}
-                className={`${cardColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105 relative`}
+                onClick={(e) => handleCardClick(item.id, e)}
+                className={`${cardColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105 relative group`}
               >
                 {isLocked && (
                   <div className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm">
                     <Lock className="w-4 h-4 text-slate-600" />
+                  </div>
+                )}
+                {isInstructor && (
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity assign-button">
+                    <Button
+                      size="sm"
+                      className="bg-white/90 hover:bg-white text-slate-700 shadow-md h-7 text-xs gap-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTopic(item);
+                        setAssignmentModalOpen(true);
+                      }}
+                    >
+                      <UserPlus className="w-3 h-3" />
+                      Assign
+                    </Button>
                   </div>
                 )}
                 <CardContent className="p-4 text-center w-full">
@@ -132,7 +223,18 @@ export default function CourseWork() {
             );
           })}
         </div>
-      </div>
-    </div>
-  );
-}
+        </div>
+        </div>
+
+        <CourseWorkAssignmentModal
+        open={assignmentModalOpen}
+        onClose={() => {
+        setAssignmentModalOpen(false);
+        setSelectedTopic(null);
+        }}
+        topic={selectedTopic}
+        onAssign={handleAssignHomework}
+        />
+        </div>
+        );
+        }

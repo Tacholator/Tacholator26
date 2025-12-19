@@ -240,6 +240,15 @@ export default function McqQuiz({ questionPack, topicId }) {
                     </div>
                   )}
                 </div>
+                {mcqStatus.instructorComment && (
+                  <div className="mt-4 p-4 bg-gradient-to-r from-[#F7B602]/10 to-amber-50 border-l-4 border-l-[#F7B602] rounded-lg">
+                    <p className="text-xs font-semibold text-[#071739] mb-1">Message from your instructor:</p>
+                    <p className="text-sm text-slate-700 italic">"{mcqStatus.instructorComment}"</p>
+                    <p className="text-xs text-slate-500 mt-2">
+                      {moment(mcqStatus.instructorCommentedAt).format('D MMM YYYY, h:mm a')}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

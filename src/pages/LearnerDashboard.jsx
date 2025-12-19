@@ -149,7 +149,7 @@ export default function LearnerDashboard() {
 
   const latestDiary = diaryEntries[0];
 
-  // Calculate overall progress from driving skills
+  // Calculate overall progress from driving skills - SHARED LOGIC WITH PupilProgressTracker
   const overallProgress = React.useMemo(() => {
     if (!drivingProgress.length) return 0;
     const progressValues = { full_talk_through: 33, prompted: 66, independent: 100 };

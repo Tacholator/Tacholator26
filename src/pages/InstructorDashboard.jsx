@@ -238,6 +238,7 @@ export default function InstructorDashboard() {
 
   const recentNotifications = notifications.slice(0, 5);
 
+  // Progress calculation - SHARED LOGIC with LearnerDashboard and PupilProgressTracker
   const getPupilProgress = (pupilId) => {
     const pupilSkills = drivingProgress.filter(dp => dp.pupilId === pupilId);
     if (pupilSkills.length === 0) return 0;
