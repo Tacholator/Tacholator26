@@ -135,35 +135,70 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     return stateConfig?.color || 'bg-slate-100 text-slate-600';
   };
 
-  const handleSkillClick = (skill) => {
-    if (!isInstructor) return;
-    const progress = getProgressForSkill(skill.id);
-    setSelectedSkill(skill);
-    setNotes(progress?.notes || '');
-  };
 
-  const handleSaveProgress = (progressState) => {
-    const currentProgress = getProgressForSkill(selectedSkill.id);
-    // If clicking the same state, clear it
-    const newState = currentProgress?.progressState === progressState ? '' : progressState;
+
+  const handleCheckboxToggle = (skillId, level) => {
+    const progress = getProgressForSkill(skillId);
+    const currentState = progress?.progressState;
+    let newState;
+
+    if (currentState === level) {
+      const levels = ['full_talk_through', 'prompted', 'independent'];
+      const currentIndex = levels.indexOf(currentState);
+      newState = currentIndex > 0 ? levels[currentIndex - 1] : '';
+    } else {
+      newState = level;
+    }
+
     updateProgressMutation.mutate({
-      skillId: selectedSkill.id,
+      skillId,
       progressState: newState
     });
   };
 
   const renderSkillItem = (skill, level = 0) => {
     const progress = getProgressForSkill(skill.id);
-    const stateLabel = progressStates.find(s => s.id === progress?.progressState)?.label;
+    const levels = ['full_talk_through', 'prompted', 'independent'];
 
+    if (isInstructor) {
+      return (
+        <div 
+          key={skill.id}
+          className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors gap-4"
+          style={{ marginLeft: `${level * 16}px` }}
+        >
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <ChevronRight className={`w-4 h-4 text-slate-400 flex-shrink-0 ${level > 0 ? 'opacity-50' : ''}`} />
+            <span className="text-sm text-slate-700 truncate">{skill.label}</span>
+          </div>
+          <div className="flex gap-3 items-center flex-shrink-0">
+            {levels.map((lvl, idx) => {
+              const isChecked = levels.indexOf(progress?.progressState) >= idx;
+              return (
+                <label key={lvl} className="flex items-center gap-1.5 cursor-pointer group">
+                  <Checkbox
+                    checked={isChecked}
+                    onCheckedChange={() => handleCheckboxToggle(skill.id, lvl)}
+                    disabled={updateProgressMutation.isPending}
+                  />
+                  <span className="text-xs text-slate-600 group-hover:text-slate-800 whitespace-nowrap">
+                    {lvl === 'full_talk_through' ? 'Full' : lvl === 'prompted' ? 'Prompt' : 'Indep'}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // Learner view - read-only
+    const stateLabel = progressStates.find(s => s.id === progress?.progressState)?.label;
     return (
       <div 
         key={skill.id}
-        className={`flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors ${
-          isInstructor ? 'cursor-pointer' : ''
-        }`}
+        className="flex items-center justify-between p-3 rounded-lg"
         style={{ marginLeft: `${level * 16}px` }}
-        onClick={() => handleSkillClick(skill)}
       >
         <div className="flex items-center gap-3 flex-1">
           <ChevronRight className={`w-4 h-4 text-slate-400 ${level > 0 ? 'opacity-50' : ''}`} />
@@ -447,52 +482,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         </CardContent>
       </Card>
 
-      {/* Edit Progress Dialog */}
-      <Dialog open={!!selectedSkill} onOpenChange={() => setSelectedSkill(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Update Progress: {selectedSkill?.label}</DialogTitle>
-            <DialogDescription>
-              Select the current progress level for this skill
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {progressStates.map(state => (
-              <button
-                key={state.id}
-                onClick={() => handleSaveProgress(state.id)}
-                disabled={updateProgressMutation.isPending}
-                className={`w-full p-4 border-2 rounded-lg text-left hover:border-[#F7B602] transition-colors ${
-                  getProgressForSkill(selectedSkill?.id)?.progressState === state.id
-                    ? 'border-[#F7B602] bg-[#F7B602]/5'
-                    : 'border-slate-200'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">{state.label}</h4>
-                    <p className="text-xs text-slate-600">{state.description}</p>
-                  </div>
-                  {getProgressForSkill(selectedSkill?.id)?.progressState === state.id && (
-                    <Check className="w-5 h-5 text-[#F7B602] shrink-0" />
-                  )}
-                </div>
-              </button>
-            ))}
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">
-                Notes (Optional)
-              </label>
-              <Textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add any notes about this skill..."
-                rows={3}
-              />
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+
 
       {/* Edit Mock Test Dialog */}
       <Dialog open={!!editingMockTest} onOpenChange={() => setEditingMockTest(null)}>
