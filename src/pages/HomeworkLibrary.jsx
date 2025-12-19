@@ -379,6 +379,6 @@ export default function HomeworkLibrary() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
