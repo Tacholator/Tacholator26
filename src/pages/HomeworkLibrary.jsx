@@ -53,6 +53,7 @@ export default function HomeworkLibrary() {
   const [showModal, setShowModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
+  const [selectedPupilId, setSelectedPupilId] = useState(null);
   const [formData, setFormData] = useState({
     templateName: '',
     templateDescription: '',
@@ -166,6 +167,17 @@ export default function HomeworkLibrary() {
     return pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown';
   };
 
+  // Group homework by pupil
+  const homeworkByPupil = assignedHomework.reduce((acc, item) => {
+    if (!acc[item.pupilId]) {
+      acc[item.pupilId] = [];
+    }
+    acc[item.pupilId].push(item);
+    return acc;
+  }, {});
+
+  const selectedPupilHomework = selectedPupilId ? homeworkByPupil[selectedPupilId] || [] : [];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
@@ -214,45 +226,47 @@ export default function HomeworkLibrary() {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-3">
-              {assignedHomework.map((item) => (
-                <Card key={item.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-slate-800 truncate">{item.title}</h3>
-                          <Badge className={
-                            item.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
-                            item.status === 'Viewed' ? 'bg-blue-100 text-blue-700' :
-                            'bg-amber-100 text-amber-700'
-                          }>
-                            {item.status}
-                          </Badge>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {Object.keys(homeworkByPupil).map((pupilId) => {
+                const pupilHomework = homeworkByPupil[pupilId];
+                const pendingCount = pupilHomework.filter(h => h.status === 'Pending').length;
+                const completedCount = pupilHomework.filter(h => h.status === 'Completed').length;
+                const pupil = pupils.find(p => p.id === pupilId);
+                
+                return (
+                  <Card 
+                    key={pupilId} 
+                    className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => setSelectedPupilId(pupilId)}
+                  >
+                    <CardContent className="p-5">
+                      <div className="flex items-start gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-lg font-bold">
+                          {pupil?.firstName?.[0]}{pupil?.lastName?.[0]}
                         </div>
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
-                          <span>Assigned to: <span className="font-medium">{getPupilName(item.pupilId)}</span></span>
-                          {item.dueDate && (
-                            <>
-                              <span>•</span>
-                              <span>Due: {moment(item.dueDate).format('D MMM YYYY')}</span>
-                            </>
-                          )}
-                          <span>•</span>
-                          <span>{moment(item.created_date).format('D MMM YYYY')}</span>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-slate-800">{getPupilName(pupilId)}</h3>
+                          <p className="text-sm text-slate-500 mt-1">
+                            {pupilHomework.length} assignment{pupilHomework.length !== 1 ? 's' : ''}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            {pendingCount > 0 && (
+                              <Badge className="bg-amber-100 text-amber-700 text-xs">
+                                {pendingCount} pending
+                              </Badge>
+                            )}
+                            {completedCount > 0 && (
+                              <Badge className="bg-emerald-100 text-emerald-700 text-xs">
+                                {completedCount} done
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <button
-                        onClick={() => deleteHomeworkMutation.mutate(item.id)}
-                        className="p-2 text-slate-400 hover:text-rose-500 transition-colors"
-                        title="Delete assignment"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
@@ -410,6 +424,72 @@ export default function HomeworkLibrary() {
               {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : (editingTemplate ? 'Update' : 'Save')}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pupil Homework Detail Dialog */}
+      <Dialog open={!!selectedPupilId} onOpenChange={() => setSelectedPupilId(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{getPupilName(selectedPupilId)}'s Homework</DialogTitle>
+            <DialogDescription>
+              {selectedPupilHomework.length} assignment{selectedPupilHomework.length !== 1 ? 's' : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            {selectedPupilHomework.map((item) => {
+              const FormatIcon = FORMAT_OPTIONS.find(f => f.value === item.formatType)?.icon || FileText;
+              return (
+                <Card key={item.id} className="border-0 shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-teal-50">
+                        <FormatIcon className="w-5 h-5 text-teal-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold text-slate-800">{item.title}</h3>
+                          <Badge className={
+                            item.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
+                            item.status === 'Viewed' ? 'bg-blue-100 text-blue-700' :
+                            'bg-amber-100 text-amber-700'
+                          }>
+                            {item.status}
+                          </Badge>
+                        </div>
+                        {item.description && (
+                          <p className="text-sm text-slate-500 mb-2">{item.description}</p>
+                        )}
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                          <span>Assigned {moment(item.created_date).format('D MMM YYYY')}</span>
+                          {item.dueDate && (
+                            <>
+                              <span>•</span>
+                              <span>Due {moment(item.dueDate).format('D MMM YYYY')}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          await deleteHomeworkMutation.mutateAsync(item.id);
+                          // Close dialog if no more homework for this pupil
+                          const remaining = selectedPupilHomework.filter(h => h.id !== item.id);
+                          if (remaining.length === 0) {
+                            setSelectedPupilId(null);
+                          }
+                        }}
+                        className="p-2 text-slate-400 hover:text-rose-500 transition-colors"
+                        title="Delete assignment"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </DialogContent>
       </Dialog>
 
