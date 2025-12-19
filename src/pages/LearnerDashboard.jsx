@@ -21,7 +21,13 @@ import {
   Car,
   User,
   ClipboardList,
-  FileText
+  FileText,
+  MessageCircle,
+  Bell,
+  Award,
+  TrendingUp,
+  DollarSign,
+  Lock
 } from 'lucide-react';
 import moment from 'moment';
 
@@ -115,6 +121,22 @@ export default function LearnerDashboard() {
     enabled: !!user?.id
   });
 
+  const { data: drivingProgress = [] } = useQuery({
+    queryKey: ['drivingProgress', pupil?.id],
+    queryFn: () => base44.entities.DrivingSkillProgress.filter({ pupilId: pupil.id }),
+    enabled: !!pupil?.id
+  });
+
+  const { data: messages = [] } = useQuery({
+    queryKey: ['messages', pupil?.id],
+    queryFn: async () => {
+      if (!pupil?.id) return [];
+      const msgs = await base44.entities.Message.filter({ pupilId: pupil.id }, '-created_date', 20);
+      return msgs;
+    },
+    enabled: !!pupil?.id
+  });
+
   const arrivalNotification = notifications.find(n => n.type === 'lesson_arrival' && !n.acknowledged);
   const arrivalLesson = arrivalNotification 
     ? lessons.find(l => l.id === arrivalNotification.linkTargetId)
@@ -126,6 +148,27 @@ export default function LearnerDashboard() {
     .sort((a, b) => a.date.localeCompare(b.date))[0];
 
   const latestDiary = diaryEntries[0];
+
+  // Calculate overall progress from driving skills
+  const overallProgress = React.useMemo(() => {
+    if (!drivingProgress.length) return 0;
+    const progressValues = { full_talk_through: 33, prompted: 66, independent: 100 };
+    const totalProgress = drivingProgress.reduce((sum, skill) => {
+      return sum + (progressValues[skill.progressState] || 0);
+    }, 0);
+    return Math.round(totalProgress / drivingProgress.length);
+  }, [drivingProgress]);
+
+  // Find next focus topic (first skill that's not independent)
+  const nextFocusTopic = React.useMemo(() => {
+    const notCompleted = drivingProgress.find(s => s.progressState !== 'independent');
+    return notCompleted ? { id: notCompleted.skillId, label: notCompleted.skillId.replace(/_/g, ' ') } : null;
+  }, [drivingProgress]);
+
+  // Messages/notifications summary
+  const unreadMessages = messages.filter(m => !m.readAt && m.senderRole === 'instructor').length;
+  const unreadNotifications = notifications.filter(n => !n.readAt).length;
+  const latestMessage = messages.find(m => m.senderRole === 'instructor');
 
   if (pupilLoading) {
     return (
@@ -171,16 +214,65 @@ export default function LearnerDashboard() {
           <ArrivalBanner notification={arrivalNotification} lesson={arrivalLesson} />
         )}
 
+        {/* Overall Driving Progress */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6"
+        >
+          <Card className="border-0 shadow-sm border-l-4 border-l-[#F7B602]">
+            <CardHeader>
+              <CardTitle className="text-lg">Driving Progress Overview</CardTitle>
+              <p className="text-sm text-slate-500">Your progress is updated by your instructor</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium text-slate-700">Overall Progress</span>
+                  <span className="text-sm font-bold text-[#F7B602]">{overallProgress}%</span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-[#F7B602] to-[#d99f02] h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${overallProgress}%` }}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Next Focus</p>
+                  <p className="text-sm font-medium text-slate-700">
+                    {nextFocusTopic?.label || 'Awaiting instructor update'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Last Updated</p>
+                  <p className="text-sm font-medium text-slate-700">
+                    {drivingProgress.length > 0 ? moment(drivingProgress[0].lastUpdated).fromNow() : '—'}
+                  </p>
+                </div>
+              </div>
+              <Link to={createPageUrl('LearnerProgress')} className="w-full">
+                <Button variant="outline" className="w-full gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  View Full Driving Progress
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </motion.div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Progress Card */}
+          {/* Lesson Hours Progress */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.15 }}
           >
             <Card className="border-0 shadow-sm h-full">
               <CardHeader>
-                <CardTitle className="text-lg">Your Progress</CardTitle>
+                <CardTitle className="text-lg">Lesson Hours</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center">
                 <ProgressRing
@@ -191,11 +283,6 @@ export default function LearnerDashboard() {
                 <p className="text-sm text-slate-500 mt-4 text-center">
                   {pupil.targetHours - (pupil.hoursCompleted || 0)} hours remaining
                 </p>
-                <Link to={createPageUrl('LearnerProgress')} className="w-full mt-4">
-                  <Button variant="outline" className="w-full gap-2">
-                    View Skills <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </Link>
               </CardContent>
             </Card>
           </motion.div>
@@ -207,7 +294,7 @@ export default function LearnerDashboard() {
             transition={{ delay: 0.2 }}
             className="lg:col-span-2"
           >
-            <Card className="border-0 shadow-sm h-full bg-gradient-to-br from-teal-500 to-teal-600 text-white">
+            <Card className="border-0 shadow-sm h-full bg-gradient-to-br from-[#071739] to-[#0a2142] text-white">
               <CardHeader>
                 <CardTitle className="text-lg text-white/90">Next Lesson</CardTitle>
               </CardHeader>
@@ -309,52 +396,167 @@ export default function LearnerDashboard() {
           </motion.div>
         )}
 
-        {/* Quick Access Homework */}
-        {homework.length > 0 && (
+        {/* Homework & Learning Hub + Payments Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          {/* Quick Access Homework */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.32 }}
-            className="mt-6"
           >
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-sm h-full">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <ClipboardList className="w-5 h-5 text-amber-500" />
-                  Pending Homework
+                  Homework & Learning
                 </CardTitle>
-                <Badge className="bg-amber-100 text-amber-700">{homework.length}</Badge>
+                {homework.length > 0 && (
+                  <Badge className="bg-amber-100 text-amber-700">{homework.length}</Badge>
+                )}
               </CardHeader>
               <CardContent className="space-y-3">
-                {homework.slice(0, 3).map(item => (
-                  <div 
-                    key={item.id} 
-                    className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
-                    onClick={() => window.location.href = createPageUrl('LearnerHomework')}
-                  >
-                    <div className="p-2 rounded-lg bg-amber-100">
-                      <FileText className="w-4 h-4 text-amber-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-slate-700 truncate">{item.title}</p>
-                      {item.dueDate && (
-                        <p className="text-xs text-amber-600">Due {moment(item.dueDate).format('D MMM')}</p>
-                      )}
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                {homework.length > 0 ? (
+                  <>
+                    {homework.slice(0, 4).map(item => (
+                      <div 
+                        key={item.id} 
+                        className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
+                        onClick={() => window.location.href = createPageUrl('LearnerHomework')}
+                      >
+                        <div className="p-2 rounded-lg bg-amber-100">
+                          <FileText className="w-4 h-4 text-amber-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-700 truncate">{item.title}</p>
+                          {item.dueDate && (
+                            <p className="text-xs text-amber-600">Due {moment(item.dueDate).format('D MMM')}</p>
+                          )}
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-slate-300" />
+                      </div>
+                    ))}
+                    <Link to={createPageUrl('LearnerHomework')}>
+                      <Button variant="outline" className="w-full gap-2">
+                        View All Homework <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <ClipboardList className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                    <p className="text-sm text-slate-500">No pending homework</p>
                   </div>
-                ))}
-                {homework.length > 3 && (
-                  <Link to={createPageUrl('LearnerHomework')}>
-                    <Button variant="outline" className="w-full gap-2">
-                      View All Homework <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
                 )}
               </CardContent>
             </Card>
           </motion.div>
-        )}
+
+          {/* Payments & Hours */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.34 }}
+          >
+            <Card className="border-0 shadow-sm h-full">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-emerald-500" />
+                  Payments & Balance
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center p-3 bg-slate-50 rounded-lg">
+                    <p className="text-2xl font-bold text-slate-700">{pupil.hoursCompleted || 0}</p>
+                    <p className="text-xs text-slate-500 mt-1">Hours Done</p>
+                  </div>
+                  <div className="text-center p-3 bg-emerald-50 rounded-lg">
+                    <p className="text-2xl font-bold text-emerald-700">
+                      {Math.max(0, (pupil.targetHours || 45) - (pupil.hoursCompleted || 0))}
+                    </p>
+                    <p className="text-xs text-emerald-600 mt-1">Remaining</p>
+                  </div>
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <p className="text-2xl font-bold text-blue-700">£{pupil.hourlyRate || 50}</p>
+                    <p className="text-xs text-blue-600 mt-1">Per Hour</p>
+                  </div>
+                </div>
+                <div className="border-t pt-4 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Block Booking Balance</span>
+                    <span className="font-semibold text-slate-700">
+                      £{pupil.bulkPaymentBalance || 0}
+                    </span>
+                  </div>
+                  {pupil.bulkAmountPaid > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Total Paid</span>
+                      <span className="font-semibold text-slate-700">
+                        £{pupil.bulkAmountPaid}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* Messages & Notifications */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.36 }}
+          className="mt-6"
+        >
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg">Messages & Notifications</CardTitle>
+              <p className="text-sm text-slate-500">Stay connected with your instructor</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
+                  <MessageCircle className="w-6 h-6 text-blue-600" />
+                  <div>
+                    <p className="text-2xl font-bold text-blue-700">{unreadMessages}</p>
+                    <p className="text-xs text-blue-600">Unread Messages</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
+                  <Bell className="w-6 h-6 text-purple-600" />
+                  <div>
+                    <p className="text-2xl font-bold text-purple-700">{unreadNotifications}</p>
+                    <p className="text-xs text-purple-600">Notifications</p>
+                  </div>
+                </div>
+              </div>
+              {latestMessage && (
+                <div className="bg-slate-50 rounded-lg p-4">
+                  <p className="text-xs text-slate-500 mb-1">Latest message</p>
+                  <p className="text-sm text-slate-700 line-clamp-2">{latestMessage.messageText}</p>
+                  <p className="text-xs text-slate-500 mt-2">
+                    From {latestMessage.senderName} • {moment(latestMessage.created_date).fromNow()}
+                  </p>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                <Link to={createPageUrl('LearnerChats')} className="w-full">
+                  <Button variant="outline" className="w-full gap-2">
+                    <MessageCircle className="w-4 h-4" />
+                    Open Chats
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('LearnerNotifications')} className="w-full">
+                  <Button variant="outline" className="w-full gap-2">
+                    <Bell className="w-4 h-4" />
+                    Notifications
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Instructor Info */}
         {(pupil.instructorName || pupil.instructorEmail) && (
@@ -384,6 +586,66 @@ export default function LearnerDashboard() {
             </Card>
           </motion.div>
         )}
+
+        {/* Milestones & Motivation */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.38 }}
+          className="mt-6"
+        >
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Award className="w-5 h-5 text-[#F7B602]" />
+                Milestones
+              </CardTitle>
+              <p className="text-sm text-slate-500">Small wins add up — keep going!</p>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-100">
+                  <Award className="w-6 h-6 text-emerald-600" />
+                  <div>
+                    <p className="text-sm font-medium text-emerald-700">First Lesson</p>
+                    <p className="text-xs text-emerald-600">Completed</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <Lock className="w-6 h-6 text-slate-400" />
+                  <div>
+                    <p className="text-sm font-medium text-slate-600">10 Hours</p>
+                    <p className="text-xs text-slate-500">Locked</p>
+                  </div>
+                </div>
+                {pupil.theoryTestPassed && (
+                  <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                    <Award className="w-6 h-6 text-blue-600" />
+                    <div>
+                      <p className="text-sm font-medium text-blue-700">Theory Test</p>
+                      <p className="text-xs text-blue-600">Passed!</p>
+                    </div>
+                  </div>
+                )}
+                {pupil.practicalTestPassed && (
+                  <div className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                    <Award className="w-6 h-6 text-rose-600" />
+                    <div>
+                      <p className="text-sm font-medium text-rose-700">Practical Test</p>
+                      <p className="text-xs text-rose-600">Passed!</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                <p className="text-xs font-medium text-blue-700 mb-1">💡 Tip for this week</p>
+                <p className="text-sm text-blue-800">
+                  Complete any assigned study material before your next lesson to make faster progress.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Test Dates */}
         {(pupil.theoryTestDate || pupil.practicalTestDate) && (
