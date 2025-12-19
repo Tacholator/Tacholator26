@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileText, Volume2, X, CheckCircle, AlertCircle, Lock, Users, Trash2 } from 'lucide-react';
+import { ArrowLeft, FileText, Volume2, X, CheckCircle, AlertCircle, Lock } from 'lucide-react';
 import SectionAudioPlayer from '@/components/learning/SectionAudioPlayer';
 import McqQuiz from '@/components/coursework/McqQuiz';
 import { questionPacks } from '@/components/coursework/questionPacks';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 import LockedContentDialog from '@/components/coursework/LockedContentDialog';
-import moment from 'moment';
 
 const courseWorkContent = {
   1: {
@@ -4256,7 +4254,6 @@ Learners may use their own car, but it must fully comply with DVSA requirements.
 
 export default function CourseWorkDetail() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
   const itemId = parseInt(urlParams.get('id'));
   const subcard = urlParams.get('subcard');
@@ -4266,14 +4263,6 @@ export default function CourseWorkDetail() {
     return !hasSeenHint && localStorage.getItem('enable_audio_reading') !== 'false';
   });
   const [showLockedDialog, setShowLockedDialog] = useState(false);
-
-  const deleteAccessMutation = useMutation({
-    mutationFn: (accessId) => base44.entities.PupilTopicAccess.delete(accessId),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['topicAccessRecords']);
-      queryClient.invalidateQueries(['pupilTopicAccess']);
-    }
-  });
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -4294,22 +4283,6 @@ export default function CourseWorkDetail() {
     queryKey: ['pupilTopicAccess', pupil?.id],
     queryFn: () => base44.entities.PupilTopicAccess.filter({ pupilId: pupil.id }),
     enabled: !!pupil?.id
-  });
-
-  const { data: allPupils = [] } = useQuery({
-    queryKey: ['pupils'],
-    queryFn: () => base44.entities.Pupil.list(),
-    enabled: !!user?.id && user?.role === 'admin'
-  });
-
-  const { data: topicAccessRecords = [] } = useQuery({
-    queryKey: ['topicAccessRecords', itemId],
-    queryFn: async () => {
-      const currentTopic = courseWorkTopics.find(t => t.id === itemId);
-      if (!currentTopic) return [];
-      return base44.entities.PupilTopicAccess.filter({ topicId: currentTopic.topicId });
-    },
-    enabled: !!itemId && !!user?.id && user?.role === 'admin'
   });
 
   const isInstructor = user?.role === 'admin';
@@ -4553,12 +4526,6 @@ export default function CourseWorkDetail() {
     ? `Back to ${content.title}`
     : 'Back to Course Work';
 
-  const activeAccessRecords = topicAccessRecords.filter(a => !a.revokedAt);
-  const getPupilName = (pupilId) => {
-    const pupil = allPupils.find(p => p.id === pupilId);
-    return pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown';
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
@@ -4568,43 +4535,6 @@ export default function CourseWorkDetail() {
             {backText}
           </Button>
         </Link>
-
-        {/* Instructor: Show Assigned Pupils */}
-        {isInstructor && activeAccessRecords.length > 0 && (
-          <Card className="border-0 shadow-sm mb-6 bg-blue-50/50">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Users className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-slate-800">Assigned Pupils ({activeAccessRecords.length})</h3>
-              </div>
-              <div className="space-y-2">
-                {activeAccessRecords.map((access) => (
-                  <div key={access.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-700">{getPupilName(access.pupilId)}</p>
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1">
-                        {access.grantStudyMaterial && (
-                          <Badge className="bg-orange-100 text-orange-700 text-xs">Study Material</Badge>
-                        )}
-                        {access.grantPracticeQuestions && (
-                          <Badge className="bg-rose-100 text-rose-700 text-xs">Practice Questions</Badge>
-                        )}
-                        <span>Assigned {moment(access.assignedAt).fromNow()}</span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => deleteAccessMutation.mutate(access.id)}
-                      className="p-2 text-slate-400 hover:text-rose-500 transition-colors ml-4"
-                      title="Remove assignment"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
