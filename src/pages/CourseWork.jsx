@@ -78,8 +78,19 @@ export default function CourseWork() {
     mutationFn: async ({ pupilIds, topicId, includeStudyMaterial, includePracticeQuestions, dueDate, instructions }) => {
       const topic = courseWorkTopics.find(t => t.id === topicId);
       const homeworkItems = [];
+      const accessRecords = [];
 
       for (const pupilId of pupilIds) {
+        // Create access record to unlock the content
+        accessRecords.push({
+          pupilId,
+          instructorId: user.id,
+          topicId: topic.topicId,
+          grantStudyMaterial: includeStudyMaterial,
+          grantPracticeQuestions: includePracticeQuestions,
+          assignedAt: new Date().toISOString()
+        });
+
         if (includeStudyMaterial) {
           homeworkItems.push({
             pupilId,
@@ -107,10 +118,21 @@ export default function CourseWork() {
         }
       }
 
-      return base44.entities.HomeworkItem.bulkCreate(homeworkItems);
+      // Create access records first to unlock content
+      if (accessRecords.length > 0) {
+        await base44.entities.PupilTopicAccess.bulkCreate(accessRecords);
+      }
+
+      // Then create homework items
+      if (homeworkItems.length > 0) {
+        await base44.entities.HomeworkItem.bulkCreate(homeworkItems);
+      }
+
+      return { accessRecords, homeworkItems };
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['homework']);
+      queryClient.invalidateQueries(['pupilTopicAccess']);
     }
   });
 
