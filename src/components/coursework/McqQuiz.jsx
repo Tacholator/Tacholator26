@@ -66,6 +66,20 @@ export default function McqQuiz({ questionPack, topicId }) {
     enabled: !!pupil?.instructorId
   });
 
+  const { data: relatedHomework } = useQuery({
+    queryKey: ['relatedHomework', pupil?.id, topicIdStr],
+    queryFn: async () => {
+      const allHomework = await base44.entities.HomeworkItem.filter({ pupilId: pupil.id });
+      return allHomework.filter(h => 
+        h.status !== 'Completed' && 
+        (h.description?.toLowerCase().includes(topicIdStr?.toLowerCase()) ||
+         h.title?.toLowerCase().includes(topicIdStr?.toLowerCase()) ||
+         h.description?.toLowerCase().includes('practice'))
+      );
+    },
+    enabled: !!pupil?.id && !!topicIdStr
+  });
+
   const createAttemptMutation = useMutation({
     mutationFn: async (attemptData) => {
       return await base44.entities.McqAttempt.create(attemptData);
@@ -156,6 +170,17 @@ export default function McqQuiz({ questionPack, topicId }) {
     };
 
     await upsertStatusMutation.mutateAsync(statusData);
+
+    // Update related homework status to Completed if passed
+    if (passed && relatedHomework && relatedHomework.length > 0) {
+      await Promise.all(
+        relatedHomework.map(hw => 
+          base44.entities.HomeworkItem.update(hw.id, { status: 'Completed' })
+        )
+      );
+      queryClient.invalidateQueries(['myHomework']);
+      queryClient.invalidateQueries(['assignedHomework']);
+    }
 
     // Auto-assign next topic if enabled and passed
     if (passed && instructorSettings?.autoAssignNextTopicOnCompletion) {
