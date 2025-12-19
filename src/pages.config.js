@@ -26,6 +26,7 @@ import CourseWork from './pages/CourseWork';
 import CourseWorkDetail from './pages/CourseWorkDetail';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
+import InstructorDashboardV2 from './pages/InstructorDashboardV2';
 import __Layout from './Layout.jsx';
 
 
@@ -58,6 +59,7 @@ export const PAGES = {
     "CourseWorkDetail": CourseWorkDetail,
     "InstructorTopicAssignment": InstructorTopicAssignment,
     "InstructorMcqReporting": InstructorMcqReporting,
+    "InstructorDashboardV2": InstructorDashboardV2,
 }
 
 export const pagesConfig = {
