@@ -225,7 +225,6 @@ export default function HomeworkLibrary() {
         {/* Templates Section */}
         <div>
           <h2 className="text-xl font-semibold text-slate-800 mb-4">Homework Templates</h2>
-
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -249,7 +248,6 @@ export default function HomeworkLibrary() {
           </Select>
         </div>
 
-          </div>
         {isLoading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
