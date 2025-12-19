@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import LessonFormModal from '@/components/modals/LessonFormModal';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
+import CalendarDayView from '@/components/calendar/CalendarDayView';
+import LessonDetailsDrawer from '@/components/calendar/LessonDetailsDrawer';
 import moment from 'moment';
 
 const VIEW_MODES = ['day', 'week', 'month'];
@@ -22,6 +24,7 @@ export default function Calendar() {
   const [viewMode, setViewMode] = useState('week');
   const [showLessonModal, setShowLessonModal] = useState(false);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
+  const [showDetailsDrawer, setShowDetailsDrawer] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
@@ -104,6 +107,11 @@ export default function Calendar() {
     setSelectedLesson(lesson);
     setSelectedSlot(null);
     setShowDiaryModal(true);
+  };
+
+  const openLessonDetails = (lesson) => {
+    setSelectedLesson(lesson);
+    setShowDetailsDrawer(true);
   };
 
   const handleSaveDiaryAndComplete = async (diaryData) => {
@@ -235,7 +243,16 @@ export default function Calendar() {
         </div>
 
         {/* Calendar View */}
-        {viewMode === 'month' ? (
+        {viewMode === 'day' ? (
+          <CalendarDayView
+            date={currentDate.format('YYYY-MM-DD')}
+            lessons={getLessonsForDay(currentDate)}
+            pupilMap={pupilMap}
+            onLessonClick={openLessonDetails}
+            onSlotClick={openNewLesson}
+            currentUser={currentUser}
+          />
+        ) : viewMode === 'month' ? (
           <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
             <div className="grid grid-cols-7 border-b">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
@@ -393,6 +410,20 @@ export default function Calendar() {
         lesson={selectedLesson}
         pupil={selectedLesson ? pupilMap[selectedLesson.pupilId] : null}
         onSave={handleSaveDiaryAndComplete}
+      />
+
+      <LessonDetailsDrawer
+        lesson={selectedLesson}
+        pupil={selectedLesson ? pupilMap[selectedLesson.pupilId] : null}
+        open={showDetailsDrawer}
+        onClose={() => {
+          setShowDetailsDrawer(false);
+          setSelectedLesson(null);
+        }}
+        onEdit={openEditLesson}
+        onDelete={handleDeleteLesson}
+        onMarkCompleted={openCompleteLessonWithDiary}
+        currentUser={currentUser}
       />
     </div>
   );
