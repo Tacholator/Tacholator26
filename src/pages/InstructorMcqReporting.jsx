@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { ChevronLeft, Search, TrendingUp, CheckCircle, XCircle, Settings, AlertCircle } from 'lucide-react';
+import { ChevronLeft, Search, TrendingUp, CheckCircle, XCircle, Settings, AlertCircle, Award } from 'lucide-react';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 import { format } from 'date-fns';
 
@@ -29,6 +29,12 @@ export default function InstructorMcqReporting() {
     enabled: !!user?.id
   });
 
+  const { data: allMcqStatuses = [] } = useQuery({
+    queryKey: ['allMcqStatuses'],
+    queryFn: () => base44.entities.McqStatus.list('-lastAttemptAt'),
+    enabled: !!user?.id
+  });
+
   const { data: settings } = useQuery({
     queryKey: ['instructorMcqSettings', user?.id],
     queryFn: async () => {
@@ -43,6 +49,35 @@ export default function InstructorMcqReporting() {
     queryFn: () => base44.entities.McqStatus.filter({ pupilId: selectedPupil.id }, '-lastAttemptAt'),
     enabled: !!selectedPupil?.id
   });
+
+  const pupilStats = useMemo(() => {
+    const stats = {};
+    pupils.forEach(pupil => {
+      const pupilStatuses = allMcqStatuses.filter(s => s.pupilId === pupil.id);
+      const totalAttempts = pupilStatuses.reduce((sum, s) => sum + s.attemptCount, 0);
+      const completedTopics = pupilStatuses.filter(s => s.completed).length;
+      const latestAttempt = pupilStatuses.length > 0 ? pupilStatuses[0]?.lastAttemptAt : null;
+      
+      stats[pupil.id] = {
+        totalAttempts,
+        completedTopics,
+        latestAttempt,
+        pupil
+      };
+    });
+    return stats;
+  }, [pupils, allMcqStatuses]);
+
+  const sortedPupils = useMemo(() => {
+    return [...pupils].sort((a, b) => {
+      const aLatest = pupilStats[a.id]?.latestAttempt;
+      const bLatest = pupilStats[b.id]?.latestAttempt;
+      if (!aLatest && !bLatest) return 0;
+      if (!aLatest) return 1;
+      if (!bLatest) return -1;
+      return new Date(bLatest) - new Date(aLatest);
+    });
+  }, [pupils, pupilStats]);
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (autoAssign) => {
@@ -62,7 +97,7 @@ export default function InstructorMcqReporting() {
     }
   });
 
-  const filteredPupils = pupils.filter(p => 
+  const filteredPupils = sortedPupils.filter(p => 
     `${p.firstName} ${p.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -110,105 +145,135 @@ export default function InstructorMcqReporting() {
           </CardContent>
         </Card>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Pupil Selection */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle>Select Pupil</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  placeholder="Search pupils..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                {filteredPupils.map(pupil => (
-                  <button
+        {!selectedPupil ? (
+          <div>
+            <div className="relative mb-6">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Input
+                placeholder="Search pupils..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-11 py-6 text-lg"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filteredPupils.map(pupil => {
+                const stats = pupilStats[pupil.id] || { totalAttempts: 0, completedTopics: 0 };
+                return (
+                  <Card 
                     key={pupil.id}
                     onClick={() => setSelectedPupil(pupil)}
-                    className={`w-full text-left p-3 rounded-lg border transition-all ${
-                      selectedPupil?.id === pupil.id
-                        ? 'border-[#F7B602] bg-amber-50'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                    }`}
+                    className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02] border-2 hover:border-[#F7B602]"
                   >
-                    <p className="font-medium text-slate-800">{pupil.firstName} {pupil.lastName}</p>
-                    <p className="text-sm text-slate-500">{pupil.email}</p>
-                  </button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* MCQ Progress */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>
-                {selectedPupil 
-                  ? `MCQ Progress: ${selectedPupil.firstName} ${selectedPupil.lastName}`
-                  : 'Select a pupil to view progress'
-                }
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {!selectedPupil ? (
-                <div className="text-center py-12 text-slate-500">
-                  <TrendingUp className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                  <p>Choose a pupil from the list to view their MCQ progress</p>
-                </div>
-              ) : mcqStatuses.length === 0 ? (
-                <div className="text-center py-12 text-slate-500">
-                  <AlertCircle className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                  <p>No MCQ attempts yet for this pupil</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {mcqStatuses.map(status => (
-                    <div key={status.id} className="border border-slate-200 rounded-lg p-4">
-                      <div className="flex items-start justify-between gap-4">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-slate-800">{getTopicName(status.topicId)}</h3>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3 text-sm">
-                            <div>
-                              <span className="text-slate-500">Attempts:</span>
-                              <span className="ml-2 font-semibold text-slate-700">{status.attemptCount}</span>
+                          <h3 className="font-bold text-lg text-slate-800 truncate">
+                            {pupil.firstName} {pupil.lastName}
+                          </h3>
+                          <p className="text-sm text-slate-500 truncate">{pupil.email}</p>
+                        </div>
+                        {stats.completedTopics > 0 && (
+                          <Award className="w-6 h-6 text-green-500 flex-shrink-0 ml-2" />
+                        )}
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                          <span className="text-sm text-slate-600">Total Attempts</span>
+                          <span className="font-bold text-slate-800">{stats.totalAttempts}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-2 bg-green-50 rounded">
+                          <span className="text-sm text-green-700">Completed Topics</span>
+                          <span className="font-bold text-green-700">{stats.completedTopics}</span>
+                        </div>
+                      </div>
+                      
+                      {stats.latestAttempt && (
+                        <p className="text-xs text-slate-500 mt-4">
+                          Latest: {format(new Date(stats.latestAttempt), 'PP')}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedPupil(null)}
+              className="mb-6 gap-2"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back to All Pupils
+            </Button>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <span>{selectedPupil.firstName} {selectedPupil.lastName}</span>
+                  {pupilStats[selectedPupil.id]?.completedTopics > 0 && (
+                    <Badge className="bg-green-100 text-green-700">
+                      {pupilStats[selectedPupil.id].completedTopics} Topic{pupilStats[selectedPupil.id].completedTopics !== 1 ? 's' : ''} Completed
+                    </Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {mcqStatuses.length === 0 ? (
+                  <div className="text-center py-12 text-slate-500">
+                    <AlertCircle className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                    <p>No MCQ attempts yet for this pupil</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {mcqStatuses.map(status => (
+                      <Card key={status.id} className={`border-2 ${status.completed ? 'border-green-300 bg-green-50/30' : 'border-slate-200'}`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <h3 className="font-semibold text-slate-800 text-sm leading-tight flex-1">
+                              {getTopicName(status.topicId)}
+                            </h3>
+                            {status.completed && (
+                              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 ml-2" />
+                            )}
+                          </div>
+                          
+                          <div className="space-y-2 text-xs">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Attempts</span>
+                              <span className="font-semibold">{status.attemptCount}</span>
                             </div>
-                            <div>
-                              <span className="text-slate-500">Last Score:</span>
-                              <span className="ml-2 font-semibold text-slate-700">{status.lastScore}/{status.totalQuestions}</span>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Last Score</span>
+                              <span className="font-semibold">{status.lastScore}/{status.totalQuestions}</span>
                             </div>
-                            <div>
-                              <span className="text-slate-500">Last Result:</span>
-                              <Badge className={`ml-2 ${status.lastPassed ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700'}`}>
+                            <div className="flex justify-between items-center">
+                              <span className="text-slate-600">Last Result</span>
+                              <Badge className={`text-xs ${status.lastPassed ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700'}`}>
                                 {status.lastPassed ? 'Pass' : 'Fail'}
                               </Badge>
                             </div>
-                            <div>
-                              <span className="text-slate-500">Status:</span>
-                              <Badge className={`ml-2 ${status.completed ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-                                {status.completed ? 'Completed' : 'In Progress'}
-                              </Badge>
-                            </div>
                           </div>
+                          
                           {status.lastAttemptAt && (
-                            <p className="text-xs text-slate-500 mt-2">
-                              Last attempt: {format(new Date(status.lastAttemptAt), 'PPpp')}
+                            <p className="text-xs text-slate-500 mt-3 pt-3 border-t">
+                              {format(new Date(status.lastAttemptAt), 'PPp')}
                             </p>
                           )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

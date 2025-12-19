@@ -51,14 +51,12 @@ export const instructorOnlyLinks = [
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
   { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
   { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
-  { name: 'DVSA Skills', icon: GraduationCap, page: 'DVSASkills' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources' }
 ];
 
 // Learner-only navigation items
 export const learnerOnlyLinks = [
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
-  { name: 'DVSA Skills', icon: BookOpen, page: 'LearnerSkills' },
   { name: 'Progress', icon: GraduationCap, page: 'LearnerProgress' },
   { name: 'Lessons', icon: Calendar, page: 'LearnerLessons' },
   { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' }
