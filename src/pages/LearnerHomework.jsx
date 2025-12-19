@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ArrowLeft, Loader2, Car, BookOpen, CheckCircle2, Calendar, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Loader2, Car, BookOpen, CheckCircle2, Calendar, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, ChevronRight, ExternalLink } from 'lucide-react';
 import moment from 'moment';
 import HomeworkViewer from '@/components/homework/HomeworkViewer';
 
@@ -90,37 +90,42 @@ export default function LearnerHomework() {
     setSelectedHomework({ ...selectedHomework, formatPayload: { ...selectedHomework.formatPayload, items } });
   };
 
+  const getHomeworkType = (item) => {
+    // Check if it's practice questions
+    if (item.description?.toLowerCase().includes('practice questions') || 
+        item.title?.toLowerCase().includes('practice') ||
+        item.description?.toLowerCase().includes('mcq')) {
+      return 'practice';
+    }
+    // Check if it's study material
+    if (item.description?.toLowerCase().includes('study material') || 
+        item.title?.toLowerCase().includes('study') ||
+        item.description?.toLowerCase().includes('read')) {
+      return 'study';
+    }
+    return 'other';
+  };
+
   const openHomework = async (item) => {
     // Mark as viewed if pending
     if (item.status === 'Pending') {
       await updateHomeworkMutation.mutateAsync({ id: item.id, data: { status: 'Viewed' } });
     }
     
-    // Redirect to appropriate page based on homework type
-    if (item.templateId) {
-      // If homework is from a template, check if it's study material or MCQ
-      const template = await base44.entities.HomeworkTemplate.filter({ id: item.templateId });
-      if (template[0]?.skillTags && template[0].skillTags.length > 0) {
-        const skillId = template[0].skillTags[0];
-        // Redirect to study material
-        navigate(createPageUrl('LearnerSkillStudy') + `?skillId=${skillId}`);
-        return;
+    // Extract topic from title or description
+    const extractTopic = (text) => {
+      const match = text.match(/(.+?)\s*-?\s*(?:Practice|Homework|Study|Material)/i);
+      if (match) {
+        return match[1].trim().toLowerCase().replace(/\s+/g, '_');
       }
-    }
+      // Try to extract first meaningful word(s)
+      return text.split(/[-:]/)[0].trim().toLowerCase().replace(/\s+/g, '_');
+    };
     
-    // Check if it's a topic-based homework (for MCQ practice)
-    if (item.description && item.description.includes('practice questions')) {
-      // Extract topic from description or title
-      const topicMatch = item.title.match(/(.+?)\s*-?\s*(?:Practice|Homework|Study)/i);
-      if (topicMatch) {
-        const topicName = topicMatch[1].trim().toLowerCase().replace(/\s+/g, '_');
-        navigate(createPageUrl('CourseWorkDetail') + `?topic=${topicName}`);
-        return;
-      }
-    }
+    const topicName = extractTopic(item.title);
     
-    // Default: open in modal
-    setSelectedHomework(item);
+    // Navigate to CourseWorkDetail page
+    navigate(createPageUrl('CourseWorkDetail') + `?topic=${topicName}`);
   };
 
   const pendingHomework = homework.filter(h => h.status !== 'Completed');
@@ -185,6 +190,7 @@ export default function LearnerHomework() {
             <div className="space-y-3">
               {pendingHomework.map((item, idx) => {
                 const FormatIcon = FORMAT_ICONS[item.formatType] || FileText;
+                const homeworkType = getHomeworkType(item);
                 return (
                   <motion.div
                     key={item.id}
@@ -192,10 +198,7 @@ export default function LearnerHomework() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
                   >
-                    <Card 
-                      className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                      onClick={() => openHomework(item)}
-                    >
+                    <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
                       <CardContent className="p-4">
                         <div className="flex items-start gap-4">
                           <div className="p-2 rounded-lg bg-amber-50">
@@ -220,7 +223,28 @@ export default function LearnerHomework() {
                             <Badge className={item.status === 'Viewed' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}>
                               {item.status === 'Viewed' ? 'In Progress' : 'New'}
                             </Badge>
-                            <ChevronRight className="w-5 h-5 text-slate-300" />
+                            <Button
+                              size="sm"
+                              onClick={() => openHomework(item)}
+                              className="bg-teal-600 hover:bg-teal-700"
+                            >
+                              {homeworkType === 'practice' ? (
+                                <>
+                                  <CheckSquare className="w-4 h-4 mr-2" />
+                                  Open Practical Questions
+                                </>
+                              ) : homeworkType === 'study' ? (
+                                <>
+                                  <BookOpen className="w-4 h-4 mr-2" />
+                                  Open Study Material
+                                </>
+                              ) : (
+                                <>
+                                  <ExternalLink className="w-4 h-4 mr-2" />
+                                  Open Resource
+                                </>
+                              )}
+                            </Button>
                           </div>
                         </div>
                       </CardContent>
@@ -242,6 +266,7 @@ export default function LearnerHomework() {
             <div className="space-y-3">
               {completedHomework.map((item, idx) => {
                 const FormatIcon = FORMAT_ICONS[item.formatType] || FileText;
+                const homeworkType = getHomeworkType(item);
                 return (
                   <motion.div
                     key={item.id}
@@ -249,10 +274,7 @@ export default function LearnerHomework() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
                   >
-                    <Card 
-                      className="border-0 shadow-sm bg-slate-50/50 cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => setSelectedHomework(item)}
-                    >
+                    <Card className="border-0 shadow-sm bg-slate-50/50 hover:shadow-md transition-shadow">
                       <CardContent className="p-4">
                         <div className="flex items-start gap-4">
                           <div className="p-2 rounded-lg bg-emerald-50">
@@ -264,9 +286,33 @@ export default function LearnerHomework() {
                               <p className="text-sm text-slate-400 mt-1">{item.description}</p>
                             )}
                           </div>
-                          <Badge className="bg-emerald-100 text-emerald-700">
-                            <CheckCircle2 className="w-3 h-3 mr-1" /> Done
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-emerald-100 text-emerald-700">
+                              <CheckCircle2 className="w-3 h-3 mr-1" /> Done
+                            </Badge>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openHomework(item)}
+                            >
+                              {homeworkType === 'practice' ? (
+                                <>
+                                  <CheckSquare className="w-4 h-4 mr-2" />
+                                  Review Questions
+                                </>
+                              ) : homeworkType === 'study' ? (
+                                <>
+                                  <BookOpen className="w-4 h-4 mr-2" />
+                                  Review Material
+                                </>
+                              ) : (
+                                <>
+                                  <ExternalLink className="w-4 h-4 mr-2" />
+                                  Review
+                                </>
+                              )}
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
