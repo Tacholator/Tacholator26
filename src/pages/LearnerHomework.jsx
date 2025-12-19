@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,6 +31,7 @@ const FORMAT_ICONS = {
 export default function LearnerHomework() {
   const [selectedHomework, setSelectedHomework] = useState(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -90,10 +91,36 @@ export default function LearnerHomework() {
   };
 
   const openHomework = async (item) => {
-    setSelectedHomework(item);
+    // Mark as viewed if pending
     if (item.status === 'Pending') {
       await updateHomeworkMutation.mutateAsync({ id: item.id, data: { status: 'Viewed' } });
     }
+    
+    // Redirect to appropriate page based on homework type
+    if (item.templateId) {
+      // If homework is from a template, check if it's study material or MCQ
+      const template = await base44.entities.HomeworkTemplate.filter({ id: item.templateId });
+      if (template[0]?.skillTags && template[0].skillTags.length > 0) {
+        const skillId = template[0].skillTags[0];
+        // Redirect to study material
+        navigate(createPageUrl('LearnerSkillStudy') + `?skillId=${skillId}`);
+        return;
+      }
+    }
+    
+    // Check if it's a topic-based homework (for MCQ practice)
+    if (item.description && item.description.includes('practice questions')) {
+      // Extract topic from description or title
+      const topicMatch = item.title.match(/(.+?)\s*-?\s*(?:Practice|Homework|Study)/i);
+      if (topicMatch) {
+        const topicName = topicMatch[1].trim().toLowerCase().replace(/\s+/g, '_');
+        navigate(createPageUrl('CourseWorkDetail') + `?topic=${topicName}`);
+        return;
+      }
+    }
+    
+    // Default: open in modal
+    setSelectedHomework(item);
   };
 
   const pendingHomework = homework.filter(h => h.status !== 'Completed');
@@ -266,22 +293,10 @@ export default function LearnerHomework() {
                 homework={selectedHomework}
                 onChecklistUpdate={selectedHomework.formatType === 'checklist' ? handleChecklistUpdate : undefined}
               />
-              <div className="mt-6 pt-4 border-t flex items-center justify-between">
+              <div className="mt-6 pt-4 border-t">
                 <span className="text-sm text-slate-400">
                   Assigned {moment(selectedHomework.created_date).format('D MMM YYYY')}
                 </span>
-                {selectedHomework.status !== 'Completed' && (
-                  <Button
-                    onClick={() => {
-                      toggleHomework(selectedHomework);
-                      setSelectedHomework(null);
-                    }}
-                    className="bg-emerald-600 hover:bg-emerald-700"
-                  >
-                    <CheckCircle2 className="w-4 h-4 mr-2" />
-                    Mark Complete
-                  </Button>
-                )}
               </div>
             </div>
           )}
