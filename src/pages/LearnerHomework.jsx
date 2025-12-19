@@ -106,6 +106,67 @@ export default function LearnerHomework() {
     return 'other';
   };
 
+  // Map of common topic name patterns to course work IDs
+  const topicNameToId = {
+    'legal_responsibilities': 1,
+    'legal': 1,
+    'safety_checks': 2,
+    'safety': 2,
+    'flower': 2,
+    'vehicle_security': 3,
+    'security': 3,
+    'cockpit_drill': 4,
+    'cockpit': 4,
+    'dsssm': 4,
+    'main_car_controls': 5,
+    'car_controls': 5,
+    'controls': 5,
+    'stopping_safely': 6,
+    'stopping': 6,
+    'moving_off': 7,
+    'moving': 7,
+    'pom': 7,
+    'use_of_mirrors': 8,
+    'mirrors': 8,
+    'use_of_signals': 9,
+    'signals': 9,
+    'signaling': 9,
+    'junctions': 10,
+    'use_of_speed': 11,
+    'speed': 11,
+    'meeting_traffic': 12,
+    'traffic': 12,
+    'crossroads': 13,
+    'roundabouts': 14,
+    'dual_carriageways': 15,
+    'dual': 15,
+    'country_roads': 16,
+    'country': 16,
+    'driving_conditions': 17,
+    'conditions': 17,
+    'traffic_lights': 18,
+    'lights': 18,
+    'manoeuvres': 19,
+    'emergency_stop': 20,
+    'emergency': 20,
+    'pedestrian_crossings': 21,
+    'pedestrian': 21,
+    'crossings': 21,
+    'making_progress': 22,
+    'progress': 22,
+    'planning_skills': 23,
+    'planning': 23,
+    'independent_driving': 24,
+    'independent': 24,
+    'show_me_tell_me': 25,
+    'hazard_perception': 26,
+    'hazard': 26,
+    'eco_safe_driving': 27,
+    'eco': 27,
+    'test_preparation': 28,
+    'test_prep': 28
+  };
+
   const openHomework = async (item) => {
     // Mark as viewed if pending
     if (item.status === 'Pending') {
@@ -113,19 +174,32 @@ export default function LearnerHomework() {
     }
     
     // Extract topic from title or description
-    const extractTopic = (text) => {
-      const match = text.match(/(.+?)\s*-?\s*(?:Practice|Homework|Study|Material)/i);
-      if (match) {
-        return match[1].trim().toLowerCase().replace(/\s+/g, '_');
+    const extractTopicId = (text) => {
+      const normalized = text.toLowerCase();
+      
+      // Try exact match first
+      for (const [key, id] of Object.entries(topicNameToId)) {
+        if (normalized.includes(key)) {
+          return id;
+        }
       }
-      // Try to extract first meaningful word(s)
-      return text.split(/[-:]/)[0].trim().toLowerCase().replace(/\s+/g, '_');
+      
+      // Default to first topic if no match
+      return 1;
     };
     
-    const topicName = extractTopic(item.title);
+    const topicId = extractTopicId(item.title + ' ' + (item.description || ''));
+    const homeworkType = getHomeworkType(item);
     
-    // Navigate to CourseWorkDetail page
-    navigate(createPageUrl('CourseWorkDetail') + `?topic=${topicName}`);
+    // Navigate to CourseWorkDetail page with correct parameters
+    if (homeworkType === 'practice') {
+      navigate(createPageUrl('CourseWorkDetail') + `?id=${topicId}&subcard=practice`);
+    } else if (homeworkType === 'study') {
+      navigate(createPageUrl('CourseWorkDetail') + `?id=${topicId}&subcard=study`);
+    } else {
+      // Default to topic selection page
+      navigate(createPageUrl('CourseWorkDetail') + `?id=${topicId}`);
+    }
   };
 
   const pendingHomework = homework.filter(h => h.status !== 'Completed');
