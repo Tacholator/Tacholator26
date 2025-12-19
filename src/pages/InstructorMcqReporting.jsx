@@ -8,15 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { ChevronLeft, Search, TrendingUp, CheckCircle, XCircle, Settings, AlertCircle, Award } from 'lucide-react';
+import { ChevronLeft, Search, TrendingUp, CheckCircle, XCircle, Settings, AlertCircle, Award, MessageSquare } from 'lucide-react';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 import { format } from 'date-fns';
+import InstructorMcqCommentModal from '@/components/coursework/InstructorMcqCommentModal';
 
 export default function InstructorMcqReporting() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [selectedPupil, setSelectedPupil] = useState(null);
+  const [commentModalOpen, setCommentModalOpen] = useState(false);
+  const [commentingStatus, setCommentingStatus] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -97,6 +100,19 @@ export default function InstructorMcqReporting() {
     }
   });
 
+  const updateCommentMutation = useMutation({
+    mutationFn: async ({ statusId, comment }) => {
+      return base44.entities.McqStatus.update(statusId, {
+        instructorComment: comment,
+        instructorCommentedAt: new Date().toISOString()
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['allMcqStatuses']);
+      queryClient.invalidateQueries(['mcqStatuses']);
+    }
+  });
+
   const filteredPupils = sortedPupils.filter(p => 
     `${p.firstName} ${p.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
@@ -104,6 +120,17 @@ export default function InstructorMcqReporting() {
   const getTopicName = (topicId) => {
     const topic = courseWorkTopics.find(t => t.topicId === topicId);
     return topic?.title || topicId;
+  };
+
+  const handleSaveComment = async (comment) => {
+    if (commentingStatus) {
+      await updateCommentMutation.mutateAsync({
+        statusId: commentingStatus.id,
+        comment
+      });
+      setCommentModalOpen(false);
+      setCommentingStatus(null);
+    }
   };
 
   return (
@@ -265,6 +292,28 @@ export default function InstructorMcqReporting() {
                               {format(new Date(status.lastAttemptAt), 'PPp')}
                             </p>
                           )}
+
+                          {status.completed && status.lastPassed && (
+                            <div className="mt-3 pt-3 border-t">
+                              <Button
+                                size="sm"
+                                variant={status.instructorComment ? 'secondary' : 'outline'}
+                                onClick={() => {
+                                  setCommentingStatus(status);
+                                  setCommentModalOpen(true);
+                                }}
+                                className="w-full gap-2 text-xs"
+                              >
+                                <MessageSquare className="w-3 h-3" />
+                                {status.instructorComment ? 'Edit Comment' : 'Add Comment'}
+                              </Button>
+                              {status.instructorComment && (
+                                <p className="text-xs text-slate-600 mt-2 italic line-clamp-2">
+                                  "{status.instructorComment}"
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     ))}
@@ -274,6 +323,18 @@ export default function InstructorMcqReporting() {
             </Card>
           </div>
         )}
+
+        <InstructorMcqCommentModal
+          open={commentModalOpen}
+          onClose={() => {
+            setCommentModalOpen(false);
+            setCommentingStatus(null);
+          }}
+          pupilName={selectedPupil ? `${selectedPupil.firstName} ${selectedPupil.lastName}` : ''}
+          topicTitle={commentingStatus ? getTopicName(commentingStatus.topicId) : ''}
+          onSaveComment={handleSaveComment}
+          existingComment={commentingStatus?.instructorComment}
+        />
       </div>
     </div>
   );

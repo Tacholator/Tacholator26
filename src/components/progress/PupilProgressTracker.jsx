@@ -232,36 +232,24 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     return null;
   };
 
+  // SHARED PROGRESS CALCULATION - matches LearnerDashboard
   const calculateOverallProgress = () => {
-    const allSkills = [];
-    drivingSkillsSections.forEach(section => {
-      section.topics.forEach(topic => {
-        if (topic.type === 'skill') {
-          allSkills.push(topic.id);
-        } else if (topic.subtopics) {
-          const extractSkills = (items) => {
-            items.forEach(item => {
-              if (item.type === 'skill') {
-                allSkills.push(item.id);
-              } else if (item.subtopics) {
-                extractSkills(item.subtopics);
-              }
-            });
-          };
-          extractSkills(topic.subtopics);
-        }
-      });
-    });
+    if (!progressData || progressData.length === 0) {
+      return { total: 0, independent: 0, percentage: 0 };
+    }
 
-    const independentCount = allSkills.filter(skillId => {
-      const progress = getProgressForSkill(skillId);
-      return progress?.progressState === 'independent';
-    }).length;
+    const progressValues = { full_talk_through: 33, prompted: 66, independent: 100 };
+    const totalProgress = progressData.reduce((sum, skill) => {
+      return sum + (progressValues[skill.progressState] || 0);
+    }, 0);
+    const percentage = Math.round(totalProgress / progressData.length);
+
+    const independentCount = progressData.filter(p => p.progressState === 'independent').length;
 
     return {
-      total: allSkills.length,
+      total: progressData.length,
       independent: independentCount,
-      percentage: Math.round((independentCount / allSkills.length) * 100)
+      percentage: percentage
     };
   };
 
