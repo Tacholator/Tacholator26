@@ -19,7 +19,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Search, Trash2, Edit, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, Loader2, Library, Copy, ClipboardList } from 'lucide-react';
@@ -41,6 +52,7 @@ export default function HomeworkLibrary() {
   const [filterFormat, setFilterFormat] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState(null);
+  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
   const [formData, setFormData] = useState({
     templateName: '',
     templateDescription: '',
@@ -106,6 +118,16 @@ export default function HomeworkLibrary() {
     onSuccess: () => queryClient.invalidateQueries(['assignedHomework'])
   });
 
+  const deleteAllHomeworkMutation = useMutation({
+    mutationFn: async () => {
+      await Promise.all(assignedHomework.map(item => base44.entities.HomeworkItem.delete(item.id)));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['assignedHomework']);
+      setShowDeleteAllDialog(false);
+    }
+  });
+
   const resetForm = () => {
     setFormData({ templateName: '', templateDescription: '', formatType: 'text', formatPayload: {} });
     setEditingTemplate(null);
@@ -166,7 +188,20 @@ export default function HomeworkLibrary() {
 
         {/* Assigned Homework Section */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-slate-800 mb-4">Assigned Homework</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-slate-800">Assigned Homework</h2>
+            {assignedHomework.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowDeleteAllDialog(true)}
+                className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete All
+              </Button>
+            )}
+          </div>
           {isLoadingHomework ? (
             <div className="flex justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
@@ -377,6 +412,34 @@ export default function HomeworkLibrary() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={showDeleteAllDialog} onOpenChange={setShowDeleteAllDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete All Assigned Homework?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete all {assignedHomework.length} assigned homework items. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteAllHomeworkMutation.mutate()}
+              disabled={deleteAllHomeworkMutation.isPending}
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              {deleteAllHomeworkMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete All'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
