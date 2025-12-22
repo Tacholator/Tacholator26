@@ -9,8 +9,8 @@ const SLOT_COLORS = {
   available: '#B7F7C9',
   confirmed: '#87CEFA',
   lunch: '#FFA500',
-  unavailable: '#D9D9D9',
-  outside_working_hours: '#8C8C8C',
+  unavailable: '#FF0000',
+  outside_working_hours: '#D3D3D3',
   reserved_pending: '#B39DDB',
   cancelled: '#CFCFCF'
 };
