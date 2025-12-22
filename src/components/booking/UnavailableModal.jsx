@@ -99,24 +99,13 @@ export default function UnavailableModal({ open, onOpenChange, onSave, isSaving,
                 <Label className="font-medium text-slate-700">{day.label}</Label>
               </div>
               {daySettings[day.value].enabled ? (
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="flex-1">
-                    <Input
-                      type="time"
-                      value={daySettings[day.value].startTime}
-                      onChange={(e) => handleTimeChange(day.value, 'startTime', e.target.value)}
-                      className="text-sm"
-                    />
-                  </div>
-                  <span className="text-slate-400">—</span>
-                  <div className="flex-1">
-                    <Input
-                      type="time"
-                      value={daySettings[day.value].endTime}
-                      onChange={(e) => handleTimeChange(day.value, 'endTime', e.target.value)}
-                      className="text-sm"
-                    />
-                  </div>
+                <div className="flex-1">
+                  <TimeRangePicker
+                    startTime={daySettings[day.value].startTime}
+                    endTime={daySettings[day.value].endTime}
+                    onStartChange={(value) => handleTimeChange(day.value, 'startTime', value)}
+                    onEndChange={(value) => handleTimeChange(day.value, 'endTime', value)}
+                  />
                 </div>
               ) : (
                 <div className="flex-1 text-sm text-slate-400">
@@ -130,7 +119,7 @@ export default function UnavailableModal({ open, onOpenChange, onSave, isSaving,
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button 
             onClick={handleSave} 
-            disabled={isSaving || !anyDayEnabled}
+            disabled={isSaving}
             className="bg-rose-600 hover:bg-rose-700"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Unavailable Times'}
