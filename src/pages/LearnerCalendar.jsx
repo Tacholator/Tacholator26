@@ -79,13 +79,22 @@ export default function LearnerCalendar() {
   const { data: rules = [] } = useQuery({
     queryKey: ['instructorCalendarRules', pupil?.instructorId],
     queryFn: () => base44.entities.CalendarRule.filter({ instructorId: pupil.instructorId }),
-    enabled: !!pupil?.instructorId
+    enabled: !!pupil?.instructorId,
+    refetchInterval: 5000
   });
 
   const { data: bookings = [] } = useQuery({
     queryKey: ['instructorBookings', pupil?.instructorId],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
-    enabled: !!pupil?.instructorId
+    enabled: !!pupil?.instructorId,
+    refetchInterval: 5000
+  });
+
+  const { data: slotInstances = [] } = useQuery({
+    queryKey: ['instructorSlotInstances', pupil?.instructorId],
+    queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: pupil.instructorId }),
+    enabled: !!pupil?.instructorId,
+    refetchInterval: 5000
   });
 
   const { data: myBookings = [] } = useQuery({
@@ -133,8 +142,17 @@ export default function LearnerCalendar() {
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
         totalPriceGbp: (pupil.hourlyRate || 50) * durationHours,
         notesFromPupil,
-        requestedAt: new Date().toISOString()
+        requestedAt: new Date().toISOString(),
+        slotInstanceId: selectedSlotInstance?.id || null
       });
+
+      if (selectedSlotInstance?.id) {
+        await base44.entities.BookableSlotInstance.update(selectedSlotInstance.id, {
+          status: 'reserved_pending',
+          reservedByPupilId: pupil.id,
+          bookingId: booking.id
+        });
+      }
 
       await base44.entities.Notification.create({
         userId: pupil.instructorId,
@@ -149,8 +167,10 @@ export default function LearnerCalendar() {
     onSuccess: () => {
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['myBookings']);
+      queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowReserveModal(false);
       setSelectedSlot(null);
+      setSelectedSlotInstance(null);
       toast({ title: 'Booking request sent', description: 'Awaiting instructor confirmation' });
     }
   });
@@ -200,8 +220,11 @@ export default function LearnerCalendar() {
     }
   });
 
-  const handleSlotClick = (slotDateTime) => {
+  const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
+
+  const handleSlotClick = (slotDateTime, slotInstance) => {
     setSelectedSlot(slotDateTime);
+    setSelectedSlotInstance(slotInstance);
     setShowReserveModal(true);
   };
 
@@ -347,6 +370,8 @@ export default function LearnerCalendar() {
             viewMode="week"
             rules={rules}
             bookings={bookings}
+            slotInstances={slotInstances}
+            availabilityMode="published_slots_only"
             onSlotClick={handleSlotClick}
             isInstructor={false}
           />
