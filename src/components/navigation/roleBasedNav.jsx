@@ -58,7 +58,7 @@ export const instructorOnlyLinks = [
 export const learnerOnlyLinks = [
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
   { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress' },
-  { name: 'Calendar', icon: Calendar, page: 'LearnerCalendar' },
+  { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
   { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' }
 ];
 

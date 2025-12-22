@@ -145,7 +145,7 @@ export default function Layout({ children, currentPageName }) {
 
           {/* User Profile */}
           <div className="border-t border-slate-700 pt-4">
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-[#071739]/80 transition-colors">
                   <Avatar className="h-9 w-9">
@@ -163,7 +163,12 @@ export default function Layout({ children, currentPageName }) {
                   </div>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent 
+                align="end" 
+                className="w-56"
+                onInteractOutside={(e) => e.preventDefault()}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+              >
                   <Link to={createPageUrl('ProfileSettings')}>
                     <DropdownMenuItem className="text-slate-600 cursor-pointer">
                       <Settings className="w-4 h-4 mr-2" />
@@ -190,7 +195,7 @@ export default function Layout({ children, currentPageName }) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-rose-600">
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Delete account
+                    Delete Account
                   </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

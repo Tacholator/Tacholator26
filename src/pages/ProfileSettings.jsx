@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -23,10 +23,12 @@ export default function ProfileSettings() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    phone: ''
+    phone: '',
+    profilePhotoUrl: ''
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(() => {
     return localStorage.getItem('enable_audio_reading') !== 'false';
   });
@@ -36,7 +38,8 @@ export default function ProfileSettings() {
       setFormData({
         firstName: user.firstName || user.full_name?.split(' ')[0] || '',
         lastName: user.lastName || user.full_name?.split(' ').slice(1).join(' ') || '',
-        phone: user.phone || ''
+        phone: user.phone || '',
+        profilePhotoUrl: user.profilePhotoUrl || ''
       });
     }
   }, [user]);
@@ -64,6 +67,27 @@ export default function ProfileSettings() {
     if (!checked) {
       window.speechSynthesis.cancel();
     }
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData(prev => ({ ...prev, profilePhotoUrl: file_url }));
+      setSaveSuccess(false);
+    } catch (error) {
+      console.error('Failed to upload photo:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setFormData(prev => ({ ...prev, profilePhotoUrl: '' }));
+    setSaveSuccess(false);
   };
 
   const isInstructor = user?.role === 'admin';
@@ -108,18 +132,68 @@ export default function ProfileSettings() {
           <Card className="border-0 shadow-sm">
             <CardHeader className="border-b border-slate-100">
               <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-xl">
-                    {displayName[0]?.toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
+                <div className="relative">
+                  <Avatar className="h-16 w-16">
+                    {formData.profilePhotoUrl ? (
+                      <img src={formData.profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-xl">
+                        {displayName[0]?.toUpperCase()}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  {formData.profilePhotoUrl && (
+                    <button
+                      onClick={handleRemovePhoto}
+                      className="absolute -top-1 -right-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+                <div className="flex-1">
                   <CardTitle className="text-xl">{displayName}</CardTitle>
                   <p className="text-sm text-slate-500">{isInstructor ? 'Instructor' : 'Learner'}</p>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
+              {/* Profile Photo Upload */}
+              <div className="space-y-2">
+                <Label htmlFor="photo" className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-slate-400" />
+                  Profile Photo
+                </Label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="file"
+                    id="photo-upload"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
+                  <label htmlFor="photo-upload">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      disabled={isUploading}
+                      onClick={() => document.getElementById('photo-upload')?.click()}
+                      className="gap-2"
+                    >
+                      {isUploading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Upload className="w-4 h-4" />
+                      )}
+                      {isUploading ? 'Uploading...' : 'Upload Photo'}
+                    </Button>
+                  </label>
+                  {formData.profilePhotoUrl && (
+                    <p className="text-xs text-emerald-600">Photo uploaded</p>
+                  )}
+                </div>
+              </div>
+
               {/* Name Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -148,19 +222,34 @@ export default function ProfileSettings() {
                 </div>
               </div>
 
-              {/* Email Field (View Only) */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-slate-400" />
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  value={user?.email || ''}
-                  disabled
-                  className="bg-slate-50"
-                />
-                <p className="text-xs text-slate-400">Email cannot be changed</p>
+              {/* Email and Role (View Only) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-slate-400" />
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    value={user?.email || ''}
+                    disabled
+                    className="bg-slate-50"
+                  />
+                  <p className="text-xs text-slate-400">Email cannot be changed</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="role" className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-slate-400" />
+                    Role
+                  </Label>
+                  <Input
+                    id="role"
+                    value={isInstructor ? 'Instructor' : 'Learner'}
+                    disabled
+                    className="bg-slate-50"
+                  />
+                  <p className="text-xs text-slate-400">Role is fixed</p>
+                </div>
               </div>
 
               {/* Phone Field */}
