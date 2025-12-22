@@ -79,8 +79,6 @@ export default function WorkingHoursModal({ open, onOpenChange, onSave, isSaving
     onSave(rulesData);
   };
 
-  const anyDayEnabled = DAYS.some(day => daySettings[day.value].enabled);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -121,7 +119,7 @@ export default function WorkingHoursModal({ open, onOpenChange, onSave, isSaving
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button 
             onClick={handleSave} 
-            disabled={isSaving || !anyDayEnabled}
+            disabled={isSaving}
             className="bg-teal-600 hover:bg-teal-700"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Working Hours'}
