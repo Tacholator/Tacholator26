@@ -73,10 +73,15 @@ export default function LearnerBookingCalendar() {
   });
 
   const reserveBookingMutation = useMutation({
-    mutationFn: async ({ durationHours, notesFromPupil }) => {
-      const startMoment = moment(selectedSlot);
-      const endMoment = startMoment.clone().add(durationHours, 'hours');
-      
+    mutationFn: async ({ pickupLocation, dropoffLocation, notesFromPupil, firstTimeData }) => {
+      // Use slot instance times as source of truth
+      const startMoment = selectedSlotInstance 
+        ? moment(selectedSlotInstance.startAtUtc).local()
+        : moment(selectedSlot);
+      const endMoment = selectedSlotInstance
+        ? moment(selectedSlotInstance.endAtUtc).local()
+        : startMoment.clone().add(1, 'hours');
+      const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
       const booking = await base44.entities.LessonBooking.create({
         instructorId: pupil.instructorId,
         pupilId: pupil.id,
@@ -292,6 +297,7 @@ export default function LearnerBookingCalendar() {
           onReserve={(data) => reserveBookingMutation.mutate(data)}
           isSaving={reserveBookingMutation.isPending}
           slotDateTime={selectedSlot}
+          slotInstance={selectedSlotInstance}
           hourlyRate={pupil.hourlyRate || 50}
         />
 

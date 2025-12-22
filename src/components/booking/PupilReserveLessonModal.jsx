@@ -1,199 +1,304 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Calendar, Clock, PoundSterling } from 'lucide-react';
-import LessonTermsSummaryModal from '@/components/modals/LessonTermsSummaryModal';
-import LessonTermsConsentModal from '@/components/modals/LessonTermsConsentModal';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Calendar, Clock, PoundSterling, MapPin, AlertCircle, User } from 'lucide-react';
 import moment from 'moment';
-
-const DURATION_OPTIONS = [
-  { value: 0.5, label: '30 minutes' },
-  { value: 1.0, label: '1 hour' },
-  { value: 1.5, label: '1.5 hours' },
-  { value: 2.0, label: '2 hours' }
-];
 
 export default function PupilReserveLessonModal({ 
   open, 
   onOpenChange, 
   onReserve, 
   isSaving, 
-  slotDateTime, 
+  slotDateTime,
+  slotInstance,
   hourlyRate 
 }) {
-  const [durationHours, setDurationHours] = useState(1.0);
+  const [pickupLocation, setPickupLocation] = useState('');
+  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(true);
+  const [dropoffLocation, setDropoffLocation] = useState('');
   const [notes, setNotes] = useState('');
-  const [showSummaryModal, setShowSummaryModal] = useState(false);
-  const [showConsentModal, setShowConsentModal] = useState(false);
-  const [pendingBooking, setPendingBooking] = useState(null);
+  const [drivingExperience, setDrivingExperience] = useState('');
+  const [transmissionType, setTransmissionType] = useState('');
+  const [agreeTerms, setAgreeTerms] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
 
-  const { data: existingConsent, refetch: refetchConsent } = useQuery({
-    queryKey: ['lessonTermsConsent', user?.id],
+  const { data: pupil } = useQuery({
+    queryKey: ['myPupilProfile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      const consents = await base44.entities.UserPolicyConsent.filter({
-        userId: user.id,
-        policyKey: 'lesson_terms_and_conditions',
-        policyVersion: 'v1'
-      });
-      return consents.length > 0 ? consents[0] : null;
+      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      return pupils.length > 0 ? pupils[0] : null;
     },
     enabled: !!user?.id
   });
 
-  const handleReserve = async () => {
-    // Check if user has already consented
-    if (existingConsent) {
-      // Already consented, proceed directly
-      onReserve({
-        durationHours,
-        notesFromPupil: notes
-      });
-    } else {
-      // First time booking, show consent flow
-      setPendingBooking({
-        durationHours,
-        notesFromPupil: notes
-      });
-      setShowSummaryModal(true);
-    }
-  };
+  const { data: instructor } = useQuery({
+    queryKey: ['instructor', pupil?.instructorId],
+    queryFn: async () => {
+      if (!pupil?.instructorId) return null;
+      const users = await base44.entities.User.filter({ id: pupil.instructorId });
+      return users.length > 0 ? users[0] : null;
+    },
+    enabled: !!pupil?.instructorId
+  });
 
-  const handleSummaryContinue = () => {
-    setShowSummaryModal(false);
-    setShowConsentModal(true);
-  };
+  // Check if this is first booking
+  const { data: existingBookings = [] } = useQuery({
+    queryKey: ['myBookings', pupil?.id],
+    queryFn: () => base44.entities.LessonBooking.filter({ pupilId: pupil.id }),
+    enabled: !!pupil?.id
+  });
 
-  const handleConsentAccept = async () => {
-    // Record consent
-    await base44.entities.UserPolicyConsent.create({
-      userId: user.id,
-      policyKey: 'lesson_terms_and_conditions',
-      policyVersion: 'v1',
-      acceptanceSource: 'pre_booking_modal',
-      acceptedAt: new Date().toISOString(),
-      metadata: {
-        screen: 'book_a_lesson',
-        timestamp_utc: new Date().toISOString()
-      }
+  const isFirstBooking = existingBookings.length === 0;
+
+  const handleReserve = () => {
+    const dropoffFinal = dropoffSameAsPickup ? pickupLocation : dropoffLocation;
+    
+    onReserve({
+      pickupLocation,
+      dropoffLocation: dropoffFinal,
+      notesFromPupil: notes,
+      firstTimeData: isFirstBooking ? {
+        drivingExperience,
+        transmissionType
+      } : null
     });
-    
-    setShowConsentModal(false);
-    await refetchConsent();
-    
-    // Proceed with booking
-    if (pendingBooking) {
-      onReserve(pendingBooking);
-      setPendingBooking(null);
-    }
   };
 
+  // Calculate slot details
+  const slotStart = slotInstance ? moment(slotInstance.startAtUtc).local() : (slotDateTime ? moment(slotDateTime) : null);
+  const slotEnd = slotInstance ? moment(slotInstance.endAtUtc).local() : null;
+  const durationHours = slotEnd ? slotEnd.diff(slotStart, 'minutes') / 60 : 1;
   const totalPrice = (hourlyRate || 50) * durationHours;
-  const slotMoment = slotDateTime ? moment(slotDateTime) : null;
+
+  const isFormValid = pickupLocation.trim() !== '' && 
+                      (!dropoffSameAsPickup ? dropoffLocation.trim() !== '' : true) &&
+                      (isFirstBooking ? (drivingExperience !== '' && transmissionType !== '') : true) &&
+                      agreeTerms;
 
   return (
-    <>
-      <LessonTermsSummaryModal 
-        open={showSummaryModal}
-        onOpenChange={setShowSummaryModal}
-        onContinue={handleSummaryContinue}
-      />
-      
-      <LessonTermsConsentModal 
-        open={showConsentModal}
-        onOpenChange={setShowConsentModal}
-        onAccept={handleConsentAccept}
-      />
-
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Request a Lesson</DialogTitle>
           <DialogDescription>
-            Reserve this slot - pending instructor confirmation
+            Complete the form below to request this lesson slot
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
-          {slotMoment && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-              <div className="flex items-center gap-2 text-sm">
+        
+        <div className="space-y-6 py-4">
+          {/* Selected Slot Summary (Read-only) */}
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-blue-600" />
-                <span className="font-medium text-slate-700">
-                  {slotMoment.format('dddd, D MMMM YYYY')}
-                </span>
+                Selected Slot (Read-only)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <span className="text-slate-500">Date:</span>
+                  <p className="font-medium text-slate-700">
+                    {slotStart?.format('dddd, D MMMM YYYY')}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-slate-500">Time:</span>
+                  <p className="font-medium text-slate-700">
+                    {slotStart?.format('HH:mm')} – {slotEnd?.format('HH:mm')}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-slate-500">Duration:</span>
+                  <p className="font-medium text-slate-700">{durationHours} hour{durationHours !== 1 ? 's' : ''}</p>
+                </div>
+                <div>
+                  <span className="text-slate-500">Instructor:</span>
+                  <p className="font-medium text-slate-700">
+                    {instructor?.firstName && instructor?.lastName 
+                      ? `${instructor.firstName} ${instructor.lastName}` 
+                      : instructor?.full_name || instructor?.email}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Clock className="w-4 h-4 text-blue-600" />
-                <span className="text-slate-600">
-                  Starting at {slotMoment.format('HH:mm')}
-                </span>
+              <div className="pt-2 border-t border-blue-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Price:</span>
+                  <span className="text-lg font-bold text-emerald-700">£{totalPrice.toFixed(2)}</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  {pupil?.bulkPaymentBalance > 0 
+                    ? 'May be deducted from your prepaid balance' 
+                    : 'Charged upon instructor confirmation'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Lesson Details */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Lesson Details
+            </h3>
+            
+            <div className="space-y-2">
+              <Label htmlFor="pickup">Pickup location *</Label>
+              <Input
+                id="pickup"
+                value={pickupLocation}
+                onChange={(e) => setPickupLocation(e.target.value)}
+                placeholder="Enter pickup address or area"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="dropoff-same"
+                checked={dropoffSameAsPickup}
+                onCheckedChange={setDropoffSameAsPickup}
+              />
+              <label htmlFor="dropoff-same" className="text-sm text-slate-700 cursor-pointer">
+                Drop-off location same as pickup
+              </label>
+            </div>
+
+            {!dropoffSameAsPickup && (
+              <div className="space-y-2">
+                <Label htmlFor="dropoff">Drop-off location *</Label>
+                <Input
+                  id="dropoff"
+                  value={dropoffLocation}
+                  onChange={(e) => setDropoffLocation(e.target.value)}
+                  placeholder="Enter drop-off address or area"
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes for instructor (optional)</Label>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Any helpful details? (e.g., nervous driver, returning after a break, what you want to focus on)"
+                rows={3}
+              />
+            </div>
+          </div>
+
+          {/* First-time Booking Questions */}
+          {isFirstBooking && (
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                <User className="w-4 h-4" />
+                First-time Booking
+              </h3>
+              
+              <div className="space-y-3">
+                <Label>Driving experience *</Label>
+                <RadioGroup value={drivingExperience} onValueChange={setDrivingExperience}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="beginner" id="exp-beginner" />
+                    <label htmlFor="exp-beginner" className="text-sm cursor-pointer">
+                      Beginner (never driven)
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="some_experience" id="exp-some" />
+                    <label htmlFor="exp-some" className="text-sm cursor-pointer">
+                      Some experience
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="nearly_test_ready" id="exp-test" />
+                    <label htmlFor="exp-test" className="text-sm cursor-pointer">
+                      Nearly test-ready
+                    </label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div className="space-y-3">
+                <Label>Transmission type *</Label>
+                <RadioGroup value={transmissionType} onValueChange={setTransmissionType}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="manual" id="trans-manual" />
+                    <label htmlFor="trans-manual" className="text-sm cursor-pointer">
+                      Manual
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="automatic" id="trans-auto" />
+                    <label htmlFor="trans-auto" className="text-sm cursor-pointer">
+                      Automatic
+                    </label>
+                  </div>
+                </RadioGroup>
               </div>
             </div>
           )}
-          
-          <div className="space-y-2">
-            <Label>Duration</Label>
-            <Select value={durationHours.toString()} onValueChange={(v) => setDurationHours(parseFloat(v))}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DURATION_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value.toString()}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
-          <div className="space-y-2">
-            <Label>Notes (Optional)</Label>
-            <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="What would you like to focus on?"
-              rows={3}
-            />
-          </div>
-
-          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <PoundSterling className="w-4 h-4 text-emerald-600" />
-                <span className="text-sm font-medium text-slate-700">Total Price</span>
-              </div>
-              <span className="text-lg font-bold text-emerald-700">
-                £{totalPrice.toFixed(2)}
-              </span>
+          {/* Payment & Cancellation Info */}
+          <div className="space-y-3 bg-slate-50 border border-slate-200 rounded-lg p-4">
+            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              Payment & Cancellation
+            </h3>
+            <ul className="text-sm text-slate-600 space-y-1 list-disc list-inside">
+              <li>This request will be marked as Pending until your instructor confirms it</li>
+              <li>Free cancellation up to 48 hours before the lesson start time</li>
+              <li>If you cancel within 48 hours (or do not attend), the full lesson price may be deducted</li>
+            </ul>
+            <div className="flex gap-3 text-xs pt-2 border-t border-slate-300">
+              <Link to={createPageUrl('LessonTermsAndConditions')} className="text-teal-600 hover:underline">
+                View full Lesson T&Cs
+              </Link>
+              <span className="text-slate-300">|</span>
+              <Link to={createPageUrl('RefundPolicy')} className="text-teal-600 hover:underline">
+                View Refund Policy
+              </Link>
             </div>
-            <p className="text-xs text-slate-500 mt-2">
-              Charged upon instructor confirmation
-            </p>
+          </div>
+
+          {/* Consent Checkbox */}
+          <div className="flex items-start gap-2 border-t pt-4">
+            <Checkbox
+              id="agree-terms"
+              checked={agreeTerms}
+              onCheckedChange={setAgreeTerms}
+            />
+            <label htmlFor="agree-terms" className="text-sm text-slate-700 cursor-pointer leading-tight">
+              I agree to the Lesson Terms & Conditions and understand the 48-hour cancellation policy *
+            </label>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button 
             onClick={handleReserve} 
-            disabled={isSaving}
-            className="bg-[#071739] hover:bg-[#071739]/90"
+            disabled={isSaving || !isFormValid}
+            className="bg-teal-600 hover:bg-teal-700"
           >
-            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Reserve (Pending Confirmation)'}
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Request Lesson'}
           </Button>
         </DialogFooter>
       </DialogContent>
       </Dialog>
-    </>
   );
 }
