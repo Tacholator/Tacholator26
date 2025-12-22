@@ -231,16 +231,20 @@ export default function Calendar24Hour({
           </div>
 
           {/* Time Slots */}
-          {timeSlots.map((timeSlot, timeIdx) => (
-            <div 
-              key={timeIdx} 
-              className="grid border-b last:border-b-0" 
-              style={{ gridTemplateColumns: `80px repeat(${days.length}, 1fr)` }}
-            >
-              <div className="p-2 border-r text-xs text-slate-600 font-medium bg-slate-50">
-                {timeSlot}
-              </div>
-              {days.map((day, dayIdx) => {
+          {timeSlots.map((timeSlot, timeIdx) => {
+            // Track which day columns are already occupied by multi-slot blocks
+            const occupiedDays = new Set();
+            
+            return (
+              <div 
+                key={timeIdx} 
+                className="grid border-b last:border-b-0" 
+                style={{ gridTemplateColumns: `80px repeat(${days.length}, 1fr)`, height: '40px' }}
+              >
+                <div className="p-2 border-r text-xs text-slate-600 font-medium bg-slate-50">
+                  {timeSlot}
+                </div>
+                {days.map((day, dayIdx) => {
                 const slotStateData = getSlotState(day, timeSlot);
                 const { state, booking, slotInstance, rule, blockType } = slotStateData;
                 const clickable = isSlotClickable(state);
@@ -316,6 +320,7 @@ export default function Calendar24Hour({
 
                 // Render card-style block
                 if (shouldRenderAsCard && isBlockStart) {
+                  const exactHeight = blockSpan * 40;
                   return (
                     <div
                       key={dayIdx}
@@ -325,8 +330,9 @@ export default function Calendar24Hour({
                       }`}
                       style={{ 
                         backgroundColor: SLOT_COLORS[state],
-                        height: `${blockSpan * 40}px`,
-                        padding: '2px'
+                        height: `${exactHeight}px`,
+                        padding: '2px',
+                        gridRow: `span ${blockSpan}`
                       }}
                     >
                       <div
@@ -376,7 +382,7 @@ export default function Calendar24Hour({
 
                 // Skip slots covered by multi-slot blocks
                 if (shouldRenderAsCard && !isBlockStart) {
-                  return null;
+                  return <div key={dayIdx} className="border-r last:border-r-0" style={{ height: '40px' }} />;
                 }
 
                 // Render flat background slot (for outside_working_hours or default available)
@@ -384,16 +390,17 @@ export default function Calendar24Hour({
                   <div
                     key={dayIdx}
                     onClick={() => clickable && onSlotClick && onSlotClick(slotDateTime, state)}
-                    className={`border-r last:border-r-0 p-1 min-h-[40px] ${
+                    className={`border-r last:border-r-0 p-1 ${
                       clickable ? 'cursor-pointer hover:opacity-80' : 'cursor-default'
                     }`}
-                    style={{ backgroundColor: SLOT_COLORS[state] }}
+                    style={{ backgroundColor: SLOT_COLORS[state], height: '40px' }}
                     title={state}
                   />
                 );
               })}
             </div>
-          ))}
+          );
+          })}
         </div>
       </div>
     </div>
