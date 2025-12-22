@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Calendar, Clock, PoundSterling } from 'lucide-react';
+import LessonTermsSummaryModal from '@/components/modals/LessonTermsSummaryModal';
+import LessonTermsConsentModal from '@/components/modals/LessonTermsConsentModal';
 import moment from 'moment';
 
 const DURATION_OPTIONS = [
@@ -24,20 +28,95 @@ export default function PupilReserveLessonModal({
 }) {
   const [durationHours, setDurationHours] = useState(1.0);
   const [notes, setNotes] = useState('');
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState(null);
 
-  const handleReserve = () => {
-    onReserve({
-      durationHours,
-      notesFromPupil: notes
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const { data: existingConsent, refetch: refetchConsent } = useQuery({
+    queryKey: ['lessonTermsConsent', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const consents = await base44.entities.UserPolicyConsent.filter({
+        userId: user.id,
+        policyKey: 'lesson_terms_and_conditions',
+        policyVersion: 'v1'
+      });
+      return consents.length > 0 ? consents[0] : null;
+    },
+    enabled: !!user?.id
+  });
+
+  const handleReserve = async () => {
+    // Check if user has already consented
+    if (existingConsent) {
+      // Already consented, proceed directly
+      onReserve({
+        durationHours,
+        notesFromPupil: notes
+      });
+    } else {
+      // First time booking, show consent flow
+      setPendingBooking({
+        durationHours,
+        notesFromPupil: notes
+      });
+      setShowSummaryModal(true);
+    }
+  };
+
+  const handleSummaryContinue = () => {
+    setShowSummaryModal(false);
+    setShowConsentModal(true);
+  };
+
+  const handleConsentAccept = async () => {
+    // Record consent
+    await base44.entities.UserPolicyConsent.create({
+      userId: user.id,
+      policyKey: 'lesson_terms_and_conditions',
+      policyVersion: 'v1',
+      acceptanceSource: 'pre_booking_modal',
+      acceptedAt: new Date().toISOString(),
+      metadata: {
+        screen: 'book_a_lesson',
+        timestamp_utc: new Date().toISOString()
+      }
     });
+    
+    setShowConsentModal(false);
+    await refetchConsent();
+    
+    // Proceed with booking
+    if (pendingBooking) {
+      onReserve(pendingBooking);
+      setPendingBooking(null);
+    }
   };
 
   const totalPrice = (hourlyRate || 50) * durationHours;
   const slotMoment = slotDateTime ? moment(slotDateTime) : null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+    <>
+      <LessonTermsSummaryModal 
+        open={showSummaryModal}
+        onOpenChange={setShowSummaryModal}
+        onContinue={handleSummaryContinue}
+      />
+      
+      <LessonTermsConsentModal 
+        open={showConsentModal}
+        onOpenChange={setShowConsentModal}
+        onAccept={handleConsentAccept}
+      />
+
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
         <DialogHeader>
           <DialogTitle>Request a Lesson</DialogTitle>
           <DialogDescription>
