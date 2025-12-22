@@ -23,6 +23,7 @@ import LunchBreakModal from '@/components/booking/LunchBreakModal';
 import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
 import CalendarSettingsDrawer from '@/components/booking/CalendarSettingsDrawer';
 import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModal';
+import SlotDetailsModal from '@/components/booking/SlotDetailsModal';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Select,
@@ -50,6 +51,8 @@ export default function Calendar() {
   const [showLunchModal, setShowLunchModal] = useState(false);
   const [showCreateSlotModal, setShowCreateSlotModal] = useState(false);
   const [selectedSlotDateTime, setSelectedSlotDateTime] = useState(null);
+  const [showSlotDetailsModal, setShowSlotDetailsModal] = useState(false);
+  const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
   const [availabilityMode, setAvailabilityMode] = useState('available_by_default');
 
   const queryClient = useQueryClient();
@@ -351,6 +354,35 @@ export default function Calendar() {
     }
   });
 
+  const deleteSlotMutation = useMutation({
+    mutationFn: async ({ slotInstanceId, sourceTemplateId, deleteOption, startAtUtc }) => {
+      if (deleteOption === 'delete_single_instance') {
+        await base44.entities.BookableSlotInstance.delete(slotInstanceId);
+      } else if (deleteOption === 'delete_future_instances') {
+        const futureSlotsToDelete = slotInstances.filter(si => 
+          si.sourceTemplateId === sourceTemplateId &&
+          moment(si.startAtUtc).isSameOrAfter(moment(startAtUtc)) &&
+          si.status === 'available'
+        );
+        await Promise.all(futureSlotsToDelete.map(si => base44.entities.BookableSlotInstance.delete(si.id)));
+      } else if (deleteOption === 'delete_entire_series') {
+        await base44.entities.BookableSlotTemplate.update(sourceTemplateId, { isActive: false });
+        const serieSlotsToDelete = slotInstances.filter(si => 
+          si.sourceTemplateId === sourceTemplateId &&
+          si.status === 'available'
+        );
+        await Promise.all(serieSlotsToDelete.map(si => base44.entities.BookableSlotInstance.delete(si.id)));
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['slotInstances']);
+      queryClient.invalidateQueries(['slotTemplates']);
+      toast({ title: 'Slot deleted successfully' });
+      setShowSlotDetailsModal(false);
+      setSelectedSlotInstance(null);
+    }
+  });
+
   const pupilMap = pupils.reduce((acc, p) => {
     acc[p.id] = p;
     return acc;
@@ -639,10 +671,17 @@ export default function Calendar() {
             slotInstances={slotInstances}
             availabilityMode={availabilityMode}
             isInstructor={true}
-            onSlotClick={(slotDateTime) => {
+            onSlotClick={(slotDateTime, slotData) => {
               if (availabilityMode === 'published_slots_only') {
-                setSelectedSlotDateTime(slotDateTime);
-                setShowCreateSlotModal(true);
+                // If slotData is an object (slot instance), show details modal
+                if (typeof slotData === 'object' && slotData.id) {
+                  setSelectedSlotInstance(slotData);
+                  setShowSlotDetailsModal(true);
+                } else {
+                  // Otherwise open create slot modal
+                  setSelectedSlotDateTime(slotDateTime);
+                  setShowCreateSlotModal(true);
+                }
               }
             }}
           />
@@ -736,6 +775,15 @@ export default function Calendar() {
         onSave={(data) => createBookableSlotMutation.mutate(data)}
         isSaving={createBookableSlotMutation.isPending}
         slotDateTime={selectedSlotDateTime}
+      />
+
+      <SlotDetailsModal
+        open={showSlotDetailsModal}
+        onOpenChange={setShowSlotDetailsModal}
+        slotInstance={selectedSlotInstance}
+        isInstructor={true}
+        onDeleteSlot={(data) => deleteSlotMutation.mutate(data)}
+        isDeleting={deleteSlotMutation.isPending}
       />
     </div>
   );
