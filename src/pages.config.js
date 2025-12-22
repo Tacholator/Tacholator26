@@ -7,12 +7,14 @@ import DVSASkillDetail from './pages/DVSASkillDetail';
 import DVSASkills from './pages/DVSASkills';
 import Home from './pages/Home';
 import HomeworkLibrary from './pages/HomeworkLibrary';
+import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
 import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
 import InstructorNotifications from './pages/InstructorNotifications';
 import InstructorResources from './pages/InstructorResources';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
+import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
 import LearnerCalendar from './pages/LearnerCalendar';
 import LearnerChats from './pages/LearnerChats';
 import LearnerDashboard from './pages/LearnerDashboard';
@@ -28,8 +30,6 @@ import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import TermsAndConditions from './pages/TermsAndConditions';
-import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
-import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
 import __Layout from './Layout.jsx';
 
 
@@ -43,12 +43,14 @@ export const PAGES = {
     "DVSASkills": DVSASkills,
     "Home": Home,
     "HomeworkLibrary": HomeworkLibrary,
+    "InstructorBookingCalendar": InstructorBookingCalendar,
     "InstructorChats": InstructorChats,
     "InstructorDashboard": InstructorDashboard,
     "InstructorMcqReporting": InstructorMcqReporting,
     "InstructorNotifications": InstructorNotifications,
     "InstructorResources": InstructorResources,
     "InstructorTopicAssignment": InstructorTopicAssignment,
+    "LearnerBookingCalendar": LearnerBookingCalendar,
     "LearnerCalendar": LearnerCalendar,
     "LearnerChats": LearnerChats,
     "LearnerDashboard": LearnerDashboard,
@@ -64,8 +66,6 @@ export const PAGES = {
     "PupilList": PupilList,
     "PupilProfile": PupilProfile,
     "TermsAndConditions": TermsAndConditions,
-    "InstructorBookingCalendar": InstructorBookingCalendar,
-    "LearnerBookingCalendar": LearnerBookingCalendar,
 }
 
 export const pagesConfig = {

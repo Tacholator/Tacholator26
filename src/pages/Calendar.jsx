@@ -100,6 +100,29 @@ export default function Calendar() {
     }
   });
 
+  const saveWorkingHoursMutation = useMutation({
+    mutationFn: async (rulesData) => {
+      // Delete existing working hours rules
+      const existingWorkingHours = rules.filter(r => r.ruleType === 'working_hours');
+      await Promise.all(existingWorkingHours.map(r => base44.entities.CalendarRule.delete(r.id)));
+      
+      // Create new rules
+      await Promise.all(rulesData.map(data => 
+        base44.entities.CalendarRule.create({
+          ...data,
+          instructorId: currentUser.id,
+          ruleType: 'working_hours'
+        })
+      ));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['calendarRules']);
+      toast({ title: 'Working hours updated successfully' });
+      setShowWorkingHoursModal(false);
+      setShowSettingsModal(false);
+    }
+  });
+
   const confirmBookingMutation = useMutation({
     mutationFn: async (bookingId) => {
       const booking = bookings.find(b => b.id === bookingId);
@@ -485,8 +508,9 @@ export default function Calendar() {
       <WorkingHoursModal
         open={showWorkingHoursModal}
         onOpenChange={setShowWorkingHoursModal}
-        onSave={(data) => createRuleMutation.mutate({ ...data, ruleType: 'working_hours' })}
-        isSaving={createRuleMutation.isPending}
+        onSave={(data) => saveWorkingHoursMutation.mutate(data)}
+        isSaving={saveWorkingHoursMutation.isPending}
+        existingRules={rules}
       />
 
       <UnavailableModal
