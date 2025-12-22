@@ -9,12 +9,20 @@ import {
   ChevronRight, 
   Plus,
   Calendar as CalendarIcon,
-  Loader2
+  Loader2,
+  Settings
 } from 'lucide-react';
 import LessonFormModal from '@/components/modals/LessonFormModal';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import CalendarDayView from '@/components/calendar/CalendarDayView';
 import LessonDetailsDrawer from '@/components/calendar/LessonDetailsDrawer';
+import Calendar24Hour from '@/components/booking/Calendar24Hour';
+import WorkingHoursModal from '@/components/booking/WorkingHoursModal';
+import UnavailableModal from '@/components/booking/UnavailableModal';
+import LunchBreakModal from '@/components/booking/LunchBreakModal';
+import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
+import CalendarSettingsDrawer from '@/components/booking/CalendarSettingsDrawer';
+import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
 const VIEW_MODES = ['day', 'week', 'month'];
@@ -27,8 +35,13 @@ export default function Calendar() {
   const [showDetailsDrawer, setShowDetailsDrawer] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showWorkingHoursModal, setShowWorkingHoursModal] = useState(false);
+  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
+  const [showLunchModal, setShowLunchModal] = useState(false);
 
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: lessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['lessons'],
@@ -45,6 +58,18 @@ export default function Calendar() {
     queryFn: () => base44.auth.me()
   });
 
+  const { data: rules = [] } = useQuery({
+    queryKey: ['calendarRules', currentUser?.id],
+    queryFn: () => base44.entities.CalendarRule.filter({ instructorId: currentUser.id }),
+    enabled: !!currentUser?.id
+  });
+
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['lessonBookings', currentUser?.id],
+    queryFn: () => base44.entities.LessonBooking.filter({ instructorId: currentUser.id }),
+    enabled: !!currentUser?.id
+  });
+
   const createLessonMutation = useMutation({
     mutationFn: (data) => base44.entities.Lesson.create(data),
     onSuccess: () => queryClient.invalidateQueries(['lessons'])
@@ -58,6 +83,78 @@ export default function Calendar() {
   const deleteLessonMutation = useMutation({
     mutationFn: (id) => base44.entities.Lesson.delete(id),
     onSuccess: () => queryClient.invalidateQueries(['lessons'])
+  });
+
+  const createRuleMutation = useMutation({
+    mutationFn: (data) => base44.entities.CalendarRule.create({
+      ...data,
+      instructorId: currentUser.id
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['calendarRules']);
+      toast({ title: 'Rule saved successfully' });
+      setShowWorkingHoursModal(false);
+      setShowUnavailableModal(false);
+      setShowLunchModal(false);
+      setShowSettingsModal(false);
+    }
+  });
+
+  const confirmBookingMutation = useMutation({
+    mutationFn: async (bookingId) => {
+      const booking = bookings.find(b => b.id === bookingId);
+      await base44.entities.LessonBooking.update(bookingId, {
+        status: 'confirmed',
+        confirmedAt: new Date().toISOString()
+      });
+      
+      await base44.entities.PaymentLedger.create({
+        userId: booking.pupilId,
+        bookingId: bookingId,
+        type: 'charge',
+        reason: 'lesson_confirmed_charge',
+        amountGbp: booking.totalPriceGbp,
+        hours: booking.durationHours,
+        createdByRole: 'system',
+        note: 'Charge applied on confirmation'
+      });
+
+      await base44.entities.Notification.create({
+        userId: booking.pupilId,
+        title: 'Lesson Confirmed',
+        message: `Your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} has been confirmed.`,
+        type: 'booking',
+        linkTarget: 'Calendar'
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['lessonBookings']);
+      toast({ title: 'Booking confirmed' });
+    }
+  });
+
+  const declineBookingMutation = useMutation({
+    mutationFn: async ({ bookingId, reason }) => {
+      const booking = bookings.find(b => b.id === bookingId);
+      await base44.entities.LessonBooking.update(bookingId, {
+        status: 'declined_by_instructor',
+        cancelledAt: new Date().toISOString(),
+        cancelledByRole: 'instructor',
+        cancellationReason: reason
+      });
+
+      await base44.entities.Notification.create({
+        userId: booking.pupilId,
+        title: 'Lesson Declined',
+        message: `Your lesson request for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined.`,
+        type: 'booking',
+        linkTarget: 'Calendar'
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['lessonBookings']);
+      toast({ title: 'Booking declined' });
+    }
   });
 
   const pupilMap = pupils.reduce((acc, p) => {
@@ -180,6 +277,8 @@ export default function Calendar() {
     return lessons.filter(l => l.date === dateStr);
   };
 
+  const pendingBookings = bookings.filter(b => b.status === 'reserved_pending_instructor');
+
   if (lessonsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -216,6 +315,14 @@ export default function Calendar() {
             </div>
             
             <Button
+              variant="outline"
+              onClick={() => setShowSettingsModal(true)}
+              className="gap-2"
+            >
+              <Settings className="w-4 h-4" />
+            </Button>
+
+            <Button
               onClick={() => {
                 setSelectedLesson(null);
                 setSelectedSlot(null);
@@ -241,6 +348,19 @@ export default function Calendar() {
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
+
+        {/* Pending Bookings */}
+        {pendingBookings.length > 0 && (
+          <div className="mb-6">
+            <PendingBookingsPanel
+              bookings={pendingBookings}
+              pupils={pupils}
+              onConfirm={(id) => confirmBookingMutation.mutate(id)}
+              onDecline={(id, reason) => declineBookingMutation.mutate({ bookingId: id, reason })}
+              isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending}
+            />
+          </div>
+        )}
 
         {/* Calendar View */}
         {viewMode === 'day' ? (
@@ -304,77 +424,12 @@ export default function Calendar() {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-            {/* Day/Week Header */}
-            <div className="grid" style={{ gridTemplateColumns: `60px repeat(${getDaysToShow.length}, 1fr)` }}>
-              <div className="border-b border-r p-2" />
-              {getDaysToShow.map((day, idx) => {
-                const isToday = day.isSame(moment(), 'day');
-                return (
-                  <div key={idx} className={`border-b border-r p-3 text-center ${isToday ? 'bg-teal-50' : ''}`}>
-                    <div className="text-xs text-slate-500">{day.format('ddd')}</div>
-                    <div className={`text-lg font-semibold ${isToday ? 'text-teal-600' : 'text-slate-700'}`}>
-                      {day.date()}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            
-            {/* Time Slots */}
-            <div className="max-h-[600px] overflow-y-auto">
-              {hours.map(hour => (
-                <div 
-                  key={hour} 
-                  className="grid" 
-                  style={{ gridTemplateColumns: `60px repeat(${getDaysToShow.length}, 1fr)` }}
-                >
-                  <div className="border-r p-2 text-xs text-slate-400 text-right pr-3">
-                    {hour}:00
-                  </div>
-                  {getDaysToShow.map((day, idx) => {
-                    const dayLessons = getLessonsForDay(day);
-                    const hourLessons = dayLessons.filter(l => {
-                      const lessonHour = parseInt(l.startTime?.split(':')[0] || 0);
-                      return lessonHour === hour;
-                    });
-                    
-                    return (
-                      <div
-                        key={idx}
-                        className="border-r border-b min-h-[60px] p-1 hover:bg-slate-50 cursor-pointer transition-colors relative"
-                        onClick={() => openNewLesson(day.format('YYYY-MM-DD'), `${hour.toString().padStart(2, '0')}:00`)}
-                      >
-                        {hourLessons.map(lesson => {
-                          const pupil = pupilMap[lesson.pupilId];
-                          const statusColors = {
-                            Scheduled: 'bg-blue-100 border-blue-300 text-blue-800',
-                            Completed: 'bg-emerald-100 border-emerald-300 text-emerald-800',
-                            Cancelled: 'bg-rose-100 border-rose-300 text-rose-800'
-                          };
-                          return (
-                            <motion.div
-                              key={lesson.id}
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openEditLesson(lesson);
-                              }}
-                              className={`rounded-lg p-2 text-xs border ${statusColors[lesson.status]} cursor-pointer hover:shadow-md transition-shadow`}
-                            >
-                              <div className="font-medium">{pupil?.firstName} {pupil?.lastName}</div>
-                              <div className="opacity-70">{lesson.startTime} - {lesson.endTime}</div>
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-          </div>
+          <Calendar24Hour
+            viewMode={viewMode}
+            rules={rules}
+            bookings={bookings}
+            isInstructor={true}
+          />
         )}
       </div>
 
@@ -424,6 +479,36 @@ export default function Calendar() {
         onDelete={handleDeleteLesson}
         onMarkCompleted={openCompleteLessonWithDiary}
         currentUser={currentUser}
+      />
+
+      {/* Calendar Settings Modals */}
+      <WorkingHoursModal
+        open={showWorkingHoursModal}
+        onOpenChange={setShowWorkingHoursModal}
+        onSave={(data) => createRuleMutation.mutate({ ...data, ruleType: 'working_hours' })}
+        isSaving={createRuleMutation.isPending}
+      />
+
+      <UnavailableModal
+        open={showUnavailableModal}
+        onOpenChange={setShowUnavailableModal}
+        onSave={(data) => createRuleMutation.mutate({ ...data, ruleType: 'unavailable' })}
+        isSaving={createRuleMutation.isPending}
+      />
+
+      <LunchBreakModal
+        open={showLunchModal}
+        onOpenChange={setShowLunchModal}
+        onSave={(data) => createRuleMutation.mutate({ ...data, ruleType: 'lunch_break' })}
+        isSaving={createRuleMutation.isPending}
+      />
+
+      <CalendarSettingsDrawer
+        open={showSettingsModal}
+        onOpenChange={setShowSettingsModal}
+        onOpenWorkingHours={() => setShowWorkingHoursModal(true)}
+        onOpenLunch={() => setShowLunchModal(true)}
+        onOpenUnavailable={() => setShowUnavailableModal(true)}
       />
     </div>
   );
