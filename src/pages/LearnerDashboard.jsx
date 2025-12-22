@@ -27,7 +27,10 @@ import {
   Award,
   TrendingUp,
   DollarSign,
-  Lock
+  Lock,
+  Mail,
+  Phone,
+  Users
 } from 'lucide-react';
 import moment from 'moment';
 
@@ -59,6 +62,17 @@ export default function LearnerDashboard() {
       return null;
     },
     enabled: !!user
+  });
+
+  // Fetch instructor profile from User entity
+  const { data: instructor } = useQuery({
+    queryKey: ['instructor', pupil?.instructorId],
+    queryFn: async () => {
+      if (!pupil?.instructorId) return null;
+      const users = await base44.entities.User.filter({ id: pupil.instructorId });
+      return users.length > 0 ? users[0] : null;
+    },
+    enabled: !!pupil?.instructorId
   });
 
   // Auto-link pupil record and track login timestamps
@@ -502,90 +516,117 @@ export default function LearnerDashboard() {
           </motion.div>
         </div>
 
-        {/* Messages & Notifications */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.36 }}
-          className="mt-6"
-        >
-          <Card className="border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg">Messages & Notifications</CardTitle>
-              <p className="text-sm text-slate-500">Stay connected with your instructor</p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-                  <MessageCircle className="w-6 h-6 text-blue-600" />
-                  <div>
-                    <p className="text-2xl font-bold text-blue-700">{unreadMessages}</p>
-                    <p className="text-xs text-blue-600">Unread Messages</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
-                  <Bell className="w-6 h-6 text-purple-600" />
-                  <div>
-                    <p className="text-2xl font-bold text-purple-700">{unreadNotifications}</p>
-                    <p className="text-xs text-purple-600">Notifications</p>
-                  </div>
-                </div>
-              </div>
-              {latestMessage && (
-                <div className="bg-slate-50 rounded-lg p-4">
-                  <p className="text-xs text-slate-500 mb-1">Latest message</p>
-                  <p className="text-sm text-slate-700 line-clamp-2">{latestMessage.messageText}</p>
-                  <p className="text-xs text-slate-500 mt-2">
-                    From {latestMessage.senderName} • {moment(latestMessage.created_date).fromNow()}
-                  </p>
-                </div>
-              )}
-              <div className="grid grid-cols-2 gap-3">
-                <Link to={createPageUrl('LearnerChats')} className="w-full">
-                  <Button variant="outline" className="w-full gap-2">
-                    <MessageCircle className="w-4 h-4" />
-                    Open Chats
-                  </Button>
-                </Link>
-                <Link to={createPageUrl('LearnerNotifications')} className="w-full">
-                  <Button variant="outline" className="w-full gap-2">
-                    <Bell className="w-4 h-4" />
-                    Notifications
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Instructor Info */}
-        {(pupil.instructorName || pupil.instructorEmail) && (
+        {/* Instructor Contact Card + Messages & Notifications */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          {/* Your Instructor */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="mt-6"
           >
-            <Card className="border-0 shadow-sm bg-gradient-to-br from-slate-50 to-slate-100">
-              <CardContent className="p-5">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-xl font-bold">
-                    <User className="w-7 h-7" />
+            {instructor && (
+              <Card className="bg-white border-slate-200 h-full">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-teal-600" />
+                    Your Instructor
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <User className="w-4 h-4 text-slate-400" />
+                    <span className="font-medium text-slate-700">
+                      {instructor.firstName && instructor.lastName 
+                        ? `${instructor.firstName} ${instructor.lastName}` 
+                        : instructor.full_name || instructor.email}
+                    </span>
                   </div>
-                  <div>
-                    <p className="text-sm text-slate-500">Your Instructor</p>
-                    <p className="text-xl font-semibold text-slate-800">
-                      {pupil.instructorName || 'Your Instructor'}
+                  {instructor.email && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Mail className="w-4 h-4 text-slate-400" />
+                      <a href={`mailto:${instructor.email}`} className="text-teal-600 hover:underline">
+                        {instructor.email}
+                      </a>
+                    </div>
+                  )}
+                  {instructor.phone && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="w-4 h-4 text-slate-400" />
+                      <a href={`tel:${instructor.phone}`} className="text-teal-600 hover:underline">
+                        {instructor.phone}
+                      </a>
+                    </div>
+                  )}
+                  <div className="pt-2">
+                    <Link to={createPageUrl('LearnerChats')}>
+                      <Button variant="outline" size="sm" className="w-full">
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        Message Instructor
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </motion.div>
+
+          {/* Messages & Notifications */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.36 }}
+          >
+          <Card className="border-0 shadow-sm h-full">
+              <CardHeader>
+                <CardTitle className="text-lg">Messages & Notifications</CardTitle>
+                <p className="text-sm text-slate-500">Stay connected with your instructor</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
+                    <MessageCircle className="w-6 h-6 text-blue-600" />
+                    <div>
+                      <p className="text-2xl font-bold text-blue-700">{unreadMessages}</p>
+                      <p className="text-xs text-blue-600">Unread Messages</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
+                    <Bell className="w-6 h-6 text-purple-600" />
+                    <div>
+                      <p className="text-2xl font-bold text-purple-700">{unreadNotifications}</p>
+                      <p className="text-xs text-purple-600">Notifications</p>
+                    </div>
+                  </div>
+                </div>
+                {latestMessage && (
+                  <div className="bg-slate-50 rounded-lg p-4">
+                    <p className="text-xs text-slate-500 mb-1">Latest message</p>
+                    <p className="text-sm text-slate-700 line-clamp-2">{latestMessage.messageText}</p>
+                    <p className="text-xs text-slate-500 mt-2">
+                      From {latestMessage.senderName} • {moment(latestMessage.created_date).fromNow()}
                     </p>
-                    {pupil.instructorEmail && (
-                      <p className="text-sm text-slate-500">{pupil.instructorEmail}</p>
-                    )}
                   </div>
+                )}
+                <div className="grid grid-cols-2 gap-3">
+                  <Link to={createPageUrl('LearnerChats')} className="w-full">
+                    <Button variant="outline" className="w-full gap-2">
+                      <MessageCircle className="w-4 h-4" />
+                      Open Chats
+                    </Button>
+                  </Link>
+                  <Link to={createPageUrl('LearnerNotifications')} className="w-full">
+                    <Button variant="outline" className="w-full gap-2">
+                      <Bell className="w-4 h-4" />
+                      Notifications
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
-        )}
+        </div>
+
+        {/* Instructor Info - moved earlier in the page */}
 
         {/* Milestones & Motivation */}
         <motion.div
