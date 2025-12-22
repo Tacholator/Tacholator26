@@ -31,7 +31,8 @@ import {
   Trash2,
   Settings,
   FileText,
-  Shield
+  Shield,
+  Receipt
 } from 'lucide-react';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
@@ -175,6 +176,18 @@ export default function Layout({ children, currentPageName }) {
                       Profile Settings
                     </DropdownMenuItem>
                   </Link>
+                  <Link to={createPageUrl('LessonTermsAndConditions')}>
+                    <DropdownMenuItem className="text-slate-600 cursor-pointer">
+                      <FileText className="w-4 h-4 mr-2" />
+                      Lesson T&Cs
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to={createPageUrl('RefundPolicy')}>
+                    <DropdownMenuItem className="text-slate-600 cursor-pointer">
+                      <Receipt className="w-4 h-4 mr-2" />
+                      Refund Policy
+                    </DropdownMenuItem>
+                  </Link>
                   <Link to={createPageUrl('TermsAndConditions')}>
                     <DropdownMenuItem className="text-slate-600 cursor-pointer">
                       <FileText className="w-4 h-4 mr-2" />
@@ -212,20 +225,73 @@ export default function Layout({ children, currentPageName }) {
           <Menu className="w-6 h-6" />
         </button>
         <div className="flex items-center gap-2 flex-1">
-                    <img 
-                      src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/b4113dc99_MobrageLearner33.png" 
-                      alt="Mobrage" 
-                      className="w-8 h-8 rounded-lg object-cover"
-                      />
-                      <span className="font-bold text-lg text-white">Mobrage Tacholator</span>
-                              </div>
-                    <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-sm">
-            {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
-          </AvatarFallback>
-        </Avatar>
-        </div>
+                      <img 
+                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/b4113dc99_MobrageLearner33.png" 
+                        alt="Mobrage" 
+                        className="w-8 h-8 rounded-lg object-cover"
+                        />
+                        <span className="font-bold text-lg text-white">Mobrage Tacholator</span>
+                                </div>
+                      <div className="flex items-center gap-2">
+                      <DropdownMenu modal={false}>
+                        <DropdownMenuTrigger asChild>
+                          <button className="focus:outline-none">
+                            <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
+                              <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-sm">
+                                {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent 
+                          align="end" 
+                          className="w-56"
+                          onInteractOutside={(e) => e.preventDefault()}
+                          onEscapeKeyDown={(e) => e.preventDefault()}
+                        >
+                          <Link to={createPageUrl('ProfileSettings')}>
+                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
+                              <Settings className="w-4 h-4 mr-2" />
+                              Profile Settings
+                            </DropdownMenuItem>
+                          </Link>
+                          <Link to={createPageUrl('LessonTermsAndConditions')}>
+                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
+                              <FileText className="w-4 h-4 mr-2" />
+                              Lesson T&Cs
+                            </DropdownMenuItem>
+                          </Link>
+                          <Link to={createPageUrl('RefundPolicy')}>
+                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
+                              <Receipt className="w-4 h-4 mr-2" />
+                              Refund Policy
+                            </DropdownMenuItem>
+                          </Link>
+                          <Link to={createPageUrl('TermsAndConditions')}>
+                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
+                              <FileText className="w-4 h-4 mr-2" />
+                              Terms & Conditions
+                            </DropdownMenuItem>
+                          </Link>
+                          <Link to={createPageUrl('PrivacyPolicy')}>
+                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
+                              <Shield className="w-4 h-4 mr-2" />
+                              Privacy Policy
+                            </DropdownMenuItem>
+                          </Link>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={handleLogout} className="text-slate-600">
+                            <LogOut className="w-4 h-4 mr-2" />
+                            Sign out
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-rose-600">
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete Account
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+          </div>
       </div>
 
       {/* Mobile Menu */}

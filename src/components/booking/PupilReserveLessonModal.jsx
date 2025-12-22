@@ -115,5 +115,6 @@ export default function PupilReserveLessonModal({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

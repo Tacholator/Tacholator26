@@ -30,6 +30,8 @@ import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import TermsAndConditions from './pages/TermsAndConditions';
+import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
+import RefundPolicy from './pages/RefundPolicy';
 import __Layout from './Layout.jsx';
 
 
@@ -66,6 +68,8 @@ export const PAGES = {
     "PupilList": PupilList,
     "PupilProfile": PupilProfile,
     "TermsAndConditions": TermsAndConditions,
+    "LessonTermsAndConditions": LessonTermsAndConditions,
+    "RefundPolicy": RefundPolicy,
 }
 
 export const pagesConfig = {
