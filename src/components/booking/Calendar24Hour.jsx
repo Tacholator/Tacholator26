@@ -8,9 +8,9 @@ import moment from 'moment';
 const SLOT_COLORS = {
   available: '#B7F7C9',
   confirmed: '#87CEFA',
-  lunch: '#FFA500',
-  unavailable: '#FF0000',
-  outside_working_hours: '#D3D3D3',
+  lunch: '#FFA07A',
+  unavailable: '#FFB3B3',
+  outside_working_hours: '#E8E8E8',
   reserved_pending: '#B39DDB',
   cancelled: '#CFCFCF'
 };
@@ -302,16 +302,16 @@ export default function Calendar24Hour({
                   available: '#2E7D32',
                   reserved_pending: '#5E35B1',
                   confirmed: '#1565C0',
-                  unavailable: '#8E0000',
-                  lunch: '#E65100'
+                  unavailable: '#D32F2F',
+                  lunch: '#F57C00'
                 };
 
                 const accentColors = {
                   available: '#1B5E20',
                   reserved_pending: '#4527A0',
                   confirmed: '#0D47A1',
-                  unavailable: '#5F0000',
-                  lunch: '#BF360C'
+                  unavailable: '#C62828',
+                  lunch: '#E65100'
                 };
 
                 const statusLabels = {
