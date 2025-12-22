@@ -123,6 +123,52 @@ export default function Calendar() {
     }
   });
 
+  const saveLunchBreaksMutation = useMutation({
+    mutationFn: async (rulesData) => {
+      // Delete existing lunch break rules
+      const existingLunchBreaks = rules.filter(r => r.ruleType === 'lunch_break');
+      await Promise.all(existingLunchBreaks.map(r => base44.entities.CalendarRule.delete(r.id)));
+      
+      // Create new rules
+      await Promise.all(rulesData.map(data => 
+        base44.entities.CalendarRule.create({
+          ...data,
+          instructorId: currentUser.id,
+          ruleType: 'lunch_break'
+        })
+      ));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['calendarRules']);
+      toast({ title: 'Lunch breaks updated successfully' });
+      setShowLunchModal(false);
+      setShowSettingsModal(false);
+    }
+  });
+
+  const saveUnavailableMutation = useMutation({
+    mutationFn: async (rulesData) => {
+      // Delete existing unavailable rules
+      const existingUnavailable = rules.filter(r => r.ruleType === 'unavailable');
+      await Promise.all(existingUnavailable.map(r => base44.entities.CalendarRule.delete(r.id)));
+      
+      // Create new rules
+      await Promise.all(rulesData.map(data => 
+        base44.entities.CalendarRule.create({
+          ...data,
+          instructorId: currentUser.id,
+          ruleType: 'unavailable'
+        })
+      ));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['calendarRules']);
+      toast({ title: 'Unavailable times updated successfully' });
+      setShowUnavailableModal(false);
+      setShowSettingsModal(false);
+    }
+  });
+
   const confirmBookingMutation = useMutation({
     mutationFn: async (bookingId) => {
       const booking = bookings.find(b => b.id === bookingId);
@@ -516,15 +562,17 @@ export default function Calendar() {
       <UnavailableModal
         open={showUnavailableModal}
         onOpenChange={setShowUnavailableModal}
-        onSave={(data) => createRuleMutation.mutate({ ...data, ruleType: 'unavailable' })}
-        isSaving={createRuleMutation.isPending}
+        onSave={(data) => saveUnavailableMutation.mutate(data)}
+        isSaving={saveUnavailableMutation.isPending}
+        existingRules={rules}
       />
 
       <LunchBreakModal
         open={showLunchModal}
         onOpenChange={setShowLunchModal}
-        onSave={(data) => createRuleMutation.mutate({ ...data, ruleType: 'lunch_break' })}
-        isSaving={createRuleMutation.isPending}
+        onSave={(data) => saveLunchBreaksMutation.mutate(data)}
+        isSaving={saveLunchBreaksMutation.isPending}
+        existingRules={rules}
       />
 
       <CalendarSettingsDrawer
