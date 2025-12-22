@@ -53,7 +53,7 @@ export default function Calendar() {
   const [selectedSlotDateTime, setSelectedSlotDateTime] = useState(null);
   const [showSlotDetailsModal, setShowSlotDetailsModal] = useState(false);
   const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
-  const [availabilityMode, setAvailabilityMode] = useState('available_by_default');
+  const [availabilityMode, setAvailabilityMode] = useState('published_slots_only');
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
