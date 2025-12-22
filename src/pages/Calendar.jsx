@@ -53,7 +53,7 @@ export default function Calendar() {
   const [selectedSlotDateTime, setSelectedSlotDateTime] = useState(null);
   const [showSlotDetailsModal, setShowSlotDetailsModal] = useState(false);
   const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
-  const [availabilityMode, setAvailabilityMode] = useState('available_by_default');
+  const [availabilityMode, setAvailabilityMode] = useState('published_slots_only');
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -88,13 +88,13 @@ export default function Calendar() {
   const { data: slotInstances = [] } = useQuery({
     queryKey: ['slotInstances', currentUser?.id],
     queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: currentUser.id }),
-    enabled: !!currentUser?.id && availabilityMode === 'published_slots_only'
+    enabled: !!currentUser?.id
   });
 
   const { data: slotTemplates = [] } = useQuery({
     queryKey: ['slotTemplates', currentUser?.id],
     queryFn: () => base44.entities.BookableSlotTemplate.filter({ instructorId: currentUser.id }),
-    enabled: !!currentUser?.id && availabilityMode === 'published_slots_only'
+    enabled: !!currentUser?.id
   });
 
   const createLessonMutation = useMutation({

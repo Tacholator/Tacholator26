@@ -1,6 +1,5 @@
 import AccountDeletionRequest from './pages/AccountDeletionRequest';
 import AdminDataManagement from './pages/AdminDataManagement';
-import Calendar from './pages/Calendar';
 import CourseWork from './pages/CourseWork';
 import CourseWorkDetail from './pages/CourseWorkDetail';
 import DVSASkillDetail from './pages/DVSASkillDetail';
@@ -14,7 +13,6 @@ import InstructorMcqReporting from './pages/InstructorMcqReporting';
 import InstructorNotifications from './pages/InstructorNotifications';
 import InstructorResources from './pages/InstructorResources';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
-import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
 import LearnerCalendar from './pages/LearnerCalendar';
 import LearnerChats from './pages/LearnerChats';
 import LearnerDashboard from './pages/LearnerDashboard';
@@ -32,13 +30,14 @@ import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
+import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
+import Calendar from './pages/Calendar';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AccountDeletionRequest": AccountDeletionRequest,
     "AdminDataManagement": AdminDataManagement,
-    "Calendar": Calendar,
     "CourseWork": CourseWork,
     "CourseWorkDetail": CourseWorkDetail,
     "DVSASkillDetail": DVSASkillDetail,
@@ -52,7 +51,6 @@ export const PAGES = {
     "InstructorNotifications": InstructorNotifications,
     "InstructorResources": InstructorResources,
     "InstructorTopicAssignment": InstructorTopicAssignment,
-    "LearnerBookingCalendar": LearnerBookingCalendar,
     "LearnerCalendar": LearnerCalendar,
     "LearnerChats": LearnerChats,
     "LearnerDashboard": LearnerDashboard,
@@ -70,6 +68,8 @@ export const PAGES = {
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "TermsAndConditions": TermsAndConditions,
+    "LearnerBookingCalendar": LearnerBookingCalendar,
+    "Calendar": Calendar,
 }
 
 export const pagesConfig = {

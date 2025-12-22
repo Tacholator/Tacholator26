@@ -157,10 +157,14 @@ export default function Calendar24Hour({
   const days = getDaysInView();
   const timeSlots = getTimeSlots();
 
-  const isSlotClickable = (state) => {
+  const isSlotClickable = (state, slotInstance) => {
     if (availabilityMode === 'published_slots_only' && isInstructor) {
-      // In published slots mode, instructors can click anywhere to create slots
+      // In published slots mode, instructors can click available slots or anywhere to create new slots
       return state === 'outside_working_hours' || state === 'unavailable' || state === 'available';
+    }
+    // For pupils, only available slots from instances are clickable
+    if (!isInstructor) {
+      return state === 'available' && slotInstance;
     }
     return state === 'available';
   };
@@ -247,7 +251,7 @@ export default function Calendar24Hour({
                 {days.map((day, dayIdx) => {
                 const slotStateData = getSlotState(day, timeSlot);
                 const { state, booking, slotInstance, rule, blockType } = slotStateData;
-                const clickable = isSlotClickable(state);
+                const clickable = isSlotClickable(state, slotInstance);
                 const dateStr = day.format('YYYY-MM-DD');
                 const slotDateTime = `${dateStr}T${timeSlot}:00`;
 
