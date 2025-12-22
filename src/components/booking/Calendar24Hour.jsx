@@ -59,10 +59,10 @@ export default function Calendar24Hour({
 
     if (overlappingBooking) {
       if (overlappingBooking.status === 'confirmed' || overlappingBooking.status === 'completed') {
-        return { state: 'confirmed', booking: overlappingBooking };
+        return { state: 'confirmed', booking: overlappingBooking, blockType: 'booking' };
       }
       if (overlappingBooking.status === 'reserved_pending_instructor') {
-        return { state: 'reserved_pending', booking: overlappingBooking };
+        return { state: 'reserved_pending', booking: overlappingBooking, blockType: 'booking' };
       }
     }
 
@@ -76,16 +76,16 @@ export default function Calendar24Hour({
 
       if (overlappingInstance) {
         if (overlappingInstance.status === 'available') {
-          return { state: 'available', slotInstance: overlappingInstance };
+          return { state: 'available', slotInstance: overlappingInstance, blockType: 'slotInstance' };
         }
         if (overlappingInstance.status === 'reserved_pending') {
-          return { state: 'reserved_pending', slotInstance: overlappingInstance };
+          return { state: 'reserved_pending', slotInstance: overlappingInstance, blockType: 'slotInstance' };
         }
         if (overlappingInstance.status === 'confirmed') {
-          return { state: 'confirmed', slotInstance: overlappingInstance };
+          return { state: 'confirmed', slotInstance: overlappingInstance, blockType: 'slotInstance' };
         }
         if (overlappingInstance.status === 'blocked') {
-          return { state: 'unavailable', slotInstance: overlappingInstance };
+          return { state: 'unavailable', slotInstance: overlappingInstance, blockType: 'slotInstance' };
         }
       }
     }
@@ -117,7 +117,7 @@ export default function Calendar24Hour({
       const lunchStart = moment(lunchRule.startTimeLocal, 'HH:mm');
       const lunchEnd = moment(lunchRule.endTimeLocal, 'HH:mm');
       if (workingStart.isSameOrAfter(lunchStart) && workingStart.isBefore(lunchEnd)) {
-        return { state: 'lunch' };
+        return { state: 'lunch', rule: lunchRule, blockType: 'rule' };
       }
     }
 
@@ -130,7 +130,7 @@ export default function Calendar24Hour({
       const unavailStart = moment(unavailableRule.startTimeLocal, 'HH:mm');
       const unavailEnd = moment(unavailableRule.endTimeLocal, 'HH:mm');
       if (workingStart.isSameOrAfter(unavailStart) && workingStart.isBefore(unavailEnd)) {
-        return { state: 'unavailable' };
+        return { state: 'unavailable', rule: unavailableRule, blockType: 'rule' };
       }
     }
 
@@ -241,55 +241,91 @@ export default function Calendar24Hour({
                 {timeSlot}
               </div>
               {days.map((day, dayIdx) => {
-                const { state, booking } = getSlotState(day, timeSlot);
+                const slotStateData = getSlotState(day, timeSlot);
+                const { state, booking, slotInstance, rule, blockType } = slotStateData;
                 const clickable = isSlotClickable(state);
                 const dateStr = day.format('YYYY-MM-DD');
                 const slotDateTime = `${dateStr}T${timeSlot}:00`;
 
-                const { slotInstance } = getSlotState(day, timeSlot);
-                const isSlotCard = slotInstance && availabilityMode === 'published_slots_only';
+                // Determine if this should be rendered as a card
+                const shouldRenderAsCard = state !== 'outside_working_hours' && (blockType === 'booking' || blockType === 'slotInstance' || blockType === 'rule');
                 
-                // Check if this is the start of a slot instance
-                const isSlotStart = isSlotCard && moment(slotInstance.startAtUtc).local().format('HH:mm') === timeSlot;
-                
-                // Calculate slot duration in 30min increments
-                let slotSpan = 1;
-                if (isSlotStart && slotInstance) {
-                  const startMoment = moment(slotInstance.startAtUtc).local();
-                  const endMoment = moment(slotInstance.endAtUtc).local();
-                  const durationMinutes = endMoment.diff(startMoment, 'minutes');
-                  slotSpan = Math.ceil(durationMinutes / 30);
+                // Determine block duration and start
+                let isBlockStart = false;
+                let blockSpan = 1;
+                let blockStartTime = '';
+                let blockEndTime = '';
+
+                if (shouldRenderAsCard) {
+                  if (blockType === 'booking' && booking) {
+                    const blockStart = moment(booking.startAtUtc).local();
+                    const blockEnd = moment(booking.endAtUtc).local();
+                    isBlockStart = blockStart.format('HH:mm') === timeSlot;
+                    if (isBlockStart) {
+                      const durationMinutes = blockEnd.diff(blockStart, 'minutes');
+                      blockSpan = Math.ceil(durationMinutes / 30);
+                      blockStartTime = blockStart.format('HH:mm');
+                      blockEndTime = blockEnd.format('HH:mm');
+                    }
+                  } else if (blockType === 'slotInstance' && slotInstance) {
+                    const blockStart = moment(slotInstance.startAtUtc).local();
+                    const blockEnd = moment(slotInstance.endAtUtc).local();
+                    isBlockStart = blockStart.format('HH:mm') === timeSlot;
+                    if (isBlockStart) {
+                      const durationMinutes = blockEnd.diff(blockStart, 'minutes');
+                      blockSpan = Math.ceil(durationMinutes / 30);
+                      blockStartTime = blockStart.format('HH:mm');
+                      blockEndTime = blockEnd.format('HH:mm');
+                    }
+                  } else if (blockType === 'rule' && rule) {
+                    isBlockStart = rule.startTimeLocal === timeSlot;
+                    if (isBlockStart) {
+                      const ruleStart = moment(rule.startTimeLocal, 'HH:mm');
+                      const ruleEnd = moment(rule.endTimeLocal, 'HH:mm');
+                      const durationMinutes = ruleEnd.diff(ruleStart, 'minutes');
+                      blockSpan = Math.ceil(durationMinutes / 30);
+                      blockStartTime = rule.startTimeLocal;
+                      blockEndTime = rule.endTimeLocal;
+                    }
+                  }
                 }
 
                 const borderColors = {
-                  available: '#4CAF50',
-                  reserved_pending: '#7E57C2',
-                  confirmed: '#4A90E2',
-                  unavailable: '#C62828',
-                  lunch: '#EF6C00',
-                  outside_working_hours: '#B0B0B0'
-                };
-
-                const accentColors = {
                   available: '#2E7D32',
                   reserved_pending: '#5E35B1',
                   confirmed: '#1565C0',
                   unavailable: '#8E0000',
-                  lunch: '#E65100',
-                  outside_working_hours: '#9E9E9E'
+                  lunch: '#E65100'
                 };
 
-                if (isSlotStart) {
+                const accentColors = {
+                  available: '#1B5E20',
+                  reserved_pending: '#4527A0',
+                  confirmed: '#0D47A1',
+                  unavailable: '#5F0000',
+                  lunch: '#BF360C'
+                };
+
+                const statusLabels = {
+                  available: 'Available',
+                  reserved_pending: 'Pending',
+                  confirmed: 'Confirmed',
+                  lunch: 'Lunch',
+                  unavailable: 'Unavailable'
+                };
+
+                // Render card-style block
+                if (shouldRenderAsCard && isBlockStart) {
                   return (
                     <div
                       key={dayIdx}
-                      onClick={() => clickable && onSlotClick && onSlotClick(slotDateTime, slotInstance)}
+                      onClick={() => clickable && onSlotClick && onSlotClick(slotDateTime, slotInstance || state)}
                       className={`border-r last:border-r-0 p-1 relative ${
                         clickable ? 'cursor-pointer group' : 'cursor-default'
                       }`}
                       style={{ 
                         backgroundColor: SLOT_COLORS[state],
-                        minHeight: `${slotSpan * 40}px`
+                        minHeight: `${blockSpan * 40}px`
                       }}
                     >
                       <div
@@ -310,7 +346,7 @@ export default function Calendar24Hour({
                         {/* Content */}
                         <div className="pl-3 pr-2 py-1 h-full flex flex-col justify-center">
                           <div className="text-xs font-semibold text-slate-700">
-                            {moment(slotInstance.startAtUtc).local().format('HH:mm')} - {moment(slotInstance.endAtUtc).local().format('HH:mm')}
+                            {blockStartTime} - {blockEndTime}
                           </div>
                           <div className="mt-1">
                             <span 
@@ -320,9 +356,7 @@ export default function Calendar24Hour({
                                 color: accentColors[state]
                               }}
                             >
-                              {state === 'available' ? 'Available' : 
-                               state === 'reserved_pending' ? 'Pending' :
-                               state === 'confirmed' ? 'Confirmed' : state}
+                              {statusLabels[state] || state}
                             </span>
                           </div>
                         </div>
@@ -338,11 +372,12 @@ export default function Calendar24Hour({
                   );
                 }
 
-                // Skip slots covered by multi-slot instances
-                if (isSlotCard && !isSlotStart) {
+                // Skip slots covered by multi-slot blocks
+                if (shouldRenderAsCard && !isBlockStart) {
                   return null;
                 }
 
+                // Render flat background slot (for outside_working_hours or default available)
                 return (
                   <div
                     key={dayIdx}
@@ -351,15 +386,8 @@ export default function Calendar24Hour({
                       clickable ? 'cursor-pointer hover:opacity-80' : 'cursor-default'
                     }`}
                     style={{ backgroundColor: SLOT_COLORS[state] }}
-                    title={booking ? `${booking.status}` : state}
-                  >
-                    {booking && (
-                      <div className="text-xs font-semibold text-slate-700 truncate px-1">
-                        {booking.status === 'confirmed' && '✓'}
-                        {booking.status === 'reserved_pending_instructor' && '⏱'}
-                      </div>
-                    )}
-                  </div>
+                    title={state}
+                  />
                 );
               })}
             </div>
