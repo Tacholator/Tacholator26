@@ -320,21 +320,23 @@ export default function Calendar24Hour({
                     <div
                       key={dayIdx}
                       onClick={() => clickable && onSlotClick && onSlotClick(slotDateTime, slotInstance || state)}
-                      className={`border-r last:border-r-0 p-1 relative ${
+                      className={`border-r last:border-r-0 relative ${
                         clickable ? 'cursor-pointer group' : 'cursor-default'
                       }`}
                       style={{ 
                         backgroundColor: SLOT_COLORS[state],
-                        minHeight: `${blockSpan * 40}px`
+                        height: `${blockSpan * 40}px`,
+                        padding: '2px'
                       }}
                     >
                       <div
-                        className={`relative h-full rounded-md border-2 overflow-hidden ${
+                        className={`relative rounded-md border-2 overflow-hidden ${
                           clickable ? 'group-hover:shadow-md transition-shadow' : ''
                         }`}
                         style={{ 
                           borderColor: borderColors[state],
-                          backgroundColor: SLOT_COLORS[state]
+                          backgroundColor: SLOT_COLORS[state],
+                          height: '100%'
                         }}
                       >
                         {/* Accent strip */}
@@ -342,9 +344,9 @@ export default function Calendar24Hour({
                           className="absolute left-0 top-0 bottom-0 w-1"
                           style={{ backgroundColor: accentColors[state] }}
                         />
-                        
+
                         {/* Content */}
-                        <div className="pl-3 pr-2 py-1 h-full flex flex-col justify-center">
+                        <div className="pl-3 pr-2 py-2 h-full flex flex-col justify-center">
                           <div className="text-xs font-semibold text-slate-700">
                             {blockStartTime} - {blockEndTime}
                           </div>
