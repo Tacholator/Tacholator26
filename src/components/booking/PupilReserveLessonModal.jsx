@@ -193,7 +193,7 @@ export default function PupilReserveLessonModal({
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+      </Dialog>
     </>
   );
 }
