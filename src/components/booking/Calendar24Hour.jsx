@@ -19,6 +19,8 @@ export default function Calendar24Hour({
   viewMode = 'week', 
   rules = [], 
   bookings = [], 
+  slotInstances = [],
+  availabilityMode = 'available_by_default',
   onSlotClick,
   isInstructor = false 
 }) {
@@ -61,6 +63,30 @@ export default function Calendar24Hour({
       }
       if (overlappingBooking.status === 'reserved_pending_instructor') {
         return { state: 'reserved_pending', booking: overlappingBooking };
+      }
+    }
+
+    // Check for published slots mode
+    if (availabilityMode === 'published_slots_only') {
+      const overlappingInstance = slotInstances.find(si => {
+        const instanceStart = moment(si.startAtUtc).local();
+        const instanceEnd = moment(si.endAtUtc).local();
+        return slotDateTime.isBefore(instanceEnd) && slotEnd.isAfter(instanceStart);
+      });
+
+      if (overlappingInstance) {
+        if (overlappingInstance.status === 'available') {
+          return { state: 'available', slotInstance: overlappingInstance };
+        }
+        if (overlappingInstance.status === 'reserved_pending') {
+          return { state: 'reserved_pending', slotInstance: overlappingInstance };
+        }
+        if (overlappingInstance.status === 'confirmed') {
+          return { state: 'confirmed', slotInstance: overlappingInstance };
+        }
+        if (overlappingInstance.status === 'blocked') {
+          return { state: 'unavailable', slotInstance: overlappingInstance };
+        }
       }
     }
 
@@ -108,6 +134,11 @@ export default function Calendar24Hour({
       }
     }
 
+    // If published slots only mode and no slot instance found, treat as unavailable
+    if (availabilityMode === 'published_slots_only') {
+      return { state: 'unavailable' };
+    }
+
     return { state: 'available' };
   };
 
@@ -127,6 +158,10 @@ export default function Calendar24Hour({
   const timeSlots = getTimeSlots();
 
   const isSlotClickable = (state) => {
+    if (availabilityMode === 'published_slots_only' && isInstructor) {
+      // In published slots mode, instructors can click anywhere to create slots
+      return state === 'outside_working_hours' || state === 'unavailable' || state === 'available';
+    }
     return state === 'available';
   };
 

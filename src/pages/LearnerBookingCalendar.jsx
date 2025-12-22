@@ -140,6 +140,7 @@ export default function LearnerBookingCalendar() {
     onSuccess: (_, { isLate }) => {
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['instructorBookings']);
+      queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowLateCancelDialog(false);
       setCancellingBooking(null);
       toast({ 
@@ -149,10 +150,13 @@ export default function LearnerBookingCalendar() {
     }
   });
 
-  const handleSlotClick = (slotDateTime) => {
+  const handleSlotClick = (slotDateTime, slotInstance) => {
     setSelectedSlot(slotDateTime);
+    setSelectedSlotInstance(slotInstance);
     setShowReserveModal(true);
   };
+
+  const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
 
   const handleCancelClick = (booking) => {
     const hoursUntilStart = moment(booking.startAtUtc).diff(moment(), 'hours', true);

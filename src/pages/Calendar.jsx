@@ -22,7 +22,16 @@ import UnavailableModal from '@/components/booking/UnavailableModal';
 import LunchBreakModal from '@/components/booking/LunchBreakModal';
 import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
 import CalendarSettingsDrawer from '@/components/booking/CalendarSettingsDrawer';
+import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModal';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import moment from 'moment';
 
 const VIEW_MODES = ['day', 'week', 'month'];
@@ -39,6 +48,9 @@ export default function Calendar() {
   const [showWorkingHoursModal, setShowWorkingHoursModal] = useState(false);
   const [showUnavailableModal, setShowUnavailableModal] = useState(false);
   const [showLunchModal, setShowLunchModal] = useState(false);
+  const [showCreateSlotModal, setShowCreateSlotModal] = useState(false);
+  const [selectedSlotDateTime, setSelectedSlotDateTime] = useState(null);
+  const [availabilityMode, setAvailabilityMode] = useState('available_by_default');
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -68,6 +80,18 @@ export default function Calendar() {
     queryKey: ['lessonBookings', currentUser?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: currentUser.id }),
     enabled: !!currentUser?.id
+  });
+
+  const { data: slotInstances = [] } = useQuery({
+    queryKey: ['slotInstances', currentUser?.id],
+    queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: currentUser.id }),
+    enabled: !!currentUser?.id && availabilityMode === 'published_slots_only'
+  });
+
+  const { data: slotTemplates = [] } = useQuery({
+    queryKey: ['slotTemplates', currentUser?.id],
+    queryFn: () => base44.entities.BookableSlotTemplate.filter({ instructorId: currentUser.id }),
+    enabled: !!currentUser?.id && availabilityMode === 'published_slots_only'
   });
 
   const createLessonMutation = useMutation({
@@ -169,6 +193,88 @@ export default function Calendar() {
     }
   });
 
+  const createBookableSlotMutation = useMutation({
+    mutationFn: async (slotData) => {
+      if (!slotData.repeatWeekly) {
+        // Create single slot instance
+        const startDateTime = moment(`${slotData.startDate} ${slotData.startTime}`, 'YYYY-MM-DD HH:mm');
+        const endDateTime = moment(`${slotData.startDate} ${slotData.endTime}`, 'YYYY-MM-DD HH:mm');
+        
+        await base44.entities.BookableSlotInstance.create({
+          instructorId: currentUser.id,
+          startAtUtc: startDateTime.utc().format(),
+          endAtUtc: endDateTime.utc().format(),
+          status: 'available'
+        });
+      } else {
+        // Create templates and generate instances
+        const templates = await Promise.all(slotData.selectedDays.map(day =>
+          base44.entities.BookableSlotTemplate.create({
+            instructorId: currentUser.id,
+            title: slotData.title || null,
+            dayOfWeek: day,
+            startTimeLocal: slotData.startTime,
+            endTimeLocal: slotData.endTime,
+            recurrence: 'weekly',
+            interval: 1,
+            startDate: slotData.startDate,
+            endDate: slotData.stopDate,
+            isActive: true
+          })
+        ));
+
+        // Generate instances for next 12 weeks
+        const horizonWeeks = 12;
+        const windowStart = moment(slotData.startDate);
+        const windowEnd = moment().add(horizonWeeks, 'weeks');
+
+        for (const template of templates) {
+          const dayIndex = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(template.dayOfWeek);
+          let currentDate = moment(template.startDate);
+          
+          // Find first occurrence
+          while (currentDate.day() !== dayIndex) {
+            currentDate.add(1, 'day');
+          }
+
+          // Generate instances
+          while (currentDate.isSameOrBefore(windowEnd) && 
+                 (!template.endDate || currentDate.isSameOrBefore(moment(template.endDate)))) {
+            const startDateTime = moment(`${currentDate.format('YYYY-MM-DD')} ${template.startTimeLocal}`, 'YYYY-MM-DD HH:mm');
+            const endDateTime = moment(`${currentDate.format('YYYY-MM-DD')} ${template.endTimeLocal}`, 'YYYY-MM-DD HH:mm');
+
+            // Check for conflicts
+            const hasConflict = bookings.some(b => {
+              if (!['confirmed', 'completed'].includes(b.status)) return false;
+              const bookingStart = moment(b.startAtUtc);
+              const bookingEnd = moment(b.endAtUtc);
+              return startDateTime.isBefore(bookingEnd) && endDateTime.isAfter(bookingStart);
+            });
+
+            if (!hasConflict && currentDate.isSameOrAfter(windowStart)) {
+              await base44.entities.BookableSlotInstance.create({
+                instructorId: currentUser.id,
+                sourceTemplateId: template.id,
+                startAtUtc: startDateTime.utc().format(),
+                endAtUtc: endDateTime.utc().format(),
+                status: 'available'
+              });
+            }
+
+            currentDate.add(1, 'week');
+          }
+        }
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['slotInstances']);
+      queryClient.invalidateQueries(['slotTemplates']);
+      toast({ title: 'Bookable slot(s) created successfully' });
+      setShowCreateSlotModal(false);
+      setSelectedSlotDateTime(null);
+    }
+  });
+
   const confirmBookingMutation = useMutation({
     mutationFn: async (bookingId) => {
       const booking = bookings.find(b => b.id === bookingId);
@@ -177,6 +283,14 @@ export default function Calendar() {
         confirmedAt: new Date().toISOString()
       });
       
+      // Update slot instance if exists
+      if (booking.slotInstanceId) {
+        await base44.entities.BookableSlotInstance.update(booking.slotInstanceId, {
+          status: 'confirmed',
+          bookingId: bookingId
+        });
+      }
+
       await base44.entities.PaymentLedger.create({
         userId: booking.pupilId,
         bookingId: bookingId,
@@ -198,6 +312,7 @@ export default function Calendar() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
       toast({ title: 'Booking confirmed' });
     }
   });
@@ -212,6 +327,15 @@ export default function Calendar() {
         cancellationReason: reason
       });
 
+      // Release slot instance if exists
+      if (booking.slotInstanceId) {
+        await base44.entities.BookableSlotInstance.update(booking.slotInstanceId, {
+          status: 'available',
+          reservedByPupilId: null,
+          bookingId: null
+        });
+      }
+
       await base44.entities.Notification.create({
         userId: booking.pupilId,
         title: 'Lesson Declined',
@@ -222,6 +346,7 @@ export default function Calendar() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
       toast({ title: 'Booking declined' });
     }
   });
@@ -366,6 +491,20 @@ export default function Calendar() {
             <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
           </div>
           
+          {/* Availability Mode Selector */}
+          <div className="flex items-center gap-3">
+            <Label className="text-sm text-slate-600">Mode:</Label>
+            <Select value={availabilityMode} onValueChange={setAvailabilityMode}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="available_by_default">Available by default</SelectItem>
+                <SelectItem value="published_slots_only">Published slots only</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
           <div className="flex items-center gap-3">
             <div className="flex items-center bg-white rounded-lg border shadow-sm p-1">
               {VIEW_MODES.map(mode => (
@@ -497,7 +636,15 @@ export default function Calendar() {
             viewMode={viewMode}
             rules={rules}
             bookings={bookings}
+            slotInstances={slotInstances}
+            availabilityMode={availabilityMode}
             isInstructor={true}
+            onSlotClick={(slotDateTime) => {
+              if (availabilityMode === 'published_slots_only') {
+                setSelectedSlotDateTime(slotDateTime);
+                setShowCreateSlotModal(true);
+              }
+            }}
           />
         )}
       </div>
@@ -581,6 +728,14 @@ export default function Calendar() {
         onOpenWorkingHours={() => setShowWorkingHoursModal(true)}
         onOpenLunch={() => setShowLunchModal(true)}
         onOpenUnavailable={() => setShowUnavailableModal(true)}
+      />
+
+      <CreateBookableSlotModal
+        open={showCreateSlotModal}
+        onOpenChange={setShowCreateSlotModal}
+        onSave={(data) => createBookableSlotMutation.mutate(data)}
+        isSaving={createBookableSlotMutation.isPending}
+        slotDateTime={selectedSlotDateTime}
       />
     </div>
   );
