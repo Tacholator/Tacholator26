@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
+import { TimeRangePicker } from '@/components/ui/TimePicker';
 
 const DAYS = [
   { value: 'mon', label: 'Monday' },
@@ -78,8 +78,6 @@ export default function UnavailableModal({ open, onOpenChange, onSave, isSaving,
     });
     onSave(rulesData);
   };
-
-  const anyDayEnabled = DAYS.some(day => daySettings[day.value].enabled);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2 } from 'lucide-react';
 import moment from 'moment';
+import { TimeRangePicker } from '@/components/ui/TimePicker';
 
 const DAYS = [
   { value: 'mon', label: 'Mon' },
@@ -75,31 +75,24 @@ export default function CreateBookableSlotModal({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Start Date</Label>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Start Time</Label>
-              <Input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label>Start Date</Label>
+            <Input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
-            <Label>End Time</Label>
-            <Input
-              type="time"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
+            <Label>Time Range</Label>
+            <TimeRangePicker
+              startTime={startTime}
+              endTime={endTime}
+              onStartChange={setStartTime}
+              onEndChange={setEndTime}
+              startPlaceholder="Start time"
+              endPlaceholder="End time"
             />
           </div>
 
