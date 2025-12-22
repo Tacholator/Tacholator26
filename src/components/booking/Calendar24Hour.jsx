@@ -246,6 +246,103 @@ export default function Calendar24Hour({
                 const dateStr = day.format('YYYY-MM-DD');
                 const slotDateTime = `${dateStr}T${timeSlot}:00`;
 
+                const { slotInstance } = getSlotState(day, timeSlot);
+                const isSlotCard = slotInstance && availabilityMode === 'published_slots_only';
+                
+                // Check if this is the start of a slot instance
+                const isSlotStart = isSlotCard && moment(slotInstance.startAtUtc).local().format('HH:mm') === timeSlot;
+                
+                // Calculate slot duration in 30min increments
+                let slotSpan = 1;
+                if (isSlotStart && slotInstance) {
+                  const startMoment = moment(slotInstance.startAtUtc).local();
+                  const endMoment = moment(slotInstance.endAtUtc).local();
+                  const durationMinutes = endMoment.diff(startMoment, 'minutes');
+                  slotSpan = Math.ceil(durationMinutes / 30);
+                }
+
+                const borderColors = {
+                  available: '#4CAF50',
+                  reserved_pending: '#7E57C2',
+                  confirmed: '#4A90E2',
+                  unavailable: '#C62828',
+                  lunch: '#EF6C00',
+                  outside_working_hours: '#B0B0B0'
+                };
+
+                const accentColors = {
+                  available: '#2E7D32',
+                  reserved_pending: '#5E35B1',
+                  confirmed: '#1565C0',
+                  unavailable: '#8E0000',
+                  lunch: '#E65100',
+                  outside_working_hours: '#9E9E9E'
+                };
+
+                if (isSlotStart) {
+                  return (
+                    <div
+                      key={dayIdx}
+                      onClick={() => clickable && onSlotClick && onSlotClick(slotDateTime, slotInstance)}
+                      className={`border-r last:border-r-0 p-1 relative ${
+                        clickable ? 'cursor-pointer group' : 'cursor-default'
+                      }`}
+                      style={{ 
+                        backgroundColor: SLOT_COLORS[state],
+                        minHeight: `${slotSpan * 40}px`
+                      }}
+                    >
+                      <div
+                        className={`relative h-full rounded-md border-2 overflow-hidden ${
+                          clickable ? 'group-hover:shadow-md transition-shadow' : ''
+                        }`}
+                        style={{ 
+                          borderColor: borderColors[state],
+                          backgroundColor: SLOT_COLORS[state]
+                        }}
+                      >
+                        {/* Accent strip */}
+                        <div
+                          className="absolute left-0 top-0 bottom-0 w-1"
+                          style={{ backgroundColor: accentColors[state] }}
+                        />
+                        
+                        {/* Content */}
+                        <div className="pl-3 pr-2 py-1 h-full flex flex-col justify-center">
+                          <div className="text-xs font-semibold text-slate-700">
+                            {moment(slotInstance.startAtUtc).local().format('HH:mm')} - {moment(slotInstance.endAtUtc).local().format('HH:mm')}
+                          </div>
+                          <div className="mt-1">
+                            <span 
+                              className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
+                              style={{ 
+                                backgroundColor: `${accentColors[state]}20`,
+                                color: accentColors[state]
+                              }}
+                            >
+                              {state === 'available' ? 'Available' : 
+                               state === 'reserved_pending' ? 'Pending' :
+                               state === 'confirmed' ? 'Confirmed' : state}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Hover outline for available slots */}
+                        {clickable && (
+                          <div 
+                            className="absolute inset-0 rounded-md border-2 border-transparent group-hover:border-[#2E7D32] pointer-events-none transition-colors"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Skip slots covered by multi-slot instances
+                if (isSlotCard && !isSlotStart) {
+                  return null;
+                }
+
                 return (
                   <div
                     key={dayIdx}
