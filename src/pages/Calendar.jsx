@@ -53,7 +53,7 @@ export default function Calendar() {
   const [selectedSlotDateTime, setSelectedSlotDateTime] = useState(null);
   const [showSlotDetailsModal, setShowSlotDetailsModal] = useState(false);
   const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
-  const [availabilityMode, setAvailabilityMode] = useState('published_slots_only');
+  const [availabilityMode, setAvailabilityMode] = useState('available_by_default');
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -76,22 +76,19 @@ export default function Calendar() {
   const { data: rules = [] } = useQuery({
     queryKey: ['calendarRules', currentUser?.id],
     queryFn: () => base44.entities.CalendarRule.filter({ instructorId: currentUser.id }),
-    enabled: !!currentUser?.id,
-    refetchInterval: 5000
+    enabled: !!currentUser?.id
   });
 
   const { data: bookings = [] } = useQuery({
     queryKey: ['lessonBookings', currentUser?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: currentUser.id }),
-    enabled: !!currentUser?.id,
-    refetchInterval: 5000
+    enabled: !!currentUser?.id
   });
 
   const { data: slotInstances = [] } = useQuery({
     queryKey: ['slotInstances', currentUser?.id],
     queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: currentUser.id }),
-    enabled: !!currentUser?.id,
-    refetchInterval: 5000
+    enabled: !!currentUser?.id && availabilityMode === 'published_slots_only'
   });
 
   const { data: slotTemplates = [] } = useQuery({
@@ -122,7 +119,6 @@ export default function Calendar() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries(['calendarRules']);
-      queryClient.invalidateQueries(['instructorCalendarRules']);
       toast({ title: 'Rule saved successfully' });
       setShowWorkingHoursModal(false);
       setShowUnavailableModal(false);
@@ -148,7 +144,6 @@ export default function Calendar() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['calendarRules']);
-      queryClient.invalidateQueries(['instructorCalendarRules']);
       toast({ title: 'Working hours updated successfully' });
       setShowWorkingHoursModal(false);
       setShowSettingsModal(false);
@@ -172,7 +167,6 @@ export default function Calendar() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['calendarRules']);
-      queryClient.invalidateQueries(['instructorCalendarRules']);
       toast({ title: 'Lunch breaks updated successfully' });
       setShowLunchModal(false);
       setShowSettingsModal(false);
@@ -196,7 +190,6 @@ export default function Calendar() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['calendarRules']);
-      queryClient.invalidateQueries(['instructorCalendarRules']);
       toast({ title: 'Unavailable times updated successfully' });
       setShowUnavailableModal(false);
       setShowSettingsModal(false);
@@ -291,7 +284,6 @@ export default function Calendar() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries(['slotInstances']);
       queryClient.invalidateQueries(['slotTemplates']);
-      queryClient.invalidateQueries(['instructorSlotInstances']);
       toast({ title: variables.slotId ? 'Slot updated successfully' : 'Bookable slot(s) created successfully' });
       setShowCreateSlotModal(false);
       setSelectedSlotDateTime(null);
@@ -337,9 +329,6 @@ export default function Calendar() {
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);
       queryClient.invalidateQueries(['slotInstances']);
-      queryClient.invalidateQueries(['instructorBookings']);
-      queryClient.invalidateQueries(['instructorSlotInstances']);
-      queryClient.invalidateQueries(['myBookings']);
       toast({ title: 'Booking confirmed' });
     }
   });
@@ -374,9 +363,6 @@ export default function Calendar() {
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);
       queryClient.invalidateQueries(['slotInstances']);
-      queryClient.invalidateQueries(['instructorBookings']);
-      queryClient.invalidateQueries(['instructorSlotInstances']);
-      queryClient.invalidateQueries(['myBookings']);
       toast({ title: 'Booking declined' });
     }
   });
@@ -404,7 +390,6 @@ export default function Calendar() {
     onSuccess: () => {
       queryClient.invalidateQueries(['slotInstances']);
       queryClient.invalidateQueries(['slotTemplates']);
-      queryClient.invalidateQueries(['instructorSlotInstances']);
       toast({ title: 'Slot deleted successfully' });
       setShowSlotDetailsModal(false);
       setSelectedSlotInstance(null);

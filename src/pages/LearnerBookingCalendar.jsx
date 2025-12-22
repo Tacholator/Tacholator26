@@ -48,29 +48,19 @@ export default function LearnerBookingCalendar() {
   const { data: rules = [] } = useQuery({
     queryKey: ['instructorCalendarRules', pupil?.instructorId],
     queryFn: () => base44.entities.CalendarRule.filter({ instructorId: pupil.instructorId }),
-    enabled: !!pupil?.instructorId,
-    refetchInterval: 5000
+    enabled: !!pupil?.instructorId
   });
 
   const { data: bookings = [] } = useQuery({
     queryKey: ['instructorBookings', pupil?.instructorId],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
-    enabled: !!pupil?.instructorId,
-    refetchInterval: 5000
-  });
-
-  const { data: slotInstances = [] } = useQuery({
-    queryKey: ['instructorSlotInstances', pupil?.instructorId],
-    queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: pupil.instructorId }),
-    enabled: !!pupil?.instructorId,
-    refetchInterval: 5000
+    enabled: !!pupil?.instructorId
   });
 
   const { data: myBookings = [] } = useQuery({
     queryKey: ['myBookings', user?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ pupilId: pupil.id }),
-    enabled: !!pupil?.id,
-    refetchInterval: 3000
+    enabled: !!pupil?.id
   });
 
   const reserveBookingMutation = useMutation({
@@ -105,8 +95,6 @@ export default function LearnerBookingCalendar() {
     onSuccess: () => {
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['myBookings']);
-      queryClient.invalidateQueries(['lessonBookings']);
-      queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowReserveModal(false);
       setSelectedSlot(null);
       toast({ title: 'Booking request sent', description: 'Awaiting instructor confirmation' });
@@ -153,8 +141,6 @@ export default function LearnerBookingCalendar() {
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
-      queryClient.invalidateQueries(['lessonBookings']);
-      queryClient.invalidateQueries(['slotInstances']);
       setShowLateCancelDialog(false);
       setCancellingBooking(null);
       toast({ 
@@ -270,8 +256,6 @@ export default function LearnerBookingCalendar() {
               viewMode="week"
               rules={rules}
               bookings={bookings}
-              slotInstances={slotInstances}
-              availabilityMode="published_slots_only"
               onSlotClick={handleSlotClick}
               isInstructor={false}
             />
