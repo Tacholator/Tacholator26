@@ -25,13 +25,13 @@ import LearnerProgress from './pages/LearnerProgress';
 import LearnerResources from './pages/LearnerResources';
 import LearnerSkillStudy from './pages/LearnerSkillStudy';
 import LearnerSkills from './pages/LearnerSkills';
+import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
-import TermsAndConditions from './pages/TermsAndConditions';
-import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
 import RefundPolicy from './pages/RefundPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
 import __Layout from './Layout.jsx';
 
 
@@ -63,13 +63,13 @@ export const PAGES = {
     "LearnerResources": LearnerResources,
     "LearnerSkillStudy": LearnerSkillStudy,
     "LearnerSkills": LearnerSkills,
+    "LessonTermsAndConditions": LessonTermsAndConditions,
     "PrivacyPolicy": PrivacyPolicy,
     "ProfileSettings": ProfileSettings,
     "PupilList": PupilList,
     "PupilProfile": PupilProfile,
-    "TermsAndConditions": TermsAndConditions,
-    "LessonTermsAndConditions": LessonTermsAndConditions,
     "RefundPolicy": RefundPolicy,
+    "TermsAndConditions": TermsAndConditions,
 }
 
 export const pagesConfig = {

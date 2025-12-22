@@ -23,7 +23,8 @@ export default function CreateBookableSlotModal({
   onOpenChange, 
   onSave, 
   isSaving,
-  slotDateTime 
+  slotDateTime,
+  existingSlot 
 }) {
   const slotMoment = slotDateTime ? moment(slotDateTime) : moment();
   const dayOfWeek = slotMoment.format('ddd').toLowerCase();
@@ -36,6 +37,32 @@ export default function CreateBookableSlotModal({
   const [selectedDays, setSelectedDays] = useState([dayOfWeek]);
   const [stopDate, setStopDate] = useState('');
 
+  // Pre-fill form when editing existing slot
+  React.useEffect(() => {
+    if (existingSlot && open) {
+      const slotStart = moment(existingSlot.startAtUtc).local();
+      const slotEnd = moment(existingSlot.endAtUtc).local();
+      
+      setStartDate(slotStart.format('YYYY-MM-DD'));
+      setStartTime(slotStart.format('HH:mm'));
+      setEndTime(slotEnd.format('HH:mm'));
+      setTitle(existingSlot.title || '');
+      setRepeatWeekly(false);
+      setSelectedDays([dayOfWeek]);
+      setStopDate('');
+    } else if (!existingSlot && open && slotDateTime) {
+      const slotMoment = moment(slotDateTime);
+      const dayOfWeek = slotMoment.format('ddd').toLowerCase();
+      setStartDate(slotMoment.format('YYYY-MM-DD'));
+      setStartTime(slotMoment.format('HH:mm'));
+      setEndTime(slotMoment.clone().add(1, 'hour').format('HH:mm'));
+      setTitle('');
+      setRepeatWeekly(false);
+      setSelectedDays([dayOfWeek]);
+      setStopDate('');
+    }
+  }, [existingSlot, open, slotDateTime, dayOfWeek]);
+
   const handleDayToggle = (day) => {
     setSelectedDays(prev => 
       prev.includes(day) 
@@ -46,6 +73,7 @@ export default function CreateBookableSlotModal({
 
   const handleSave = () => {
     onSave({
+      slotId: existingSlot?.id,
       title,
       startDate,
       startTime,
@@ -60,9 +88,9 @@ export default function CreateBookableSlotModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Create Bookable Slot</DialogTitle>
+          <DialogTitle>{existingSlot ? 'Edit Bookable Slot' : 'Create Bookable Slot'}</DialogTitle>
           <DialogDescription>
-            Publish a time slot that pupils can book
+            {existingSlot ? 'Update the time slot details' : 'Publish a time slot that pupils can book'}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -146,7 +174,7 @@ export default function CreateBookableSlotModal({
             disabled={isSaving || (repeatWeekly && selectedDays.length === 0)}
             className="bg-teal-600 hover:bg-teal-700"
           >
-            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Slot'}
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : (existingSlot ? 'Update Slot' : 'Save Slot')}
           </Button>
         </DialogFooter>
       </DialogContent>

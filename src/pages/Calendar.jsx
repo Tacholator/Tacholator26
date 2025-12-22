@@ -198,6 +198,18 @@ export default function Calendar() {
 
   const createBookableSlotMutation = useMutation({
     mutationFn: async (slotData) => {
+      // If editing existing slot, update it
+      if (slotData.slotId) {
+        const startDateTime = moment(`${slotData.startDate} ${slotData.startTime}`, 'YYYY-MM-DD HH:mm');
+        const endDateTime = moment(`${slotData.startDate} ${slotData.endTime}`, 'YYYY-MM-DD HH:mm');
+        
+        await base44.entities.BookableSlotInstance.update(slotData.slotId, {
+          startAtUtc: startDateTime.utc().format(),
+          endAtUtc: endDateTime.utc().format()
+        });
+        return;
+      }
+
       if (!slotData.repeatWeekly) {
         // Create single slot instance
         const startDateTime = moment(`${slotData.startDate} ${slotData.startTime}`, 'YYYY-MM-DD HH:mm');
@@ -269,12 +281,13 @@ export default function Calendar() {
         }
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries(['slotInstances']);
       queryClient.invalidateQueries(['slotTemplates']);
-      toast({ title: 'Bookable slot(s) created successfully' });
+      toast({ title: variables.slotId ? 'Slot updated successfully' : 'Bookable slot(s) created successfully' });
       setShowCreateSlotModal(false);
       setSelectedSlotDateTime(null);
+      setSelectedSlotInstance(null);
     }
   });
 
@@ -673,13 +686,14 @@ export default function Calendar() {
             isInstructor={true}
             onSlotClick={(slotDateTime, slotData) => {
               if (availabilityMode === 'published_slots_only') {
-                // If slotData is an object (slot instance), show details modal
+                // If slotData is an object (slot instance), open for editing
                 if (typeof slotData === 'object' && slotData.id) {
                   setSelectedSlotInstance(slotData);
-                  setShowSlotDetailsModal(true);
+                  setShowCreateSlotModal(true);
                 } else {
                   // Otherwise open create slot modal
                   setSelectedSlotDateTime(slotDateTime);
+                  setSelectedSlotInstance(null);
                   setShowCreateSlotModal(true);
                 }
               }
@@ -771,10 +785,17 @@ export default function Calendar() {
 
       <CreateBookableSlotModal
         open={showCreateSlotModal}
-        onOpenChange={setShowCreateSlotModal}
+        onOpenChange={(open) => {
+          setShowCreateSlotModal(open);
+          if (!open) {
+            setSelectedSlotInstance(null);
+            setSelectedSlotDateTime(null);
+          }
+        }}
         onSave={(data) => createBookableSlotMutation.mutate(data)}
         isSaving={createBookableSlotMutation.isPending}
         slotDateTime={selectedSlotDateTime}
+        existingSlot={selectedSlotInstance}
       />
 
       <SlotDetailsModal
