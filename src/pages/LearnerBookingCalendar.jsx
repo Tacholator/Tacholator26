@@ -24,6 +24,7 @@ import moment from 'moment';
 
 export default function LearnerBookingCalendar() {
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
   const [showReserveModal, setShowReserveModal] = useState(false);
   const [showLateCancelDialog, setShowLateCancelDialog] = useState(false);
   const [cancellingBooking, setCancellingBooking] = useState(null);
@@ -91,7 +92,7 @@ export default function LearnerBookingCalendar() {
         status: 'reserved_pending_instructor',
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
         totalPriceGbp: (pupil.hourlyRate || 50) * durationHours,
-        notesFromPupil,
+        notesFromPupil: `Pickup: ${pickupLocation} | Dropoff: ${dropoffLocation}${notesFromPupil ? ' | ' + notesFromPupil : ''}${firstTimeData ? ` | First booking - Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''}`,
         requestedAt: new Date().toISOString(),
         slotInstanceId: selectedSlotInstance?.id || null
       });
@@ -109,7 +110,7 @@ export default function LearnerBookingCalendar() {
       await base44.entities.Notification.create({
         userId: pupil.instructorId,
         title: 'New Lesson Request',
-        message: `${pupil.firstName} ${pupil.lastName} requested a lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')}`,
+        message: `${pupil.firstName} ${pupil.lastName} requested a lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} | Pickup: ${pickupLocation}`,
         type: 'booking',
         linkTarget: 'InstructorBookingCalendar'
       });
@@ -173,10 +174,11 @@ export default function LearnerBookingCalendar() {
         title: 'Lesson cancelled', 
         description: isLate ? 'Full deduction applied due to late cancellation' : 'No penalty applied'
       });
+    },
+    onError: (error) => {
+      toast({ title: 'Booking failed', description: error.message, variant: 'destructive' });
     }
   });
-
-  const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
 
   const handleSlotClick = (slotDateTime, slotInstance) => {
     setSelectedSlot(slotDateTime);
