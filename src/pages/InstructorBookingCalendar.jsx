@@ -191,6 +191,8 @@ export default function InstructorBookingCalendar() {
               viewMode={viewMode}
               rules={rules}
               bookings={bookings}
+              slotInstances={[]}
+              availabilityMode="available_by_default"
               isInstructor={true}
             />
           </CardContent>
