@@ -266,6 +266,15 @@ export default function Calendar24Hour({
                 // Determine if this should be rendered as a card
                 const shouldRenderAsCard = state !== 'outside_working_hours' && (blockType === 'booking' || blockType === 'slotInstance' || blockType === 'rule');
 
+                // Define status labels first
+                const statusLabels = {
+                  available: 'Available',
+                  reserved_pending: 'Pending',
+                  confirmed: 'Confirmed',
+                  lunch: 'Lunch',
+                  unavailable: 'Unavailable'
+                };
+
                 // For non-instructors viewing pending/confirmed slots
                 // If it's their own confirmed booking, show as normal confirmed
                 // If it's someone else's, show as unavailable with grey hatch
@@ -275,7 +284,7 @@ export default function Calendar24Hour({
 
                 // Override status label for others' confirmed slots
                 const displayStatusLabel = isOthersReserved && state === 'confirmed' ? 'Unavailable' : (statusLabels[state] || state);
-                
+
                 // Determine block duration and start
                 let isBlockStart = false;
                 let blockSpan = 1;
@@ -330,14 +339,6 @@ export default function Calendar24Hour({
                   confirmed: '#0D47A1',
                   unavailable: '#C62828',
                   lunch: '#E65100'
-                };
-
-                const statusLabels = {
-                  available: 'Available',
-                  reserved_pending: 'Pending',
-                  confirmed: 'Confirmed',
-                  lunch: 'Lunch',
-                  unavailable: 'Unavailable'
                 };
 
                 // Render card-style block
