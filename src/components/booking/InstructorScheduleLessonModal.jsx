@@ -217,8 +217,8 @@ export default function InstructorScheduleLessonModal({
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
-                <Command>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                <Command shouldFilter={false}>
                   <CommandInput 
                     placeholder="Search by name, email, or phone..." 
                     value={pupilSearchQuery}
@@ -229,7 +229,7 @@ export default function InstructorScheduleLessonModal({
                     {filteredPupils.map(pupil => (
                       <CommandItem
                         key={pupil.id}
-                        value={pupil.id}
+                        value={`${pupil.firstName} ${pupil.lastName}`}
                         onSelect={() => {
                           setSelectedPupilId(pupil.id);
                           setPupilComboboxOpen(false);
