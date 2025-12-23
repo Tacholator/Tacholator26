@@ -78,7 +78,8 @@ export default function InstructorScheduleLessonModal({
 
       const pupil = pupils.find(p => p.id === selectedPupilId);
       const durationHours = moment(slotInstance.endAtUtc).diff(moment(slotInstance.startAtUtc), 'hours', true);
-      const totalPriceGbp = (pupil?.hourlyRate || 0) * durationHours;
+      const hourlyRate = pupil?.hourlyRate || 0;
+      const totalPriceGbp = hourlyRate * durationHours;
 
       // Create booking
       const booking = await base44.entities.LessonBooking.create({
@@ -93,6 +94,7 @@ export default function InstructorScheduleLessonModal({
         status: 'confirmed',
         confirmedAt: new Date().toISOString(),
         durationHours,
+        hourlyRateAtBookingGbp: hourlyRate,
         totalPriceGbp
       });
 
