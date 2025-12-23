@@ -410,7 +410,7 @@ export default function Calendar24Hour({
                                 color: isOthersViewingReserved ? '#999999' : accentColors[state]
                               }}
                             >
-                              {statusLabels[state] || state}
+                              {isOthersViewingReserved && state === 'confirmed' ? 'Unavailable' : (statusLabels[state] || state)}
                             </span>
                           </div>
                         </div>
