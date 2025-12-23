@@ -14,21 +14,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { Calendar, Clock, Loader2, Check, ChevronsUpDown } from 'lucide-react';
+import { Calendar, Clock, Loader2, Search } from 'lucide-react';
 import moment from 'moment';
-import { cn } from '@/lib/utils';
 
 export default function InstructorScheduleLessonModal({ 
   open, 
@@ -43,8 +37,7 @@ export default function InstructorScheduleLessonModal({
   const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(true);
   const [dropoffLocation, setDropoffLocation] = useState('');
   const [notes, setNotes] = useState('');
-  const [pupilComboboxOpen, setPupilComboboxOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -66,15 +59,15 @@ export default function InstructorScheduleLessonModal({
   });
 
   const filteredPupils = React.useMemo(() => {
-    if (!searchValue) return pupils;
-    const query = searchValue.toLowerCase();
+    if (!searchQuery.trim()) return pupils;
+    const query = searchQuery.toLowerCase();
     return pupils.filter(pupil => {
       const fullName = `${pupil.firstName} ${pupil.lastName}`.toLowerCase();
       const email = pupil.email?.toLowerCase() || '';
       const phone = pupil.phone?.toLowerCase() || '';
       return fullName.includes(query) || email.includes(query) || phone.includes(query);
     });
-  }, [pupils, searchValue]);
+  }, [pupils, searchQuery]);
 
   const scheduleLessonMutation = useMutation({
     mutationFn: async () => {
@@ -139,8 +132,7 @@ export default function InstructorScheduleLessonModal({
     setDropoffSameAsPickup(true);
     setDropoffLocation('');
     setNotes('');
-    setSearchValue('');
-    setPupilComboboxOpen(false);
+    setSearchQuery('');
     onOpenChange(false);
   };
 
@@ -202,58 +194,44 @@ export default function InstructorScheduleLessonModal({
           {/* Pupil Selection */}
           <div className="space-y-2">
             <Label htmlFor="pupil">Select Pupil *</Label>
-            <Popover open={pupilComboboxOpen} onOpenChange={setPupilComboboxOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={pupilComboboxOpen}
-                  className="w-full justify-between"
-                >
-                  {selectedPupilId
-                    ? pupils.find(p => p.id === selectedPupilId)
-                        ? `${pupils.find(p => p.id === selectedPupilId).firstName} ${pupils.find(p => p.id === selectedPupilId).lastName}`
-                        : "Choose a pupil..."
-                    : "Choose a pupil..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                <Command shouldFilter={false}>
-                  <CommandInput 
-                    placeholder="Search by name, email, or phone..." 
-                    onValueChange={setSearchValue}
-                  />
-                  <CommandEmpty>No pupil found.</CommandEmpty>
-                  <CommandGroup className="max-h-[280px] overflow-y-auto">
-                    {filteredPupils.map(pupil => (
-                      <CommandItem
-                        key={pupil.id}
-                        value={`${pupil.firstName} ${pupil.lastName}`}
-                        onSelect={() => {
-                          setSelectedPupilId(pupil.id);
-                          setPupilComboboxOpen(false);
-                          setSearchValue('');
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedPupilId === pupil.id ? "opacity-100" : "opacity-0"
-                          )}
-                        />
+            <div className="relative">
+              <Input
+                id="pupil-search"
+                type="text"
+                placeholder="Search by name, email, or phone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pr-10"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            </div>
+            <Select value={selectedPupilId} onValueChange={setSelectedPupilId}>
+              <SelectTrigger id="pupil">
+                <SelectValue placeholder="Choose a pupil..." />
+              </SelectTrigger>
+              <SelectContent>
+                <div className="max-h-[280px] overflow-y-auto">
+                  {filteredPupils.length === 0 ? (
+                    <div className="p-2 text-sm text-slate-500 text-center">
+                      No pupils found
+                    </div>
+                  ) : (
+                    filteredPupils.map(pupil => (
+                      <SelectItem key={pupil.id} value={pupil.id}>
                         <div className="flex flex-col">
                           <span className="font-medium">{pupil.firstName} {pupil.lastName}</span>
-                          <span className="text-xs text-slate-500">
-                            {pupil.email || pupil.phone || ''}
-                          </span>
+                          {(pupil.email || pupil.phone) && (
+                            <span className="text-xs text-slate-500">
+                              {pupil.email || pupil.phone}
+                            </span>
+                          )}
                         </div>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                      </SelectItem>
+                    ))
+                  )}
+                </div>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Pickup Location */}
