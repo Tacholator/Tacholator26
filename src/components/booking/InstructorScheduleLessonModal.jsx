@@ -76,6 +76,10 @@ export default function InstructorScheduleLessonModal({
         throw new Error('This slot is no longer available');
       }
 
+      const pupil = pupils.find(p => p.id === selectedPupilId);
+      const durationHours = moment(slotInstance.endAtUtc).diff(moment(slotInstance.startAtUtc), 'hours', true);
+      const totalPriceGbp = (pupil?.hourlyRate || 0) * durationHours;
+
       // Create booking
       const booking = await base44.entities.LessonBooking.create({
         instructorId: user.id,
@@ -88,7 +92,8 @@ export default function InstructorScheduleLessonModal({
         notesForInstructor: notes,
         status: 'confirmed',
         confirmedAt: new Date().toISOString(),
-        durationHours: moment(slotInstance.endAtUtc).diff(moment(slotInstance.startAtUtc), 'hours', true)
+        durationHours,
+        totalPriceGbp
       });
 
       // Update slot instance
@@ -97,8 +102,19 @@ export default function InstructorScheduleLessonModal({
         bookingId: booking.id
       });
 
+      // Create payment ledger entry
+      await base44.entities.PaymentLedger.create({
+        userId: selectedPupilId,
+        bookingId: booking.id,
+        type: 'charge',
+        reason: 'lesson_confirmed_charge',
+        amountGbp: totalPriceGbp,
+        hours: durationHours,
+        createdByRole: 'instructor',
+        note: 'Charge applied on confirmation'
+      });
+
       // Create notification for pupil
-      const pupil = pupils.find(p => p.id === selectedPupilId);
       if (pupil?.linkedUserId) {
         await base44.entities.Notification.create({
           userId: pupil.linkedUserId,
