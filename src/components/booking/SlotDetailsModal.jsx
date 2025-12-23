@@ -121,47 +121,42 @@ export default function SlotDetailsModal({
               </div>
             )}
           </div>
-          <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-between">
-            <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
-              Close
-            </Button>
-            <div className="flex flex-col sm:flex-row gap-2">
-              {isInstructor && slotInstance.status === 'available' && onEditSlot && (
-                <Button
-                  onClick={() => {
-                    onOpenChange(false);
-                    onEditSlot(slotInstance);
-                  }}
-                  variant="outline"
-                  className="gap-2 w-full sm:w-auto"
-                >
-                  <Edit2 className="w-4 h-4" />
-                  Edit Slot
-                </Button>
-              )}
-              {isInstructor && slotInstance.status === 'available' && onBookForPupil && (
-                <Button
-                  onClick={() => {
-                    onOpenChange(false);
-                    onBookForPupil(slotInstance);
-                  }}
-                  className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] gap-2 w-full sm:w-auto"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  Book for Pupil
-                </Button>
-              )}
-              {isInstructor && canDelete && (
-                <Button
-                  variant="destructive"
-                  onClick={handleDeleteClick}
-                  className="gap-2 w-full sm:w-auto"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete Slot
-                </Button>
-              )}
-            </div>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            {isInstructor && slotInstance.status === 'available' && onEditSlot && (
+              <Button
+                onClick={() => {
+                  onOpenChange(false);
+                  onEditSlot(slotInstance);
+                }}
+                variant="outline"
+                className="gap-2 w-full sm:flex-1"
+              >
+                <Edit2 className="w-4 h-4" />
+                Edit Slot
+              </Button>
+            )}
+            {isInstructor && slotInstance.status === 'available' && onBookForPupil && (
+              <Button
+                onClick={() => {
+                  onOpenChange(false);
+                  onBookForPupil(slotInstance);
+                }}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] gap-2 w-full sm:flex-1"
+              >
+                <UserPlus className="w-4 h-4" />
+                Book for Pupil
+              </Button>
+            )}
+            {isInstructor && canDelete && (
+              <Button
+                variant="destructive"
+                onClick={handleDeleteClick}
+                className="gap-2 w-full sm:flex-1"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Slot
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
