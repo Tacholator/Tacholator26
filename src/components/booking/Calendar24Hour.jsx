@@ -40,8 +40,37 @@ export default function Calendar24Hour({
   };
 
   const getTimeSlots = () => {
+    // Get working hours range from rules
+    const workingHoursRules = rules.filter(r => r.ruleType === 'working_hours');
+    
+    if (workingHoursRules.length === 0) {
+      // Fallback: 07:00 to 20:00
+      const slots = [];
+      for (let hour = 7; hour <= 19; hour++) {
+        slots.push(`${hour.toString().padStart(2, '0')}:00`);
+        slots.push(`${hour.toString().padStart(2, '0')}:30`);
+      }
+      return slots;
+    }
+
+    // Find earliest start and latest end time from working hours
+    let earliestStart = 24;
+    let latestEnd = 0;
+
+    workingHoursRules.forEach(rule => {
+      const startHour = parseInt(rule.startTimeLocal.split(':')[0]);
+      const endHour = parseInt(rule.endTimeLocal.split(':')[0]);
+      const endMinute = parseInt(rule.endTimeLocal.split(':')[1]);
+      
+      if (startHour < earliestStart) earliestStart = startHour;
+      if (endHour > latestEnd || (endHour === latestEnd && endMinute > 0)) {
+        latestEnd = endMinute > 0 ? endHour + 1 : endHour;
+      }
+    });
+
+    // Generate slots from earliest to latest
     const slots = [];
-    for (let hour = 0; hour < 24; hour++) {
+    for (let hour = earliestStart; hour < latestEnd; hour++) {
       slots.push(`${hour.toString().padStart(2, '0')}:00`);
       slots.push(`${hour.toString().padStart(2, '0')}:30`);
     }
