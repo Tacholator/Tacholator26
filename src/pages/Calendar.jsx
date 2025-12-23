@@ -689,6 +689,7 @@ export default function Calendar() {
             slotInstances={slotInstances}
             availabilityMode={availabilityMode}
             isInstructor={true}
+            pupils={pupils}
             onSlotClick={(slotDateTime, slotData) => {
               if (availabilityMode === 'published_slots_only') {
                 // If slotData is an object (slot instance), open for editing
