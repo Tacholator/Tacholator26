@@ -225,7 +225,7 @@ export default function InstructorScheduleLessonModal({
                     onValueChange={setPupilSearchQuery}
                   />
                   <CommandEmpty>No pupil found.</CommandEmpty>
-                  <CommandGroup className="max-h-64 overflow-auto">
+                  <CommandGroup className="overflow-y-auto" style={{ maxHeight: '280px' }}>
                     {filteredPupils.map(pupil => (
                       <CommandItem
                         key={pupil.id}
