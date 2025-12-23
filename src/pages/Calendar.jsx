@@ -24,6 +24,7 @@ import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
 import CalendarSettingsDrawer from '@/components/booking/CalendarSettingsDrawer';
 import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModal';
 import SlotDetailsModal from '@/components/booking/SlotDetailsModal';
+import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Select,
@@ -54,6 +55,10 @@ export default function Calendar() {
   const [showSlotDetailsModal, setShowSlotDetailsModal] = useState(false);
   const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
   const [availabilityMode, setAvailabilityMode] = useState('published_slots_only');
+  
+  const [showBookingDetailsModal, setShowBookingDetailsModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [selectedBookingSlotInstance, setSelectedBookingSlotInstance] = useState(null);
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -698,6 +703,11 @@ export default function Calendar() {
                 }
               }
             }}
+            onPendingSlotClick={(booking, slotInstance) => {
+              setSelectedBooking(booking);
+              setSelectedBookingSlotInstance(slotInstance);
+              setShowBookingDetailsModal(true);
+            }}
           />
         )}
       </div>
@@ -805,6 +815,13 @@ export default function Calendar() {
         isInstructor={true}
         onDeleteSlot={(data) => deleteSlotMutation.mutate(data)}
         isDeleting={deleteSlotMutation.isPending}
+      />
+
+      <BookingDetailsModal
+        open={showBookingDetailsModal}
+        onOpenChange={setShowBookingDetailsModal}
+        booking={selectedBooking}
+        slotInstance={selectedBookingSlotInstance}
       />
     </div>
   );
