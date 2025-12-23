@@ -824,6 +824,10 @@ export default function Calendar() {
           setSelectedSlotForSchedule(slot);
           setShowScheduleLessonModal(true);
         }}
+        onEditSlot={(slot) => {
+          setSelectedSlotInstance(slot);
+          setShowCreateSlotModal(true);
+        }}
       />
 
       <InstructorScheduleLessonModal

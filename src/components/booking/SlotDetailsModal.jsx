@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Calendar, Clock, AlertTriangle, Loader2, UserPlus } from 'lucide-react';
+import { Trash2, Calendar, Clock, AlertTriangle, Loader2, UserPlus, Edit2 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import moment from 'moment';
@@ -30,7 +30,8 @@ export default function SlotDetailsModal({
   isInstructor,
   onDeleteSlot,
   isDeleting,
-  onBookForPupil
+  onBookForPupil,
+  onEditSlot
 }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteOption, setDeleteOption] = useState('delete_single_instance');
@@ -121,6 +122,19 @@ export default function SlotDetailsModal({
             )}
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
+            {isInstructor && slotInstance.status === 'available' && onEditSlot && (
+              <Button
+                onClick={() => {
+                  onOpenChange(false);
+                  onEditSlot(slotInstance);
+                }}
+                variant="outline"
+                className="gap-2"
+              >
+                <Edit2 className="w-4 h-4" />
+                Edit Slot
+              </Button>
+            )}
             {isInstructor && slotInstance.status === 'available' && onBookForPupil && (
               <Button
                 onClick={() => {
