@@ -146,7 +146,7 @@ export default function LearnerCalendar() {
         status: 'reserved_pending_instructor',
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
         totalPriceGbp: (pupil.hourlyRate || 50) * durationHours,
-        notesFromPupil,
+        notesFromPupil: `Pickup: ${pickupLocation} | Dropoff: ${dropoffLocation}${notesFromPupil ? ' | ' + notesFromPupil : ''}${firstTimeData ? ` | First booking - Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''}`,
         requestedAt: new Date().toISOString(),
         slotInstanceId: selectedSlotInstance?.id || null
       });
@@ -382,6 +382,7 @@ export default function LearnerCalendar() {
             availabilityMode="published_slots_only"
             onSlotClick={handleSlotClick}
             isInstructor={false}
+            currentPupilId={pupil?.id}
           />
         )}
       </div>

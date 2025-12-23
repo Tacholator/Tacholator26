@@ -25,7 +25,8 @@ export default function Calendar24Hour({
   availabilityMode = 'available_by_default',
   onSlotClick,
   onPendingSlotClick,
-  isInstructor = false 
+  isInstructor = false,
+  currentPupilId = null
 }) {
   const [currentDate, setCurrentDate] = useState(moment());
 
@@ -265,9 +266,15 @@ export default function Calendar24Hour({
                 // Determine if this should be rendered as a card
                 const shouldRenderAsCard = state !== 'outside_working_hours' && (blockType === 'booking' || blockType === 'slotInstance' || blockType === 'rule');
 
-                // For non-instructors viewing pending/confirmed, use light grey with hatch
-                const isOthersViewingReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed');
-                const displayColor = isOthersViewingReserved ? SLOT_COLORS.reserved_confirmed_other : SLOT_COLORS[state];
+                // For non-instructors viewing pending/confirmed slots
+                // If it's their own confirmed booking, show as normal confirmed
+                // If it's someone else's, show as unavailable with grey hatch
+                const isOwnBooking = !isInstructor && booking && booking.pupilId === currentPupilId;
+                const isOthersReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed') && !isOwnBooking;
+                const displayColor = isOthersReserved ? SLOT_COLORS.reserved_confirmed_other : SLOT_COLORS[state];
+
+                // Override status label for others' confirmed slots
+                const displayStatusLabel = isOthersReserved && state === 'confirmed' ? 'Unavailable' : (statusLabels[state] || state);
                 
                 // Determine block duration and start
                 let isBlockStart = false;
@@ -367,13 +374,13 @@ export default function Calendar24Hour({
                           clickable ? 'group-hover:shadow-md transition-shadow' : ''
                         }`}
                         style={{ 
-                          borderColor: isOthersViewingReserved ? '#E0E0E0' : borderColors[state],
+                          borderColor: isOthersReserved ? '#E0E0E0' : borderColors[state],
                           backgroundColor: displayColor,
                           height: '100%'
                         }}
                       >
-                        {/* Diagonal hatch overlay for non-instructors viewing pending/confirmed */}
-                        {isOthersViewingReserved && (
+                        {/* Diagonal hatch overlay for non-instructors viewing others' reserved slots */}
+                        {isOthersReserved && (
                           <div 
                             className="absolute inset-0 pointer-events-none"
                             style={{
@@ -390,7 +397,7 @@ export default function Calendar24Hour({
                         )}
 
                         {/* Accent strip */}
-                        {!isOthersViewingReserved && (
+                        {!isOthersReserved && (
                           <div
                             className="absolute left-0 top-0 bottom-0 w-1"
                             style={{ backgroundColor: accentColors[state] }}
@@ -398,25 +405,25 @@ export default function Calendar24Hour({
                         )}
 
                         {/* Content */}
-                        <div className={`${isOthersViewingReserved ? 'pl-2' : 'pl-3'} pr-2 py-2 h-full flex flex-col justify-center relative z-10`}>
-                          <div className={`text-xs font-semibold ${isOthersViewingReserved ? 'text-slate-400' : 'text-slate-700'}`}>
+                        <div className={`${isOthersReserved ? 'pl-2' : 'pl-3'} pr-2 py-2 h-full flex flex-col justify-center relative z-10`}>
+                          <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
                           <div className="mt-1">
                             <span 
                               className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
                               style={{ 
-                                backgroundColor: isOthersViewingReserved ? '#E0E0E0' : `${accentColors[state]}20`,
-                                color: isOthersViewingReserved ? '#999999' : accentColors[state]
+                                backgroundColor: isOthersReserved ? '#E0E0E0' : `${accentColors[state]}20`,
+                                color: isOthersReserved ? '#999999' : accentColors[state]
                               }}
                             >
-                              {statusLabels[state] || state}
+                              {displayStatusLabel}
                             </span>
                           </div>
                         </div>
 
                         {/* Hover outline for clickable slots */}
-                        {clickable && !isOthersViewingReserved && (
+                        {clickable && !isOthersReserved && (
                           <div 
                             className="absolute inset-0 rounded-md border-2 border-transparent group-hover:border-[#2E7D32] pointer-events-none transition-colors"
                           />

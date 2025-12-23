@@ -286,6 +286,7 @@ export default function LearnerBookingCalendar() {
               availabilityMode="published_slots_only"
               onSlotClick={handleSlotClick}
               isInstructor={false}
+              currentPupilId={pupil?.id}
             />
           </CardContent>
         </Card>
