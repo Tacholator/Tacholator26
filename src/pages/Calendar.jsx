@@ -25,6 +25,7 @@ import CalendarSettingsDrawer from '@/components/booking/CalendarSettingsDrawer'
 import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModal';
 import SlotDetailsModal from '@/components/booking/SlotDetailsModal';
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
+import InstructorScheduleLessonModal from '@/components/booking/InstructorScheduleLessonModal';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Select,
@@ -59,6 +60,9 @@ export default function Calendar() {
   const [showBookingDetailsModal, setShowBookingDetailsModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [selectedBookingSlotInstance, setSelectedBookingSlotInstance] = useState(null);
+  
+  const [showScheduleLessonModal, setShowScheduleLessonModal] = useState(false);
+  const [selectedSlotForSchedule, setSelectedSlotForSchedule] = useState(null);
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -692,10 +696,10 @@ export default function Calendar() {
             pupils={pupils}
             onSlotClick={(slotDateTime, slotData) => {
               if (availabilityMode === 'published_slots_only') {
-                // If slotData is an object (slot instance), open for editing
+                // If slotData is an object (slot instance), open slot details
                 if (typeof slotData === 'object' && slotData.id) {
                   setSelectedSlotInstance(slotData);
-                  setShowCreateSlotModal(true);
+                  setShowSlotDetailsModal(true);
                 } else {
                   // Otherwise open create slot modal
                   setSelectedSlotDateTime(slotDateTime);
@@ -816,6 +820,16 @@ export default function Calendar() {
         isInstructor={true}
         onDeleteSlot={(data) => deleteSlotMutation.mutate(data)}
         isDeleting={deleteSlotMutation.isPending}
+        onBookForPupil={(slot) => {
+          setSelectedSlotForSchedule(slot);
+          setShowScheduleLessonModal(true);
+        }}
+      />
+
+      <InstructorScheduleLessonModal
+        open={showScheduleLessonModal}
+        onOpenChange={setShowScheduleLessonModal}
+        slotInstance={selectedSlotForSchedule}
       />
 
       <BookingDetailsModal
