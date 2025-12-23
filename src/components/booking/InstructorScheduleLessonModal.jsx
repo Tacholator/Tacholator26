@@ -44,13 +44,12 @@ export default function InstructorScheduleLessonModal({
   const [dropoffLocation, setDropoffLocation] = useState('');
   const [notes, setNotes] = useState('');
   const [pupilComboboxOpen, setPupilComboboxOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
-
-  const [pupilSearchQuery, setPupilSearchQuery] = useState('');
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['activePupils', user?.id],
@@ -66,14 +65,16 @@ export default function InstructorScheduleLessonModal({
     enabled: !!user?.id
   });
 
-  const filteredPupils = pupils.filter(pupil => {
-    if (!pupilSearchQuery) return true;
-    const query = pupilSearchQuery.toLowerCase();
-    const fullName = `${pupil.firstName} ${pupil.lastName}`.toLowerCase();
-    const email = pupil.email?.toLowerCase() || '';
-    const phone = pupil.phone?.toLowerCase() || '';
-    return fullName.includes(query) || email.includes(query) || phone.includes(query);
-  });
+  const filteredPupils = React.useMemo(() => {
+    if (!searchValue) return pupils;
+    const query = searchValue.toLowerCase();
+    return pupils.filter(pupil => {
+      const fullName = `${pupil.firstName} ${pupil.lastName}`.toLowerCase();
+      const email = pupil.email?.toLowerCase() || '';
+      const phone = pupil.phone?.toLowerCase() || '';
+      return fullName.includes(query) || email.includes(query) || phone.includes(query);
+    });
+  }, [pupils, searchValue]);
 
   const scheduleLessonMutation = useMutation({
     mutationFn: async () => {
@@ -138,7 +139,7 @@ export default function InstructorScheduleLessonModal({
     setDropoffSameAsPickup(true);
     setDropoffLocation('');
     setNotes('');
-    setPupilSearchQuery('');
+    setSearchValue('');
     setPupilComboboxOpen(false);
     onOpenChange(false);
   };
@@ -221,11 +222,10 @@ export default function InstructorScheduleLessonModal({
                 <Command shouldFilter={false}>
                   <CommandInput 
                     placeholder="Search by name, email, or phone..." 
-                    value={pupilSearchQuery}
-                    onValueChange={setPupilSearchQuery}
+                    onValueChange={setSearchValue}
                   />
                   <CommandEmpty>No pupil found.</CommandEmpty>
-                  <CommandGroup className="overflow-y-auto" style={{ maxHeight: '280px' }}>
+                  <CommandGroup className="max-h-[280px] overflow-y-auto">
                     {filteredPupils.map(pupil => (
                       <CommandItem
                         key={pupil.id}
@@ -233,7 +233,7 @@ export default function InstructorScheduleLessonModal({
                         onSelect={() => {
                           setSelectedPupilId(pupil.id);
                           setPupilComboboxOpen(false);
-                          setPupilSearchQuery('');
+                          setSearchValue('');
                         }}
                       >
                         <Check
