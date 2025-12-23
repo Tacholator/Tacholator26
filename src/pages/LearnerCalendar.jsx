@@ -383,6 +383,7 @@ export default function LearnerCalendar() {
             onSlotClick={handleSlotClick}
             isInstructor={false}
             currentPupilId={pupil?.id}
+            pupils={[]}
           />
         )}
       </div>

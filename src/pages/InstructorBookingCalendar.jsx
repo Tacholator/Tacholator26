@@ -10,6 +10,8 @@ import WorkingHoursModal from '@/components/booking/WorkingHoursModal';
 import UnavailableModal from '@/components/booking/UnavailableModal';
 import LunchBreakModal from '@/components/booking/LunchBreakModal';
 import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
+import InstructorScheduleLessonModal from '@/components/booking/InstructorScheduleLessonModal';
+import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
@@ -18,6 +20,11 @@ export default function InstructorBookingCalendar() {
   const [showWorkingHoursModal, setShowWorkingHoursModal] = useState(false);
   const [showUnavailableModal, setShowUnavailableModal] = useState(false);
   const [showLunchModal, setShowLunchModal] = useState(false);
+  const [showScheduleLessonModal, setShowScheduleLessonModal] = useState(false);
+  const [selectedSlotForSchedule, setSelectedSlotForSchedule] = useState(null);
+  const [showBookingDetailsModal, setShowBookingDetailsModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -41,6 +48,12 @@ export default function InstructorBookingCalendar() {
   const { data: pupils = [] } = useQuery({
     queryKey: ['pupils'],
     queryFn: () => base44.entities.Pupil.list(),
+    enabled: !!user?.id
+  });
+
+  const { data: slotInstances = [] } = useQuery({
+    queryKey: ['slotInstances', user?.id],
+    queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: user.id }),
     enabled: !!user?.id
   });
 
@@ -120,6 +133,20 @@ export default function InstructorBookingCalendar() {
 
   const pendingBookings = bookings.filter(b => b.status === 'reserved_pending_instructor');
 
+  const handleSlotClick = (slotDateTime, slotInstance) => {
+    if (typeof slotInstance === 'object' && slotInstance.status === 'available') {
+      // Available slot clicked - open schedule modal
+      setSelectedSlotForSchedule(slotInstance);
+      setShowScheduleLessonModal(true);
+    }
+  };
+
+  const handlePendingSlotClick = (booking, slotInstance) => {
+    setSelectedBooking(booking);
+    setSelectedSlotInstance(slotInstance);
+    setShowBookingDetailsModal(true);
+  };
+
   if (rulesLoading || bookingsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -191,9 +218,12 @@ export default function InstructorBookingCalendar() {
               viewMode={viewMode}
               rules={rules}
               bookings={bookings}
-              slotInstances={[]}
-              availabilityMode="available_by_default"
+              slotInstances={slotInstances}
+              availabilityMode="published_slots_only"
               isInstructor={true}
+              onSlotClick={handleSlotClick}
+              onPendingSlotClick={handlePendingSlotClick}
+              pupils={pupils}
             />
           </CardContent>
         </Card>
@@ -218,6 +248,22 @@ export default function InstructorBookingCalendar() {
           onOpenChange={setShowLunchModal}
           onSave={(data) => createRuleMutation.mutate({ ...data, ruleType: 'lunch_break' })}
           isSaving={createRuleMutation.isPending}
+        />
+
+        <InstructorScheduleLessonModal
+          open={showScheduleLessonModal}
+          onOpenChange={setShowScheduleLessonModal}
+          slotInstance={selectedSlotForSchedule}
+        />
+
+        <BookingDetailsModal
+          open={showBookingDetailsModal}
+          onOpenChange={setShowBookingDetailsModal}
+          booking={selectedBooking}
+          slotInstance={selectedSlotInstance}
+          onConfirm={confirmBookingMutation.mutate}
+          onDecline={(reason) => declineBookingMutation.mutate({ bookingId: selectedBooking?.id, reason })}
+          isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending}
         />
       </div>
     </div>

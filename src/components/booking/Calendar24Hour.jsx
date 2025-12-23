@@ -26,7 +26,8 @@ export default function Calendar24Hour({
   onSlotClick,
   onPendingSlotClick,
   isInstructor = false,
-  currentPupilId = null
+  currentPupilId = null,
+  pupils = []
 }) {
   const [currentDate, setCurrentDate] = useState(moment());
 
@@ -314,6 +315,15 @@ export default function Calendar24Hour({
                 // Override status label for others' confirmed slots
                 const displayStatusLabel = isOthersReserved && state === 'confirmed' ? 'Unavailable' : (statusLabels[state] || state);
 
+                // Get pupil name for instructor view
+                let pupilName = null;
+                if (isInstructor && booking && (state === 'reserved_pending' || state === 'confirmed')) {
+                  const pupil = pupils.find(p => p.id === booking.pupilId);
+                  if (pupil) {
+                    pupilName = `${pupil.firstName} ${pupil.lastName}`;
+                  }
+                }
+
                 // Determine block duration and start
                 let isBlockStart = false;
                 let blockSpan = 1;
@@ -436,6 +446,11 @@ export default function Calendar24Hour({
 
                         {/* Content */}
                         <div className={`${isOthersReserved ? 'pl-2' : 'pl-3'} pr-2 py-2 h-full flex flex-col justify-center relative z-10`}>
+                          {pupilName && (
+                            <div className={`text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-1`}>
+                              {pupilName}
+                            </div>
+                          )}
                           <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>

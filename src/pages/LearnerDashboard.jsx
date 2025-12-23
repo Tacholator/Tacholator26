@@ -111,6 +111,12 @@ export default function LearnerDashboard() {
     enabled: !!pupil?.id
   });
 
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['myBookings', pupil?.id],
+    queryFn: () => base44.entities.LessonBooking.filter({ pupilId: pupil.id }),
+    enabled: !!pupil?.id
+  });
+
   const { data: diaryEntries = [] } = useQuery({
     queryKey: ['myDiaryEntries', pupil?.id],
     queryFn: async () => {
@@ -156,21 +162,22 @@ export default function LearnerDashboard() {
     ? lessons.find(l => l.id === arrivalNotification.linkTargetId)
     : null;
 
-  const today = moment().format('YYYY-MM-DD');
-  const nextLesson = lessons
-    .filter(l => l.date >= today && l.status === 'Scheduled')
-    .sort((a, b) => a.date.localeCompare(b.date))[0];
+  const now = moment();
+  const nextLesson = bookings
+    .filter(b => b.status === 'confirmed' && moment(b.startAtUtc).isAfter(now))
+    .sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)))[0];
 
   const latestDiary = diaryEntries[0];
 
-  // Calculate overall progress from driving skills - SHARED LOGIC WITH PupilProgressTracker
+  // Calculate overall progress from driving skills - Based on 24 total DVSA skills
   const overallProgress = React.useMemo(() => {
+    const TOTAL_SKILLS = 24;
     if (!drivingProgress.length) return 0;
     const progressValues = { full_talk_through: 33, prompted: 66, independent: 100 };
     const totalProgress = drivingProgress.reduce((sum, skill) => {
       return sum + (progressValues[skill.progressState] || 0);
     }, 0);
-    return Math.round(totalProgress / drivingProgress.length);
+    return Math.round(totalProgress / TOTAL_SKILLS);
   }, [drivingProgress]);
 
   // Find next focus topic (first skill that's not independent)
@@ -321,20 +328,20 @@ export default function LearnerDashboard() {
                       </div>
                       <div>
                         <p className="text-xl font-semibold">
-                          {moment(nextLesson.date).format('dddd, D MMMM')}
+                          {moment(nextLesson.startAtUtc).local().format('dddd, D MMMM')}
                         </p>
-                        <p className="text-white/80">{moment(nextLesson.date).fromNow()}</p>
+                        <p className="text-white/80">{moment(nextLesson.startAtUtc).fromNow()}</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 pt-2">
                       <div className="flex items-center gap-2">
                         <Clock className="w-5 h-5 text-white/70" />
-                        <span>{nextLesson.startTime} - {nextLesson.endTime}</span>
+                        <span>{moment(nextLesson.startAtUtc).local().format('HH:mm')} - {moment(nextLesson.endAtUtc).local().format('HH:mm')}</span>
                       </div>
-                      {nextLesson.location && (
+                      {nextLesson.pickupLocation && (
                         <div className="flex items-center gap-2">
                           <MapPin className="w-5 h-5 text-white/70" />
-                          <span className="truncate">{nextLesson.location}</span>
+                          <span className="truncate">{nextLesson.pickupLocation}</span>
                         </div>
                       )}
                     </div>
@@ -349,6 +356,33 @@ export default function LearnerDashboard() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Scheduled Lessons Quick Access */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="mt-6"
+        >
+          <Link to={createPageUrl('LearnerScheduledLessons')}>
+            <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-teal-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-800">Scheduled Lessons</h3>
+                      <p className="text-sm text-slate-500">View your upcoming and past lessons</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-slate-400" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </motion.div>
 
         {/* Latest Lesson Summary */}
         {latestDiary && (

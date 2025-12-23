@@ -232,22 +232,24 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     return null;
   };
 
-  // SHARED PROGRESS CALCULATION - matches LearnerDashboard
+  // SHARED PROGRESS CALCULATION - Based on 24 total DVSA skills
   const calculateOverallProgress = () => {
+    const TOTAL_SKILLS = 24;
+    
     if (!progressData || progressData.length === 0) {
-      return { total: 0, independent: 0, percentage: 0 };
+      return { total: TOTAL_SKILLS, independent: 0, percentage: 0 };
     }
 
     const progressValues = { full_talk_through: 33, prompted: 66, independent: 100 };
     const totalProgress = progressData.reduce((sum, skill) => {
       return sum + (progressValues[skill.progressState] || 0);
     }, 0);
-    const percentage = Math.round(totalProgress / progressData.length);
+    const percentage = Math.round(totalProgress / TOTAL_SKILLS);
 
     const independentCount = progressData.filter(p => p.progressState === 'independent').length;
 
     return {
-      total: progressData.length,
+      total: TOTAL_SKILLS,
       independent: independentCount,
       percentage: percentage
     };

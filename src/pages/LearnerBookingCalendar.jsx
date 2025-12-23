@@ -289,6 +289,7 @@ export default function LearnerBookingCalendar() {
               onSlotClick={handleSlotClick}
               isInstructor={false}
               currentPupilId={pupil?.id}
+              pupils={[]}
             />
           </CardContent>
         </Card>
