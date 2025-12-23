@@ -12,7 +12,9 @@ const SLOT_COLORS = {
   unavailable: '#FFB3B3',
   outside_working_hours: '#E8E8E8',
   reserved_pending: '#B39DDB',
-  cancelled: '#CFCFCF'
+  cancelled: '#CFCFCF',
+  // Light grey for others viewing pending/confirmed
+  reserved_confirmed_other: '#F2F2F2'
 };
 
 export default function Calendar24Hour({ 
@@ -22,6 +24,7 @@ export default function Calendar24Hour({
   slotInstances = [],
   availabilityMode = 'available_by_default',
   onSlotClick,
+  onPendingSlotClick,
   isInstructor = false 
 }) {
   const [currentDate, setCurrentDate] = useState(moment());
@@ -157,16 +160,20 @@ export default function Calendar24Hour({
   const days = getDaysInView();
   const timeSlots = getTimeSlots();
 
-  const isSlotClickable = (state, slotInstance) => {
-    if (availabilityMode === 'published_slots_only' && isInstructor) {
+  const isSlotClickable = (state, slotInstance, booking) => {
+    if (isInstructor) {
+      // Instructors can click pending/confirmed slots to view booking details
+      if ((state === 'reserved_pending' || state === 'confirmed') && booking) {
+        return true;
+      }
       // In published slots mode, instructors can click available slots or anywhere to create new slots
-      return state === 'outside_working_hours' || state === 'unavailable' || state === 'available';
+      if (availabilityMode === 'published_slots_only') {
+        return state === 'outside_working_hours' || state === 'unavailable' || state === 'available';
+      }
+      return state === 'available';
     }
     // For pupils, only available slots from instances are clickable
-    if (!isInstructor) {
-      return state === 'available' && slotInstance;
-    }
-    return state === 'available';
+    return state === 'available' && slotInstance;
   };
 
   return (
@@ -251,12 +258,16 @@ export default function Calendar24Hour({
                 {days.map((day, dayIdx) => {
                 const slotStateData = getSlotState(day, timeSlot);
                 const { state, booking, slotInstance, rule, blockType } = slotStateData;
-                const clickable = isSlotClickable(state, slotInstance);
+                const clickable = isSlotClickable(state, slotInstance, booking);
                 const dateStr = day.format('YYYY-MM-DD');
                 const slotDateTime = `${dateStr}T${timeSlot}:00`;
 
                 // Determine if this should be rendered as a card
                 const shouldRenderAsCard = state !== 'outside_working_hours' && (blockType === 'booking' || blockType === 'slotInstance' || blockType === 'rule');
+
+                // For non-instructors viewing pending/confirmed, use light grey with hatch
+                const isOthersViewingReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed');
+                const displayColor = isOthersViewingReserved ? SLOT_COLORS.reserved_confirmed_other : SLOT_COLORS[state];
                 
                 // Determine block duration and start
                 let isBlockStart = false;
@@ -325,15 +336,27 @@ export default function Calendar24Hour({
                 // Render card-style block
                 if (shouldRenderAsCard && isBlockStart) {
                   const exactHeight = blockSpan * 40;
+
+                  const handleClick = () => {
+                    if (!clickable) return;
+
+                    // If instructor clicking pending/confirmed with booking, open booking details
+                    if (isInstructor && (state === 'reserved_pending' || state === 'confirmed') && booking) {
+                      onPendingSlotClick && onPendingSlotClick(booking, slotInstance);
+                    } else {
+                      onSlotClick && onSlotClick(slotDateTime, slotInstance || state);
+                    }
+                  };
+
                   return (
                     <div
                       key={dayIdx}
-                      onClick={() => clickable && onSlotClick && onSlotClick(slotDateTime, slotInstance || state)}
+                      onClick={handleClick}
                       className={`border-r last:border-r-0 relative ${
-                        clickable ? 'cursor-pointer group' : 'cursor-default'
+                        clickable ? 'cursor-pointer group' : isOthersViewingReserved ? 'cursor-not-allowed' : 'cursor-default'
                       }`}
                       style={{ 
-                        backgroundColor: SLOT_COLORS[state],
+                        backgroundColor: displayColor,
                         height: `${exactHeight}px`,
                         padding: '2px',
                         gridRow: `span ${blockSpan}`
@@ -344,28 +367,47 @@ export default function Calendar24Hour({
                           clickable ? 'group-hover:shadow-md transition-shadow' : ''
                         }`}
                         style={{ 
-                          borderColor: borderColors[state],
-                          backgroundColor: SLOT_COLORS[state],
+                          borderColor: isOthersViewingReserved ? '#E0E0E0' : borderColors[state],
+                          backgroundColor: displayColor,
                           height: '100%'
                         }}
                       >
+                        {/* Diagonal hatch overlay for non-instructors viewing pending/confirmed */}
+                        {isOthersViewingReserved && (
+                          <div 
+                            className="absolute inset-0 pointer-events-none"
+                            style={{
+                              backgroundImage: `repeating-linear-gradient(
+                                45deg,
+                                transparent,
+                                transparent 8px,
+                                #D9D9D9 8px,
+                                #D9D9D9 10px
+                              )`,
+                              opacity: 0.7
+                            }}
+                          />
+                        )}
+
                         {/* Accent strip */}
-                        <div
-                          className="absolute left-0 top-0 bottom-0 w-1"
-                          style={{ backgroundColor: accentColors[state] }}
-                        />
+                        {!isOthersViewingReserved && (
+                          <div
+                            className="absolute left-0 top-0 bottom-0 w-1"
+                            style={{ backgroundColor: accentColors[state] }}
+                          />
+                        )}
 
                         {/* Content */}
-                        <div className="pl-3 pr-2 py-2 h-full flex flex-col justify-center">
-                          <div className="text-xs font-semibold text-slate-700">
+                        <div className={`${isOthersViewingReserved ? 'pl-2' : 'pl-3'} pr-2 py-2 h-full flex flex-col justify-center relative z-10`}>
+                          <div className={`text-xs font-semibold ${isOthersViewingReserved ? 'text-slate-400' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
                           <div className="mt-1">
                             <span 
                               className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
                               style={{ 
-                                backgroundColor: `${accentColors[state]}20`,
-                                color: accentColors[state]
+                                backgroundColor: isOthersViewingReserved ? '#E0E0E0' : `${accentColors[state]}20`,
+                                color: isOthersViewingReserved ? '#999999' : accentColors[state]
                               }}
                             >
                               {statusLabels[state] || state}
@@ -373,8 +415,8 @@ export default function Calendar24Hour({
                           </div>
                         </div>
 
-                        {/* Hover outline for available slots */}
-                        {clickable && (
+                        {/* Hover outline for clickable slots */}
+                        {clickable && !isOthersViewingReserved && (
                           <div 
                             className="absolute inset-0 rounded-md border-2 border-transparent group-hover:border-[#2E7D32] pointer-events-none transition-colors"
                           />
@@ -393,20 +435,23 @@ export default function Calendar24Hour({
                 return (
                   <div
                     key={dayIdx}
-                    onClick={() => clickable && onSlotClick && onSlotClick(slotDateTime, state)}
+                    onClick={() => {
+                      if (!clickable) return;
+                      onSlotClick && onSlotClick(slotDateTime, state);
+                    }}
                     className={`border-r last:border-r-0 p-1 ${
                       clickable ? 'cursor-pointer hover:opacity-80' : 'cursor-default'
                     }`}
-                    style={{ backgroundColor: SLOT_COLORS[state], height: '40px' }}
+                    style={{ backgroundColor: displayColor, height: '40px' }}
                     title={state}
                   />
                 );
-              })}
-            </div>
-          );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
+                })}
+                </div>
+                );
+                })}
+                </div>
+                </div>
+                </div>
+                );
+                }
