@@ -2,6 +2,16 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle } from 'lucide-react';
@@ -17,6 +27,7 @@ export default function BookingDetailsModal({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const { data: pupil } = useQuery({
     queryKey: ['pupil', booking?.pupilId],
@@ -95,6 +106,8 @@ export default function BookingDetailsModal({
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       queryClient.invalidateQueries(['myBookings']);
+      queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
       toast({ title: 'Booking declined', description: 'The pupil has been notified' });
       setIsProcessing(false);
       onOpenChange(false);
@@ -105,6 +118,53 @@ export default function BookingDetailsModal({
     }
   });
 
+  const cancelMutation = useMutation({
+    mutationFn: async () => {
+      setIsProcessing(true);
+      
+      // Update booking status
+      await base44.entities.LessonBooking.update(booking.id, {
+        status: 'cancelled_by_instructor',
+        cancelledAt: new Date().toISOString()
+      });
+
+      // Release slot instance if exists - make it available again
+      if (slotInstance?.id) {
+        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+          status: 'available',
+          bookingId: null
+        });
+      }
+
+      // Notify pupil
+      if (pupil?.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: pupil.linkedUserId,
+          title: 'Lesson Cancelled',
+          message: `Your instructor has cancelled the lesson scheduled for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')}. Please book another slot.`,
+          type: 'booking',
+          linkTarget: 'LearnerBookingCalendar'
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['instructorBookings']);
+      queryClient.invalidateQueries(['instructorSlotInstances']);
+      queryClient.invalidateQueries(['myBookings']);
+      queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
+      toast({ title: 'Lesson cancelled successfully', description: 'The pupil has been notified' });
+      setIsProcessing(false);
+      setShowCancelDialog(false);
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      toast({ title: 'Cancellation failed', description: error.message, variant: 'destructive' });
+      setIsProcessing(false);
+      setShowCancelDialog(false);
+    }
+  });
+
   if (!booking || !pupil) {
     return null;
   }
@@ -112,6 +172,7 @@ export default function BookingDetailsModal({
   const startMoment = moment(booking.startAtUtc).local();
   const endMoment = moment(booking.endAtUtc).local();
   const isPending = booking.status === 'reserved_pending_instructor';
+  const isConfirmed = booking.status === 'confirmed';
 
   // Parse locations from notes
   const parseLocations = () => {
@@ -127,7 +188,8 @@ export default function BookingDetailsModal({
   const locations = parseLocations();
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
@@ -285,11 +347,44 @@ export default function BookingDetailsModal({
                 {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm Booking'}
               </Button>
             </>
+          ) : isConfirmed ? (
+            <>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+              <Button 
+                variant="destructive"
+                onClick={() => setShowCancelDialog(true)}
+                disabled={isProcessing}
+              >
+                Cancel Lesson
+              </Button>
+            </>
           ) : (
             <Button onClick={() => onOpenChange(false)}>Close</Button>
           )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+      <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Cancel Confirmed Lesson</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to cancel this confirmed lesson? The pupil will be notified and the slot will become available again. This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isProcessing}>No, Keep Lesson</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => cancelMutation.mutate()}
+            disabled={isProcessing}
+            className="bg-rose-600 hover:bg-rose-700"
+          >
+            {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Yes, Cancel Lesson'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
