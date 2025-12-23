@@ -8,7 +8,7 @@ import moment from 'moment';
 const SLOT_COLORS = {
   available: '#B7F7C9',
   confirmed: '#87CEFA',
-  lunch: '#FFA07A',
+  lunch: '#F7B602',
   unavailable: '#FFB3B3',
   outside_working_hours: '#E8E8E8',
   reserved_pending: '#B39DDB',
