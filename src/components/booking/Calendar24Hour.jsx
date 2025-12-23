@@ -361,7 +361,7 @@ export default function Calendar24Hour({
                       key={dayIdx}
                       onClick={handleClick}
                       className={`border-r last:border-r-0 relative ${
-                        clickable ? 'cursor-pointer group' : isOthersViewingReserved ? 'cursor-not-allowed' : 'cursor-default'
+                        clickable ? 'cursor-pointer group' : isOthersReserved ? 'cursor-not-allowed' : 'cursor-default'
                       }`}
                       style={{ 
                         backgroundColor: displayColor,
