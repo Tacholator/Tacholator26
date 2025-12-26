@@ -12,6 +12,16 @@ import {
   Loader2,
   Settings
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import LessonFormModal from '@/components/modals/LessonFormModal';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import CalendarDayView from '@/components/calendar/CalendarDayView';
@@ -63,6 +73,9 @@ export default function Calendar() {
   
   const [showScheduleLessonModal, setShowScheduleLessonModal] = useState(false);
   const [selectedSlotForSchedule, setSelectedSlotForSchedule] = useState(null);
+  
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -527,6 +540,53 @@ export default function Calendar() {
 
   const pendingBookings = bookings.filter(b => b.status === 'reserved_pending_instructor');
 
+  const deleteBookingMutation = useMutation({
+    mutationFn: async ({ booking, slotInstance }) => {
+      if (booking) {
+        await base44.entities.LessonBooking.update(booking.id, {
+          status: 'cancelled_by_instructor',
+          cancelledAt: new Date().toISOString()
+        });
+
+        const pupil = pupils.find(p => p.id === booking.pupilId);
+        if (pupil?.linkedUserId) {
+          await base44.entities.Notification.create({
+            userId: pupil.linkedUserId,
+            title: 'Lesson Cancelled',
+            message: `Your instructor has cancelled the lesson scheduled for ${moment(booking.startAtUtc).local().format('D MMM [at] HH:mm')}.`,
+            type: 'booking',
+            linkTarget: 'LearnerBookingCalendar'
+          });
+        }
+      }
+
+      if (slotInstance) {
+        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+          status: 'available',
+          bookingId: null
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
+      toast({ title: 'Booking deleted successfully' });
+      setShowDeleteDialog(false);
+      setDeleteTarget(null);
+    },
+    onError: (error) => {
+      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const handleDeleteBooking = (bookingOrSlot, state) => {
+    const booking = bookingOrSlot.pupilId ? bookingOrSlot : null;
+    const slotInstance = bookingOrSlot.slotInstanceId || bookingOrSlot.templateId ? bookingOrSlot : null;
+    
+    setDeleteTarget({ booking, slotInstance, state });
+    setShowDeleteDialog(true);
+  };
+
   if (lessonsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -713,6 +773,7 @@ export default function Calendar() {
               setSelectedBookingSlotInstance(slotInstance);
               setShowBookingDetailsModal(true);
             }}
+            onDeleteBooking={handleDeleteBooking}
           />
         )}
       </div>
@@ -842,6 +903,26 @@ export default function Calendar() {
         booking={selectedBooking}
         slotInstance={selectedBookingSlotInstance}
       />
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Booking</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this booking? The pupil will be notified and the slot will become available again. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteBookingMutation.mutate(deleteTarget)}
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              Delete Booking
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
