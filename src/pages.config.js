@@ -23,6 +23,7 @@ import LearnerLessons from './pages/LearnerLessons';
 import LearnerNotifications from './pages/LearnerNotifications';
 import LearnerProgress from './pages/LearnerProgress';
 import LearnerResources from './pages/LearnerResources';
+import LearnerScheduledLessons from './pages/LearnerScheduledLessons';
 import LearnerSkillStudy from './pages/LearnerSkillStudy';
 import LearnerSkills from './pages/LearnerSkills';
 import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
@@ -32,7 +33,6 @@ import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
-import LearnerScheduledLessons from './pages/LearnerScheduledLessons';
 import __Layout from './Layout.jsx';
 
 
@@ -62,6 +62,7 @@ export const PAGES = {
     "LearnerNotifications": LearnerNotifications,
     "LearnerProgress": LearnerProgress,
     "LearnerResources": LearnerResources,
+    "LearnerScheduledLessons": LearnerScheduledLessons,
     "LearnerSkillStudy": LearnerSkillStudy,
     "LearnerSkills": LearnerSkills,
     "LessonTermsAndConditions": LessonTermsAndConditions,
@@ -71,7 +72,6 @@ export const PAGES = {
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "TermsAndConditions": TermsAndConditions,
-    "LearnerScheduledLessons": LearnerScheduledLessons,
 }
 
 export const pagesConfig = {

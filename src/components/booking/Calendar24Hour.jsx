@@ -25,6 +25,7 @@ export default function Calendar24Hour({
   availabilityMode = 'available_by_default',
   onSlotClick,
   onPendingSlotClick,
+  onDeleteBooking,
   isInstructor = false,
   currentPupilId = null,
   pupils = []
@@ -395,6 +396,13 @@ export default function Calendar24Hour({
                     }
                   };
 
+                  const handleDelete = (e) => {
+                    e.stopPropagation();
+                    if (onDeleteBooking && (booking || slotInstance)) {
+                      onDeleteBooking(booking || slotInstance, state);
+                    }
+                  };
+
                   return (
                     <div
                       key={dayIdx}
@@ -454,7 +462,7 @@ export default function Calendar24Hour({
                           <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
-                          <div className="mt-1">
+                          <div className="mt-1 flex items-center justify-between">
                             <span 
                               className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
                               style={{ 
@@ -464,6 +472,15 @@ export default function Calendar24Hour({
                             >
                               {displayStatusLabel}
                             </span>
+                            {isInstructor && onDeleteBooking && !isOthersReserved && (
+                              <button
+                                onClick={handleDelete}
+                                className="p-1 hover:bg-slate-200 rounded transition-colors opacity-70 hover:opacity-100"
+                                title="Delete booking"
+                              >
+                                <Trash2 className="w-3 h-3 text-slate-600" />
+                              </button>
+                            )}
                           </div>
                         </div>
 
