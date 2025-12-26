@@ -189,6 +189,9 @@ export default function InstructorBookingCalendar() {
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);
       queryClient.invalidateQueries(['slotInstances']);
+      queryClient.invalidateQueries(['instructorBookings']);
+      queryClient.invalidateQueries(['instructorSlotInstances']);
+      queryClient.invalidateQueries(['myBookings']);
       toast({ title: 'Booking deleted successfully' });
       setShowDeleteDialog(false);
       setDeleteTarget(null);

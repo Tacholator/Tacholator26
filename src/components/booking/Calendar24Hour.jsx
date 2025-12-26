@@ -462,16 +462,7 @@ export default function Calendar24Hour({
                           <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
-                          <div className="mt-1 flex items-center justify-between">
-                            <span 
-                              className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
-                              style={{ 
-                                backgroundColor: isOthersReserved ? '#E0E0E0' : `${accentColors[state]}20`,
-                                color: isOthersReserved ? '#999999' : accentColors[state]
-                              }}
-                            >
-                              {displayStatusLabel}
-                            </span>
+                          <div className="mt-1 flex items-center gap-2">
                             {isInstructor && onDeleteBooking && !isOthersReserved && (
                               <button
                                 onClick={handleDelete}
@@ -481,6 +472,15 @@ export default function Calendar24Hour({
                                 <Trash2 className="w-3 h-3 text-slate-600" />
                               </button>
                             )}
+                            <span 
+                              className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
+                              style={{ 
+                                backgroundColor: isOthersReserved ? '#E0E0E0' : `${accentColors[state]}20`,
+                                color: isOthersReserved ? '#999999' : accentColors[state]
+                              }}
+                            >
+                              {displayStatusLabel}
+                            </span>
                           </div>
                         </div>
 
