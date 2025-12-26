@@ -34,6 +34,7 @@ import DiaryTimeline from '@/components/diary/DiaryTimeline';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
+import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
 import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import moment from 'moment';
@@ -55,6 +56,8 @@ export default function PupilProfile() {
   const [selectedDiaryEntry, setSelectedDiaryEntry] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [showLessonModal, setShowLessonModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showBookingSummaryModal, setShowBookingSummaryModal] = useState(false);
   const [checksData, setChecksData] = useState({
     licenseChecked: false,
     licenseCheckDate: '',
@@ -97,6 +100,21 @@ export default function PupilProfile() {
     queryFn: async () => {
       const allLessons = await base44.entities.Lesson.filter({ pupilId });
       return allLessons.sort((a, b) => b.date.localeCompare(a.date));
+    },
+    enabled: !!pupilId
+  });
+
+  // Fetch confirmed bookings for the lessons tab
+  const { data: confirmedBookings = [] } = useQuery({
+    queryKey: ['pupilConfirmedBookings', pupilId],
+    queryFn: async () => {
+      const bookings = await base44.entities.LessonBooking.filter({ 
+        pupilId,
+        status: 'confirmed'
+      });
+      return bookings.sort((a, b) => 
+        moment(b.startAtUtc).diff(moment(a.startAtUtc))
+      );
     },
     enabled: !!pupilId
   });
@@ -555,16 +573,11 @@ export default function PupilProfile() {
           </TabsContent>
 
           <TabsContent value="lessons">
-            <div className="mb-4">
-              <Button 
-                onClick={() => setShowLessonModal(true)}
-                className="bg-teal-600 hover:bg-teal-700"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Book Next Lesson
-              </Button>
-            </div>
             <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle>Confirmed Lessons</CardTitle>
+                <p className="text-sm text-slate-600">Lessons booked by the pupil that have been confirmed</p>
+              </CardHeader>
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
@@ -577,48 +590,53 @@ export default function PupilProfile() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {lessons.map(lesson => (
-                      <TableRow 
-                        key={lesson.id}
-                        className={lesson.status === 'Scheduled' ? 'cursor-pointer hover:bg-slate-50' : ''}
-                        onClick={() => {
-                          if (lesson.status === 'Scheduled') {
-                            setSelectedLesson(lesson);
-                            setSelectedDiaryEntry(null);
-                            setShowDiaryModal(true);
-                          }
-                        }}
-                      >
-                        <TableCell className="font-medium">
-                          {moment(lesson.date).format('ddd, D MMM YYYY')}
-                        </TableCell>
-                        <TableCell>
-                          {lesson.startTime} - {lesson.endTime}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1 text-slate-500">
-                            <Clock className="w-4 h-4" />
-                            {lesson.durationMinutes || 60} mins
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-slate-500">
-                          {lesson.location || '-'}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={{
-                            Scheduled: 'bg-blue-100 text-blue-700',
-                            Completed: 'bg-emerald-100 text-emerald-700',
-                            Cancelled: 'bg-rose-100 text-rose-700'
-                          }[lesson.status]}>
-                            {lesson.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {lessons.length === 0 && (
+                    {confirmedBookings.map(booking => {
+                      const startMoment = moment(booking.startAtUtc).local();
+                      const endMoment = moment(booking.endAtUtc).local();
+                      
+                      // Parse location from notes
+                      const parseLocation = () => {
+                        const notes = booking.notesFromPupil || '';
+                        const pickupMatch = notes.match(/Pickup:\s*([^|]+)/);
+                        return pickupMatch ? pickupMatch[1].trim() : 'Not specified';
+                      };
+                      
+                      return (
+                        <TableRow 
+                          key={booking.id}
+                          className="cursor-pointer hover:bg-slate-50"
+                          onClick={() => {
+                            setSelectedBooking(booking);
+                            setShowBookingSummaryModal(true);
+                          }}
+                        >
+                          <TableCell className="font-medium">
+                            {startMoment.format('ddd, D MMM YYYY')}
+                          </TableCell>
+                          <TableCell>
+                            {startMoment.format('HH:mm')} - {endMoment.format('HH:mm')}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1 text-slate-500">
+                              <Clock className="w-4 h-4" />
+                              {booking.durationHours} hour{booking.durationHours !== 1 ? 's' : ''}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-slate-500">
+                            {parseLocation()}
+                          </TableCell>
+                          <TableCell>
+                            <Badge className="bg-emerald-100 text-emerald-700">
+                              Confirmed
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    {confirmedBookings.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-12 text-slate-400">
-                          No lessons recorded yet
+                          No confirmed lessons yet
                         </TableCell>
                       </TableRow>
                     )}
@@ -669,6 +687,13 @@ export default function PupilProfile() {
           await base44.entities.Lesson.create(data);
           queryClient.invalidateQueries(['lessons', pupilId]);
         }}
+      />
+
+      <BookingSummaryModal
+        open={showBookingSummaryModal}
+        onOpenChange={setShowBookingSummaryModal}
+        booking={selectedBooking}
+        pupil={pupil}
       />
     </div>
   );

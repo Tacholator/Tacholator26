@@ -109,6 +109,7 @@ export default function BookingDetailsModal({
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       queryClient.invalidateQueries(['myBookings']);
+      queryClient.invalidateQueries(['pupilConfirmedBookings']);
       toast({ title: 'Booking confirmed', description: 'The pupil has been notified' });
       setIsProcessing(false);
       onOpenChange(false);
@@ -197,6 +198,7 @@ export default function BookingDetailsModal({
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['lessonBookings']);
       queryClient.invalidateQueries(['slotInstances']);
+      queryClient.invalidateQueries(['pupilConfirmedBookings']);
       toast({ title: 'Lesson cancelled successfully', description: 'The pupil has been notified' });
       setIsProcessing(false);
       setShowCancelDialog(false);
@@ -247,6 +249,7 @@ export default function BookingDetailsModal({
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['pupilConfirmedBookings']);
       toast({ title: 'Booking reassigned successfully' });
       setIsProcessing(false);
       setShowReassignDialog(false);
@@ -295,6 +298,7 @@ export default function BookingDetailsModal({
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['lessonBookings']);
       queryClient.invalidateQueries(['slotInstances']);
+      queryClient.invalidateQueries(['pupilConfirmedBookings']);
       toast({ title: 'Pupil removed and slot restored to available' });
       setIsProcessing(false);
       setShowRemoveDialog(false);
@@ -342,6 +346,7 @@ export default function BookingDetailsModal({
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['lessonBookings']);
       queryClient.invalidateQueries(['slotInstances']);
+      queryClient.invalidateQueries(['pupilConfirmedBookings']);
       toast({ title: 'Booking deleted and slot restored to available' });
       setIsProcessing(false);
       setShowDeleteDialog(false);
