@@ -194,6 +194,10 @@ export default function Calendar24Hour({
 
   const isSlotClickable = (state, slotInstance, booking) => {
     if (isInstructor) {
+      // Instructors can click any booking to view details
+      if (booking) {
+        return true;
+      }
       // Instructors can click pending/confirmed slots to view booking details
       if ((state === 'reserved_pending' || state === 'confirmed') && booking) {
         return true;
@@ -388,8 +392,8 @@ export default function Calendar24Hour({
                   const handleClick = () => {
                     if (!clickable) return;
 
-                    // If instructor clicking pending/confirmed with booking, open booking details
-                    if (isInstructor && (state === 'reserved_pending' || state === 'confirmed') && booking) {
+                    // If instructor clicking any booking, open booking details
+                    if (isInstructor && booking) {
                       onPendingSlotClick && onPendingSlotClick(booking, slotInstance);
                     } else {
                       onSlotClick && onSlotClick(slotDateTime, slotInstance || state);
