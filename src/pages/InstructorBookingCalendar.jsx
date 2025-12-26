@@ -206,14 +206,6 @@ export default function InstructorBookingCalendar() {
     setShowDeleteDialog(true);
   };
 
-  const handleDeleteBooking = (bookingOrSlot, state) => {
-    const booking = bookingOrSlot.pupilId ? bookingOrSlot : null;
-    const slotInstance = bookingOrSlot.slotInstanceId || bookingOrSlot.templateId ? bookingOrSlot : null;
-    
-    setDeleteTarget({ booking, slotInstance, state });
-    setShowDeleteDialog(true);
-  };
-
   if (rulesLoading || bookingsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
