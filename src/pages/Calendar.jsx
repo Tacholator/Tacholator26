@@ -543,12 +543,12 @@ export default function Calendar() {
   const deleteBookingMutation = useMutation({
     mutationFn: async ({ booking, slotInstance }) => {
       if (booking) {
-        await base44.entities.LessonBooking.update(booking.id, {
-          status: 'cancelled_by_instructor',
-          cancelledAt: new Date().toISOString()
-        });
-
         const pupil = pupils.find(p => p.id === booking.pupilId);
+        
+        // Hard delete the booking
+        await base44.entities.LessonBooking.delete(booking.id);
+
+        // Notify pupil
         if (pupil?.linkedUserId) {
           await base44.entities.Notification.create({
             userId: pupil.linkedUserId,
