@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import moment from 'moment';
 
 const SLOT_COLORS = {
@@ -462,16 +462,7 @@ export default function Calendar24Hour({
                           <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
-                          <div className="mt-1 flex items-center gap-2">
-                            {isInstructor && onDeleteBooking && !isOthersReserved && (
-                              <button
-                                onClick={handleDelete}
-                                className="p-1 hover:bg-slate-200 rounded transition-colors opacity-70 hover:opacity-100"
-                                title="Delete booking"
-                              >
-                                <Trash2 className="w-3 h-3 text-slate-600" />
-                              </button>
-                            )}
+                          <div className="mt-1">
                             <span 
                               className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
                               style={{ 
