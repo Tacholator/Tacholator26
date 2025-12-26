@@ -14,7 +14,16 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle } from 'lucide-react';
+import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
@@ -28,12 +37,47 @@ export default function BookingDetailsModal({
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showReassignDialog, setShowReassignDialog] = useState(false);
+  const [showRemovePupilDialog, setShowRemovePupilDialog] = useState(false);
+  const [showDeleteBookingDialog, setShowDeleteBookingDialog] = useState(false);
+  const [selectedNewPupilId, setSelectedNewPupilId] = useState('');
+  const [pupilSearchQuery, setPupilSearchQuery] = useState('');
 
   const { data: pupil } = useQuery({
     queryKey: ['pupil', booking?.pupilId],
     queryFn: () => base44.entities.Pupil.filter({ id: booking.pupilId }).then(p => p[0]),
     enabled: !!booking?.pupilId
   });
+
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const { data: allPupils = [] } = useQuery({
+    queryKey: ['activePupils', user?.id],
+    queryFn: async () => {
+      const pupils = await base44.entities.Pupil.filter({ 
+        instructorId: user.id,
+        status: 'Active'
+      });
+      return pupils.sort((a, b) => 
+        `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
+      );
+    },
+    enabled: !!user?.id
+  });
+
+  const filteredPupils = React.useMemo(() => {
+    if (!pupilSearchQuery.trim()) return allPupils;
+    const query = pupilSearchQuery.toLowerCase();
+    return allPupils.filter(p => {
+      const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
+      const email = p.email?.toLowerCase() || '';
+      const phone = p.phone?.toLowerCase() || '';
+      return fullName.includes(query) || email.includes(query) || phone.includes(query);
+    });
+  }, [allPupils, pupilSearchQuery]);
 
   const confirmMutation = useMutation({
     mutationFn: async () => {
@@ -165,6 +209,152 @@ export default function BookingDetailsModal({
     }
   });
 
+  const reassignMutation = useMutation({
+    mutationFn: async () => {
+      setIsProcessing(true);
+      const oldPupilId = booking.pupilId;
+      const newPupil = allPupils.find(p => p.id === selectedNewPupilId);
+
+      // Update booking with new pupil
+      await base44.entities.LessonBooking.update(booking.id, {
+        pupilId: selectedNewPupilId
+      });
+
+      // Notify old pupil
+      if (pupil?.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: pupil.linkedUserId,
+          title: 'Lesson Updated',
+          message: `Your lesson has been reassigned and is no longer scheduled under your account.`,
+          type: 'booking',
+          linkTarget: 'LearnerScheduledLessons'
+        });
+      }
+
+      // Notify new pupil
+      if (newPupil?.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: newPupil.linkedUserId,
+          title: 'New Lesson Scheduled',
+          message: `A lesson has been scheduled for you on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')}.`,
+          type: 'booking',
+          linkTarget: 'LearnerScheduledLessons'
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['instructorBookings']);
+      queryClient.invalidateQueries(['instructorSlotInstances']);
+      queryClient.invalidateQueries(['myBookings']);
+      queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
+      toast({ title: 'Booking reassigned successfully' });
+      setIsProcessing(false);
+      setShowReassignDialog(false);
+      setSelectedNewPupilId('');
+      setPupilSearchQuery('');
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      toast({ title: 'Reassignment failed', description: error.message, variant: 'destructive' });
+      setIsProcessing(false);
+    }
+  });
+
+  const removePupilMutation = useMutation({
+    mutationFn: async () => {
+      setIsProcessing(true);
+
+      // Cancel booking
+      await base44.entities.LessonBooking.update(booking.id, {
+        status: 'cancelled_by_instructor',
+        cancelledAt: new Date().toISOString()
+      });
+
+      // Restore slot to available
+      if (slotInstance?.id) {
+        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+          status: 'available',
+          bookingId: null
+        });
+      }
+
+      // Notify pupil
+      if (pupil?.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: pupil.linkedUserId,
+          title: 'Lesson Cancelled',
+          message: `Your instructor has removed you from a booking. The slot has been released.`,
+          type: 'booking',
+          linkTarget: 'LearnerScheduledLessons'
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['instructorBookings']);
+      queryClient.invalidateQueries(['instructorSlotInstances']);
+      queryClient.invalidateQueries(['myBookings']);
+      queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
+      toast({ title: 'Pupil removed and slot restored to available' });
+      setIsProcessing(false);
+      setShowRemovePupilDialog(false);
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      toast({ title: 'Operation failed', description: error.message, variant: 'destructive' });
+      setIsProcessing(false);
+      setShowRemovePupilDialog(false);
+    }
+  });
+
+  const deleteBookingMutation = useMutation({
+    mutationFn: async () => {
+      setIsProcessing(true);
+
+      // Cancel booking
+      await base44.entities.LessonBooking.update(booking.id, {
+        status: 'cancelled_by_instructor',
+        cancelledAt: new Date().toISOString()
+      });
+
+      // Restore slot to available
+      if (slotInstance?.id) {
+        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+          status: 'available',
+          bookingId: null
+        });
+      }
+
+      // Notify pupil
+      if (pupil?.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: pupil.linkedUserId,
+          title: 'Lesson Cancelled',
+          message: `Your instructor has cancelled a booking. Please book another slot.`,
+          type: 'booking',
+          linkTarget: 'LearnerBookingCalendar'
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['instructorBookings']);
+      queryClient.invalidateQueries(['instructorSlotInstances']);
+      queryClient.invalidateQueries(['myBookings']);
+      queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
+      toast({ title: 'Booking deleted and slot restored to available' });
+      setIsProcessing(false);
+      setShowDeleteBookingDialog(false);
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      toast({ title: 'Deletion failed', description: error.message, variant: 'destructive' });
+      setIsProcessing(false);
+      setShowDeleteBookingDialog(false);
+    }
+  });
+
   if (!booking || !pupil) {
     return null;
   }
@@ -173,6 +363,7 @@ export default function BookingDetailsModal({
   const endMoment = moment(booking.endAtUtc).local();
   const isPending = booking.status === 'reserved_pending_instructor';
   const isConfirmed = booking.status === 'confirmed';
+  const canManage = isPending || isConfirmed;
 
   // Parse locations from notes
   const parseLocations = () => {
@@ -326,6 +517,46 @@ export default function BookingDetailsModal({
               </div>
             </div>
           )}
+
+          {/* Booking Management Actions */}
+          {canManage && (
+            <Card className="border-slate-300">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Manage Booking</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <p className="text-sm text-slate-600 mb-3">
+                  You can reassign this booking to another pupil, remove the pupil to restore the slot to available, or delete the booking entirely.
+                </p>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowReassignDialog(true)}
+                    disabled={isProcessing}
+                    className="w-full justify-start"
+                  >
+                    Reassign to another pupil
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowRemovePupilDialog(true)}
+                    disabled={isProcessing}
+                    className="w-full justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
+                  >
+                    Remove pupil (restore slot to available)
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowDeleteBookingDialog(true)}
+                    disabled={isProcessing}
+                    className="w-full justify-start border-rose-300 text-rose-600 hover:bg-rose-50"
+                  >
+                    Delete booking (restore slot to available)
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <DialogFooter>
@@ -381,6 +612,143 @@ export default function BookingDetailsModal({
             className="bg-rose-600 hover:bg-rose-700"
           >
             {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Yes, Cancel Lesson'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    {/* Reassign Dialog */}
+    <Dialog open={showReassignDialog} onOpenChange={setShowReassignDialog}>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle>Reassign Booking</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          {/* Slot Summary */}
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Slot (Read-only)</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-600">Date:</span>
+                <span className="font-medium">{startMoment.format('dddd, D MMMM YYYY')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Time:</span>
+                <span className="font-medium">{startMoment.format('HH:mm')} – {endMoment.format('HH:mm')}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Pupil Selection */}
+          <div className="space-y-2">
+            <Label>Select new pupil *</Label>
+            <div className="relative mb-2">
+              <Input
+                type="text"
+                placeholder="Search by name, email, or phone..."
+                value={pupilSearchQuery}
+                onChange={(e) => setPupilSearchQuery(e.target.value)}
+                className="pr-10"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            </div>
+            <Select value={selectedNewPupilId} onValueChange={setSelectedNewPupilId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose a pupil..." />
+              </SelectTrigger>
+              <SelectContent>
+                <div className="max-h-[280px] overflow-y-auto">
+                  {filteredPupils.length === 0 ? (
+                    <div className="p-2 text-sm text-slate-500 text-center">
+                      No pupils found
+                    </div>
+                  ) : (
+                    filteredPupils.map(p => (
+                      <SelectItem key={p.id} value={p.id}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{p.firstName} {p.lastName}</span>
+                          {(p.email || p.phone) && (
+                            <span className="text-xs text-slate-500">
+                              {p.email || p.phone}
+                            </span>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))
+                  )}
+                </div>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => {
+            setShowReassignDialog(false);
+            setSelectedNewPupilId('');
+            setPupilSearchQuery('');
+          }} disabled={isProcessing}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (!selectedNewPupilId) {
+                toast({ title: 'Please select a pupil', variant: 'destructive' });
+                return;
+              }
+              reassignMutation.mutate();
+            }}
+            disabled={isProcessing || !selectedNewPupilId}
+            className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+          >
+            {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Reassign Booking'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* Remove Pupil Dialog */}
+    <AlertDialog open={showRemovePupilDialog} onOpenChange={setShowRemovePupilDialog}>
+      <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Remove Pupil</AlertDialogTitle>
+          <AlertDialogDescription>
+            Remove the pupil from this booking and restore the slot to available? The pupil will be notified.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isProcessing}>No, Keep Booking</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => removePupilMutation.mutate()}
+            disabled={isProcessing}
+            className="bg-amber-600 hover:bg-amber-700"
+          >
+            {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Yes, Remove Pupil'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    {/* Delete Booking Dialog */}
+    <AlertDialog open={showDeleteBookingDialog} onOpenChange={setShowDeleteBookingDialog}>
+      <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete Booking</AlertDialogTitle>
+          <AlertDialogDescription>
+            Delete this booking entirely and restore the slot to available? The pupil will be notified. This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isProcessing}>No, Keep Booking</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => deleteBookingMutation.mutate()}
+            disabled={isProcessing}
+            className="bg-rose-600 hover:bg-rose-700"
+          >
+            {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Yes, Delete Booking'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
