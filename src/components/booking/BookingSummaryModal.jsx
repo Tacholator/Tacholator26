@@ -217,45 +217,6 @@ Generate a professional, clear, and concise lesson summary (2-3 paragraphs) that
             </CardContent>
           </Card>
 
-          {/* AI Summary Section */}
-          <Card className="border-purple-200 bg-purple-50">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-purple-600" />
-                  AI-Generated Summary
-                </CardTitle>
-                <Button
-                  onClick={handleGenerateAISummary}
-                  disabled={isGeneratingSummary}
-                  size="sm"
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  {isGeneratingSummary ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Generate Summary
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                value={summaryData.aiSummary}
-                onChange={(e) => setSummaryData({ ...summaryData, aiSummary: e.target.value })}
-                placeholder="Click 'Generate Summary' to create an AI-powered lesson summary based on your notes..."
-                rows={4}
-                className="bg-white"
-              />
-            </CardContent>
-          </Card>
-
           {/* Summary Form */}
           <div className="space-y-4">
             <div>
@@ -318,6 +279,45 @@ Generate a professional, clear, and concise lesson summary (2-3 paragraphs) that
               />
             </div>
           </div>
+
+          {/* AI Summary Section */}
+          <Card className="border-purple-200 bg-purple-50">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  AI-Generated Summary
+                </CardTitle>
+                <Button
+                  onClick={handleGenerateAISummary}
+                  disabled={isGeneratingSummary}
+                  size="sm"
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  {isGeneratingSummary ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Generate Summary
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                value={summaryData.aiSummary}
+                onChange={(e) => setSummaryData({ ...summaryData, aiSummary: e.target.value })}
+                placeholder="Click 'Generate Summary' to create an AI-powered lesson summary based on your notes..."
+                rows={4}
+                className="bg-white"
+              />
+            </CardContent>
+          </Card>
         </div>
 
         <DialogFooter>
