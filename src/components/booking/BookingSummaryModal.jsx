@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Loader2, Calendar, Clock, MapPin, FileText, Save } from 'lucide-react';
+import { Loader2, Calendar, Clock, MapPin, FileText, Save, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
@@ -25,8 +25,10 @@ export default function BookingSummaryModal({
     progressNotes: '',
     nextSteps: '',
     homeworkAssigned: '',
-    instructorComments: ''
+    instructorComments: '',
+    aiSummary: ''
   });
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
 
   // Check if there's an existing diary entry for this booking
   const { data: existingDiaryEntry } = useQuery({
@@ -46,7 +48,8 @@ export default function BookingSummaryModal({
         progressNotes: existingDiaryEntry.whatWentWell || '',
         nextSteps: existingDiaryEntry.areasToImprove || '',
         homeworkAssigned: existingDiaryEntry.homeworkSuggestions || '',
-        instructorComments: existingDiaryEntry.instructorComments || ''
+        instructorComments: existingDiaryEntry.instructorComments || '',
+        aiSummary: existingDiaryEntry.aiSummary || ''
       });
     } else {
       setSummaryData({
@@ -54,10 +57,44 @@ export default function BookingSummaryModal({
         progressNotes: '',
         nextSteps: '',
         homeworkAssigned: '',
-        instructorComments: ''
+        instructorComments: '',
+        aiSummary: ''
       });
     }
   }, [existingDiaryEntry, booking]);
+
+  const handleGenerateAISummary = async () => {
+    setIsGeneratingSummary(true);
+    try {
+      const prompt = `Create a concise lesson summary based on the following details:
+
+What Was Covered: ${summaryData.whatWasCovered || 'Not provided'}
+Progress Notes / What Went Well: ${summaryData.progressNotes || 'Not provided'}
+Areas to Improve / Next Steps: ${summaryData.nextSteps || 'Not provided'}
+Homework Assigned: ${summaryData.homeworkAssigned || 'Not provided'}
+Instructor Comments: ${summaryData.instructorComments || 'Not provided'}
+
+Generate a professional, clear, and concise lesson summary (2-3 paragraphs) that captures the key points from this driving lesson.`;
+
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: prompt
+      });
+
+      setSummaryData({ ...summaryData, aiSummary: response });
+      toast({ 
+        title: 'AI summary generated', 
+        description: 'Review and edit as needed before saving' 
+      });
+    } catch (error) {
+      toast({ 
+        title: 'Failed to generate summary', 
+        description: error.message, 
+        variant: 'destructive' 
+      });
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!booking) return;
@@ -73,7 +110,9 @@ export default function BookingSummaryModal({
         whatWentWell: summaryData.progressNotes,
         areasToImprove: summaryData.nextSteps,
         homeworkSuggestions: summaryData.homeworkAssigned,
-        instructorComments: summaryData.instructorComments
+        instructorComments: summaryData.instructorComments,
+        aiSummary: summaryData.aiSummary,
+        aiSummaryGeneratedAt: summaryData.aiSummary ? new Date().toISOString() : null
       };
 
       if (existingDiaryEntry) {
@@ -175,6 +214,45 @@ export default function BookingSummaryModal({
                   <p className="font-medium text-slate-800">{locations.dropoff}</p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* AI Summary Section */}
+          <Card className="border-purple-200 bg-purple-50">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  AI-Generated Summary
+                </CardTitle>
+                <Button
+                  onClick={handleGenerateAISummary}
+                  disabled={isGeneratingSummary}
+                  size="sm"
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  {isGeneratingSummary ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Generate Summary
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                value={summaryData.aiSummary}
+                onChange={(e) => setSummaryData({ ...summaryData, aiSummary: e.target.value })}
+                placeholder="Click 'Generate Summary' to create an AI-powered lesson summary based on your notes..."
+                rows={4}
+                className="bg-white"
+              />
             </CardContent>
           </Card>
 
