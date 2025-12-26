@@ -83,9 +83,12 @@ export default function Calendar24Hour({
     const dateStr = day.format('YYYY-MM-DD');
     const slotDateTime = moment(`${dateStr} ${timeSlot}`, 'YYYY-MM-DD HH:mm');
 
-    // Check if there's a booking at this time
+    // Check if there's a booking at this time (only non-cancelled bookings)
     const slotEnd = slotDateTime.clone().add(30, 'minutes');
     const overlappingBooking = bookings.find(b => {
+      if (b.status === 'cancelled_by_instructor' || b.status === 'cancelled_by_pupil' || b.status === 'declined_by_instructor') {
+        return false;
+      }
       const bookingStart = moment(b.startAtUtc).local();
       const bookingEnd = moment(b.endAtUtc).local();
       return slotDateTime.isBefore(bookingEnd) && slotEnd.isAfter(bookingStart);
