@@ -28,8 +28,21 @@ export default function AdminInstructorCalendars() {
   const { data: allInstructors = [], isLoading: loadingInstructors } = useQuery({
     queryKey: ['allInstructors'],
     queryFn: async () => {
-      const instructors = await base44.entities.Instructor.list();
-      return instructors.sort((a, b) => a.name.localeCompare(b.name));
+      // Get all users with admin role (instructors)
+      const users = await base44.entities.User.filter({ role: 'admin' });
+      // Get instructor profiles to get additional info
+      const instructorProfiles = await base44.entities.Instructor.list();
+      
+      // Merge user data with instructor profiles
+      return users.map(user => {
+        const profile = instructorProfiles.find(p => p.created_by === user.email);
+        return {
+          id: user.id,
+          name: profile?.name || user.full_name || user.email,
+          email: user.email,
+          instructorProfileId: profile?.id
+        };
+      }).sort((a, b) => a.name.localeCompare(b.name));
     }
   });
 
@@ -62,7 +75,7 @@ export default function AdminInstructorCalendars() {
     const query = searchQuery.toLowerCase();
     return allInstructors.filter(i => {
       const name = i.name?.toLowerCase() || '';
-      const email = i.created_by?.toLowerCase() || '';
+      const email = i.email?.toLowerCase() || '';
       return name.includes(query) || email.includes(query);
     });
   }, [allInstructors, searchQuery]);
@@ -142,7 +155,7 @@ export default function AdminInstructorCalendars() {
                       <SelectItem key={instructor.id} value={instructor.id}>
                         <div className="flex flex-col">
                           <span className="font-medium">{instructor.name}</span>
-                          <span className="text-xs text-slate-500">{instructor.created_by}</span>
+                          <span className="text-xs text-slate-500">{instructor.email}</span>
                         </div>
                       </SelectItem>
                     ))
