@@ -166,6 +166,20 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
+      // Create refund ledger entry for confirmed bookings
+      if (booking.status === 'confirmed' && booking.totalPriceGbp > 0) {
+        await base44.entities.PaymentLedger.create({
+          userId: booking.pupilId,
+          bookingId: booking.id,
+          type: 'refund',
+          reason: 'lesson_cancelled_by_instructor',
+          amountGbp: booking.totalPriceGbp,
+          hours: booking.durationHours,
+          createdByRole: 'instructor',
+          note: 'Refund applied - lesson cancelled by instructor'
+        });
+      }
+
       // Update booking status
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'cancelled_by_instructor',
@@ -265,6 +279,20 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
 
+      // If booking was confirmed, create refund ledger entry
+      if (booking.status === 'confirmed' && booking.totalPriceGbp > 0) {
+        await base44.entities.PaymentLedger.create({
+          userId: booking.pupilId,
+          bookingId: booking.id,
+          type: 'refund',
+          reason: 'lesson_cancelled_by_instructor',
+          amountGbp: booking.totalPriceGbp,
+          hours: booking.durationHours,
+          createdByRole: 'instructor',
+          note: 'Refund applied - pupil removed by instructor'
+        });
+      }
+
       // Cancel booking
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'cancelled_by_instructor',
@@ -311,6 +339,20 @@ export default function BookingDetailsModal({
   const deleteBookingMutation = useMutation({
     mutationFn: async () => {
       setIsProcessing(true);
+
+      // If booking was confirmed, create refund ledger entry
+      if (booking.status === 'confirmed' && booking.totalPriceGbp > 0) {
+        await base44.entities.PaymentLedger.create({
+          userId: booking.pupilId,
+          bookingId: booking.id,
+          type: 'refund',
+          reason: 'lesson_cancelled_by_instructor',
+          amountGbp: booking.totalPriceGbp,
+          hours: booking.durationHours,
+          createdByRole: 'instructor',
+          note: 'Refund applied - booking deleted by instructor'
+        });
+      }
 
       // Cancel booking
       await base44.entities.LessonBooking.update(booking.id, {
