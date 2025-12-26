@@ -32,7 +32,8 @@ import {
   Settings,
   FileText,
   Shield,
-  Receipt
+  Receipt,
+  Calendar as CalendarIcon
 } from 'lucide-react';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
@@ -78,9 +79,13 @@ export default function Layout({ children, currentPageName }) {
   // Build navigation dynamically based on role
   const baseNavItems = buildNavigation(isInstructor);
   
-  // Add Data Management only for main admin
+  // Add admin pages only for main admin
   const navItems = isInstructor && isMainAdmin
-    ? [...baseNavItems, { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' }]
+    ? [
+        ...baseNavItems, 
+        { name: 'Instructor Calendars', icon: CalendarIcon, page: 'AdminInstructorCalendars' },
+        { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' }
+      ]
     : baseNavItems;
 
   const handleLogout = () => {
