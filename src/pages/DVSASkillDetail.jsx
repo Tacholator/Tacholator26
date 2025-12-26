@@ -23,7 +23,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote } from 'lucide-react';
+import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote, UserX } from 'lucide-react';
 import { getSkillById, DVSA_SKILLS_DATA } from '@/components/dvsa/dvsaSkillsData';
 import StudyMaterial from '@/components/dvsa/StudyMaterial';
 import McqQuiz from '@/components/dvsa/McqQuiz';
@@ -36,6 +36,7 @@ export default function DVSASkillDetail() {
 
   const [activeTab, setActiveTab] = useState('material');
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showRemoveAllModal, setShowRemoveAllModal] = useState(false);
   const [selectedPupils, setSelectedPupils] = useState([]);
   const [assignComponents, setAssignComponents] = useState('both');
   const [materialProgress, setMaterialProgress] = useState({ scrollDepth: 0, timeSpent: 0 });
@@ -141,6 +142,19 @@ export default function DVSASkillDetail() {
     }
   });
 
+  const removeAllAssignmentsMutation = useMutation({
+    mutationFn: async () => {
+      const assignmentIds = allAssignments.map(a => a.id);
+      for (const id of assignmentIds) {
+        await base44.entities.SkillAssignment.delete(id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['skillAssignmentsForSkill', skillId]);
+      setShowRemoveAllModal(false);
+    }
+  });
+
   const materialContent = skill?.learningMaterial || '<p>Content for this skill will be added soon.</p>';
   
   React.useEffect(() => {
@@ -235,13 +249,25 @@ export default function DVSASkillDetail() {
             </Button>
           </Link>
           {user?.role === 'admin' && (
-            <Button 
-              onClick={() => setShowAssignModal(true)}
-              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-            >
-              <Send className="w-4 h-4 mr-2" />
-              Assign to Pupils
-            </Button>
+            <div className="flex gap-2">
+              {allAssignments.length > 0 && (
+                <Button 
+                  onClick={() => setShowRemoveAllModal(true)}
+                  variant="destructive"
+                  className="bg-rose-600 hover:bg-rose-700"
+                >
+                  <UserX className="w-4 h-4 mr-2" />
+                  Remove All Pupils
+                </Button>
+              )}
+              <Button 
+                onClick={() => setShowAssignModal(true)}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Assign to Pupils
+              </Button>
+            </div>
           )}
         </div>
 
@@ -521,6 +547,37 @@ export default function DVSASkillDetail() {
               className="bg-teal-600 hover:bg-teal-700"
             >
               {createAssignmentMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Assign'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showRemoveAllModal} onOpenChange={setShowRemoveAllModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove All Assigned Pupils</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-slate-600">
+              This will remove this study material from all {allAssignments.length} assigned pupil{allAssignments.length !== 1 ? 's' : ''}. This action cannot be undone.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRemoveAllModal(false)}>Cancel</Button>
+            <Button
+              onClick={() => removeAllAssignmentsMutation.mutate()}
+              disabled={removeAllAssignmentsMutation.isPending}
+              variant="destructive"
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              {removeAllAssignmentsMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Removing...
+                </>
+              ) : (
+                'Remove All'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
