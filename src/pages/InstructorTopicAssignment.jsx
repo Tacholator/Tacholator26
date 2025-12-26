@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, Search, Lock, Unlock, BookOpen, ClipboardList, Trash2 } from 'lucide-react';
+import { ChevronLeft, Search, Lock, Unlock, BookOpen, ClipboardList } from 'lucide-react';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 export default function InstructorTopicAssignment() {
@@ -42,22 +42,6 @@ export default function InstructorTopicAssignment() {
 
   const revokeAccessMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.PupilTopicAccess.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['allTopicAccess']);
-    }
-  });
-
-  const revokeAllPupilsMutation = useMutation({
-    mutationFn: async (topicId) => {
-      const allAccess = await base44.entities.PupilTopicAccess.filter({ topicId, instructorId: user.id });
-      const activeAccess = allAccess.filter(a => !a.revokedAt);
-      
-      await Promise.all(
-        activeAccess.map(access =>
-          base44.entities.PupilTopicAccess.update(access.id, { revokedAt: new Date().toISOString() })
-        )
-      );
-    },
     onSuccess: () => {
       queryClient.invalidateQueries(['allTopicAccess']);
     }
@@ -161,45 +145,18 @@ export default function InstructorTopicAssignment() {
           {/* Topic Access Management */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>
-                  {selectedPupil 
-                    ? `Access for ${selectedPupil.firstName} ${selectedPupil.lastName}`
-                    : 'Topic Access Management'
-                  }
-                </CardTitle>
-                {!selectedPupil && (
-                  <p className="text-sm text-slate-500">Manage all pupils' access by topic</p>
-                )}
-              </div>
+              <CardTitle>
+                {selectedPupil 
+                  ? `Access for ${selectedPupil.firstName} ${selectedPupil.lastName}`
+                  : 'Select a pupil to manage access'
+                }
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {!selectedPupil ? (
-                <div className="space-y-4">
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-                    <p className="text-sm text-amber-800">
-                      <strong>Bulk Actions:</strong> Revoke access for all pupils from specific topics using the buttons below
-                    </p>
-                  </div>
-                  {courseWorkTopics.map(topic => (
-                    <div key={topic.id} className="border border-slate-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-slate-800">{topic.title}</h3>
-                          <p className="text-sm text-slate-500 mt-1">Revoke access from all assigned pupils</p>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => revokeAllPupilsMutation.mutate(topic.topicId)}
-                          disabled={revokeAllPupilsMutation.isPending}
-                        >
-                          <Trash2 className="w-3 h-3 mr-1" />
-                          Remove All Pupils
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                <div className="text-center py-12 text-slate-500">
+                  <Lock className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                  <p>Choose a pupil from the list to manage their topic access</p>
                 </div>
               ) : (
                 <div className="space-y-4">
