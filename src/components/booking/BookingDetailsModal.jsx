@@ -303,6 +303,7 @@ export default function BookingDetailsModal({
       if (slotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
+          reservedByPupilId: null,
           bookingId: null
         });
       }
@@ -364,6 +365,7 @@ export default function BookingDetailsModal({
       if (slotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
+          reservedByPupilId: null,
           bookingId: null
         });
       }
