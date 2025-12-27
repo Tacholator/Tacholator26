@@ -102,7 +102,7 @@ Requirements:
   };
 
   const handleSave = async () => {
-    if (!booking) return;
+    if (!booking || !pupil) return;
     
     setIsSaving(true);
     try {
@@ -120,18 +120,33 @@ Requirements:
         aiSummaryGeneratedAt: summaryData.aiSummary ? new Date().toISOString() : null
       };
 
+      // Save diary entry
       if (existingDiaryEntry) {
         await base44.entities.DiaryEntry.update(existingDiaryEntry.id, diaryData);
       } else {
         await base44.entities.DiaryEntry.create(diaryData);
       }
 
+      // Update pupil hours
+      const updatedHours = (pupil.hoursCompleted || 0) + (booking.durationHours || 0);
+      await base44.entities.Pupil.update(pupil.id, {
+        hoursCompleted: updatedHours
+      });
+
+      // Mark booking as completed
+      await base44.entities.LessonBooking.update(booking.id, {
+        status: 'completed'
+      });
+
       queryClient.invalidateQueries(['diaryEntry', booking.id]);
       queryClient.invalidateQueries(['diaryEntries', booking.pupilId]);
+      queryClient.invalidateQueries(['pupils']);
+      queryClient.invalidateQueries(['bookings']);
+      queryClient.invalidateQueries(['lessonBookings']);
       
       toast({ 
         title: 'Lesson summary saved', 
-        description: 'Your notes have been recorded successfully' 
+        description: 'Hours updated and lesson marked complete' 
       });
       
       onOpenChange(false);
