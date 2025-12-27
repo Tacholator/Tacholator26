@@ -4355,14 +4355,9 @@ export default function CourseWorkDetail() {
      h.title?.toLowerCase().includes(topicIdStr?.toLowerCase()))
   );
   
-  // Default access is allowed for all pupils unless explicitly restricted
-  const hasStudyAccess = isInstructor || 
-    !access || // No access record = allowed by default
-    access.grantStudyMaterial !== false || // Not explicitly restricted
+  const hasStudyAccess = isInstructor || (access?.grantStudyMaterial === true) || 
     (hasHomeworkAccess && myHomework.some(h => h.description?.toLowerCase().includes('study')));
-  const hasMcqAccess = isInstructor || 
-    !access || // No access record = allowed by default
-    access.grantPracticeQuestions !== false || // Not explicitly restricted
+  const hasMcqAccess = isInstructor || (access?.grantPracticeQuestions === true) || 
     (hasHomeworkAccess && myHomework.some(h => h.description?.toLowerCase().includes('practice')));
 
   const dismissAudioHint = () => {

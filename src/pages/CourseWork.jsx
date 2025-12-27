@@ -139,9 +139,8 @@ export default function CourseWork() {
   const hasAccess = (topicId, type) => {
     if (isInstructor) return true;
     const access = accessList.find(a => a.topicId === courseWorkTopics.find(t => t.id === topicId)?.topicId && !a.revokedAt);
-    // Default access is allowed unless explicitly restricted
-    if (!access) return true;
-    return type === 'study' ? access.grantStudyMaterial !== false : access.grantPracticeQuestions !== false;
+    if (!access) return false;
+    return type === 'study' ? access.grantStudyMaterial : access.grantPracticeQuestions;
   };
 
   const handleCardClick = (itemId, event) => {
@@ -191,12 +190,21 @@ export default function CourseWork() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {courseWorkTopics.map((item, index) => {
+            const hasStudyAccess = hasAccess(item.id, 'study');
+            const hasMcqAccess = hasAccess(item.id, 'mcq');
+            const isLocked = !isInstructor && !hasStudyAccess && !hasMcqAccess;
+
             return (
               <Card 
                 key={item.id}
                 onClick={(e) => handleCardClick(item.id, e)}
                 className={`${cardColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105 relative group`}
               >
+                {isLocked && (
+                  <div className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm">
+                    <Lock className="w-4 h-4 text-slate-600" />
+                  </div>
+                )}
                 {isInstructor && (
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity assign-button">
                     <Button
