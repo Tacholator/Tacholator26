@@ -249,13 +249,25 @@ export default function DVSASkillDetail() {
             </Button>
           </Link>
           {user?.role === 'admin' && (
-            <Button 
-              onClick={() => setShowAssignModal(true)}
-              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-            >
-              <Send className="w-4 h-4 mr-2" />
-              Assign to Pupils
-            </Button>
+            <div className="flex gap-2">
+              {allAssignments.length > 0 && (
+                <Button 
+                  onClick={() => setShowRemoveAllModal(true)}
+                  variant="destructive"
+                  className="bg-rose-600 hover:bg-rose-700"
+                >
+                  <UserX className="w-4 h-4 mr-2" />
+                  Remove All Pupils
+                </Button>
+              )}
+              <Button 
+                onClick={() => setShowAssignModal(true)}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Assign to Pupils
+              </Button>
+            </div>
           )}
         </div>
 
@@ -417,20 +429,7 @@ export default function DVSASkillDetail() {
           <TabsContent value="progress">
             <Card className="border-0 shadow-sm">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Pupil Progress Overview</CardTitle>
-                  {allAssignments.length > 0 && (
-                    <Button 
-                      onClick={() => setShowRemoveAllModal(true)}
-                      variant="destructive"
-                      size="sm"
-                      className="bg-rose-600 hover:bg-rose-700"
-                    >
-                      <UserX className="w-4 h-4 mr-2" />
-                      Remove All Pupils
-                    </Button>
-                  )}
-                </div>
+                <CardTitle>Pupil Progress Overview</CardTitle>
               </CardHeader>
               <CardContent>
                 {allAssignments.length === 0 ? (
