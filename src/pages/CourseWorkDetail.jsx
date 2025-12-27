@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileText, Volume2, X, CheckCircle, AlertCircle, Lock, Users, Trash2 } from 'lucide-react';
+import { ArrowLeft, FileText, Volume2, X, CheckCircle, AlertCircle, Lock, Users, Trash2, UserX, Loader2 } from 'lucide-react';
 import SectionAudioPlayer from '@/components/learning/SectionAudioPlayer';
 import McqQuiz from '@/components/coursework/McqQuiz';
 import { questionPacks } from '@/components/coursework/questionPacks';
@@ -4266,12 +4266,27 @@ export default function CourseWorkDetail() {
     return !hasSeenHint && localStorage.getItem('enable_audio_reading') !== 'false';
   });
   const [showLockedDialog, setShowLockedDialog] = useState(false);
+  const [showRemoveAllDialog, setShowRemoveAllDialog] = useState(false);
 
   const deleteAccessMutation = useMutation({
     mutationFn: (accessId) => base44.entities.PupilTopicAccess.delete(accessId),
     onSuccess: () => {
       queryClient.invalidateQueries(['topicAccessRecords']);
       queryClient.invalidateQueries(['pupilTopicAccess']);
+    }
+  });
+
+  const removeAllAccessMutation = useMutation({
+    mutationFn: async () => {
+      const accessIds = activeAccessRecords.map(a => a.id);
+      for (const id of accessIds) {
+        await base44.entities.PupilTopicAccess.delete(id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['topicAccessRecords']);
+      queryClient.invalidateQueries(['pupilTopicAccess']);
+      setShowRemoveAllDialog(false);
     }
   });
 
@@ -4588,9 +4603,20 @@ export default function CourseWorkDetail() {
         {isInstructor && activeAccessRecords.length > 0 && (
           <Card className="border-0 shadow-sm mb-6 bg-blue-50/50">
             <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Users className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-slate-800">Assigned Pupils ({activeAccessRecords.length})</h3>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-semibold text-slate-800">Assigned Pupils ({activeAccessRecords.length})</h3>
+                </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setShowRemoveAllDialog(true)}
+                  className="bg-rose-600 hover:bg-rose-700"
+                >
+                  <UserX className="w-4 h-4 mr-2" />
+                  Remove All Pupils
+                </Button>
               </div>
               <div className="space-y-2">
                 {activeAccessRecords.map((access) => (
@@ -4674,6 +4700,35 @@ export default function CourseWorkDetail() {
         </p>
 
         <LockedContentDialog open={showLockedDialog} onOpenChange={setShowLockedDialog} />
+
+        {/* Remove All Dialog */}
+        <AlertDialog open={showRemoveAllDialog} onOpenChange={setShowRemoveAllDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove All Assigned Pupils</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will remove this study material from all {activeAccessRecords.length} assigned pupil{activeAccessRecords.length !== 1 ? 's' : ''}. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={removeAllAccessMutation.isPending}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => removeAllAccessMutation.mutate()}
+                disabled={removeAllAccessMutation.isPending}
+                className="bg-rose-600 hover:bg-rose-700"
+              >
+                {removeAllAccessMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Removing...
+                  </>
+                ) : (
+                  'Remove All'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
