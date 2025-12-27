@@ -7,6 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, FileText, Volume2, X, CheckCircle, AlertCircle, Lock, Users, Trash2, UserX, Loader2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import SectionAudioPlayer from '@/components/learning/SectionAudioPlayer';
 import McqQuiz from '@/components/coursework/McqQuiz';
 import { questionPacks } from '@/components/coursework/questionPacks';
