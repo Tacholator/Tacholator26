@@ -139,8 +139,9 @@ export default function CourseWork() {
   const hasAccess = (topicId, type) => {
     if (isInstructor) return true;
     const access = accessList.find(a => a.topicId === courseWorkTopics.find(t => t.id === topicId)?.topicId && !a.revokedAt);
-    if (!access) return false;
-    return type === 'study' ? access.grantStudyMaterial : access.grantPracticeQuestions;
+    // Default access is allowed unless explicitly restricted
+    if (!access) return true;
+    return type === 'study' ? access.grantStudyMaterial !== false : access.grantPracticeQuestions !== false;
   };
 
   const handleCardClick = (itemId, event) => {
@@ -177,20 +178,6 @@ export default function CourseWork() {
           <h1 className="text-3xl font-bold text-[#071739]">Course Work</h1>
         </div>
 
-        {!isInstructor && (
-          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <Lock className="w-5 h-5 text-blue-600 mt-0.5" />
-              <div>
-                <p className="font-medium text-blue-900">Content Access</p>
-                <p className="text-sm text-blue-700 mt-1">
-                  Topics with a lock icon require your instructor to assign access. Once assigned, you can view study materials and practice questions.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {isInstructor && (
           <div className="mb-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
             <div className="flex items-center justify-between">
@@ -204,21 +191,12 @@ export default function CourseWork() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {courseWorkTopics.map((item, index) => {
-            const hasStudyAccess = hasAccess(item.id, 'study');
-            const hasMcqAccess = hasAccess(item.id, 'mcq');
-            const isLocked = !isInstructor && !hasStudyAccess && !hasMcqAccess;
-
             return (
               <Card 
                 key={item.id}
                 onClick={(e) => handleCardClick(item.id, e)}
                 className={`${cardColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105 relative group`}
               >
-                {isLocked && (
-                  <div className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm">
-                    <Lock className="w-4 h-4 text-slate-600" />
-                  </div>
-                )}
                 {isInstructor && (
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity assign-button">
                     <Button
