@@ -139,8 +139,9 @@ export default function CourseWork() {
   const hasAccess = (topicId, type) => {
     if (isInstructor) return true;
     const access = accessList.find(a => a.topicId === courseWorkTopics.find(t => t.id === topicId)?.topicId && !a.revokedAt);
-    if (!access) return false;
-    return type === 'study' ? access.grantStudyMaterial : access.grantPracticeQuestions;
+    // Default: full access unless explicitly restricted
+    if (!access) return true;
+    return type === 'study' ? access.grantStudyMaterial !== false : access.grantPracticeQuestions !== false;
   };
 
   const handleCardClick = (itemId, event) => {

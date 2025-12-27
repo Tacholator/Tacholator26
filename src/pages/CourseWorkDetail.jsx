@@ -4355,10 +4355,13 @@ export default function CourseWorkDetail() {
      h.title?.toLowerCase().includes(topicIdStr?.toLowerCase()))
   );
   
-  const hasStudyAccess = isInstructor || (access?.grantStudyMaterial === true) || 
+  // Default: full access unless explicitly restricted
+  const hasStudyAccess = isInstructor || !access || access.grantStudyMaterial !== false || 
     (hasHomeworkAccess && myHomework.some(h => h.description?.toLowerCase().includes('study')));
-  const hasMcqAccess = isInstructor || (access?.grantPracticeQuestions === true) || 
+  const hasMcqAccess = isInstructor || !access || access.grantPracticeQuestions !== false || 
     (hasHomeworkAccess && myHomework.some(h => h.description?.toLowerCase().includes('practice')));
+  
+  const isTopicLocked = !isInstructor && access && access.grantStudyMaterial === false && access.grantPracticeQuestions === false;
 
   const dismissAudioHint = () => {
     setShowAudioHint(false);
@@ -4608,6 +4611,23 @@ export default function CourseWorkDetail() {
             {backText}
           </Button>
         </Link>
+
+        {/* Learner: Show locked content message */}
+        {isTopicLocked && (
+          <Card className="border-l-4 border-l-amber-500 mb-6">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-3">
+                <Lock className="w-5 h-5 text-amber-600 mt-0.5" />
+                <div>
+                  <p className="font-medium text-amber-900 mb-1">Content Access</p>
+                  <p className="text-sm text-amber-700">
+                    Topics with a lock icon require your instructor to assign access. Once assigned, you can view study materials and practice questions.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Instructor: Show Assigned Pupils */}
         {isInstructor && activeAccessRecords.length > 0 && (
