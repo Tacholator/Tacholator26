@@ -66,15 +66,20 @@ export default function BookingSummaryModal({
   const handleGenerateAISummary = async () => {
     setIsGeneratingSummary(true);
     try {
-      const prompt = `Create a concise lesson summary based on the following details:
+      const prompt = `Write a brief lesson summary directly to the pupil using second person (you/your). Maximum 120 words, 1 short paragraph.
 
-What Was Covered: ${summaryData.whatWasCovered || 'Not provided'}
-Progress Notes / What Went Well: ${summaryData.progressNotes || 'Not provided'}
-Areas to Improve / Next Steps: ${summaryData.nextSteps || 'Not provided'}
-Homework Assigned: ${summaryData.homeworkAssigned || 'Not provided'}
-Instructor Comments: ${summaryData.instructorComments || 'Not provided'}
+What was covered: ${summaryData.whatWasCovered || 'Not provided'}
+What went well: ${summaryData.progressNotes || 'Not provided'}
+Next steps: ${summaryData.nextSteps || 'Not provided'}
+Homework: ${summaryData.homeworkAssigned || 'Not provided'}
+Instructor notes: ${summaryData.instructorComments || 'Not provided'}
 
-Generate a professional, clear, and concise lesson summary (2-3 paragraphs) that captures the key points from this driving lesson.`;
+Requirements:
+- Address the pupil directly using "you" and "your"
+- NEVER use "the student", "the pupil", "the learner", "student showed", "pupil demonstrated"
+- Keep it brief, clear, and supportive
+- Focus on: what you worked on, what you did well, and next steps
+- Maximum 120 words, one paragraph`;
 
       const response = await base44.integrations.Core.InvokeLLM({
         prompt: prompt
@@ -309,6 +314,7 @@ Generate a professional, clear, and concise lesson summary (2-3 paragraphs) that
               </div>
             </CardHeader>
             <CardContent>
+              <p className="text-xs text-purple-600 mb-2">This summary is written directly to the pupil and kept brief.</p>
               <Textarea
                 value={summaryData.aiSummary}
                 onChange={(e) => setSummaryData({ ...summaryData, aiSummary: e.target.value })}
