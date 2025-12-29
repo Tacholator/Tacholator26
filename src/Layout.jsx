@@ -55,23 +55,6 @@ export default function Layout({ children, currentPageName }) {
     base44.auth.isAuthenticated().then(setIsAuthenticated);
   }, []);
 
-  // Redirect learners to LearnerDashboard on first sign-in
-  useEffect(() => {
-    if (user && isAuthenticated) {
-      const isLearner = user.role === 'user';
-      const isOnInstructorPage = currentPageName === 'InstructorDashboard' || 
-                                  currentPageName === 'Calendar' || 
-                                  currentPageName === 'PupilList' ||
-                                  currentPageName === 'PupilProfile' ||
-                                  currentPageName === 'InstructorResources' ||
-                                  currentPageName === 'AdminDataManagement';
-      
-      if (isLearner && isOnInstructorPage) {
-        navigate(createPageUrl('LearnerDashboard'), { replace: true });
-      }
-    }
-  }, [user, isAuthenticated, currentPageName, navigate]);
-
   // Determine if user is instructor or learner
   const isInstructor = user?.role === 'admin';
   const isMainAdmin = user?.email === 'fasobah@gmail.com';
