@@ -34,6 +34,9 @@ import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
+import LearnerNotes from './pages/LearnerNotes';
+import InstructorPupilNotes from './pages/InstructorPupilNotes';
+import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
 import __Layout from './Layout.jsx';
 
 
@@ -74,6 +77,9 @@ export const PAGES = {
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "TermsAndConditions": TermsAndConditions,
+    "LearnerNotes": LearnerNotes,
+    "InstructorPupilNotes": InstructorPupilNotes,
+    "InstructorPupilNotesList": InstructorPupilNotesList,
 }
 
 export const pagesConfig = {
