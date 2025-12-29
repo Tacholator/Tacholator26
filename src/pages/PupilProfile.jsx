@@ -429,12 +429,37 @@ export default function PupilProfile() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-white border shadow-sm mb-6">
-                          <TabsTrigger value="progress">Driving Progress</TabsTrigger>
-                          <TabsTrigger value="checks">First Lesson Checks</TabsTrigger>
-                          <TabsTrigger value="diary">Lesson Diary</TabsTrigger>
-                          <TabsTrigger value="lessons">Lessons</TabsTrigger>
-                          <TabsTrigger value="homework">Homework</TabsTrigger>
+          <TabsList className="bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-sm mb-6 p-1">
+                          <TabsTrigger 
+                            value="progress"
+                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#F7B602] data-[state=active]:to-[#d99f02] data-[state=active]:text-[#071739] data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
+                          >
+                            Driving Progress
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="checks"
+                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
+                          >
+                            First Lesson Checks
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="diary"
+                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
+                          >
+                            Lesson Diary
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="lessons"
+                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
+                          >
+                            Lessons
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="homework"
+                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
+                          >
+                            Homework
+                          </TabsTrigger>
                         </TabsList>
 
           <TabsContent value="progress">
