@@ -42,6 +42,15 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
     enabled: open && !!lessonId
   });
 
+  const { data: booking } = useQuery({
+    queryKey: ['booking', bookingId],
+    queryFn: async () => {
+      const bookings = await base44.entities.LessonBooking.filter({ id: bookingId });
+      return bookings[0] || null;
+    },
+    enabled: open && !!bookingId
+  });
+
   const { data: pupils = [] } = useQuery({
     queryKey: ['pupils'],
     queryFn: () => base44.entities.Pupil.list(),
@@ -67,34 +76,52 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         no_show: 'no_show'
       };
 
-      // Update lesson
-      await base44.entities.Lesson.update(lessonId, {
-        status: statusMap[data.completionOutcome],
-        completionOutcome: data.completionOutcome,
-        chargesApplied: data.chargesApplied,
-        chargesDecisionReason: data.chargesDecisionReason || null,
-        completionNote: data.completionNote || null,
-        completedAt: new Date().toISOString()
-      });
+      // Update lesson or booking
+      if (lessonId && lesson) {
+        await base44.entities.Lesson.update(lessonId, {
+          status: statusMap[data.completionOutcome],
+          completionOutcome: data.completionOutcome,
+          chargesApplied: data.chargesApplied,
+          chargesDecisionReason: data.chargesDecisionReason || null,
+          completionNote: data.completionNote || null,
+          completedAt: new Date().toISOString()
+        });
+      } else if (bookingId && booking) {
+        await base44.entities.LessonBooking.update(bookingId, {
+          status: data.completionOutcome,
+          completionOutcome: data.completionOutcome,
+          chargesApplied: data.chargesApplied,
+          chargesDecisionReason: data.chargesDecisionReason || null,
+          completionNote: data.completionNote || null,
+          completedAt: new Date().toISOString()
+        });
+      }
 
       // Apply charges logic if needed
-      if (data.chargesApplied && lesson) {
-        const pupil = pupils.find(p => p.id === lesson.pupilId);
-        if (pupil) {
+      const pupilId = lesson?.pupilId || booking?.pupilId;
+      const pupil = pupils.find(p => p.id === pupilId);
+      
+      if (data.chargesApplied && data.completionOutcome === 'completed' && pupil) {
+        let durationHours = 0;
+        if (lesson) {
           const startMoment = moment(lesson.startTime, 'HH:mm');
           const endMoment = moment(lesson.endTime, 'HH:mm');
-          const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
-          
-          const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
-          await base44.entities.Pupil.update(pupil.id, { 
-            hoursCompleted: newHoursCompleted 
-          });
+          durationHours = endMoment.diff(startMoment, 'minutes') / 60;
+        } else if (booking) {
+          durationHours = booking.durationHours || 0;
         }
+        
+        const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
+        await base44.entities.Pupil.update(pupil.id, { 
+          hoursCompleted: newHoursCompleted 
+        });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['lessons']);
       queryClient.invalidateQueries(['lesson', lessonId]);
+      queryClient.invalidateQueries(['bookings']);
+      queryClient.invalidateQueries(['booking', bookingId]);
       queryClient.invalidateQueries(['pupils']);
       toast({ title: 'Lesson updated' });
       onClose();
@@ -126,13 +153,15 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
     });
   };
 
-  const pupil = lesson ? pupils.find(p => p.id === lesson.pupilId) : null;
+  const currentRecord = lesson || booking;
+  const pupilId = lesson?.pupilId || booking?.pupilId;
+  const pupil = pupils.find(p => p.id === pupilId);
   const isCompleted = formData.completionOutcome === 'completed';
   const showChargesOptions = formData.completionOutcome === 'cancelled' || formData.completionOutcome === 'no_show';
 
   const isLoading = updateOutcomeMutation.isPending;
 
-  if (!lesson) {
+  if (!currentRecord) {
     return null;
   }
 
@@ -149,11 +178,11 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
             <div className="bg-slate-50 rounded-lg p-3 text-sm">
               <div className="flex items-center gap-2 text-slate-600 mb-1">
                 <Calendar className="w-4 h-4" />
-                {moment(lesson.date).format('DD MMM YYYY')}
+                {lesson ? moment(lesson.date).format('DD MMM YYYY') : moment(booking.startAtUtc).local().format('DD MMM YYYY')}
               </div>
               <div className="flex items-center gap-2 text-slate-600 mb-1">
                 <Clock className="w-4 h-4" />
-                {lesson.startTime} – {lesson.endTime}
+                {lesson ? `${lesson.startTime} – ${lesson.endTime}` : `${moment(booking.startAtUtc).local().format('HH:mm')} – ${moment(booking.endAtUtc).local().format('HH:mm')}`}
               </div>
               <p className="font-medium text-slate-800">
                 {pupil?.firstName} {pupil?.lastName}
