@@ -32,7 +32,7 @@ export default function InstructorPupilNotes() {
   const getAccessibleNotesCount = (pupilId) => {
     return allNotes.filter(note => 
       note.ownerPupilId === pupilId &&
-      (note.instructorAccessLevel === 'full' || note.createdByRole === 'instructor')
+      note.instructorAccessLevel === 'full'
     ).length;
   };
 

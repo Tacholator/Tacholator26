@@ -49,9 +49,7 @@ export default function InstructorPupilNotesList() {
     queryFn: async () => {
       const allNotes = await base44.entities.Note.filter({ ownerPupilId: pupilId });
       return allNotes
-        .filter(note => 
-          note.instructorAccessLevel === 'full' || note.createdByRole === 'instructor'
-        )
+        .filter(note => note.instructorAccessLevel === 'full')
         .sort((a, b) => new Date(b.updated_date) - new Date(a.updated_date));
     },
     enabled: !!pupilId && !!user?.id
@@ -175,20 +173,18 @@ export default function InstructorPupilNotesList() {
                     >
                       Open
                     </Button>
-                    {note.createdByRole === 'instructor' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedNote(note);
-                          setEditorOpen(true);
-                        }}
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedNote(note);
+                        setEditorOpen(true);
+                      }}
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Edit
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

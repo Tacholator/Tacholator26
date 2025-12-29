@@ -13,6 +13,8 @@ import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
 import InstructorNotifications from './pages/InstructorNotifications';
+import InstructorPupilNotes from './pages/InstructorPupilNotes';
+import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
 import InstructorResources from './pages/InstructorResources';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
 import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
@@ -21,6 +23,7 @@ import LearnerChats from './pages/LearnerChats';
 import LearnerDashboard from './pages/LearnerDashboard';
 import LearnerHomework from './pages/LearnerHomework';
 import LearnerLessons from './pages/LearnerLessons';
+import LearnerNotes from './pages/LearnerNotes';
 import LearnerNotifications from './pages/LearnerNotifications';
 import LearnerProgress from './pages/LearnerProgress';
 import LearnerResources from './pages/LearnerResources';
@@ -34,9 +37,6 @@ import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
-import LearnerNotes from './pages/LearnerNotes';
-import InstructorPupilNotes from './pages/InstructorPupilNotes';
-import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
 import __Layout from './Layout.jsx';
 
 
@@ -56,6 +56,8 @@ export const PAGES = {
     "InstructorDashboard": InstructorDashboard,
     "InstructorMcqReporting": InstructorMcqReporting,
     "InstructorNotifications": InstructorNotifications,
+    "InstructorPupilNotes": InstructorPupilNotes,
+    "InstructorPupilNotesList": InstructorPupilNotesList,
     "InstructorResources": InstructorResources,
     "InstructorTopicAssignment": InstructorTopicAssignment,
     "LearnerBookingCalendar": LearnerBookingCalendar,
@@ -64,6 +66,7 @@ export const PAGES = {
     "LearnerDashboard": LearnerDashboard,
     "LearnerHomework": LearnerHomework,
     "LearnerLessons": LearnerLessons,
+    "LearnerNotes": LearnerNotes,
     "LearnerNotifications": LearnerNotifications,
     "LearnerProgress": LearnerProgress,
     "LearnerResources": LearnerResources,
@@ -77,9 +80,6 @@ export const PAGES = {
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "TermsAndConditions": TermsAndConditions,
-    "LearnerNotes": LearnerNotes,
-    "InstructorPupilNotes": InstructorPupilNotes,
-    "InstructorPupilNotesList": InstructorPupilNotesList,
 }
 
 export const pagesConfig = {
