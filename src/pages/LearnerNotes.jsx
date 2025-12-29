@@ -33,17 +33,18 @@ export default function LearnerNotes() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me()
+    queryFn: () => base44.auth.me(),
+    retry: false
   });
 
   const { data: pupil } = useQuery({
     queryKey: ['myPupilProfile', user?.id],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user?.id) return null;
       const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
       return byLinkedId.length > 0 ? byLinkedId[0] : null;
     },
-    enabled: !!user
+    enabled: !!user?.id
   });
 
   const { data: notes = [], isLoading } = useQuery({

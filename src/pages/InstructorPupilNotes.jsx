@@ -13,19 +13,20 @@ export default function InstructorPupilNotes() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me()
+    queryFn: () => base44.auth.me(),
+    retry: false
   });
 
   const { data: pupils = [], isLoading } = useQuery({
     queryKey: ['pupils'],
     queryFn: () => base44.entities.Pupil.list(),
-    enabled: !!user
+    enabled: !!user?.id
   });
 
   const { data: allNotes = [] } = useQuery({
     queryKey: ['allNotes'],
     queryFn: () => base44.entities.Note.list(),
-    enabled: !!user
+    enabled: !!user?.id
   });
 
   const getAccessibleNotesCount = (pupilId) => {

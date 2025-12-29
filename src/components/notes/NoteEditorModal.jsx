@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,12 @@ export default function NoteEditorModal({ open, onClose, note, pupilId, instruct
     content: '',
     cardColor: 'auto',
     instructorAccessLevel: 'full'
+  });
+
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+    enabled: open
   });
 
   useEffect(() => {
@@ -82,7 +88,10 @@ export default function NoteEditorModal({ open, onClose, note, pupilId, instruct
       return;
     }
 
-    const { data: user } = await base44.auth.me();
+    if (!user) {
+      toast({ title: 'User not found', variant: 'destructive' });
+      return;
+    }
 
     if (note) {
       updateMutation.mutate({

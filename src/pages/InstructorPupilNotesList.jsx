@@ -31,7 +31,8 @@ export default function InstructorPupilNotesList() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me()
+    queryFn: () => base44.auth.me(),
+    retry: false
   });
 
   const { data: pupil, isLoading: pupilLoading } = useQuery({
@@ -53,7 +54,7 @@ export default function InstructorPupilNotesList() {
         )
         .sort((a, b) => new Date(b.updated_date) - new Date(a.updated_date));
     },
-    enabled: !!pupilId && !!user
+    enabled: !!pupilId && !!user?.id
   });
 
   const stripHtml = (html) => {
