@@ -13,23 +13,40 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { BookOpen, Target, Calendar, Users } from 'lucide-react';
 
-export default function CourseWorkAssignmentModal({ open, onClose, topic, onAssign, pupils = [] }) {
+export default function CourseWorkAssignmentModal({ open, onClose, topic, topics = [], onAssign, pupils = [], singlePupil = false }) {
+  const [selectedTopicId, setSelectedTopicId] = useState('');
   const [includeStudyMaterial, setIncludeStudyMaterial] = useState(true);
   const [includePracticeQuestions, setIncludePracticeQuestions] = useState(true);
   const [dueDate, setDueDate] = useState('');
   const [instructions, setInstructions] = useState('');
   const [selectedPupilIds, setSelectedPupilIds] = useState([]);
 
+  const currentTopic = topic || topics.find(t => t.topicId === selectedTopicId);
+
   const handleAssign = () => {
-    onAssign({
-      includeStudyMaterial,
-      includePracticeQuestions,
-      dueDate,
-      instructions,
-      pupilIds: selectedPupilIds
-    });
+    if (singlePupil) {
+      onAssign({
+        topicId: currentTopic.topicId,
+        topicTitle: currentTopic.title,
+        includeStudyMaterial,
+        includePracticeQuestions,
+        dueDate,
+        instructions
+      });
+    } else {
+      onAssign({
+        includeStudyMaterial,
+        includePracticeQuestions,
+        dueDate,
+        instructions,
+        pupilIds: selectedPupilIds,
+        topicId: currentTopic?.topicId,
+        topicTitle: currentTopic?.title
+      });
+    }
     onClose();
     setSelectedPupilIds([]);
+    setSelectedTopicId('');
   };
 
   const togglePupil = (pupilId) => {
@@ -54,16 +71,36 @@ export default function CourseWorkAssignmentModal({ open, onClose, topic, onAssi
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Assign {topic?.title} as Homework</DialogTitle>
-          <p className="text-sm text-slate-500 mt-2">Choose what to assign to your pupils</p>
+          <DialogTitle>Assign {currentTopic?.title || 'Coursework'} as Homework</DialogTitle>
+          <p className="text-sm text-slate-500 mt-2">{singlePupil ? 'Choose what to assign' : 'Choose what to assign to your pupils'}</p>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Select Pupils ({selectedPupilIds.length} selected)
-            </Label>
+          {!topic && topics.length > 0 && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4" />
+                Select Topic
+              </Label>
+              <select
+                value={selectedTopicId}
+                onChange={(e) => setSelectedTopicId(e.target.value)}
+                className="w-full p-2 border rounded-lg"
+              >
+                <option value="">Choose a topic...</option>
+                {topics.map(t => (
+                  <option key={t.topicId} value={t.topicId}>{t.title}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {!singlePupil && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Select Pupils ({selectedPupilIds.length} selected)
+              </Label>
             <div className="border rounded-lg p-3 max-h-48 overflow-y-auto bg-slate-50">
               <div className="flex items-center gap-2 mb-2 pb-2 border-b">
                 <Checkbox
@@ -87,7 +124,8 @@ export default function CourseWorkAssignmentModal({ open, onClose, topic, onAssi
                 <p className="text-sm text-slate-500 text-center py-2">No active pupils</p>
               )}
             </div>
-          </div>
+            </div>
+          )}
 
           <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
             <div className="flex items-center space-x-2">
@@ -158,10 +196,10 @@ export default function CourseWorkAssignmentModal({ open, onClose, topic, onAssi
           </Button>
           <Button
             onClick={handleAssign}
-            disabled={!includeStudyMaterial && !includePracticeQuestions || selectedPupilIds.length === 0}
+            disabled={(!includeStudyMaterial && !includePracticeQuestions) || (!singlePupil && selectedPupilIds.length === 0) || (!topic && !selectedTopicId)}
             className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
           >
-            Assign to {selectedPupilIds.length} Pupil{selectedPupilIds.length !== 1 ? 's' : ''}
+            {singlePupil ? 'Assign Coursework' : `Assign to ${selectedPupilIds.length} Pupil${selectedPupilIds.length !== 1 ? 's' : ''}`}
           </Button>
         </DialogFooter>
       </DialogContent>

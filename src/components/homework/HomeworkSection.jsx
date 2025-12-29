@@ -4,9 +4,11 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, BookOpen, Calendar, Trash2, CheckCircle2, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, Save } from 'lucide-react';
+import { Plus, BookOpen, Calendar, Trash2, CheckCircle2, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, Save, GraduationCap } from 'lucide-react';
 import moment from 'moment';
 import HomeworkFormModal from './HomeworkFormModal';
+import CourseWorkAssignmentModal from './CourseWorkAssignmentModal';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 const FORMAT_ICONS = {
   text: FileText,
@@ -21,6 +23,8 @@ const FORMAT_ICONS = {
 export default function HomeworkSection({ pupilId, instructorId, homework = [] }) {
   const [showModal, setShowModal] = useState(false);
   const [editingHomework, setEditingHomework] = useState(null);
+  const [showCourseWorkModal, setShowCourseWorkModal] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
@@ -32,6 +36,43 @@ export default function HomeworkSection({ pupilId, instructorId, homework = [] }
     mutationFn: (data) => base44.entities.HomeworkTemplate.create(data),
     onSuccess: () => queryClient.invalidateQueries(['homeworkTemplates'])
   });
+
+  const assignCourseWorkMutation = useMutation({
+    mutationFn: async ({ topicId, topicTitle, dueDate, instructions }) => {
+      return await base44.entities.HomeworkItem.create({
+        pupilId,
+        instructorId,
+        title: `Coursework: ${topicTitle}`,
+        description: instructions || `Complete the assigned coursework on ${topicTitle}`,
+        formatType: 'link',
+        formatPayload: {
+          url: `/course-work?topicId=${topicId}`,
+          topicId: topicId
+        },
+        dueDate: dueDate || null,
+        status: 'Pending'
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries(['homework', pupilId])
+  });
+
+  const handleAssignCourseWork = (topic) => {
+    setSelectedTopic(topic);
+    setShowCourseWorkModal(true);
+  };
+
+  const handleConfirmAssign = ({ dueDate, instructions }) => {
+    if (selectedTopic) {
+      assignCourseWorkMutation.mutate({
+        topicId: selectedTopic.topicId,
+        topicTitle: selectedTopic.title,
+        dueDate,
+        instructions
+      });
+    }
+    setShowCourseWorkModal(false);
+    setSelectedTopic(null);
+  };
 
   const handleSaveAsTemplate = (item) => {
     saveTemplateMutation.mutate({
@@ -107,10 +148,16 @@ export default function HomeworkSection({ pupilId, instructorId, homework = [] }
           <BookOpen className="w-5 h-5 text-amber-500" />
           Homework
         </h3>
-        <Button onClick={() => { setEditingHomework(null); setShowModal(true); }} size="sm" className="bg-teal-600 hover:bg-teal-700">
-          <Plus className="w-4 h-4 mr-1" />
-          Add Homework
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => { setEditingHomework(null); setShowModal(true); }} size="sm" variant="outline">
+            <Plus className="w-4 h-4 mr-1" />
+            Add Homework
+          </Button>
+          <Button onClick={() => setShowCourseWorkModal(true)} size="sm" className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
+            <GraduationCap className="w-4 h-4 mr-1" />
+            Assign Coursework
+          </Button>
+        </div>
       </div>
 
       {homework.length === 0 ? (
@@ -133,6 +180,18 @@ export default function HomeworkSection({ pupilId, instructorId, homework = [] }
         pupilId={pupilId}
         instructorId={instructorId}
         existingHomework={editingHomework}
+      />
+
+      <CourseWorkAssignmentModal
+        open={showCourseWorkModal}
+        onClose={() => {
+          setShowCourseWorkModal(false);
+          setSelectedTopic(null);
+        }}
+        topic={selectedTopic}
+        topics={courseWorkTopics}
+        onAssign={handleConfirmAssign}
+        singlePupil={true}
       />
     </div>
   );
