@@ -11,11 +11,11 @@ import moment from 'moment';
 
 // Warm color palette - stable per section
 const warmPalette = {
-  card_greeting: 'bg-gradient-to-br from-blue-50 to-cyan-50',
-  card_quiz_of_day: 'bg-gradient-to-br from-rose-50 to-pink-50',
-  card_todays_schedule: 'bg-gradient-to-br from-green-50 to-emerald-50',
-  card_upcoming_tests: 'bg-gradient-to-br from-peach-50 to-orange-50',
-  card_notifications: 'bg-gradient-to-br from-orange-50 to-amber-50'
+  card_greeting: 'bg-gradient-to-br from-blue-100 to-cyan-100',
+  card_quiz_of_day: 'bg-gradient-to-br from-rose-100 to-pink-100',
+  card_todays_schedule: 'bg-gradient-to-br from-green-100 to-emerald-100',
+  card_upcoming_tests: 'bg-gradient-to-br from-orange-100 to-amber-100',
+  card_notifications: 'bg-gradient-to-br from-amber-100 to-yellow-100'
 };
 
 export default function InstructorDashboard() {
