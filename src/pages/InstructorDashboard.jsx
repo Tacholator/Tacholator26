@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -6,8 +6,9 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle } from 'lucide-react';
+import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle } from 'lucide-react';
 import moment from 'moment';
+import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 
 // Warm color palette - stable per section
 const warmPalette = {
@@ -19,6 +20,9 @@ const warmPalette = {
 };
 
 export default function InstructorDashboard() {
+  const [outcomeModalOpen, setOutcomeModalOpen] = useState(false);
+  const [selectedLessonId, setSelectedLessonId] = useState(null);
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
@@ -74,6 +78,24 @@ export default function InstructorDashboard() {
     return lessonTime.isAfter(now) && l.status === 'Scheduled';
   });
 
+  // Context lesson for quick action (ongoing or just finished within 3 hours)
+  const contextLesson = todayLessons.find(l => {
+    const startTime = moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm');
+    const endTime = moment(`${l.date} ${l.endTime}`, 'YYYY-MM-DD HH:mm');
+    
+    // Ongoing lesson
+    if (startTime.isSameOrBefore(now) && endTime.isAfter(now) && l.status === 'Scheduled') {
+      return true;
+    }
+    
+    // Just finished within 3 hours
+    if (endTime.isSameOrBefore(now) && now.diff(endTime, 'minutes') <= 180 && l.status === 'Scheduled') {
+      return true;
+    }
+    
+    return false;
+  });
+
   const upcomingTests = pupils.filter(p =>
     p.practicalTestDate &&
     moment(p.practicalTestDate).isAfter(today) &&
@@ -99,9 +121,27 @@ export default function InstructorDashboard() {
 
   const firstName = user.firstName || user.full_name?.split(' ')[0] || 'there';
 
+  const handleMarkLesson = (lessonId) => {
+    setSelectedLessonId(lessonId);
+    setOutcomeModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
+        {/* Quick Action - Mark Lesson (contextual) */}
+        {contextLesson && (
+          <div className="mb-4">
+            <Button 
+              onClick={() => handleMarkLesson(contextLesson.id)}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+            >
+              <CheckCircle className="w-4 h-4" />
+              Mark Lesson as Complete
+            </Button>
+          </div>
+        )}
+
         {/* Fixed card order - cards show/hide in place */}
         <div className="space-y-4">
           
@@ -300,6 +340,15 @@ export default function InstructorDashboard() {
 
         </div>
       </div>
+
+      <LessonOutcomeModal
+        open={outcomeModalOpen}
+        onClose={() => {
+          setOutcomeModalOpen(false);
+          setSelectedLessonId(null);
+        }}
+        lessonId={selectedLessonId}
+      />
     </div>
   );
 }
