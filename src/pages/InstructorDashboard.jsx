@@ -48,6 +48,11 @@ export default function InstructorDashboard() {
     queryFn: () => base44.entities.Lesson.list('-date')
   });
 
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['bookings'],
+    queryFn: () => base44.entities.LessonBooking.list('-startAtUtc')
+  });
+
   const { data: dailyQuiz } = useQuery({
     queryKey: ['todayDailyQuiz'],
     queryFn: async () => {
@@ -77,6 +82,50 @@ export default function InstructorDashboard() {
     const lessonTime = moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm');
     return lessonTime.isAfter(now) && l.status === 'Scheduled';
   });
+
+  // Lessons needing outcome (past lessons not marked as completed/cancelled/no_show)
+  const lessonsNeedingOutcome = bookings.filter(b => {
+    const endTime = moment(b.endAtUtc);
+    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+  }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
+
+  // Today's bookings that are upcoming or need outcome
+  const todayBookings = bookings.filter(b => {
+    const startTime = moment(b.startAtUtc);
+    return startTime.isSame(today, 'day');
+  });
+
+  const upcomingTodayBookings = todayBookings.filter(b => {
+    const startTime = moment(b.startAtUtc);
+    return startTime.isAfter(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+  }).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
+
+  const todayNeedingOutcome = todayBookings.filter(b => {
+    const endTime = moment(b.endAtUtc);
+    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+  }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
+
+  // Next relevant lesson (upcoming or recently finished within 3 hours)
+  const nextRelevantBooking = todayBookings.find(b => {
+    const startTime = moment(b.startAtUtc);
+    const endTime = moment(b.endAtUtc);
+    const isUpcoming = startTime.isAfter(now);
+    const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
+    const isRecentlyFinished = endTime.isSameOrBefore(now) && now.diff(endTime, 'minutes') <= 180;
+    return (isUpcoming || isOngoing || isRecentlyFinished) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+  });
+
+  const getStatusColor = (status) => {
+    const colors = {
+      pending: 'bg-slate-100 text-slate-700',
+      confirmed: 'bg-blue-100 text-blue-700',
+      in_progress: 'bg-amber-100 text-amber-700',
+      completed: 'bg-emerald-100 text-emerald-700',
+      cancelled: 'bg-rose-100 text-rose-700',
+      no_show: 'bg-red-100 text-red-700'
+    };
+    return colors[status] || 'bg-slate-100 text-slate-700';
+  };
 
   // Context lesson for quick action (ongoing or just finished within 3 hours)
   const contextLesson = todayLessons.find(l => {
@@ -144,7 +193,7 @@ export default function InstructorDashboard() {
 
         {/* Fixed card order - cards show/hide in place */}
         <div className="space-y-4">
-          
+
           {/* 1. Greeting Card */}
           <Card className={`${warmPalette.card_greeting} border-0 shadow-sm`}>
             <CardContent className="p-6">
@@ -152,11 +201,60 @@ export default function InstructorDashboard() {
                 Good {getTimeOfDay()}, {firstName}
               </h2>
               <p className="text-slate-600">
-                You have {todayLessons.length} lesson{todayLessons.length !== 1 ? 's' : ''} today
-                {nextLesson && ` • Next lesson at ${nextLesson.startTime}`}
+                You have {upcomingTodayBookings.length} upcoming lesson{upcomingTodayBookings.length !== 1 ? 's' : ''} today
+                {nextRelevantBooking && ` • Next at ${moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')}`}
               </p>
             </CardContent>
           </Card>
+
+          {/* 1.5. Lessons to Complete (reminder card) */}
+          {lessonsNeedingOutcome.length > 0 && (
+            <Card className="bg-gradient-to-br from-rose-100 to-orange-100 border-0 shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-rose-600" />
+                    Lessons to Complete
+                  </h3>
+                  <Badge className="bg-rose-600 text-white">
+                    {lessonsNeedingOutcome.length}
+                  </Badge>
+                </div>
+                <p className="text-sm text-slate-600 mb-4">
+                  These lessons have passed and need an outcome (Completed / Cancelled / No show).
+                </p>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {lessonsNeedingOutcome.slice(0, 5).map(booking => {
+                    const pupil = pupils.find(p => p.id === booking.pupilId);
+                    return (
+                      <div key={booking.id} className="bg-white/70 rounded-lg p-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-slate-800">
+                              {moment(booking.endAtUtc).local().format('ddd, D MMM HH:mm')} • {pupil?.firstName} {pupil?.lastName}
+                            </p>
+                            <p className="text-xs text-slate-500 mt-1">Status: {booking.status} • Needs outcome</p>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => handleMarkLesson(booking.id)}
+                            className="bg-rose-600 hover:bg-rose-700 text-white"
+                          >
+                            Set Outcome
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {lessonsNeedingOutcome.length > 5 && (
+                  <p className="text-xs text-slate-500 mt-3 text-center">
+                    And {lessonsNeedingOutcome.length - 5} more...
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (
@@ -184,65 +282,109 @@ export default function InstructorDashboard() {
                 Today's Schedule
               </h3>
 
-              {/* Next Lesson */}
-              {nextLesson ? (
-                <div className="bg-white/70 rounded-lg p-4 mb-4">
-                  <p className="text-xs font-medium text-slate-500 mb-2">Next Lesson</p>
-                  <p className="text-lg font-semibold text-slate-800">
-                    {nextLesson.startTime} – {nextLesson.endTime}
-                  </p>
-                  <p className="text-slate-700 mt-1">
-                    {pupils.find(p => p.id === nextLesson.pupilId)?.firstName} {pupils.find(p => p.id === nextLesson.pupilId)?.lastName}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1 text-sm text-slate-600">
-                    <Clock className="w-4 h-4" />
-                    {nextLesson.durationMinutes / 60}h • {nextLesson.status}
-                  </div>
-                  {nextLesson.location && (
-                    <p className="text-sm text-slate-500 mt-1">{nextLesson.location}</p>
-                  )}
-                  <div className="flex gap-2 mt-3">
-                    <Link to={createPageUrl('Calendar')}>
-                      <Button size="sm" variant="outline">View Lesson</Button>
-                    </Link>
-                    <Link to={createPageUrl('InstructorChats')}>
-                      <Button size="sm" variant="outline">
-                        <MessageCircle className="w-4 h-4 mr-1" />
-                        Message
+              {/* Next Relevant Lesson */}
+              <div className="bg-white/70 rounded-lg p-4 mb-4">
+                <p className="text-xs font-medium text-slate-500 mb-2">Next Lesson</p>
+                {nextRelevantBooking ? (
+                  <>
+                    <p className="text-lg font-semibold text-slate-800">
+                      {moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')} – {moment(nextRelevantBooking.endAtUtc).local().format('HH:mm')}
+                    </p>
+                    <p className="text-slate-700 mt-1">
+                      {pupils.find(p => p.id === nextRelevantBooking.pupilId)?.firstName} {pupils.find(p => p.id === nextRelevantBooking.pupilId)?.lastName}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge className={getStatusColor(nextRelevantBooking.status)}>
+                        {nextRelevantBooking.status}
+                      </Badge>
+                      <span className="text-sm text-slate-600">
+                        {nextRelevantBooking.durationHours}h
+                      </span>
+                    </div>
+                    {nextRelevantBooking.pickupLocation && (
+                      <p className="text-sm text-slate-500 mt-1">{nextRelevantBooking.pickupLocation}</p>
+                    )}
+                    <div className="flex gap-2 mt-3">
+                      <Link to={createPageUrl('Calendar')}>
+                        <Button size="sm" variant="outline">View Lesson</Button>
+                      </Link>
+                      <Button 
+                        size="sm" 
+                        onClick={() => handleMarkLesson(nextRelevantBooking.id)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        Set Outcome
                       </Button>
-                    </Link>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-4">
+                    <Calendar className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                    <p className="text-sm text-slate-500">No more lessons today.</p>
                   </div>
-                </div>
-              ) : (
-                <div className="bg-white/70 rounded-lg p-4 mb-4 text-center">
-                  <Calendar className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                  <p className="text-sm text-slate-500">No lessons scheduled today</p>
-                </div>
-              )}
+                )}
+              </div>
 
-              {/* Today's Lessons List */}
-              {todayLessons.length > 0 && (
-                <div>
-                  <p className="text-sm font-medium text-slate-700 mb-2">All Lessons Today</p>
+              {/* Upcoming Lessons Today */}
+              {upcomingTodayBookings.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm font-medium text-slate-700 mb-2">Upcoming Today</p>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {todayLessons.map(lesson => {
-                      const pupil = pupils.find(p => p.id === lesson.pupilId);
+                    {upcomingTodayBookings.map(booking => {
+                      const pupil = pupils.find(p => p.id === booking.pupilId);
                       return (
-                        <div key={lesson.id} className="bg-white/70 rounded-lg p-3">
+                        <div key={booking.id} className="bg-white/70 rounded-lg p-3">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <p className="text-sm font-medium text-slate-800">
-                                {lesson.startTime} • {pupil?.firstName} {pupil?.lastName}
+                                {moment(booking.startAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
                               </p>
-                              <p className="text-xs text-slate-500">{lesson.status}</p>
+                              <Badge className={`${getStatusColor(booking.status)} text-xs mt-1`}>
+                                {booking.status}
+                              </Badge>
                             </div>
-                            <Badge variant="secondary">{lesson.durationMinutes / 60}h</Badge>
+                            <span className="text-xs text-slate-500">{booking.durationHours}h</span>
                           </div>
                         </div>
                       );
                     })}
                   </div>
                 </div>
+              )}
+
+              {/* Lessons Needing Outcome Today */}
+              {todayNeedingOutcome.length > 0 && (
+                <>
+                  <div className="border-t my-4"></div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-700 mb-1">Needs Outcome (Today)</p>
+                    <p className="text-xs text-slate-500 mb-3">Past lessons shown only if they need an outcome.</p>
+                    <div className="space-y-2">
+                      {todayNeedingOutcome.map(booking => {
+                        const pupil = pupils.find(p => p.id === booking.pupilId);
+                        return (
+                          <div key={booking.id} className="bg-rose-50/70 rounded-lg p-3 border border-rose-200">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-slate-800">
+                                  {moment(booking.startAtUtc).local().format('HH:mm')}–{moment(booking.endAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
+                                </p>
+                                <p className="text-xs text-rose-600 mt-1">Needs outcome</p>
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => handleMarkLesson(booking.id)}
+                                className="bg-rose-600 hover:bg-rose-700 text-white"
+                              >
+                                Set Outcome
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>
@@ -347,7 +489,7 @@ export default function InstructorDashboard() {
           setOutcomeModalOpen(false);
           setSelectedLessonId(null);
         }}
-        lessonId={selectedLessonId}
+        bookingId={selectedLessonId}
       />
     </div>
   );

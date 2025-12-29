@@ -22,7 +22,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 import moment from 'moment';
 
-export default function LessonOutcomeModal({ open, onClose, lessonId }) {
+export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
