@@ -9,7 +9,9 @@ import {
   BookOpen,
   FolderOpen,
   FileText,
-  Lock
+  Lock,
+  StickyNote,
+  Notebook
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -49,6 +51,7 @@ export const instructorOnlyLinks = [
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
+  { name: 'Pupil Notes', icon: Notebook, page: 'InstructorPupilNotes' },
   { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
   { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources' }
@@ -57,6 +60,7 @@ export const instructorOnlyLinks = [
 // Learner-only navigation items
 export const learnerOnlyLinks = [
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
+  { name: 'My Notes', icon: StickyNote, page: 'LearnerNotes' },
   { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress' },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
   { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' }
