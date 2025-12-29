@@ -11,9 +11,9 @@ import moment from 'moment';
 
 // Warm color palette - stable per section
 const warmPalette = {
-  card_greeting: 'bg-gradient-to-br from-amber-50 to-orange-50',
+  card_greeting: 'bg-gradient-to-br from-blue-50 to-cyan-50',
   card_quiz_of_day: 'bg-gradient-to-br from-rose-50 to-pink-50',
-  card_todays_schedule: 'bg-gradient-to-br from-yellow-50 to-amber-50',
+  card_todays_schedule: 'bg-gradient-to-br from-green-50 to-emerald-50',
   card_upcoming_tests: 'bg-gradient-to-br from-peach-50 to-orange-50',
   card_notifications: 'bg-gradient-to-br from-orange-50 to-amber-50'
 };
