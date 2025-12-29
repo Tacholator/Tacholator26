@@ -37,9 +37,10 @@ import moment from 'moment';
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
 
-  const { data: user } = useQuery({
+  const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me()
+    queryFn: () => base44.auth.me(),
+    retry: false
   });
 
   const { data: pupil, isLoading: pupilLoading } = useQuery({
@@ -197,10 +198,27 @@ export default function LearnerDashboard() {
   const unreadNotifications = notifications.filter(n => !n.readAt).length;
   const latestMessage = messages.find(m => m.senderRole === 'instructor');
 
-  if (pupilLoading) {
+  if (userLoading || pupilLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6">
+        <Card className="max-w-md text-center p-8">
+          <Car className="w-16 h-16 mx-auto mb-4 text-slate-300" />
+          <h2 className="text-xl font-semibold text-slate-700 mb-2">Not Authenticated</h2>
+          <p className="text-slate-500 mb-4">
+            Please log in to access the learner dashboard.
+          </p>
+          <Button onClick={() => base44.auth.redirectToLogin()}>
+            Log In
+          </Button>
+        </Card>
       </div>
     );
   }
