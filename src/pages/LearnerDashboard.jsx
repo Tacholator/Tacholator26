@@ -226,29 +226,34 @@ export default function LearnerDashboard() {
     return 'evening';
   };
 
-  // Quiz of the Day - stable daily quiz selection
-  const quizOfTheDay = React.useMemo(() => {
-    const dayOfYear = moment().dayOfYear();
-    const quizzes = [
-      { id: '1', title: 'Legal Responsibilities', topicId: 'legal_responsibilities', mcqPackId: 'legal_responsibilities' },
-      { id: '2', title: 'Mirrors, Signals & Speed', topicId: 'mirrors_signals_speed', mcqPackId: 'mirrors_signals_speed' },
-      { id: '3', title: 'Junctions & Roundabouts', topicId: 'junctions_roundabouts', mcqPackId: 'junctions_roundabouts' },
-      { id: '4', title: 'Emergency Situations', topicId: 'emergency_situations', mcqPackId: 'emergency_situations' }
-    ];
-    return quizzes[dayOfYear % quizzes.length];
-  }, []);
+  // Fetch today's published daily quiz
+  const { data: dailyQuiz } = useQuery({
+    queryKey: ['todayDailyQuiz'],
+    queryFn: async () => {
+      const today = moment().format('YYYY-MM-DD');
+      const quizzes = await base44.entities.DailyQuiz.filter({ 
+        date: today,
+        status: 'published'
+      });
+      return quizzes.length > 0 ? quizzes[0] : null;
+    },
+    enabled: !!pupil?.id
+  });
 
   // Quiz visibility logic
   const quizVisibility = React.useMemo(() => {
-    if (!quizOfTheDay || !pupil?.id) return { visible: false };
+    if (!dailyQuiz || !pupil?.id) return { visible: false };
 
     const today = moment().startOf('day');
+    
+    // Check if any question from this quiz was completed today
+    const quizQuestionIds = dailyQuiz.questionIds || [];
     const todayAttempts = mcqAttempts.filter(attempt => 
-      attempt.mcqPackId === quizOfTheDay.mcqPackId &&
+      quizQuestionIds.includes(attempt.mcqPackId) &&
       moment(attempt.submittedAt).isSame(today, 'day')
     );
 
-    const completedToday = todayAttempts.some(attempt => attempt.passed);
+    const completedToday = todayAttempts.length > 0 && todayAttempts.some(attempt => attempt.passed);
     
     if (completedToday) {
       return { visible: false, reason: 'completed' };
@@ -271,7 +276,7 @@ export default function LearnerDashboard() {
       buttonLabel: 'Start Quiz',
       reason: 'not_started'
     };
-  }, [quizOfTheDay, mcqAttempts, pupil?.id]);
+  }, [dailyQuiz, mcqAttempts, pupil?.id]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
@@ -305,9 +310,11 @@ export default function LearnerDashboard() {
             <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-indigo-50 border-l-4 border-l-purple-500">
               <CardContent className="p-6">
                 <Badge className="mb-3 bg-purple-600 text-white">{quizVisibility.badge}</Badge>
-                <h3 className="text-xl font-semibold text-slate-800 mb-2">{quizOfTheDay.title}</h3>
-                <p className="text-sm text-slate-600 mb-4">Test your knowledge with today's quick quiz</p>
-                <Link to={createPageUrl('CourseWorkDetail') + `?topicId=${quizOfTheDay.topicId}`}>
+                <h3 className="text-xl font-semibold text-slate-800 mb-2">{dailyQuiz.title}</h3>
+                <p className="text-sm text-slate-600 mb-4">
+                  {dailyQuiz.questionIds?.length || 0} questions • Test your knowledge
+                </p>
+                <Link to={createPageUrl('CourseWorkDetail') + `?quizId=${dailyQuiz.id}`}>
                   <Button className="w-full bg-purple-600 hover:bg-purple-700">
                     {quizVisibility.buttonLabel}
                   </Button>

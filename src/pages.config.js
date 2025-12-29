@@ -37,6 +37,7 @@ import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
+import AdminDailyQuizzes from './pages/AdminDailyQuizzes';
 import __Layout from './Layout.jsx';
 
 
@@ -80,6 +81,7 @@ export const PAGES = {
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "TermsAndConditions": TermsAndConditions,
+    "AdminDailyQuizzes": AdminDailyQuizzes,
 }
 
 export const pagesConfig = {
