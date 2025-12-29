@@ -1,4 +1,5 @@
 import AccountDeletionRequest from './pages/AccountDeletionRequest';
+import AdminDailyQuizzes from './pages/AdminDailyQuizzes';
 import AdminDataManagement from './pages/AdminDataManagement';
 import AdminInstructorCalendars from './pages/AdminInstructorCalendars';
 import Calendar from './pages/Calendar';
@@ -15,6 +16,7 @@ import InstructorMcqReporting from './pages/InstructorMcqReporting';
 import InstructorNotifications from './pages/InstructorNotifications';
 import InstructorPupilNotes from './pages/InstructorPupilNotes';
 import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
+import InstructorQuizPreview from './pages/InstructorQuizPreview';
 import InstructorResources from './pages/InstructorResources';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
 import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
@@ -37,13 +39,12 @@ import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
-import AdminDailyQuizzes from './pages/AdminDailyQuizzes';
-import InstructorQuizPreview from './pages/InstructorQuizPreview';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AccountDeletionRequest": AccountDeletionRequest,
+    "AdminDailyQuizzes": AdminDailyQuizzes,
     "AdminDataManagement": AdminDataManagement,
     "AdminInstructorCalendars": AdminInstructorCalendars,
     "Calendar": Calendar,
@@ -60,6 +61,7 @@ export const PAGES = {
     "InstructorNotifications": InstructorNotifications,
     "InstructorPupilNotes": InstructorPupilNotes,
     "InstructorPupilNotesList": InstructorPupilNotesList,
+    "InstructorQuizPreview": InstructorQuizPreview,
     "InstructorResources": InstructorResources,
     "InstructorTopicAssignment": InstructorTopicAssignment,
     "LearnerBookingCalendar": LearnerBookingCalendar,
@@ -82,8 +84,6 @@ export const PAGES = {
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "TermsAndConditions": TermsAndConditions,
-    "AdminDailyQuizzes": AdminDailyQuizzes,
-    "InstructorQuizPreview": InstructorQuizPreview,
 }
 
 export const pagesConfig = {

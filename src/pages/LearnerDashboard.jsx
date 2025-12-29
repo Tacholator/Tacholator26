@@ -198,6 +198,57 @@ export default function LearnerDashboard() {
   const unreadNotifications = notifications.filter(n => !n.readAt).length;
   const latestMessage = messages.find(m => m.senderRole === 'instructor');
 
+  // Fetch today's published daily quiz
+  const { data: dailyQuiz } = useQuery({
+    queryKey: ['todayDailyQuiz'],
+    queryFn: async () => {
+      const today = moment().format('YYYY-MM-DD');
+      const quizzes = await base44.entities.DailyQuiz.filter({ 
+        date: today,
+        status: 'published'
+      });
+      return quizzes.length > 0 ? quizzes[0] : null;
+    },
+    enabled: !!pupil?.id
+  });
+
+  // Quiz visibility logic
+  const quizVisibility = React.useMemo(() => {
+    if (!dailyQuiz || !pupil?.id) return { visible: false };
+
+    const today = moment().startOf('day');
+    
+    const quizQuestionIds = dailyQuiz.questionIds || [];
+    const todayAttempts = mcqAttempts.filter(attempt => 
+      quizQuestionIds.includes(attempt.mcqPackId) &&
+      moment(attempt.submittedAt).isSame(today, 'day')
+    );
+
+    const completedToday = todayAttempts.length > 0 && todayAttempts.some(attempt => attempt.passed);
+    
+    if (completedToday) {
+      return { visible: false, reason: 'completed' };
+    }
+
+    const inProgressAttempt = todayAttempts.find(attempt => !attempt.submittedAt);
+    
+    if (inProgressAttempt) {
+      return {
+        visible: true,
+        badge: 'Quiz of the Day • In progress',
+        buttonLabel: 'Continue Quiz',
+        reason: 'in_progress'
+      };
+    }
+
+    return {
+      visible: true,
+      badge: 'Quiz of the Day',
+      buttonLabel: 'Start Quiz',
+      reason: 'not_started'
+    };
+  }, [dailyQuiz, mcqAttempts, pupil?.id]);
+
   if (userLoading || pupilLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -243,58 +294,6 @@ export default function LearnerDashboard() {
     if (hour < 18) return 'afternoon';
     return 'evening';
   };
-
-  // Fetch today's published daily quiz
-  const { data: dailyQuiz } = useQuery({
-    queryKey: ['todayDailyQuiz'],
-    queryFn: async () => {
-      const today = moment().format('YYYY-MM-DD');
-      const quizzes = await base44.entities.DailyQuiz.filter({ 
-        date: today,
-        status: 'published'
-      });
-      return quizzes.length > 0 ? quizzes[0] : null;
-    },
-    enabled: !!pupil?.id
-  });
-
-  // Quiz visibility logic
-  const quizVisibility = React.useMemo(() => {
-    if (!dailyQuiz || !pupil?.id) return { visible: false };
-
-    const today = moment().startOf('day');
-    
-    // Check if any question from this quiz was completed today
-    const quizQuestionIds = dailyQuiz.questionIds || [];
-    const todayAttempts = mcqAttempts.filter(attempt => 
-      quizQuestionIds.includes(attempt.mcqPackId) &&
-      moment(attempt.submittedAt).isSame(today, 'day')
-    );
-
-    const completedToday = todayAttempts.length > 0 && todayAttempts.some(attempt => attempt.passed);
-    
-    if (completedToday) {
-      return { visible: false, reason: 'completed' };
-    }
-
-    const inProgressAttempt = todayAttempts.find(attempt => !attempt.submittedAt);
-    
-    if (inProgressAttempt) {
-      return {
-        visible: true,
-        badge: 'Quiz of the Day • In progress',
-        buttonLabel: 'Continue Quiz',
-        reason: 'in_progress'
-      };
-    }
-
-    return {
-      visible: true,
-      badge: 'Quiz of the Day',
-      buttonLabel: 'Start Quiz',
-      reason: 'not_started'
-    };
-  }, [dailyQuiz, mcqAttempts, pupil?.id]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
