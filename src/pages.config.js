@@ -1,5 +1,6 @@
 import AccountDeletionRequest from './pages/AccountDeletionRequest';
 import AdminDataManagement from './pages/AdminDataManagement';
+import AdminInstructorCalendars from './pages/AdminInstructorCalendars';
 import Calendar from './pages/Calendar';
 import CourseWork from './pages/CourseWork';
 import CourseWorkDetail from './pages/CourseWorkDetail';
@@ -33,13 +34,13 @@ import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
-import AdminInstructorCalendars from './pages/AdminInstructorCalendars';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AccountDeletionRequest": AccountDeletionRequest,
     "AdminDataManagement": AdminDataManagement,
+    "AdminInstructorCalendars": AdminInstructorCalendars,
     "Calendar": Calendar,
     "CourseWork": CourseWork,
     "CourseWorkDetail": CourseWorkDetail,
@@ -73,7 +74,6 @@ export const PAGES = {
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "TermsAndConditions": TermsAndConditions,
-    "AdminInstructorCalendars": AdminInstructorCalendars,
 }
 
 export const pagesConfig = {

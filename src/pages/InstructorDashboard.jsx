@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import UserManagement from '@/components/admin/UserManagement';
+import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
 import {
   Users, Calendar, Clock, BookOpen, AlertTriangle, ChevronRight, Plus,
   UserPlus, ClipboardList, MessageCircle, Bell, Search, X, MapPin,
@@ -370,7 +371,11 @@ export default function InstructorDashboard() {
                       {nextLesson.location}
                     </div>
                   )}
-                  <div className="flex gap-2 mt-3">
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <NotifyArrivalButton 
+                      lesson={nextLesson} 
+                      pupil={pupils.find(p => p.id === nextLesson.pupilId)} 
+                    />
                     <Button
                       size="sm"
                       onClick={() => {
@@ -404,6 +409,9 @@ export default function InstructorDashboard() {
                 <div className="space-y-2">
                   {todayLessons.map(lesson => {
                     const pupil = pupils.find(p => p.id === lesson.pupilId);
+                    const lessonTime = moment(`${lesson.date} ${lesson.startTime}`, 'YYYY-MM-DD HH:mm');
+                    const isUpcoming = lessonTime.isAfter(now) || lessonTime.isSame(now, 'hour');
+                    
                     return (
                       <div key={lesson.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
                         <div className="flex-shrink-0">
@@ -416,6 +424,11 @@ export default function InstructorDashboard() {
                           <p className="text-xs text-slate-500">
                             {lesson.location || 'Pickup TBC'} • {lesson.durationMinutes / 60}h
                           </p>
+                          {isUpcoming && lesson.status === 'Scheduled' && (
+                            <div className="mt-2">
+                              <NotifyArrivalButton lesson={lesson} pupil={pupil} />
+                            </div>
+                          )}
                         </div>
                         <Badge>{lesson.status}</Badge>
                       </div>
