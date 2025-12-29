@@ -141,6 +141,12 @@ export default function LearnerDashboard() {
     enabled: !!user?.id
   });
 
+  const { data: mcqAttempts = [] } = useQuery({
+    queryKey: ['mcqAttempts', pupil?.id],
+    queryFn: () => base44.entities.McqAttempt.filter({ pupilId: pupil.id }),
+    enabled: !!pupil?.id
+  });
+
   const { data: drivingProgress = [] } = useQuery({
     queryKey: ['drivingProgress', pupil?.id],
     queryFn: () => base44.entities.DrivingSkillProgress.filter({ pupilId: pupil.id }),
@@ -224,13 +230,48 @@ export default function LearnerDashboard() {
   const quizOfTheDay = React.useMemo(() => {
     const dayOfYear = moment().dayOfYear();
     const quizzes = [
-      { id: '1', title: 'Legal Responsibilities', topicId: 'legal_responsibilities' },
-      { id: '2', title: 'Mirrors, Signals & Speed', topicId: 'mirrors_signals_speed' },
-      { id: '3', title: 'Junctions & Roundabouts', topicId: 'junctions_roundabouts' },
-      { id: '4', title: 'Emergency Situations', topicId: 'emergency_situations' }
+      { id: '1', title: 'Legal Responsibilities', topicId: 'legal_responsibilities', mcqPackId: 'legal_responsibilities' },
+      { id: '2', title: 'Mirrors, Signals & Speed', topicId: 'mirrors_signals_speed', mcqPackId: 'mirrors_signals_speed' },
+      { id: '3', title: 'Junctions & Roundabouts', topicId: 'junctions_roundabouts', mcqPackId: 'junctions_roundabouts' },
+      { id: '4', title: 'Emergency Situations', topicId: 'emergency_situations', mcqPackId: 'emergency_situations' }
     ];
     return quizzes[dayOfYear % quizzes.length];
   }, []);
+
+  // Quiz visibility logic
+  const quizVisibility = React.useMemo(() => {
+    if (!quizOfTheDay || !pupil?.id) return { visible: false };
+
+    const today = moment().startOf('day');
+    const todayAttempts = mcqAttempts.filter(attempt => 
+      attempt.mcqPackId === quizOfTheDay.mcqPackId &&
+      moment(attempt.submittedAt).isSame(today, 'day')
+    );
+
+    const completedToday = todayAttempts.some(attempt => attempt.passed);
+    
+    if (completedToday) {
+      return { visible: false, reason: 'completed' };
+    }
+
+    const inProgressAttempt = todayAttempts.find(attempt => !attempt.submittedAt);
+    
+    if (inProgressAttempt) {
+      return {
+        visible: true,
+        badge: 'Quiz of the Day • In progress',
+        buttonLabel: 'Continue Quiz',
+        reason: 'in_progress'
+      };
+    }
+
+    return {
+      visible: true,
+      badge: 'Quiz of the Day',
+      buttonLabel: 'Start Quiz',
+      reason: 'not_started'
+    };
+  }, [quizOfTheDay, mcqAttempts, pupil?.id]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
@@ -255,24 +296,26 @@ export default function LearnerDashboard() {
         )}
 
         {/* 2. Quiz of the Day */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-        >
-          <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-indigo-50 border-l-4 border-l-purple-500">
-            <CardContent className="p-6">
-              <Badge className="mb-3 bg-purple-600 text-white">Quiz of the Day</Badge>
-              <h3 className="text-xl font-semibold text-slate-800 mb-2">{quizOfTheDay.title}</h3>
-              <p className="text-sm text-slate-600 mb-4">Test your knowledge with today's quick quiz</p>
-              <Link to={createPageUrl('CourseWorkDetail') + `?topicId=${quizOfTheDay.topicId}`}>
-                <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                  Start Quiz
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {quizVisibility.visible && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+          >
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-indigo-50 border-l-4 border-l-purple-500">
+              <CardContent className="p-6">
+                <Badge className="mb-3 bg-purple-600 text-white">{quizVisibility.badge}</Badge>
+                <h3 className="text-xl font-semibold text-slate-800 mb-2">{quizOfTheDay.title}</h3>
+                <p className="text-sm text-slate-600 mb-4">Test your knowledge with today's quick quiz</p>
+                <Link to={createPageUrl('CourseWorkDetail') + `?topicId=${quizOfTheDay.topicId}`}>
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                    {quizVisibility.buttonLabel}
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* 3. Next Lesson */}
         <motion.div
@@ -441,53 +484,46 @@ export default function LearnerDashboard() {
         </motion.div>
 
         {/* 6. Notifications */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-        >
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Bell className="w-5 h-5 text-purple-500" />
-                Recent Notifications
-              </CardTitle>
-              {unreadNotifications > 0 && (
-                <Badge className="bg-purple-100 text-purple-700">{unreadNotifications} unread</Badge>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {notifications.length > 0 ? (
-                <>
-                  {notifications.slice(0, 3).map(notification => (
-                    <div 
-                      key={notification.id}
-                      className={`flex items-start gap-3 p-3 rounded-lg ${
-                        notification.readAt ? 'bg-slate-50' : 'bg-purple-50 border border-purple-100'
-                      }`}
-                    >
-                      <Bell className={`w-5 h-5 mt-0.5 ${notification.readAt ? 'text-slate-400' : 'text-purple-600'}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-700">{notification.title}</p>
-                        <p className="text-xs text-slate-500 mt-1">{moment(notification.created_date).fromNow()}</p>
-                      </div>
+        {notifications.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-purple-500" />
+                  Recent Notifications
+                </CardTitle>
+                {unreadNotifications > 0 && (
+                  <Badge className="bg-purple-100 text-purple-700">{unreadNotifications} unread</Badge>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {notifications.slice(0, 3).map(notification => (
+                  <div 
+                    key={notification.id}
+                    className={`flex items-start gap-3 p-3 rounded-lg ${
+                      notification.readAt ? 'bg-slate-50' : 'bg-purple-50 border border-purple-100'
+                    }`}
+                  >
+                    <Bell className={`w-5 h-5 mt-0.5 ${notification.readAt ? 'text-slate-400' : 'text-purple-600'}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-700">{notification.title}</p>
+                      <p className="text-xs text-slate-500 mt-1">{moment(notification.created_date).fromNow()}</p>
                     </div>
-                  ))}
-                  <Link to={createPageUrl('LearnerNotifications')}>
-                    <Button variant="outline" className="w-full gap-2 mt-2">
-                      View All Notifications <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <Bell className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                  <p className="text-sm text-slate-500">No notifications yet</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+                  </div>
+                ))}
+                <Link to={createPageUrl('LearnerNotifications')}>
+                  <Button variant="outline" className="w-full gap-2 mt-2">
+                    View All Notifications <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* 7. Instructor Snapshot */}
         <motion.div
