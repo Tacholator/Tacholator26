@@ -55,7 +55,18 @@ export default function NoteEditorModal({ open, onClose, note, pupilId, instruct
   }, [note, open]);
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Note.create(data),
+    mutationFn: async (data) => {
+      // Get current notes count to set orderIndex
+      const existingNotes = await base44.entities.Note.filter({ ownerPupilId: data.ownerPupilId });
+      const maxOrderIndex = existingNotes.length > 0 
+        ? Math.max(...existingNotes.map(n => n.orderIndex || 0))
+        : -1;
+      
+      return base44.entities.Note.create({
+        ...data,
+        orderIndex: maxOrderIndex + 1
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['myNotes']);
       queryClient.invalidateQueries(['pupilNotes']);

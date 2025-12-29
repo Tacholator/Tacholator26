@@ -26,7 +26,7 @@ export default function LearnerNotes() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('updated');
+  const [sortBy, setSortBy] = useState('created');
   const [editorOpen, setEditorOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
@@ -49,7 +49,10 @@ export default function LearnerNotes() {
 
   const { data: notes = [], isLoading } = useQuery({
     queryKey: ['myNotes', pupil?.id],
-    queryFn: () => base44.entities.Note.filter({ ownerPupilId: pupil.id }),
+    queryFn: async () => {
+      const allNotes = await base44.entities.Note.filter({ ownerPupilId: pupil.id });
+      return allNotes.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+    },
     enabled: !!pupil?.id
   });
 
@@ -111,6 +114,7 @@ export default function LearnerNotes() {
   const filteredNotes = notes
     .filter(note => !searchQuery || note.title.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
+      if (sortBy === 'created') return (a.orderIndex || 0) - (b.orderIndex || 0);
       if (sortBy === 'updated') return new Date(b.updated_date) - new Date(a.updated_date);
       if (sortBy === 'title_asc') return a.title.localeCompare(b.title);
       if (sortBy === 'title_desc') return b.title.localeCompare(a.title);
@@ -157,6 +161,7 @@ export default function LearnerNotes() {
             onChange={(e) => setSortBy(e.target.value)}
             className="px-4 py-2 border rounded-lg bg-white"
           >
+            <option value="created">Order created</option>
             <option value="updated">Recently updated</option>
             <option value="title_asc">Title A–Z</option>
             <option value="title_desc">Title Z–A</option>

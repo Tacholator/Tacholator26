@@ -50,7 +50,7 @@ export default function InstructorPupilNotesList() {
       const allNotes = await base44.entities.Note.filter({ ownerPupilId: pupilId });
       return allNotes
         .filter(note => note.instructorAccessLevel === 'full')
-        .sort((a, b) => new Date(b.updated_date) - new Date(a.updated_date));
+        .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
     },
     enabled: !!pupilId && !!user?.id
   });
