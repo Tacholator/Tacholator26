@@ -56,11 +56,34 @@ export default function LearnerNotes() {
   const updateAccessMutation = useMutation({
     mutationFn: ({ noteId, accessLevel }) =>
       base44.entities.Note.update(noteId, { instructorAccessLevel: accessLevel }),
+    onMutate: async ({ noteId, accessLevel }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries(['myNotes', pupil?.id]);
+      
+      // Snapshot previous value
+      const previousNotes = queryClient.getQueryData(['myNotes', pupil?.id]);
+      
+      // Optimistically update to new value
+      queryClient.setQueryData(['myNotes', pupil?.id], (old) => {
+        if (!old) return old;
+        return old.map(note => 
+          note.id === noteId 
+            ? { ...note, instructorAccessLevel: accessLevel }
+            : note
+        );
+      });
+      
+      return { previousNotes };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['myNotes']);
       toast({ title: 'Permission updated' });
     },
-    onError: () => {
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousNotes) {
+        queryClient.setQueryData(['myNotes', pupil?.id], context.previousNotes);
+      }
       toast({ title: 'Failed to update permission', variant: 'destructive' });
     }
   });
