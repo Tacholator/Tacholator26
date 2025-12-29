@@ -50,7 +50,7 @@ export default function PupilProfile() {
   const urlParams = new URLSearchParams(window.location.search);
   const pupilId = urlParams.get('id');
 
-  const [activeTab, setActiveTab] = useState('skills');
+  const [activeTab, setActiveTab] = useState('progress');
   const [showDiaryModal, setShowDiaryModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDiaryEntry, setSelectedDiaryEntry] = useState(null);
