@@ -6,50 +6,69 @@ import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import {
   Home,
-  ClipboardList,
-  MessageCircle,
-  Bell
+  Calendar,
+  Users,
+  CalendarPlus,
+  FileText,
+  MessageCircle
 } from 'lucide-react';
 
-const navItems = [
+const instructorNavItems = [
   {
     id: 'home',
     label: 'Home',
     icon: Home,
-    instructorPage: 'InstructorDashboard',
-    learnerPage: 'LearnerDashboard'
+    page: 'InstructorDashboard'
   },
   {
-    id: 'homework',
-    label: 'Homework',
-    icon: ClipboardList,
-    instructorPage: 'HomeworkLibrary',
-    learnerPage: 'LearnerHomework'
+    id: 'calendar',
+    label: 'Calendar',
+    icon: Calendar,
+    page: 'InstructorBookingCalendar'
+  },
+  {
+    id: 'pupils',
+    label: 'Pupils',
+    icon: Users,
+    page: 'PupilList'
   },
   {
     id: 'chats',
     label: 'Chats',
     icon: MessageCircle,
-    instructorPage: 'InstructorChats',
-    learnerPage: 'LearnerChats'
+    page: 'InstructorChats'
+  }
+];
+
+const pupilNavItems = [
+  {
+    id: 'home',
+    label: 'Home',
+    icon: Home,
+    page: 'LearnerDashboard'
   },
   {
-    id: 'notifications',
-    label: 'Notifications',
-    icon: Bell,
-    instructorPage: 'InstructorNotifications',
-    learnerPage: 'LearnerNotifications'
+    id: 'book',
+    label: 'Book Lesson',
+    icon: CalendarPlus,
+    page: 'LearnerBookingCalendar'
+  },
+  {
+    id: 'coursework',
+    label: 'Course Work',
+    icon: FileText,
+    page: 'CourseWork'
+  },
+  {
+    id: 'chats',
+    label: 'Chats',
+    icon: MessageCircle,
+    page: 'LearnerChats'
   }
 ];
 
 export default function MobileBottomNav({ userId, currentPageName, isInstructor }) {
-  const location = useLocation();
-
-  const { data: notifications = [] } = useQuery({
-    queryKey: ['notifications', userId],
-    queryFn: () => base44.entities.Notification.filter({ userId, readAt: null }),
-    enabled: !!userId
-  });
+  const navItems = isInstructor ? instructorNavItems : pupilNavItems;
 
   const { data: unreadMessages = [] } = useQuery({
     queryKey: ['unreadMessages', userId],
@@ -64,7 +83,6 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
     enabled: !!userId
   });
 
-  const unreadNotificationsCount = notifications.length;
   const unreadMessagesCount = unreadMessages.length;
 
   return (
@@ -72,13 +90,12 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
       <div className="flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const targetPage = isInstructor ? item.instructorPage : item.learnerPage;
-          const isActive = currentPageName === targetPage;
+          const isActive = currentPageName === item.page;
 
           return (
             <Link
               key={item.id}
-              to={createPageUrl(targetPage)}
+              to={createPageUrl(item.page)}
               className={`flex flex-col items-center justify-center flex-1 h-full relative transition-colors ${
                 isActive 
                   ? 'text-[#F7B602]' 
@@ -87,13 +104,6 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
             >
               <div className="relative">
                 <Icon className={`w-6 h-6 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-                {item.id === 'notifications' && unreadNotificationsCount > 0 && (
-                  <Badge 
-                    className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-[#F7B602] text-[#071739] text-xs font-bold"
-                  >
-                    {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
-                  </Badge>
-                )}
                 {item.id === 'chats' && unreadMessagesCount > 0 && (
                   <Badge 
                     className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-[#F7B602] text-[#071739] text-xs font-bold"
