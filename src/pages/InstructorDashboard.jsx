@@ -97,7 +97,10 @@ export default function InstructorDashboard() {
 
   const upcomingTodayBookings = todayBookings.filter(b => {
     const startTime = moment(b.startAtUtc);
-    return startTime.isAfter(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+    // Exclude the next relevant booking from this list
+    return startTime.isAfter(now) && 
+           ['pending', 'confirmed', 'in_progress'].includes(b.status) &&
+           b.id !== nextRelevantBooking?.id;
   }).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
 
   const todayNeedingOutcome = todayBookings.filter(b => {
@@ -105,15 +108,21 @@ export default function InstructorDashboard() {
     return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
   }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
 
-  // Next relevant lesson (upcoming or recently finished within 3 hours)
-  const nextRelevantBooking = todayBookings.find(b => {
-    const startTime = moment(b.startAtUtc);
-    const endTime = moment(b.endAtUtc);
-    const isUpcoming = startTime.isAfter(now);
-    const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
-    const isRecentlyFinished = endTime.isSameOrBefore(now) && now.diff(endTime, 'minutes') <= 180;
-    return (isUpcoming || isOngoing || isRecentlyFinished) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
-  });
+  // Find closest lesson to current time (upcoming or ongoing)
+  const nextRelevantBooking = todayBookings
+    .filter(b => {
+      const startTime = moment(b.startAtUtc);
+      const endTime = moment(b.endAtUtc);
+      const isUpcoming = startTime.isAfter(now);
+      const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
+      return (isUpcoming || isOngoing) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+    })
+    .sort((a, b) => {
+      // Sort by how close they are to current time
+      const aStart = moment(a.startAtUtc);
+      const bStart = moment(b.startAtUtc);
+      return Math.abs(aStart.diff(now)) - Math.abs(bStart.diff(now));
+    })[0];
 
   const getStatusColor = (status) => {
     const colors = {
@@ -257,10 +266,15 @@ export default function InstructorDashboard() {
                     {nextRelevantBooking.pickupLocation && (
                       <p className="text-sm text-slate-500 mt-1">{nextRelevantBooking.pickupLocation}</p>
                     )}
-                    <div className="flex gap-2 mt-3">
+                    <div className="flex gap-2 mt-3 flex-wrap">
                       <Link to={createPageUrl('Calendar')}>
                         <Button size="sm" variant="outline">View Lesson</Button>
                       </Link>
+                      <NotifyArrivalButton 
+                        lessonId={null}
+                        bookingId={nextRelevantBooking.id}
+                        pupilId={nextRelevantBooking.pupilId}
+                      />
                       <Button 
                         size="sm" 
                         onClick={() => handleMarkLesson(nextRelevantBooking.id)}
