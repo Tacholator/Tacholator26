@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
+import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
 
 // Warm color palette - stable per section
 const warmPalette = {
