@@ -59,7 +59,7 @@ export default function DrivingProgressV2Content({ pupilId }) {
     enabled: !!pupilId
   });
 
-  // Auto-initialize skills if not present
+  // Auto-initialize skills if not present and migrate existing
   React.useEffect(() => {
     const initializeIfNeeded = async () => {
       if (!pupilId || !user?.id) return;
@@ -76,8 +76,20 @@ export default function DrivingProgressV2Content({ pupilId }) {
         } finally {
           setIsInitializing(false);
         }
+      } else if (skills.length > 0 && skills.length !== 24) {
+        // Migrate/sync to canonical structure if count doesn't match
+        setIsInitializing(true);
+        try {
+          await initializeProgressSkills(pupilId, user.id, PROGRESS_SKILLS_DATA);
+          queryClient.invalidateQueries(['progressSkills', pupilId]);
+          queryClient.invalidateQueries(['progressSummary', pupilId]);
+        } catch (error) {
+          console.error('Failed to migrate skills:', error);
+        } finally {
+          setIsInitializing(false);
+        }
       } else {
-        // Recalculate existing skills
+        // Recalculate existing skills on load
         try {
           const { recalculateProgressSkill } = await import('@/components/progress/progressHelper');
           for (const skill of skills) {

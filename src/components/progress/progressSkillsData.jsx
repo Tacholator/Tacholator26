@@ -1,148 +1,203 @@
-
 export const PROGRESS_SKILLS_DATA = [
   {
     skillKey: "legal_responsibilities",
     order: 1,
-    title: "1. Legal responsibilities",
-    subsections: [
-      { order: 1, title: "Licence requirements" },
-      { order: 2, title: "Insurance" },
-      { order: 3, title: "MOT and vehicle tax" }
-    ]
+    title: "Legal Responsibilities",
+    subsections: []
   },
   {
     skillKey: "safety_checks",
     order: 2,
-    title: "2. Safety checks",
+    title: "Safety Checks",
     subsections: [
-      { order: 1, title: "Tell me questions" },
-      { order: 2, title: "Show me questions" }
+      { order: 1, title: "Show me, tell me questions" }
     ]
   },
   {
-    skillKey: "security",
+    skillKey: "vehicle_security",
     order: 3,
-    title: "3. Security",
-    subsections: [
-      { order: 1, title: "Locking the car" },
-      { order: 2, title: "Valuables out of sight" }
-    ]
+    title: "Vehicle Security",
+    subsections: []
   },
   {
-    skillKey: "cockpit_drill",
+    skillKey: "cockpit_safety_procedures",
     order: 4,
-    title: "4. Cockpit drill",
+    title: "Cockpit & Safety Procedures",
     subsections: [
-      { order: 1, title: "Doors secure" },
-      { order: 2, title: "Seat position" },
-      { order: 3, title: "Head restraint" },
-      { order: 4, title: "Mirrors" },
-      { order: 5, title: "Seat belt" }
+      { order: 1, title: "Cockpit drill" },
+      { order: 2, title: "DSSSM routine" }
     ]
   },
   {
-    skillKey: "controls",
+    skillKey: "main_car_controls",
     order: 5,
-    title: "5. Controls",
+    title: "Main Car Controls",
     subsections: [
-      { order: 1, title: "Accelerator" },
-      { order: 2, title: "Footbrake" },
-      { order: 3, title: "Clutch" },
-      { order: 4, title: "Gear lever" },
-      { order: 5, title: "Steering" },
-      { order: 6, title: "Handbrake" }
+      { order: 1, title: "Foot Controls: Accelerator" },
+      { order: 2, title: "Foot Controls: Footbrake" },
+      { order: 3, title: "Foot Controls: Clutch" },
+      { order: 4, title: "Hand Controls: Steering wheel" },
+      { order: 5, title: "Hand Controls: Handbrake" },
+      { order: 6, title: "Hand Controls: Gear lever" },
+      { order: 7, title: "Hand Controls: Indicators" },
+      { order: 8, title: "Hand Controls: Horn" },
+      { order: 9, title: "Ancillary Controls: Lights" },
+      { order: 10, title: "Ancillary Controls: Wipers" },
+      { order: 11, title: "Ancillary Controls: Demisters" }
     ]
   },
   {
-    skillKey: "moving_off",
+    skillKey: "moving_off_pom",
     order: 6,
-    title: "6. Moving off",
+    title: "Moving Off (POM)",
     subsections: [
-      { order: 1, title: "POM routine" },
-      { order: 2, title: "Level ground" },
-      { order: 3, title: "Uphill" },
-      { order: 4, title: "Downhill" }
-    ]
-  },
-  {
-    skillKey: "emergency_stop",
-    order: 7,
-    title: "7. Emergency stop",
-    subsections: [
-      { order: 1, title: "Reaction and stopping" },
-      { order: 2, title: "Control and safety" }
-    ]
-  },
-  {
-    skillKey: "reverse_parking",
-    order: 8,
-    title: "8. Reverse parking",
-    subsections: [
-      { order: 1, title: "Bay parking (reverse in)" },
-      { order: 2, title: "Parallel parking" },
-      { order: 3, title: "Pull up on right and reverse" }
+      { order: 1, title: "Prepare – gear D, park brake down" },
+      { order: 2, title: "Observe – 6-point checks" },
+      { order: 3, title: "Manoeuvre – signalling and driving off" }
     ]
   },
   {
     skillKey: "use_of_mirrors",
-    order: 9,
-    title: "9. Use of mirrors",
+    order: 7,
+    title: "Use of Mirrors",
     subsections: [
       { order: 1, title: "Before signalling" },
-      { order: 2, title: "Before changing direction" },
-      { order: 3, title: "Before changing speed" }
+      { order: 2, title: "Before changing lane" },
+      { order: 3, title: "Before changing direction" },
+      { order: 4, title: "Change of speed – entering a new road" },
+      { order: 5, title: "Mirrors at traffic / traffic lights" },
+      { order: 6, title: "Change of speed – before / whilst slowing down" }
     ]
   },
   {
-    skillKey: "signals",
-    order: 10,
-    title: "10. Signals",
+    skillKey: "use_of_signals",
+    order: 8,
+    title: "Use of Signals",
     subsections: [
-      { order: 1, title: "Indicators" },
-      { order: 2, title: "Brake lights" },
-      { order: 3, title: "Horn and headlights" }
+      { order: 1, title: "Indicators (changing direction)" },
+      { order: 2, title: "Road position (overtaking parked cars)" },
+      { order: 3, title: "Horn" },
+      { order: 4, title: "Brake and headlights" },
+      { order: 5, title: "Arm signals" },
+      { order: 6, title: "Hazard lights" }
     ]
   },
   {
-    skillKey: "anticipation",
-    order: 11,
-    title: "11. Anticipation and planning",
+    skillKey: "junctions_turning_emerging",
+    order: 9,
+    title: "Junctions",
     subsections: [
-      { order: 1, title: "Reading the road ahead" },
-      { order: 2, title: "Hazard perception" }
+      { order: 1, title: "Turning and emerging right" },
+      { order: 2, title: "Turning and emerging left" },
+      { order: 3, title: "With filter lane turning right" },
+      { order: 4, title: "Open junctions" },
+      { order: 5, title: "Closed junctions" }
     ]
   },
   {
     skillKey: "use_of_speed",
+    order: 10,
+    title: "Use of Speed",
+    subsections: []
+  },
+  {
+    skillKey: "meeting_traffic",
+    order: 11,
+    title: "Meeting Traffic",
+    subsections: [
+      { order: 1, title: "Parked cars" },
+      { order: 2, title: "Priorities" },
+      { order: 3, title: "Forward planning" }
+    ]
+  },
+  {
+    skillKey: "crossroads",
     order: 12,
-    title: "12. Use of speed",
+    title: "Crossroads",
     subsections: [
-      { order: 1, title: "Making progress" },
-      { order: 2, title: "Speed limits" }
+      { order: 1, title: "No traffic lights" },
+      { order: 2, title: "Traffic-light controlled crossroads" }
     ]
   },
   {
-    skillKey: "following_distance",
+    skillKey: "roundabouts",
     order: 13,
-    title: "13. Following distance",
+    title: "Roundabouts",
     subsections: [
-      { order: 1, title: "Two-second rule" },
-      { order: 2, title: "Adjusting for conditions" }
+      { order: 1, title: "Mini roundabouts: Left" },
+      { order: 2, title: "Mini roundabouts: Ahead" },
+      { order: 3, title: "Mini roundabouts: Right" },
+      { order: 4, title: "Standard roundabouts: Left" },
+      { order: 5, title: "Standard roundabouts: Ahead" },
+      { order: 6, title: "Standard roundabouts: Right" },
+      { order: 7, title: "Multi-lane roundabouts: Two lanes" },
+      { order: 8, title: "Multi-lane roundabouts: Three or more lanes" },
+      { order: 9, title: "Multi-lane roundabouts: Complex roundabouts" }
     ]
   },
   {
-    skillKey: "positioning",
+    skillKey: "dual_carriageways",
     order: 14,
-    title: "14. Positioning",
+    title: "Dual Carriageways",
     subsections: [
-      { order: 1, title: "Normal driving" },
-      { order: 2, title: "Lane discipline" }
+      { order: 1, title: "Joining" },
+      { order: 2, title: "Exiting" },
+      { order: 3, title: "In the carriageway (dealing with traffic joining from slip roads)" }
+    ]
+  },
+  {
+    skillKey: "country_roads",
+    order: 15,
+    title: "Country Roads",
+    subsections: [
+      { order: 1, title: "Country roads (general driving)" }
+    ]
+  },
+  {
+    skillKey: "driving_conditions",
+    order: 16,
+    title: "Driving Conditions",
+    subsections: [
+      { order: 1, title: "Driving in the dark" },
+      { order: 2, title: "Weather conditions: Rain" },
+      { order: 3, title: "Weather conditions: Fog" },
+      { order: 4, title: "Weather conditions: Ice / snow" },
+      { order: 5, title: "Passengers and loads" }
+    ]
+  },
+  {
+    skillKey: "traffic_lights",
+    order: 17,
+    title: "Traffic Lights",
+    subsections: []
+  },
+  {
+    skillKey: "manoeuvres",
+    order: 18,
+    title: "Manoeuvres",
+    subsections: [
+      { order: 1, title: "Forward bay parking – reverse out (busy car park)" },
+      { order: 2, title: "Forward bay parking – reverse out (less busy car park)" },
+      { order: 3, title: "Reverse bay parking (busy car park)" },
+      { order: 4, title: "Reverse bay parking (less busy car park)" },
+      { order: 5, title: "Pull over on the right, reverse straight" },
+      { order: 6, title: "Parallel parking" },
+      { order: 7, title: "Reversing into a side road" },
+      { order: 8, title: "Three-point turn in the road" }
+    ]
+  },
+  {
+    skillKey: "emergency_stop",
+    order: 19,
+    title: "Emergency Stop",
+    subsections: [
+      { order: 1, title: "Emergency stop" }
     ]
   },
   {
     skillKey: "pedestrian_crossings",
-    order: 15,
-    title: "15. Pedestrian crossings",
+    order: 20,
+    title: "Pedestrian Crossings",
     subsections: [
       { order: 1, title: "Zebra crossings" },
       { order: 2, title: "Pelican crossings" },
@@ -150,89 +205,46 @@ export const PROGRESS_SKILLS_DATA = [
     ]
   },
   {
-    skillKey: "junctions",
-    order: 16,
-    title: "16. Junctions",
-    subsections: [
-      { order: 1, title: "Turning left" },
-      { order: 2, title: "Turning right" },
-      { order: 3, title: "Emerging left" },
-      { order: 4, title: "Emerging right" }
-    ]
-  },
-  {
-    skillKey: "roundabouts",
-    order: 17,
-    title: "17. Roundabouts",
-    subsections: [
-      { order: 1, title: "Mini roundabouts" },
-      { order: 2, title: "Single lane roundabouts" },
-      { order: 3, title: "Multi-lane roundabouts" }
-    ]
-  },
-  {
-    skillKey: "dual_carriageways",
-    order: 18,
-    title: "18. Dual carriageways",
-    subsections: [
-      { order: 1, title: "Joining" },
-      { order: 2, title: "Driving on" },
-      { order: 3, title: "Leaving" }
-    ]
-  },
-  {
-    skillKey: "overtaking",
-    order: 19,
-    title: "19. Overtaking",
-    subsections: [
-      { order: 1, title: "Safe opportunities" },
-      { order: 2, title: "Procedure" }
-    ]
-  },
-  {
-    skillKey: "meeting_traffic",
-    order: 20,
-    title: "20. Meeting traffic",
-    subsections: [
-      { order: 1, title: "Passing parked cars" },
-      { order: 2, title: "Meeting oncoming traffic" }
-    ]
-  },
-  {
-    skillKey: "crossing_traffic",
+    skillKey: "making_progress_road_position",
     order: 21,
-    title: "21. Crossing traffic",
+    title: "Making Progress",
     subsections: [
-      { order: 1, title: "Right turns across traffic" },
-      { order: 2, title: "Emerging across traffic" }
+      { order: 1, title: "Appropriate speed on 30, 40, and 50 mph roads" },
+      { order: 2, title: "National speed limit roads" },
+      { order: 3, title: "Hump roads" },
+      { order: 4, title: "Lane discipline" }
     ]
   },
   {
-    skillKey: "progress",
+    skillKey: "planning",
     order: 22,
-    title: "22. Progress",
+    title: "Planning Skills",
     subsections: [
-      { order: 1, title: "Making reasonable progress" },
-      { order: 2, title: "Appropriate speed for conditions" }
+      { order: 1, title: "Road markings and road signs" },
+      { order: 2, title: "Anticipating actions of other road users" }
     ]
   },
   {
     skillKey: "independent_driving",
     order: 23,
-    title: "23. Independent driving",
+    title: "Independent Driving",
     subsections: [
-      { order: 1, title: "Following road signs" },
-      { order: 2, title: "Using sat nav" }
+      { order: 1, title: "Independent driving following road signs" },
+      { order: 2, title: "Sat Nav use" }
     ]
   },
   {
-    skillKey: "show_me_tell_me",
+    skillKey: "eco_safe_driving",
     order: 24,
-    title: "24. Show me, tell me questions",
-    subsections: [
-      { order: 1, title: "Tell me questions" },
-      { order: 2, title: "Show me questions" },
-      { order: 3, title: "Safety checks" }
-    ]
+    title: "Eco-Safe Driving",
+    subsections: []
   }
 ];
+
+// Alias mapping for legacy subsection titles
+export const SUBSECTION_ALIAS_MAP = {
+  roundabouts: {
+    "brighton hill": "Multi-lane roundabouts: Complex roundabouts",
+    "multilane: brighton hill": "Multi-lane roundabouts: Complex roundabouts"
+  }
+};
