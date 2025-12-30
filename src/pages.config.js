@@ -39,6 +39,8 @@ import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
+import SkillBasedProgress from './pages/SkillBasedProgress';
+import SkillDetail from './pages/SkillDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -84,6 +86,8 @@ export const PAGES = {
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "TermsAndConditions": TermsAndConditions,
+    "SkillBasedProgress": SkillBasedProgress,
+    "SkillDetail": SkillDetail,
 }
 
 export const pagesConfig = {
