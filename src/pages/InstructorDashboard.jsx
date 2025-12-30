@@ -211,7 +211,7 @@ export default function InstructorDashboard() {
                 Good {getTimeOfDay()}, {firstName}
               </h2>
               <p className="text-slate-600">
-                You have {upcomingTodayBookings.length} upcoming lesson{upcomingTodayBookings.length !== 1 ? 's' : ''} today
+                You have {nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length} upcoming lesson{(nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length) !== 1 ? 's' : ''} today
                 {nextRelevantBooking && ` • Next at ${moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')}`}
               </p>
             </CardContent>
