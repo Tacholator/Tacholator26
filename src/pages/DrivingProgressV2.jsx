@@ -75,21 +75,49 @@ export default function DrivingProgressV2() {
     enabled: !!pupilId
   });
 
-  // Recalculate all skills on page load to ensure data integrity
+  // Auto-initialize and migrate skills to canonical structure
   React.useEffect(() => {
-    const recalculateAll = async () => {
-      if (!pupilId || skills.length === 0) return;
-      try {
-        const { recalculateProgressSkill } = await import('@/components/progress/progressHelper');
-        for (const skill of skills) {
-          await recalculateProgressSkill(skill.id);
+    const initializeIfNeeded = async () => {
+      if (!pupilId || !user?.id) return;
+      if (skillsLoading) return;
+      
+      if (skills.length === 0) {
+        setIsInitializing(true);
+        try {
+          await initializeProgressSkills(pupilId, user.id, PROGRESS_SKILLS_DATA);
+          queryClient.invalidateQueries(['progressSkills', pupilId]);
+          queryClient.invalidateQueries(['progressSummary', pupilId]);
+        } catch (error) {
+          console.error('Failed to initialize skills:', error);
+        } finally {
+          setIsInitializing(false);
         }
-      } catch (error) {
-        console.error('Failed to recalculate skills:', error);
+      } else if (skills.length > 0 && skills.length !== 24) {
+        // Migrate/sync to canonical structure if count doesn't match
+        setIsInitializing(true);
+        try {
+          await initializeProgressSkills(pupilId, user.id, PROGRESS_SKILLS_DATA);
+          queryClient.invalidateQueries(['progressSkills', pupilId]);
+          queryClient.invalidateQueries(['progressSummary', pupilId]);
+        } catch (error) {
+          console.error('Failed to migrate skills:', error);
+        } finally {
+          setIsInitializing(false);
+        }
+      } else {
+        // Recalculate on load
+        try {
+          const { recalculateProgressSkill } = await import('@/components/progress/progressHelper');
+          for (const skill of skills) {
+            await recalculateProgressSkill(skill.id);
+          }
+        } catch (error) {
+          console.error('Failed to recalculate skills:', error);
+        }
       }
     };
-    recalculateAll();
-  }, [pupilId, skills.length]);
+    initializeIfNeeded();
+  }, [pupilId, user?.id, skills.length, skillsLoading]);
 
   const handleInitialize = async () => {
     if (!pupilId || !user?.id) return;
