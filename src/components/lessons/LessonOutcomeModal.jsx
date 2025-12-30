@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -137,6 +137,15 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
       return;
     }
 
+    // Prevent marking future lessons as completed or no show
+    if (isFutureLesson && (formData.completionOutcome === 'completed' || formData.completionOutcome === 'no_show')) {
+      toast({ 
+        title: `Future lessons cannot be marked as ${formData.completionOutcome === 'completed' ? 'completed' : 'no show'}`, 
+        variant: 'destructive' 
+      });
+      return;
+    }
+
     setConfirmDialogOpen(true);
   };
 
@@ -146,6 +155,16 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
   };
 
   const handleOutcomeChange = (value) => {
+    // Reset to cancelled if trying to select completed/no_show for future lesson
+    if (isFutureLesson && (value === 'completed' || value === 'no_show')) {
+      setFormData({
+        ...formData,
+        completionOutcome: 'cancelled',
+        chargesApplied: formData.chargesApplied
+      });
+      return;
+    }
+    
     setFormData({
       ...formData,
       completionOutcome: value,
@@ -158,6 +177,17 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
   const pupil = pupils.find(p => p.id === pupilId);
   const isCompleted = formData.completionOutcome === 'completed';
   const showChargesOptions = formData.completionOutcome === 'cancelled' || formData.completionOutcome === 'no_show';
+
+  // Check if lesson is in the future
+  const isFutureLesson = React.useMemo(() => {
+    if (lesson) {
+      const lessonDateTime = moment(`${lesson.date} ${lesson.startTime}`, 'YYYY-MM-DD HH:mm');
+      return lessonDateTime.isAfter(moment());
+    } else if (booking) {
+      return moment(booking.startAtUtc).isAfter(moment());
+    }
+    return false;
+  }, [lesson, booking]);
 
   const isLoading = updateOutcomeMutation.isPending;
 
@@ -192,11 +222,16 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
             {/* Outcome Selection */}
             <div className="space-y-2">
               <Label>Outcome *</Label>
+              {isFutureLesson && (
+                <p className="text-xs text-amber-600 mb-2">
+                  ⚠️ This is a future lesson. Only cancellation is allowed.
+                </p>
+              )}
               <RadioGroup value={formData.completionOutcome} onValueChange={handleOutcomeChange}>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="completed" id="completed" />
-                  <Label htmlFor="completed" className="font-normal cursor-pointer">
-                    Completed
+                  <RadioGroupItem value="completed" id="completed" disabled={isFutureLesson} />
+                  <Label htmlFor="completed" className={`font-normal ${isFutureLesson ? 'text-slate-400 cursor-not-allowed' : 'cursor-pointer'}`}>
+                    Completed {isFutureLesson && '(future lesson)'}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -206,9 +241,9 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no_show" id="no_show" />
-                  <Label htmlFor="no_show" className="font-normal cursor-pointer">
-                    No show
+                  <RadioGroupItem value="no_show" id="no_show" disabled={isFutureLesson} />
+                  <Label htmlFor="no_show" className={`font-normal ${isFutureLesson ? 'text-slate-400 cursor-not-allowed' : 'cursor-pointer'}`}>
+                    No show {isFutureLesson && '(future lesson)'}
                   </Label>
                 </div>
               </RadioGroup>
