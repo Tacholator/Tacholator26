@@ -95,19 +95,6 @@ export default function InstructorDashboard() {
     return startTime.isSame(today, 'day');
   });
 
-  const upcomingTodayBookings = todayBookings.filter(b => {
-    const startTime = moment(b.startAtUtc);
-    // Exclude the next relevant booking from this list
-    return startTime.isAfter(now) && 
-           ['pending', 'confirmed', 'in_progress'].includes(b.status) &&
-           b.id !== nextRelevantBooking?.id;
-  }).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
-
-  const todayNeedingOutcome = todayBookings.filter(b => {
-    const endTime = moment(b.endAtUtc);
-    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
-  }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
-
   // Find closest lesson to current time (upcoming or ongoing)
   const nextRelevantBooking = todayBookings
     .filter(b => {
@@ -123,6 +110,19 @@ export default function InstructorDashboard() {
       const bStart = moment(b.startAtUtc);
       return Math.abs(aStart.diff(now)) - Math.abs(bStart.diff(now));
     })[0];
+
+  const upcomingTodayBookings = todayBookings.filter(b => {
+    const startTime = moment(b.startAtUtc);
+    // Exclude the next relevant booking from this list
+    return startTime.isAfter(now) && 
+           ['pending', 'confirmed', 'in_progress'].includes(b.status) &&
+           b.id !== nextRelevantBooking?.id;
+  }).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
+
+  const todayNeedingOutcome = todayBookings.filter(b => {
+    const endTime = moment(b.endAtUtc);
+    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+  }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
 
   const getStatusColor = (status) => {
     const colors = {
