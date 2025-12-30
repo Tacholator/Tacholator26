@@ -5,10 +5,7 @@ export async function recalculateProgressSkill(skillId) {
   const skill = await base44.entities.ProgressSkill.filter({ id: skillId }).then(s => s[0]);
   if (!skill) return;
 
-  const allSubsections = await base44.entities.ProgressSubsection.filter({ skillId });
-  
-  // Only count non-archived subsections
-  const subsections = allSubsections.filter(s => !s.isArchived);
+  const subsections = await base44.entities.ProgressSubsection.filter({ skillId });
   
   const total = subsections.length;
   const completed = subsections.filter(s => s.isCompleted).length;
@@ -163,20 +160,10 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
       }
     }
 
-    // Archive non-canonical subsections (preserve history, don't delete)
+    // Delete non-canonical subsections to enforce canonical structure
     for (const existingSubsection of existingSubsections) {
       if (!matchedSubsectionIds.has(existingSubsection.id)) {
-        // Note: This assumes the ProgressSubsection entity has an isArchived field
-        // If not, the subsection will remain but won't be counted in progress
-        try {
-          await base44.entities.ProgressSubsection.update(existingSubsection.id, {
-            isArchived: true
-          });
-        } catch (error) {
-          // If isArchived field doesn't exist, we can't archive
-          // Subsection will remain visible but won't match canonical list
-          console.warn('Could not archive subsection:', error);
-        }
+        await base44.entities.ProgressSubsection.delete(existingSubsection.id);
       }
     }
 
@@ -184,31 +171,19 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
     await recalculateProgressSkill(skill.id);
   }
 
-  // Archive non-canonical skills (preserve history, don't delete)
+  // Delete non-canonical skills to enforce canonical structure
   for (const existingSkill of existingSkills) {
     if (!matchedSkillIds.has(existingSkill.id)) {
-      // Archive all subsections for this skill first
+      // Delete all subsections for this skill first
       const subsections = await base44.entities.ProgressSubsection.filter({
         skillId: existingSkill.id,
         pupilId
       });
       for (const subsection of subsections) {
-        try {
-          await base44.entities.ProgressSubsection.update(subsection.id, {
-            isArchived: true
-          });
-        } catch (error) {
-          console.warn('Could not archive subsection:', error);
-        }
+        await base44.entities.ProgressSubsection.delete(subsection.id);
       }
-      // Archive the skill
-      try {
-        await base44.entities.ProgressSkill.update(existingSkill.id, {
-          isArchived: true
-        });
-      } catch (error) {
-        console.warn('Could not archive skill:', error);
-      }
+      // Delete the skill
+      await base44.entities.ProgressSkill.delete(existingSkill.id);
     }
   }
 
