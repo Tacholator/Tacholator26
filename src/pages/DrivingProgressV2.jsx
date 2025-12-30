@@ -16,22 +16,22 @@ import SkillDetailDrawer from '@/components/progress/SkillDetailDrawer';
 
 const STATUS_THEME = {
   not_started: {
-    background: '#FFF3D6',
-    border: '#F7B602',
-    accent: '#F0B429',
-    chip: { bg: '#FFE8B3', text: '#3B2F00' }
+    background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE99F 100%)',
+    border: '#FFB800',
+    accent: '#FFB800',
+    chip: { bg: '#FFE066', text: '#4A3600' }
   },
   in_progress: {
-    background: '#FFE0C2',
-    border: '#FF9B54',
-    accent: '#FF7A1A',
-    chip: { bg: '#FFD1A3', text: '#4A1F00' }
+    background: 'linear-gradient(135deg, #FFF0E6 0%, #FFCFA3 100%)',
+    border: '#FF8C42',
+    accent: '#FF8C42',
+    chip: { bg: '#FFB380', text: '#5C2600' }
   },
   completed: {
-    background: '#DFF5E6',
-    border: '#38A169',
-    accent: '#2F855A',
-    chip: { bg: '#CDEEDB', text: '#0F3D22' }
+    background: 'linear-gradient(135deg, #E6FFF0 0%, #99F5C2 100%)',
+    border: '#00D66B',
+    accent: '#00D66B',
+    chip: { bg: '#66E6A8', text: '#004D26' }
   }
 };
 
@@ -201,48 +201,53 @@ export default function DrivingProgressV2() {
               return (
                 <Card
                   key={skill.id}
-                  className="hover:shadow-xl transition-all duration-200 cursor-pointer transform hover:scale-105"
+                  className="hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:scale-105 hover:-translate-y-1"
                   style={{
-                    backgroundColor: theme.background,
+                    background: theme.background,
                     borderColor: theme.border,
-                    borderWidth: '2px',
-                    borderRadius: '16px'
+                    borderWidth: '3px',
+                    borderRadius: '20px',
+                    minHeight: '180px'
                   }}
                   onClick={() => setSelectedSkillId(skill.id)}
                 >
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <h3 className="font-semibold text-sm text-slate-800 flex-1 leading-tight">
+                  <CardContent className="p-5 space-y-3 h-full flex flex-col justify-between">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-bold text-base text-slate-900 flex-1 leading-tight">
                         {skill.title}
                       </h3>
                       <Badge
+                        className="shrink-0 font-semibold"
                         style={{
                           backgroundColor: theme.chip.bg,
                           color: theme.chip.text,
-                          fontSize: '10px',
-                          padding: '2px 8px'
+                          fontSize: '11px',
+                          padding: '4px 10px',
+                          borderRadius: '8px'
                         }}
                       >
                         {getStatusLabel(skill.status)}
                       </Badge>
                     </div>
-                    <p className="text-xs text-slate-600">
-                      {skill.subsectionsCompleted} / {skill.subsectionsTotal} sub-sections completed
-                    </p>
-                    <div className="space-y-1">
-                      <div className="w-full bg-white/50 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all duration-300"
-                          style={{
-                            width: `${skill.subsectionsRatio * 100}%`,
-                            backgroundColor: theme.accent
-                          }}
-                        />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-slate-700 mb-3">
+                        {skill.subsectionsCompleted} / {skill.subsectionsTotal} sections
+                      </p>
+                      <div className="space-y-2">
+                        <div className="w-full bg-white/70 rounded-full h-3 overflow-hidden shadow-inner">
+                          <div
+                            className="h-full rounded-full transition-all duration-500 shadow-sm"
+                            style={{
+                              width: `${skill.subsectionsRatio * 100}%`,
+                              backgroundColor: theme.accent
+                            }}
+                          />
+                        </div>
+                        <p className="text-xs font-medium text-slate-600">
+                          {Math.round(skill.subsectionsRatio * 100)}% complete
+                        </p>
                       </div>
                     </div>
-                    <p className="text-[10px] text-slate-500 italic">
-                      Complete all sub-sections to finish this skill.
-                    </p>
                   </CardContent>
                 </Card>
               );

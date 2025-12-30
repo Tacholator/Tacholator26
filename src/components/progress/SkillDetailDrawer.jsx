@@ -13,22 +13,22 @@ import { Loader2 } from 'lucide-react';
 
 const STATUS_THEME = {
   not_started: {
-    background: '#FFF3D6',
-    border: '#F7B602',
-    accent: '#F0B429',
-    chip: { bg: '#FFE8B3', text: '#3B2F00' }
+    background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE99F 100%)',
+    border: '#FFB800',
+    accent: '#FFB800',
+    chip: { bg: '#FFE066', text: '#4A3600' }
   },
   in_progress: {
-    background: '#FFE0C2',
-    border: '#FF9B54',
-    accent: '#FF7A1A',
-    chip: { bg: '#FFD1A3', text: '#4A1F00' }
+    background: 'linear-gradient(135deg, #FFF0E6 0%, #FFCFA3 100%)',
+    border: '#FF8C42',
+    accent: '#FF8C42',
+    chip: { bg: '#FFB380', text: '#5C2600' }
   },
   completed: {
-    background: '#DFF5E6',
-    border: '#38A169',
-    accent: '#2F855A',
-    chip: { bg: '#CDEEDB', text: '#0F3D22' }
+    background: 'linear-gradient(135deg, #E6FFF0 0%, #99F5C2 100%)',
+    border: '#00D66B',
+    accent: '#00D66B',
+    chip: { bg: '#66E6A8', text: '#004D26' }
   }
 };
 
@@ -111,10 +111,10 @@ export default function SkillDetailDrawer({ skillId, open, onClose, pupilId }) {
         <div className="mt-6 space-y-6">
           <Card
             style={{
-              backgroundColor: theme.background,
+              background: theme.background,
               borderColor: theme.border,
-              borderWidth: '2px',
-              borderRadius: '16px'
+              borderWidth: '3px',
+              borderRadius: '20px'
             }}
           >
             <CardContent className="p-4 space-y-3">
