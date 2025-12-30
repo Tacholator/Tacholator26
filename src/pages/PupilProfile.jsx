@@ -463,6 +463,13 @@ export default function PupilProfile() {
                         </TabsList>
 
           <TabsContent value="progress">
+            <div className="mb-4">
+              <Link to={createPageUrl('DrivingProgressV2', `pupilId=${pupilId}`)}>
+                <Button className="bg-[#F7B602] hover:bg-[#F0B429] text-[#071739]">
+                  View New Driving Progress (24 Skills)
+                </Button>
+              </Link>
+            </div>
             <PupilProgressTracker
               pupilId={pupilId}
               instructorId={pupil.instructorId}
