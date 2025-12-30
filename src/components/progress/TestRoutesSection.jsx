@@ -63,7 +63,7 @@ export default function TestRoutesSection({ pupilId }) {
   };
 
   const handleSave = () => {
-    saveMockRouteMutation.mutate(formData);
+    saveRouteMutation.mutate(formData);
   };
 
   return (
