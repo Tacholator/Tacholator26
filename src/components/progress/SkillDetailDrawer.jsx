@@ -69,13 +69,17 @@ export default function SkillDetailDrawer({ skillId, open, onClose, pupilId }) {
   });
 
   const handleMethodChange = async (subsectionId, value) => {
-    const previousSkillStatus = skill?.status;
-    await updateSubsectionMutation.mutateAsync({ subsectionId, completedMethod: value });
-    
-    // Check if skill just became completed
-    const updatedSkill = await base44.entities.ProgressSkill.filter({ id: skillId }).then(s => s[0]);
-    if (previousSkillStatus !== 'completed' && updatedSkill?.status === 'completed') {
-      toast({ title: 'Skill completed ✅', description: 'Well done!' });
+    try {
+      const previousSkillStatus = skill?.status;
+      await updateSubsectionMutation.mutateAsync({ subsectionId, completedMethod: value });
+      
+      // Check if skill just became completed
+      const updatedSkill = await base44.entities.ProgressSkill.filter({ id: skillId }).then(s => s[0]);
+      if (previousSkillStatus !== 'completed' && updatedSkill?.status === 'completed') {
+        toast({ title: 'Skill completed ✅', description: 'Well done!' });
+      }
+    } catch (error) {
+      toast({ title: 'Update failed', description: error.message, variant: 'destructive' });
     }
   };
 

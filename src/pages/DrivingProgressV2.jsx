@@ -69,6 +69,22 @@ export default function DrivingProgressV2() {
     enabled: !!pupilId
   });
 
+  // Recalculate all skills on page load to ensure data integrity
+  React.useEffect(() => {
+    const recalculateAll = async () => {
+      if (!pupilId || skills.length === 0) return;
+      try {
+        const { recalculateProgressSkill } = await import('@/components/progress/progressHelper');
+        for (const skill of skills) {
+          await recalculateProgressSkill(skill.id);
+        }
+      } catch (error) {
+        console.error('Failed to recalculate skills:', error);
+      }
+    };
+    recalculateAll();
+  }, [pupilId, skills.length]);
+
   const handleInitialize = async () => {
     if (!pupilId || !user?.id) return;
     setIsInitializing(true);

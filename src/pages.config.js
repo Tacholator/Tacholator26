@@ -36,12 +36,12 @@ import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
-import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
 import DrivingProgressV2 from './pages/DrivingProgressV2';
+import PupilProfile from './pages/PupilProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -84,12 +84,12 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "ProfileSettings": ProfileSettings,
     "PupilList": PupilList,
-    "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
     "DrivingProgressV2": DrivingProgressV2,
+    "PupilProfile": PupilProfile,
 }
 
 export const pagesConfig = {

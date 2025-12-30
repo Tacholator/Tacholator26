@@ -99,8 +99,19 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
           order: subsectionData.order,
           isCompleted: false
         });
+      } else {
+        // Migrate existing subsections: if they don't have completedMethod but are marked completed, backfill
+        const subsection = existingSubsection[0];
+        if (!subsection.completedMethod && subsection.isCompleted) {
+          await base44.entities.ProgressSubsection.update(subsection.id, {
+            completedMethod: 'full_talkthrough'
+          });
+        }
       }
     }
+
+    // Recalculate this skill to ensure counts are correct
+    await recalculateProgressSkill(skill.id);
   }
 
   await recalculateProgressSummary(pupilId);
