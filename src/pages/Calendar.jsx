@@ -541,7 +541,7 @@ export default function Calendar() {
   const pendingBookings = bookings.filter(b => b.status === 'reserved_pending_instructor');
 
   const deleteBookingMutation = useMutation({
-    mutationFn: async ({ booking, slotInstance }) => {
+    mutationFn: async ({ booking, slotInstance, state, blockType }) => {
       if (booking) {
         const pupil = pupils.find(p => p.id === booking.pupilId);
         
@@ -558,13 +558,18 @@ export default function Calendar() {
             linkTarget: 'LearnerBookingCalendar'
           });
         }
-      }
 
-      if (slotInstance) {
-        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
-          status: 'available',
-          bookingId: null
-        });
+        // If booking had a slot instance, restore it to available
+        if (booking.slotInstanceId) {
+          await base44.entities.BookableSlotInstance.update(booking.slotInstanceId, {
+            status: 'available',
+            bookingId: null,
+            reservedByPupilId: null
+          });
+        }
+      } else if (slotInstance && blockType === 'slotInstance') {
+        // Delete slot instance directly (for available slots without bookings)
+        await base44.entities.BookableSlotInstance.delete(slotInstance.id);
       }
     },
     onSuccess: () => {
@@ -573,7 +578,7 @@ export default function Calendar() {
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       queryClient.invalidateQueries(['myBookings']);
-      toast({ title: 'Booking deleted successfully' });
+      toast({ title: 'Deleted successfully' });
       setShowDeleteDialog(false);
       setDeleteTarget(null);
     },
@@ -582,11 +587,11 @@ export default function Calendar() {
     }
   });
 
-  const handleDeleteBooking = (bookingOrSlot, state) => {
+  const handleDeleteBooking = (bookingOrSlot, state, blockType) => {
     const booking = bookingOrSlot.pupilId ? bookingOrSlot : null;
-    const slotInstance = bookingOrSlot.slotInstanceId || bookingOrSlot.templateId ? bookingOrSlot : null;
+    const slotInstance = (!booking && bookingOrSlot.instructorId) ? bookingOrSlot : null;
     
-    setDeleteTarget({ booking, slotInstance, state });
+    setDeleteTarget({ booking, slotInstance, state, blockType });
     setShowDeleteDialog(true);
   };
 
@@ -910,9 +915,12 @@ export default function Calendar() {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Booking</AlertDialogTitle>
+            <AlertDialogTitle>Delete {deleteTarget?.booking ? 'Booking' : 'Slot'}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this booking? The pupil will be notified and the slot will become available again. This action cannot be undone.
+              {deleteTarget?.booking 
+                ? 'Are you sure you want to delete this booking? The pupil will be notified and the slot will become available again. This action cannot be undone.'
+                : 'Are you sure you want to delete this slot? This action cannot be undone.'
+              }
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -921,7 +929,7 @@ export default function Calendar() {
               onClick={() => deleteBookingMutation.mutate(deleteTarget)}
               className="bg-rose-600 hover:bg-rose-700"
             >
-              Delete Booking
+              Delete {deleteTarget?.booking ? 'Booking' : 'Slot'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
