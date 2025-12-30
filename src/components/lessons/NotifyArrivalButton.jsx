@@ -47,32 +47,35 @@ export default function NotifyArrivalButton({ lesson, pupil, lessonId, bookingId
   const notifyArrivalMutation = useMutation({
     mutationFn: async () => {
       const now = new Date().toISOString();
+      const targetLesson = lesson || fetchedLesson;
+      const targetBooking = fetchedBooking;
+      const targetPupil = pupil || fetchedPupil;
       
       // Update lesson or booking
-      if (currentLesson) {
-        await base44.entities.Lesson.update(currentLesson.id, {
+      if (targetLesson) {
+        await base44.entities.Lesson.update(targetLesson.id, {
           arrivalNotified: true,
           arrivalNotifiedAt: now
         });
-      } else if (currentBooking) {
-        await base44.entities.LessonBooking.update(currentBooking.id, {
+      } else if (targetBooking) {
+        await base44.entities.LessonBooking.update(targetBooking.id, {
           arrivalNotified: true,
           arrivalNotifiedAt: now
         });
       }
 
       // Create notification for pupil
-      if (currentPupil?.linkedUserId) {
+      if (targetPupil?.linkedUserId) {
         const { createNotificationIfAllowed } = await import('@/components/notifications/notificationHelper');
-        const startTime = currentLesson?.startTime || moment(currentBooking?.startAtUtc).local().format('HH:mm');
+        const startTime = targetLesson?.startTime || moment(targetBooking?.startAtUtc).local().format('HH:mm');
         await createNotificationIfAllowed({
-          userId: currentPupil.linkedUserId,
+          userId: targetPupil.linkedUserId,
           title: 'Your instructor has arrived',
           message: `Your Mobrage instructor has arrived for your lesson scheduled at ${startTime}.`,
           type: 'lesson_arrival',
           linkTarget: 'LearnerDashboard',
-          linkTargetType: currentLesson ? 'lesson' : 'booking',
-          linkTargetId: currentLesson?.id || currentBooking?.id
+          linkTargetType: targetLesson ? 'lesson' : 'booking',
+          linkTargetId: targetLesson?.id || targetBooking?.id
         }, false); // false = pupil is recipient
       }
     },
