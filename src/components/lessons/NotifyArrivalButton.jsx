@@ -1,56 +1,103 @@
 import React from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, CheckCircle2, Clock } from 'lucide-react';
 import moment from 'moment';
 
-export default function NotifyArrivalButton({ lesson, pupil }) {
+export default function NotifyArrivalButton({ lesson, pupil, lessonId, bookingId, pupilId }) {
   const queryClient = useQueryClient();
+
+  const { data: fetchedLesson } = useQuery({
+    queryKey: ['lesson', lessonId],
+    queryFn: async () => {
+      if (!lessonId) return null;
+      const lessons = await base44.entities.Lesson.filter({ id: lessonId });
+      return lessons[0] || null;
+    },
+    enabled: !!lessonId && !lesson
+  });
+
+  const { data: fetchedBooking } = useQuery({
+    queryKey: ['booking', bookingId],
+    queryFn: async () => {
+      if (!bookingId) return null;
+      const bookings = await base44.entities.LessonBooking.filter({ id: bookingId });
+      return bookings[0] || null;
+    },
+    enabled: !!bookingId && !lesson
+  });
+
+  const { data: fetchedPupil } = useQuery({
+    queryKey: ['pupil', pupilId || lesson?.pupilId || fetchedLesson?.pupilId || fetchedBooking?.pupilId],
+    queryFn: async () => {
+      const id = pupilId || lesson?.pupilId || fetchedLesson?.pupilId || fetchedBooking?.pupilId;
+      if (!id) return null;
+      const pupils = await base44.entities.Pupil.filter({ id });
+      return pupils[0] || null;
+    },
+    enabled: !!(pupilId || lesson?.pupilId || fetchedLesson?.pupilId || fetchedBooking?.pupilId) && !pupil
+  });
+
+  const currentLesson = lesson || fetchedLesson;
+  const currentBooking = fetchedBooking;
+  const currentPupil = pupil || fetchedPupil;
 
   const notifyArrivalMutation = useMutation({
     mutationFn: async () => {
       const now = new Date().toISOString();
       
-      // Update lesson
-      await base44.entities.Lesson.update(lesson.id, {
-        arrivalNotified: true,
-        arrivalNotifiedAt: now
-      });
+      // Update lesson or booking
+      if (currentLesson) {
+        await base44.entities.Lesson.update(currentLesson.id, {
+          arrivalNotified: true,
+          arrivalNotifiedAt: now
+        });
+      } else if (currentBooking) {
+        await base44.entities.LessonBooking.update(currentBooking.id, {
+          arrivalNotified: true,
+          arrivalNotifiedAt: now
+        });
+      }
 
       // Create notification for pupil
-      if (pupil?.linkedUserId) {
+      if (currentPupil?.linkedUserId) {
         const { createNotificationIfAllowed } = await import('@/components/notifications/notificationHelper');
+        const startTime = currentLesson?.startTime || moment(currentBooking?.startAtUtc).local().format('HH:mm');
         await createNotificationIfAllowed({
-          userId: pupil.linkedUserId,
+          userId: currentPupil.linkedUserId,
           title: 'Your instructor has arrived',
-          message: `Your Mobrage instructor has arrived for your lesson scheduled at ${lesson.startTime}.`,
+          message: `Your Mobrage instructor has arrived for your lesson scheduled at ${startTime}.`,
           type: 'lesson_arrival',
           linkTarget: 'LearnerDashboard',
-          linkTargetType: 'lesson',
-          linkTargetId: lesson.id
+          linkTargetType: currentLesson ? 'lesson' : 'booking',
+          linkTargetId: currentLesson?.id || currentBooking?.id
         }, false); // false = pupil is recipient
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['lessons']);
+      queryClient.invalidateQueries(['bookings']);
     }
   });
 
+  const record = currentLesson || currentBooking;
+  if (!record) return null;
+
   // Show status if already notified
-  if (lesson.arrivalNotified) {
+  if (record.arrivalNotified) {
     return (
       <div className="space-y-1">
         <div className="flex items-center gap-2 text-xs text-slate-600">
           <Bell className="w-3 h-3" />
-          <span>Notified at {moment(lesson.arrivalNotifiedAt).format('h:mm a')}</span>
+          <span>Notified at {moment(record.arrivalNotifiedAt).format('h:mm a')}</span>
         </div>
-        {lesson.pupilAcknowledged ? (
+        {record.pupilAcknowledged ? (
           <div className="flex items-center gap-2 text-xs text-emerald-600">
             <CheckCircle2 className="w-3 h-3" />
             <span>
-              Responded: {lesson.pupilAcknowledgementOption === 'on_my_way' ? "I'm on my way" : 'Got it'} at {moment(lesson.pupilAcknowledgedAt).format('h:mm a')}
+              Responded: {record.pupilAcknowledgementOption === 'on_my_way' ? "I'm on my way" : 'Got it'} at {moment(record.pupilAcknowledgedAt).format('h:mm a')}
             </span>
           </div>
         ) : (
