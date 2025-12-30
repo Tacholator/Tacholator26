@@ -463,33 +463,11 @@ export default function PupilProfile() {
                         </TabsList>
 
           <TabsContent value="progress">
-            <div className="space-y-4">
-              <Card className="border-t-4 border-[#F7B602] shadow-md hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-800 mb-2">
-                        New Driving Progress Tracker
-                      </h3>
-                      <p className="text-sm text-slate-600">
-                        Track 24 driving skills with detailed sub-section completion. Each skill tracks progress through Full Talkthrough, Prompt, and Independent methods.
-                      </p>
-                    </div>
-                    <Link to={createPageUrl('DrivingProgressV2', `pupilId=${pupilId}`)}>
-                      <Button className="bg-[#F7B602] hover:bg-[#F0B429] text-[#071739]">
-                        View Progress
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <PupilProgressTracker
-                pupilId={pupilId}
-                instructorId={pupil.instructorId}
-                isInstructor={true}
-              />
-            </div>
+            <PupilProgressTracker
+              pupilId={pupilId}
+              instructorId={pupil.instructorId}
+              isInstructor={true}
+            />
           </TabsContent>
 
           <TabsContent value="checks">
