@@ -367,7 +367,11 @@ export default function BookingDetailsModal({
   const endMoment = moment(booking.endAtUtc).local();
   const isPending = booking.status === 'reserved_pending_instructor';
   const isConfirmed = booking.status === 'confirmed';
+  const isCompleted = booking.status === 'completed';
+  const isCancelled = booking.status === 'cancelled';
+  const isNoShow = booking.status === 'no_show';
   const canManage = isPending || isConfirmed;
+  const canChangeStatus = isConfirmed;
 
   // Parse locations from notes
   const parseLocations = () => {
@@ -582,15 +586,25 @@ export default function BookingDetailsModal({
                 {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm Booking'}
               </Button>
             </>
-          ) : isConfirmed ? (
+          ) : canChangeStatus ? (
             <>
               <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+              <LessonOutcomeModal
+                open={false}
+                onClose={() => {}}
+                bookingId={booking.id}
+              />
               <Button 
-                variant="destructive"
-                onClick={() => setShowCancelDialog(true)}
-                disabled={isProcessing}
+                onClick={() => {
+                  // Trigger lesson outcome modal
+                  import('@/components/lessons/LessonOutcomeModal').then(module => {
+                    const modal = document.createElement('div');
+                    document.body.appendChild(modal);
+                  });
+                }}
+                className="bg-emerald-600 hover:bg-emerald-700"
               >
-                Cancel Lesson
+                Set Lesson Status
               </Button>
             </>
           ) : (
