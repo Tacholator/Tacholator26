@@ -8,11 +8,13 @@ import moment from 'moment';
 const SLOT_COLORS = {
   available: '#B7F7C9',
   confirmed: '#87CEFA',
+  completed: '#CFCFCF',
+  cancelled: '#FFCC80',
+  no_show: '#FF8A80',
   lunch: '#F7B602',
   unavailable: '#FFB3B3',
   outside_working_hours: '#E8E8E8',
   reserved_pending: '#B39DDB',
-  cancelled: '#CFCFCF',
   // Light grey for others viewing pending/confirmed
   reserved_confirmed_other: '#F2F2F2'
 };
@@ -93,7 +95,16 @@ export default function Calendar24Hour({
     });
 
     if (overlappingBooking) {
-      if (overlappingBooking.status === 'confirmed' || overlappingBooking.status === 'completed') {
+      if (overlappingBooking.status === 'completed') {
+        return { state: 'completed', booking: overlappingBooking, blockType: 'booking' };
+      }
+      if (overlappingBooking.status === 'cancelled') {
+        return { state: 'cancelled', booking: overlappingBooking, blockType: 'booking' };
+      }
+      if (overlappingBooking.status === 'no_show') {
+        return { state: 'no_show', booking: overlappingBooking, blockType: 'booking' };
+      }
+      if (overlappingBooking.status === 'confirmed') {
         return { state: 'confirmed', booking: overlappingBooking, blockType: 'booking' };
       }
       if (overlappingBooking.status === 'reserved_pending_instructor') {
@@ -246,6 +257,18 @@ export default function Calendar24Hour({
           <span>Confirmed</span>
         </div>
         <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.completed }} />
+          <span>Completed</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.cancelled }} />
+          <span>Cancelled</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.no_show }} />
+          <span>No Show</span>
+        </div>
+        <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.reserved_pending }} />
           <span>Pending</span>
         </div>
@@ -306,6 +329,9 @@ export default function Calendar24Hour({
                   available: 'Available',
                   reserved_pending: 'Pending',
                   confirmed: 'Confirmed',
+                  completed: 'Completed',
+                  cancelled: 'Cancelled',
+                  no_show: 'No Show',
                   lunch: 'Lunch',
                   unavailable: 'Unavailable'
                 };
@@ -373,6 +399,9 @@ export default function Calendar24Hour({
                   available: '#2E7D32',
                   reserved_pending: '#5E35B1',
                   confirmed: '#1565C0',
+                  completed: '#757575',
+                  cancelled: '#F57C00',
+                  no_show: '#D32F2F',
                   unavailable: '#D32F2F',
                   lunch: '#F57C00'
                 };
@@ -381,6 +410,9 @@ export default function Calendar24Hour({
                   available: '#1B5E20',
                   reserved_pending: '#4527A0',
                   confirmed: '#0D47A1',
+                  completed: '#616161',
+                  cancelled: '#E65100',
+                  no_show: '#C62828',
                   unavailable: '#C62828',
                   lunch: '#E65100'
                 };
