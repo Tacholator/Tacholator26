@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import moment from 'moment';
 
 const SLOT_COLORS = {
@@ -435,9 +435,16 @@ export default function Calendar24Hour({
                   const handleDelete = (e) => {
                     e.stopPropagation();
                     if (onDeleteBooking && (booking || slotInstance)) {
-                      onDeleteBooking(booking || slotInstance, state);
+                      onDeleteBooking(booking || slotInstance, state, blockType);
                     }
                   };
+
+                  // Show delete icon for instructors on available, confirmed, and completed slots
+                  const showDeleteIcon = isInstructor && (
+                    state === 'available' || 
+                    state === 'confirmed' || 
+                    state === 'completed'
+                  );
 
                   return (
                     <div
@@ -510,6 +517,17 @@ export default function Calendar24Hour({
                             </span>
                           </div>
                         </div>
+
+                        {/* Delete Icon */}
+                        {showDeleteIcon && (
+                          <button
+                            onClick={handleDelete}
+                            className="absolute top-1 right-1 p-1 rounded bg-white/80 hover:bg-rose-100 transition-colors opacity-0 group-hover:opacity-100 z-20"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-3 h-3 text-rose-600" />
+                          </button>
+                        )}
 
                         {/* Hover outline for clickable slots */}
                         {clickable && !isOthersReserved && (
