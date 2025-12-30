@@ -79,11 +79,17 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
   // Get existing skills for this pupil
   const existingSkills = await base44.entities.ProgressSkill.filter({ pupilId });
   
+  // Track which existing skills were matched to canonical skills
+  const matchedSkillIds = new Set();
+  
   for (const skillData of skillsData) {
     // Try to match by skill_key first, then by title
     let skill = existingSkills.find(s => s.skillKey === skillData.skillKey);
     if (!skill) {
-      skill = existingSkills.find(s => normalizeTitle(s.title) === normalizeTitle(skillData.title));
+      skill = existingSkills.find(s => 
+        normalizeTitle(s.title) === normalizeTitle(skillData.title) && 
+        !matchedSkillIds.has(s.id)
+      );
     }
 
     // Create or update skill
@@ -106,6 +112,7 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
         title: skillData.title,
         order: skillData.order
       });
+      matchedSkillIds.add(skill.id);
     }
 
     // Get existing subsections for this skill
@@ -116,6 +123,7 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
 
     // Process canonical subsections
     const canonicalTitles = skillData.subsections.map(s => normalizeTitle(s.title));
+    const matchedSubsectionIds = new Set();
     
     for (const subsectionData of skillData.subsections) {
       // Apply alias mapping
@@ -123,6 +131,8 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
       
       // Check if subsection exists (match by normalized title or alias)
       let subsection = existingSubsections.find(s => {
+        if (matchedSubsectionIds.has(s.id)) return false;
+        
         const normalizedExisting = normalizeTitle(s.title);
         const normalizedTarget = normalizeTitle(targetTitle);
         const aliasedExisting = applyAliasMap(skillData.skillKey, s.title);
@@ -146,28 +156,35 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
           title: targetTitle,
           order: subsectionData.order
         });
+        matchedSubsectionIds.add(subsection.id);
       }
     }
 
-    // Archive non-canonical subsections (those not in the canonical list)
+    // Delete non-canonical subsections
     for (const existingSubsection of existingSubsections) {
-      const normalizedExisting = normalizeTitle(existingSubsection.title);
-      const aliasedTitle = applyAliasMap(skillData.skillKey, existingSubsection.title);
-      const normalizedAliased = normalizeTitle(aliasedTitle);
-      
-      const isCanonical = canonicalTitles.includes(normalizedExisting) || 
-                         canonicalTitles.includes(normalizedAliased);
-      
-      if (!isCanonical && !existingSubsection.isArchived) {
-        // Archive this subsection (don't delete, just mark as archived)
-        // Note: This requires the entity to have an isArchived field
-        // For now, we'll leave non-canonical subsections as-is
-        // await base44.entities.ProgressSubsection.update(existingSubsection.id, { isArchived: true });
+      if (!matchedSubsectionIds.has(existingSubsection.id)) {
+        await base44.entities.ProgressSubsection.delete(existingSubsection.id);
       }
     }
 
     // Recalculate skill progress
     await recalculateProgressSkill(skill.id);
+  }
+
+  // Delete non-canonical skills
+  for (const existingSkill of existingSkills) {
+    if (!matchedSkillIds.has(existingSkill.id)) {
+      // Delete all subsections for this skill first
+      const subsections = await base44.entities.ProgressSubsection.filter({
+        skillId: existingSkill.id,
+        pupilId
+      });
+      for (const subsection of subsections) {
+        await base44.entities.ProgressSubsection.delete(subsection.id);
+      }
+      // Delete the skill
+      await base44.entities.ProgressSkill.delete(existingSkill.id);
+    }
   }
 
   // Final summary recalculation
