@@ -43,6 +43,7 @@ import { Link } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import DrivingProgressV2Content from '@/components/progress/DrivingProgressV2Content';
 
 
 
@@ -463,11 +464,7 @@ export default function PupilProfile() {
                         </TabsList>
 
           <TabsContent value="progress">
-            <PupilProgressTracker
-              pupilId={pupilId}
-              instructorId={pupil.instructorId}
-              isInstructor={true}
-            />
+            <DrivingProgressV2Content pupilId={pupilId} />
           </TabsContent>
 
           <TabsContent value="checks">
