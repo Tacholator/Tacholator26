@@ -207,54 +207,7 @@ export default function InstructorDashboard() {
             </CardContent>
           </Card>
 
-          {/* 1.5. Lessons to Complete (reminder card) */}
-          {lessonsNeedingOutcome.length > 0 && (
-            <Card className="bg-gradient-to-br from-rose-100 to-orange-100 border-0 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-rose-600" />
-                    Lessons to Complete
-                  </h3>
-                  <Badge className="bg-rose-600 text-white">
-                    {lessonsNeedingOutcome.length}
-                  </Badge>
-                </div>
-                <p className="text-sm text-slate-600 mb-4">
-                  These lessons have passed and need an outcome (Completed / Cancelled / No show).
-                </p>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {lessonsNeedingOutcome.slice(0, 5).map(booking => {
-                    const pupil = pupils.find(p => p.id === booking.pupilId);
-                    return (
-                      <div key={booking.id} className="bg-white/70 rounded-lg p-3">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-slate-800">
-                              {moment(booking.endAtUtc).local().format('ddd, D MMM HH:mm')} • {pupil?.firstName} {pupil?.lastName}
-                            </p>
-                            <p className="text-xs text-slate-500 mt-1">Status: {booking.status} • Needs outcome</p>
-                          </div>
-                          <Button
-                            size="sm"
-                            onClick={() => handleMarkLesson(booking.id)}
-                            className="bg-rose-600 hover:bg-rose-700 text-white"
-                          >
-                            Set Outcome
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                {lessonsNeedingOutcome.length > 5 && (
-                  <p className="text-xs text-slate-500 mt-3 text-center">
-                    And {lessonsNeedingOutcome.length - 5} more...
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          )}
+
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (
