@@ -33,17 +33,17 @@ export const PROGRESS_SKILLS_DATA = [
     order: 5,
     title: "Main Car Controls",
     subsections: [
-      { order: 1, title: "Foot Controls: Accelerator" },
-      { order: 2, title: "Foot Controls: Footbrake" },
-      { order: 3, title: "Foot Controls: Clutch" },
-      { order: 4, title: "Hand Controls: Steering wheel" },
-      { order: 5, title: "Hand Controls: Handbrake" },
-      { order: 6, title: "Hand Controls: Gear lever" },
-      { order: 7, title: "Hand Controls: Indicators" },
-      { order: 8, title: "Hand Controls: Horn" },
-      { order: 9, title: "Ancillary Controls: Lights" },
-      { order: 10, title: "Ancillary Controls: Wipers" },
-      { order: 11, title: "Ancillary Controls: Demisters" }
+      { order: 1, title: "Foot controls – Accelerator" },
+      { order: 2, title: "Foot controls – Footbrake" },
+      { order: 3, title: "Foot controls – Clutch" },
+      { order: 4, title: "Hand controls – Steering wheel" },
+      { order: 5, title: "Hand controls – Handbrake" },
+      { order: 6, title: "Hand controls – Gear lever" },
+      { order: 7, title: "Hand controls – Indicators" },
+      { order: 8, title: "Hand controls – Horn" },
+      { order: 9, title: "Ancillary controls – Lights" },
+      { order: 10, title: "Ancillary controls – Wipers" },
+      { order: 11, title: "Ancillary controls – Demisters" }
     ]
   },
   {
@@ -83,7 +83,7 @@ export const PROGRESS_SKILLS_DATA = [
     ]
   },
   {
-    skillKey: "junctions_turning_emerging",
+    skillKey: "junctions",
     order: 9,
     title: "Junctions",
     subsections: [
@@ -124,15 +124,15 @@ export const PROGRESS_SKILLS_DATA = [
     order: 13,
     title: "Roundabouts",
     subsections: [
-      { order: 1, title: "Mini roundabouts: Left" },
-      { order: 2, title: "Mini roundabouts: Ahead" },
-      { order: 3, title: "Mini roundabouts: Right" },
-      { order: 4, title: "Standard roundabouts: Left" },
-      { order: 5, title: "Standard roundabouts: Ahead" },
-      { order: 6, title: "Standard roundabouts: Right" },
-      { order: 7, title: "Multi-lane roundabouts: Two lanes" },
-      { order: 8, title: "Multi-lane roundabouts: Three or more lanes" },
-      { order: 9, title: "Multi-lane roundabouts: Complex roundabouts" }
+      { order: 1, title: "Mini roundabouts – Left" },
+      { order: 2, title: "Mini roundabouts – Ahead" },
+      { order: 3, title: "Mini roundabouts – Right" },
+      { order: 4, title: "Standard roundabouts – Left" },
+      { order: 5, title: "Standard roundabouts – Ahead" },
+      { order: 6, title: "Standard roundabouts – Right" },
+      { order: 7, title: "Multi-lane roundabouts – Two lanes" },
+      { order: 8, title: "Multi-lane roundabouts – Three or more lanes" },
+      { order: 9, title: "Multi-lane roundabouts – Complex roundabouts" }
     ]
   },
   {
@@ -159,9 +159,9 @@ export const PROGRESS_SKILLS_DATA = [
     title: "Driving Conditions",
     subsections: [
       { order: 1, title: "Driving in the dark" },
-      { order: 2, title: "Weather conditions: Rain" },
-      { order: 3, title: "Weather conditions: Fog" },
-      { order: 4, title: "Weather conditions: Ice / snow" },
+      { order: 2, title: "Weather conditions – Rain" },
+      { order: 3, title: "Weather conditions – Fog" },
+      { order: 4, title: "Weather conditions – Ice / snow" },
       { order: 5, title: "Passengers and loads" }
     ]
   },
@@ -205,7 +205,7 @@ export const PROGRESS_SKILLS_DATA = [
     ]
   },
   {
-    skillKey: "making_progress_road_position",
+    skillKey: "making_progress",
     order: 21,
     title: "Making Progress",
     subsections: [
@@ -216,7 +216,7 @@ export const PROGRESS_SKILLS_DATA = [
     ]
   },
   {
-    skillKey: "planning",
+    skillKey: "planning_skills",
     order: 22,
     title: "Planning Skills",
     subsections: [
@@ -244,7 +244,8 @@ export const PROGRESS_SKILLS_DATA = [
 // Alias mapping for legacy subsection titles
 export const SUBSECTION_ALIAS_MAP = {
   roundabouts: {
-    "brighton hill": "Multi-lane roundabouts: Complex roundabouts",
-    "multilane: brighton hill": "Multi-lane roundabouts: Complex roundabouts"
+    "brighton hill": "Multi-lane roundabouts – Complex roundabouts",
+    "multilane brighton hill": "Multi-lane roundabouts – Complex roundabouts",
+    "multilane: brighton hill": "Multi-lane roundabouts – Complex roundabouts"
   }
 };
