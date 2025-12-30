@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,6 +41,7 @@ export default function BookingDetailsModal({
   const [showReassignDialog, setShowReassignDialog] = useState(false);
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showOutcomeModal, setShowOutcomeModal] = useState(false);
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -589,19 +591,8 @@ export default function BookingDetailsModal({
           ) : canChangeStatus ? (
             <>
               <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-              <LessonOutcomeModal
-                open={false}
-                onClose={() => {}}
-                bookingId={booking.id}
-              />
               <Button 
-                onClick={() => {
-                  // Trigger lesson outcome modal
-                  import('@/components/lessons/LessonOutcomeModal').then(module => {
-                    const modal = document.createElement('div');
-                    document.body.appendChild(modal);
-                  });
-                }}
+                onClick={() => setShowOutcomeModal(true)}
                 className="bg-emerald-600 hover:bg-emerald-700"
               >
                 Set Lesson Status
@@ -769,7 +760,17 @@ export default function BookingDetailsModal({
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
-    </AlertDialog>
-    </>
-  );
-}
+      </AlertDialog>
+
+      {/* Lesson Outcome Modal */}
+      <LessonOutcomeModal
+      open={showOutcomeModal}
+      onClose={() => {
+        setShowOutcomeModal(false);
+        onOpenChange(false);
+      }}
+      bookingId={booking.id}
+      />
+      </>
+      );
+      }
