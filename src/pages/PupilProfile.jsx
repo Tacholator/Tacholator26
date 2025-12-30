@@ -44,6 +44,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import DrivingProgressV2Content from '@/components/progress/DrivingProgressV2Content';
+import MockTestsSection from '@/components/progress/MockTestsSection';
+import TestRoutesSection from '@/components/progress/TestRoutesSection';
 
 
 
@@ -464,7 +466,29 @@ export default function PupilProfile() {
                         </TabsList>
 
           <TabsContent value="progress">
-            <DrivingProgressV2Content pupilId={pupilId} />
+            <div className="space-y-6">
+              <DrivingProgressV2Content pupilId={pupilId} />
+              
+              {/* Mock Tests Section */}
+              <Card className="border-0 shadow-sm">
+                <CardHeader>
+                  <CardTitle>Mock Tests</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <MockTestsSection pupilId={pupilId} />
+                </CardContent>
+              </Card>
+
+              {/* Test Routes Section */}
+              <Card className="border-0 shadow-sm">
+                <CardHeader>
+                  <CardTitle>Test Routes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TestRoutesSection pupilId={pupilId} />
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="checks">

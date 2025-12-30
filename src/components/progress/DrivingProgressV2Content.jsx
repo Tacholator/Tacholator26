@@ -10,26 +10,32 @@ import { initializeProgressSkills } from '@/components/progress/progressHelper';
 import { Skeleton } from '@/components/ui/skeleton';
 import SkillDetailDrawer from '@/components/progress/SkillDetailDrawer';
 
-const STATUS_THEME = {
-  not_started: {
-    background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE99F 100%)',
-    border: '#FFB800',
-    accent: '#FFB800',
-    chip: { bg: '#FFE066', text: '#4A3600' }
-  },
-  in_progress: {
-    background: 'linear-gradient(135deg, #FFF0E6 0%, #FFCFA3 100%)',
-    border: '#FF8C42',
-    accent: '#FF8C42',
-    chip: { bg: '#FFB380', text: '#5C2600' }
-  },
-  completed: {
-    background: 'linear-gradient(135deg, #E6FFF0 0%, #99F5C2 100%)',
-    border: '#00D66B',
-    accent: '#00D66B',
-    chip: { bg: '#66E6A8', text: '#004D26' }
-  }
-};
+const SKILL_COLORS = [
+  { background: 'linear-gradient(135deg, #FFE5E5 0%, #FFB3B3 100%)', border: '#FF4D4D', accent: '#FF4D4D', chip: { bg: '#FFB3B3', text: '#800000' } },
+  { background: 'linear-gradient(135deg, #FFE8CC 0%, #FFD699 100%)', border: '#FF9933', accent: '#FF9933', chip: { bg: '#FFD699', text: '#804D00' } },
+  { background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE99F 100%)', border: '#FFB800', accent: '#FFB800', chip: { bg: '#FFE066', text: '#4A3600' } },
+  { background: 'linear-gradient(135deg, #FFFFCC 0%, #FFFF66 100%)', border: '#E6E600', accent: '#E6E600', chip: { bg: '#FFFF99', text: '#666600' } },
+  { background: 'linear-gradient(135deg, #E6FFE6 0%, #99FF99 100%)', border: '#00CC00', accent: '#00CC00', chip: { bg: '#99FF99', text: '#004D00' } },
+  { background: 'linear-gradient(135deg, #E6FFF0 0%, #99F5C2 100%)', border: '#00D66B', accent: '#00D66B', chip: { bg: '#66E6A8', text: '#004D26' } },
+  { background: 'linear-gradient(135deg, #E6FFFF 0%, #99FFFF 100%)', border: '#00CCCC', accent: '#00CCCC', chip: { bg: '#99FFFF', text: '#004D4D' } },
+  { background: 'linear-gradient(135deg, #E6F2FF 0%, #99C2FF 100%)', border: '#3399FF', accent: '#3399FF', chip: { bg: '#99C2FF', text: '#00264D' } },
+  { background: 'linear-gradient(135deg, #E6E6FF 0%, #CCCCFF 100%)', border: '#6666FF', accent: '#6666FF', chip: { bg: '#CCCCFF', text: '#1A1A66' } },
+  { background: 'linear-gradient(135deg, #F2E6FF 0%, #D699FF 100%)', border: '#9933FF', accent: '#9933FF', chip: { bg: '#D699FF', text: '#330066' } },
+  { background: 'linear-gradient(135deg, #FFE6F2 0%, #FFB3D9 100%)', border: '#FF66B3', accent: '#FF66B3', chip: { bg: '#FFB3D9', text: '#660033' } },
+  { background: 'linear-gradient(135deg, #FFE6E6 0%, #FFD1D1 100%)', border: '#FF8A8A', accent: '#FF8A8A', chip: { bg: '#FFD1D1', text: '#4D0000' } },
+  { background: 'linear-gradient(135deg, #FFF0E6 0%, #FFCFA3 100%)', border: '#FF8C42', accent: '#FF8C42', chip: { bg: '#FFB380', text: '#5C2600' } },
+  { background: 'linear-gradient(135deg, #FFF5E6 0%, #FFE4B3 100%)', border: '#FFAA00', accent: '#FFAA00', chip: { bg: '#FFE4B3', text: '#664400' } },
+  { background: 'linear-gradient(135deg, #FFFBE6 0%, #FFF199 100%)', border: '#FFD700', accent: '#FFD700', chip: { bg: '#FFF199', text: '#665500' } },
+  { background: 'linear-gradient(135deg, #F0FFE6 0%, #CCFF99 100%)', border: '#99FF33', accent: '#99FF33', chip: { bg: '#CCFF99', text: '#336600' } },
+  { background: 'linear-gradient(135deg, #E6FFEC 0%, #99FFAA 100%)', border: '#33FF66', accent: '#33FF66', chip: { bg: '#99FFAA', text: '#00662B' } },
+  { background: 'linear-gradient(135deg, #E6FFF9 0%, #99FFE6 100%)', border: '#00FFB3', accent: '#00FFB3', chip: { bg: '#99FFE6', text: '#00664D' } },
+  { background: 'linear-gradient(135deg, #E6F9FF 0%, #99EBFF 100%)', border: '#00BBFF', accent: '#00BBFF', chip: { bg: '#99EBFF', text: '#004D66' } },
+  { background: 'linear-gradient(135deg, #E6ECFF 0%, #99B3FF 100%)', border: '#0066FF', accent: '#0066FF', chip: { bg: '#99B3FF', text: '#001A66' } },
+  { background: 'linear-gradient(135deg, #EDE6FF 0%, #C999FF 100%)', border: '#7700FF', accent: '#7700FF', chip: { bg: '#C999FF', text: '#2B0066' } },
+  { background: 'linear-gradient(135deg, #F9E6FF 0%, #E699FF 100%)', border: '#BB00FF', accent: '#BB00FF', chip: { bg: '#E699FF', text: '#4D0066' } },
+  { background: 'linear-gradient(135deg, #FFE6F9 0%, #FFC2EB 100%)', border: '#FF3DB8', accent: '#FF3DB8', chip: { bg: '#FFC2EB', text: '#66004D' } },
+  { background: 'linear-gradient(135deg, #FFE6F0 0%, #FFB3D1 100%)', border: '#FF5599', accent: '#FF5599', chip: { bg: '#FFB3D1', text: '#660033' } }
+];
 
 export default function DrivingProgressV2Content({ pupilId }) {
   const queryClient = useQueryClient();
@@ -53,21 +59,37 @@ export default function DrivingProgressV2Content({ pupilId }) {
     enabled: !!pupilId
   });
 
-  // Recalculate all skills on page load to ensure data integrity
+  // Auto-initialize skills if not present
   React.useEffect(() => {
-    const recalculateAll = async () => {
-      if (!pupilId || skills.length === 0) return;
-      try {
-        const { recalculateProgressSkill } = await import('@/components/progress/progressHelper');
-        for (const skill of skills) {
-          await recalculateProgressSkill(skill.id);
+    const initializeIfNeeded = async () => {
+      if (!pupilId || !user?.id) return;
+      if (skillsLoading) return;
+      
+      if (skills.length === 0) {
+        setIsInitializing(true);
+        try {
+          await initializeProgressSkills(pupilId, user.id, PROGRESS_SKILLS_DATA);
+          queryClient.invalidateQueries(['progressSkills', pupilId]);
+          queryClient.invalidateQueries(['progressSummary', pupilId]);
+        } catch (error) {
+          console.error('Failed to initialize skills:', error);
+        } finally {
+          setIsInitializing(false);
         }
-      } catch (error) {
-        console.error('Failed to recalculate skills:', error);
+      } else {
+        // Recalculate existing skills
+        try {
+          const { recalculateProgressSkill } = await import('@/components/progress/progressHelper');
+          for (const skill of skills) {
+            await recalculateProgressSkill(skill.id);
+          }
+        } catch (error) {
+          console.error('Failed to recalculate skills:', error);
+        }
       }
     };
-    recalculateAll();
-  }, [pupilId, skills.length]);
+    initializeIfNeeded();
+  }, [pupilId, user?.id, skills.length, skillsLoading]);
 
   const handleInitialize = async () => {
     if (!pupilId || !user?.id) return;
@@ -145,8 +167,8 @@ export default function DrivingProgressV2Content({ pupilId }) {
         </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {skills.map((skill) => {
-            const theme = STATUS_THEME[skill.status];
+          {skills.map((skill, index) => {
+            const theme = SKILL_COLORS[index % SKILL_COLORS.length];
             return (
               <Card
                 key={skill.id}
