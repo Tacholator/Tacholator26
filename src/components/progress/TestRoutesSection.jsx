@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Edit, Loader2, MapPin } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
-export default function TestRoutesSection({ pupilId }) {
+export default function TestRoutesSection({ pupilId, isInstructorView = true }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);

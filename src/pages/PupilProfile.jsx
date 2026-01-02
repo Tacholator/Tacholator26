@@ -37,15 +37,14 @@ import LessonFormModal from '@/components/modals/LessonFormModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
 import DrivingProgressV2Content from '@/components/progress/DrivingProgressV2Content';
+import MockTestsSection from '@/components/progress/MockTestsSection';
+import TestRoutesSection from '@/components/progress/TestRoutesSection';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import DrivingProgressV2Content from '@/components/progress/DrivingProgressV2Content';
-import MockTestsSection from '@/components/progress/MockTestsSection';
-import TestRoutesSection from '@/components/progress/TestRoutesSection';
 
 
 
@@ -467,7 +466,7 @@ export default function PupilProfile() {
 
           <TabsContent value="progress">
             <div className="space-y-6">
-              <DrivingProgressV2Content pupilId={pupilId} />
+              <DrivingProgressV2Content pupilId={pupilId} isInstructorView={true} />
               
               {/* Mock Tests Section */}
               <Card className="border-0 shadow-sm">
@@ -475,7 +474,7 @@ export default function PupilProfile() {
                   <CardTitle>Mock Tests</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <MockTestsSection pupilId={pupilId} />
+                  <MockTestsSection pupilId={pupilId} isInstructorView={true} />
                 </CardContent>
               </Card>
 
@@ -485,7 +484,7 @@ export default function PupilProfile() {
                   <CardTitle>Test Routes</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <TestRoutesSection pupilId={pupilId} />
+                  <TestRoutesSection pupilId={pupilId} isInstructorView={true} />
                 </CardContent>
               </Card>
             </div>

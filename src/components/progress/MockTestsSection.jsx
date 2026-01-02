@@ -13,7 +13,7 @@ import { CheckCircle2, XCircle, Plus, Edit, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
-export default function MockTestsSection({ pupilId }) {
+export default function MockTestsSection({ pupilId, isInstructorView = true }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);
