@@ -6,9 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Loader2, Car, ExternalLink } from 'lucide-react';
-import DrivingProgressV2Content from '@/components/progress/DrivingProgressV2Content';
-import MockTestsSection from '@/components/progress/MockTestsSection';
-import TestRoutesSection from '@/components/progress/TestRoutesSection';
+import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 
 export default function LearnerProgress() {
   const { data: user } = useQuery({
@@ -88,27 +86,11 @@ export default function LearnerProgress() {
           </Card>
         )}
 
-        <DrivingProgressV2Content pupilId={pupil.id} isInstructorView={false} />
-        
-        {/* Mock Tests Section */}
-        <Card className="mt-6 border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Mock Tests</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <MockTestsSection pupilId={pupil.id} isInstructorView={false} />
-          </CardContent>
-        </Card>
-
-        {/* Test Routes Section */}
-        <Card className="mt-6 border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Test Routes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TestRoutesSection pupilId={pupil.id} isInstructorView={false} />
-          </CardContent>
-        </Card>
+        <PupilProgressTracker 
+          pupilId={pupil.id} 
+          instructorId={pupil.instructorId}
+          isInstructor={false}
+        />
       </div>
     </div>
   );

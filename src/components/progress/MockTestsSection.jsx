@@ -13,7 +13,7 @@ import { CheckCircle2, XCircle, Plus, Edit, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
-export default function MockTestsSection({ pupilId, isInstructorView = true }) {
+export default function MockTestsSection({ pupilId }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);
@@ -104,34 +104,30 @@ export default function MockTestsSection({ pupilId, isInstructorView = true }) {
                       {mock.instructorComments && (
                         <p className="text-xs text-slate-600 line-clamp-2">{mock.instructorComments}</p>
                       )}
-                      {isInstructorView && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(mock)}
-                          className="w-full mt-2"
-                        >
-                          <Edit className="w-3 h-3 mr-2" />
-                          Edit
-                        </Button>
-                      )}
-                    </div>
-                  ) : (
-                    isInstructorView && (
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => {
-                          setEditingMock(null);
-                          setFormData({ mockTestId: mockId, result: 'pass', instructorComments: '', pupilComments: '', testDate: '' });
-                          setShowModal(true);
-                        }}
-                        className="w-full"
+                        onClick={() => handleEdit(mock)}
+                        className="w-full mt-2"
                       >
-                        <Plus className="w-3 h-3 mr-2" />
-                        Add Result
+                        <Edit className="w-3 h-3 mr-2" />
+                        Edit
                       </Button>
-                    )
+                    </div>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setEditingMock(null);
+                        setFormData({ mockTestId: mockId, result: 'pass', instructorComments: '', pupilComments: '', testDate: '' });
+                        setShowModal(true);
+                      }}
+                      className="w-full"
+                    >
+                      <Plus className="w-3 h-3 mr-2" />
+                      Add Result
+                    </Button>
                   )}
                 </CardContent>
               </Card>

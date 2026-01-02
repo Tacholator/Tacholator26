@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Edit, Loader2, MapPin } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
-export default function TestRoutesSection({ pupilId, isInstructorView = true }) {
+export default function TestRoutesSection({ pupilId }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);
@@ -69,12 +69,10 @@ export default function TestRoutesSection({ pupilId, isInstructorView = true }) 
   return (
     <>
       <div className="space-y-4">
-        {isInstructorView && (
-          <Button onClick={handleAddNew} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Test Route
-          </Button>
-        )}
+        <Button onClick={handleAddNew} size="sm">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Test Route
+        </Button>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {testRoutes.map((route) => (
@@ -85,15 +83,13 @@ export default function TestRoutesSection({ pupilId, isInstructorView = true }) 
                     <MapPin className="w-4 h-4 text-blue-600" />
                     <h4 className="font-semibold text-slate-800">Route {route.routeNumber}</h4>
                   </div>
-                  {isInstructorView && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleEdit(route)}
-                    >
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                  )}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleEdit(route)}
+                  >
+                    <Edit className="w-3 h-3" />
+                  </Button>
                 </div>
                 {route.routeDetails && (
                   <p className="text-sm text-slate-600 mb-2">{route.routeDetails}</p>
