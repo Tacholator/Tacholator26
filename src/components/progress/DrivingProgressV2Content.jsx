@@ -37,7 +37,7 @@ const SKILL_COLORS = [
   { background: 'linear-gradient(135deg, #FFE6F0 0%, #FFB3D1 100%)', border: '#FF5599', accent: '#FF5599', chip: { bg: '#FFB3D1', text: '#660033' } }
 ];
 
-export default function DrivingProgressV2Content({ pupilId }) {
+export default function DrivingProgressV2Content({ pupilId, isInstructor = false }) {
   const queryClient = useQueryClient();
   const [isInitializing, setIsInitializing] = useState(false);
   const [selectedSkillId, setSelectedSkillId] = useState(null);
