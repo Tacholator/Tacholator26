@@ -36,7 +36,7 @@ import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
-import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
+import DrivingProgressV2Content from '@/components/progress/DrivingProgressV2Content';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
