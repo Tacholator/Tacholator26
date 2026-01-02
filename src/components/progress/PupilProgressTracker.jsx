@@ -1,611 +1,273 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { progressStates, drivingSkillsSections, mockTests } from './drivingSkillsData';
-import { ChevronRight, Check, Loader2, Edit2, Award, CheckSquare, Square, MapPin } from 'lucide-react';
-import moment from 'moment';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { PROGRESS_SKILLS_DATA } from './progressSkillsData';
+import { initializeProgressSkills } from './progressHelper';
+import SkillDetailDrawer from './SkillDetailDrawer';
+import MockTestsSection from './MockTestsSection';
+import TestRoutesSection from './TestRoutesSection';
+
+const SKILL_COLORS = [
+  { background: 'linear-gradient(135deg, #FFE5E5 0%, #FFB3B3 100%)', border: '#FF4D4D', accent: '#FF4D4D', chip: { bg: '#FFB3B3', text: '#800000' } },
+  { background: 'linear-gradient(135deg, #FFE8CC 0%, #FFD699 100%)', border: '#FF9933', accent: '#FF9933', chip: { bg: '#FFD699', text: '#804D00' } },
+  { background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE99F 100%)', border: '#FFB800', accent: '#FFB800', chip: { bg: '#FFE066', text: '#4A3600' } },
+  { background: 'linear-gradient(135deg, #FFFFCC 0%, #FFFF66 100%)', border: '#E6E600', accent: '#E6E600', chip: { bg: '#FFFF99', text: '#666600' } },
+  { background: 'linear-gradient(135deg, #E6FFE6 0%, #99FF99 100%)', border: '#00CC00', accent: '#00CC00', chip: { bg: '#99FF99', text: '#004D00' } },
+  { background: 'linear-gradient(135deg, #E6FFF0 0%, #99F5C2 100%)', border: '#00D66B', accent: '#00D66B', chip: { bg: '#66E6A8', text: '#004D26' } },
+  { background: 'linear-gradient(135deg, #E6FFFF 0%, #99FFFF 100%)', border: '#00CCCC', accent: '#00CCCC', chip: { bg: '#99FFFF', text: '#004D4D' } },
+  { background: 'linear-gradient(135deg, #E6F2FF 0%, #99C2FF 100%)', border: '#3399FF', accent: '#3399FF', chip: { bg: '#99C2FF', text: '#00264D' } },
+  { background: 'linear-gradient(135deg, #E6E6FF 0%, #CCCCFF 100%)', border: '#6666FF', accent: '#6666FF', chip: { bg: '#CCCCFF', text: '#1A1A66' } },
+  { background: 'linear-gradient(135deg, #F2E6FF 0%, #D699FF 100%)', border: '#9933FF', accent: '#9933FF', chip: { bg: '#D699FF', text: '#330066' } },
+  { background: 'linear-gradient(135deg, #FFE6F2 0%, #FFB3D9 100%)', border: '#FF66B3', accent: '#FF66B3', chip: { bg: '#FFB3D9', text: '#660033' } },
+  { background: 'linear-gradient(135deg, #FFE6E6 0%, #FFD1D1 100%)', border: '#FF8A8A', accent: '#FF8A8A', chip: { bg: '#FFD1D1', text: '#4D0000' } },
+  { background: 'linear-gradient(135deg, #FFF0E6 0%, #FFCFA3 100%)', border: '#FF8C42', accent: '#FF8C42', chip: { bg: '#FFB380', text: '#5C2600' } },
+  { background: 'linear-gradient(135deg, #FFF5E6 0%, #FFE4B3 100%)', border: '#FFAA00', accent: '#FFAA00', chip: { bg: '#FFE4B3', text: '#664400' } },
+  { background: 'linear-gradient(135deg, #FFFBE6 0%, #FFF199 100%)', border: '#FFD700', accent: '#FFD700', chip: { bg: '#FFF199', text: '#665500' } },
+  { background: 'linear-gradient(135deg, #F0FFE6 0%, #CCFF99 100%)', border: '#99FF33', accent: '#99FF33', chip: { bg: '#CCFF99', text: '#336600' } },
+  { background: 'linear-gradient(135deg, #E6FFEC 0%, #99FFAA 100%)', border: '#33FF66', accent: '#33FF66', chip: { bg: '#99FFAA', text: '#00662B' } },
+  { background: 'linear-gradient(135deg, #E6FFF9 0%, #99FFE6 100%)', border: '#00FFB3', accent: '#00FFB3', chip: { bg: '#99FFE6', text: '#00664D' } },
+  { background: 'linear-gradient(135deg, #E6F9FF 0%, #99EBFF 100%)', border: '#00BBFF', accent: '#00BBFF', chip: { bg: '#99EBFF', text: '#004D66' } },
+  { background: 'linear-gradient(135deg, #E6ECFF 0%, #99B3FF 100%)', border: '#0066FF', accent: '#0066FF', chip: { bg: '#99B3FF', text: '#001A66' } },
+  { background: 'linear-gradient(135deg, #EDE6FF 0%, #C999FF 100%)', border: '#7700FF', accent: '#7700FF', chip: { bg: '#C999FF', text: '#2B0066' } },
+  { background: 'linear-gradient(135deg, #F9E6FF 0%, #E699FF 100%)', border: '#BB00FF', accent: '#BB00FF', chip: { bg: '#E699FF', text: '#4D0066' } },
+  { background: 'linear-gradient(135deg, #FFE6F9 0%, #FFC2EB 100%)', border: '#FF3DB8', accent: '#FF3DB8', chip: { bg: '#FFC2EB', text: '#66004D' } },
+  { background: 'linear-gradient(135deg, #FFE6F0 0%, #FFB3D1 100%)', border: '#FF5599', accent: '#FF5599', chip: { bg: '#FFB3D1', text: '#660033' } }
+];
 
 export default function PupilProgressTracker({ pupilId, instructorId, isInstructor = true }) {
   const queryClient = useQueryClient();
-  const [selectedSkill, setSelectedSkill] = useState(null);
-  const [notes, setNotes] = useState('');
-  const [editingMockTest, setEditingMockTest] = useState(null);
-  const [mockTestData, setMockTestData] = useState({ result: '', instructorComments: '', pupilComments: '', testDate: '' });
-  const [editingRoute, setEditingRoute] = useState(null);
-  const [routeData, setRouteData] = useState({ routeDetails: '', comments: '' });
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [selectedSkillId, setSelectedSkillId] = useState(null);
 
-  const { data: progressData = [], isLoading } = useQuery({
-    queryKey: ['drivingProgress', pupilId],
-    queryFn: () => base44.entities.DrivingSkillProgress.filter({ pupilId }),
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const { data: skills = [], isLoading: skillsLoading } = useQuery({
+    queryKey: ['progressSkills', pupilId],
+    queryFn: () => base44.entities.ProgressSkill.filter({ pupilId }).then(s => s.sort((a, b) => a.order - b.order)),
     enabled: !!pupilId
   });
 
-  const { data: mockTestResults = [] } = useQuery({
-    queryKey: ['mockTestResults', pupilId],
-    queryFn: () => base44.entities.MockTestResult.filter({ pupilId }),
+  const { data: progressSummary } = useQuery({
+    queryKey: ['progressSummary', pupilId],
+    queryFn: () => base44.entities.ProgressSummary.filter({ pupilId }).then(p => p[0] || null),
     enabled: !!pupilId
   });
 
-  const { data: testRoutes = [] } = useQuery({
-    queryKey: ['testRoutes', pupilId],
-    queryFn: () => base44.entities.TestRoute.filter({ pupilId }, 'routeNumber'),
-    enabled: !!pupilId
-  });
-
-  const { data: pupil } = useQuery({
-    queryKey: ['pupil', pupilId],
-    queryFn: () => base44.entities.Pupil.filter({ id: pupilId }).then(r => r[0]),
-    enabled: !!pupilId
-  });
-
-  const updateProgressMutation = useMutation({
-    mutationFn: async ({ skillId, progressState }) => {
-      const existing = progressData.find(p => p.skillId === skillId);
-      if (existing) {
-        return base44.entities.DrivingSkillProgress.update(existing.id, {
-          progressState,
-          notes,
-          lastUpdated: new Date().toISOString()
-        });
-      } else {
-        return base44.entities.DrivingSkillProgress.create({
-          pupilId,
-          instructorId,
-          skillId,
-          progressState,
-          notes,
-          lastUpdated: new Date().toISOString()
-        });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['drivingProgress']);
-      setSelectedSkill(null);
-      setNotes('');
-    }
-  });
-
-  const saveMockTestMutation = useMutation({
-    mutationFn: async ({ mockTestId, data }) => {
-      const existing = mockTestResults.find(r => r.mockTestId === mockTestId);
-      if (existing) {
-        return base44.entities.MockTestResult.update(existing.id, data);
-      } else {
-        return base44.entities.MockTestResult.create({
-          pupilId,
-          instructorId,
-          mockTestId,
-          ...data
-        });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['mockTestResults']);
-      setEditingMockTest(null);
-      setMockTestData({ result: '', instructorComments: '', pupilComments: '', testDate: '' });
-    }
-  });
-
-  const saveRouteMutation = useMutation({
-    mutationFn: async ({ routeNumber, data }) => {
-      const existing = testRoutes.find(r => r.routeNumber === routeNumber);
-      if (existing) {
-        return base44.entities.TestRoute.update(existing.id, data);
-      } else {
-        return base44.entities.TestRoute.create({
-          pupilId,
-          instructorId,
-          routeNumber,
-          ...data
-        });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['testRoutes']);
-      setEditingRoute(null);
-      setRouteData({ routeDetails: '', comments: '' });
-    }
-  });
-
-  const getProgressForSkill = (skillId) => {
-    return progressData.find(p => p.skillId === skillId);
-  };
-
-  const getProgressColor = (state) => {
-    const stateConfig = progressStates.find(s => s.id === state);
-    return stateConfig?.color || 'bg-slate-100 text-slate-600';
-  };
-
-
-
-  const handleCheckboxToggle = (skillId, level) => {
-    const progress = getProgressForSkill(skillId);
-    const currentState = progress?.progressState;
-    let newState;
-
-    if (currentState === level) {
-      const levels = ['full_talk_through', 'prompted', 'independent'];
-      const currentIndex = levels.indexOf(currentState);
-      newState = currentIndex > 0 ? levels[currentIndex - 1] : '';
-    } else {
-      newState = level;
-    }
-
-    updateProgressMutation.mutate({
-      skillId,
-      progressState: newState
-    });
-  };
-
-  const renderSkillItem = (skill, level = 0) => {
-    const progress = getProgressForSkill(skill.id);
-    const levels = ['full_talk_through', 'prompted', 'independent'];
-
-    if (isInstructor) {
-      return (
-        <div 
-          key={skill.id}
-          className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors gap-4"
-          style={{ marginLeft: `${level * 16}px` }}
-        >
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <ChevronRight className={`w-4 h-4 text-slate-400 flex-shrink-0 ${level > 0 ? 'opacity-50' : ''}`} />
-            <span className="text-sm text-slate-700 truncate">{skill.label}</span>
-          </div>
-          <div className="flex gap-3 items-center flex-shrink-0">
-            {levels.map((lvl, idx) => {
-              const isChecked = levels.indexOf(progress?.progressState) >= idx;
-              return (
-                <label key={lvl} className="flex items-center gap-1.5 cursor-pointer group">
-                  <Checkbox
-                    checked={isChecked}
-                    onCheckedChange={() => handleCheckboxToggle(skill.id, lvl)}
-                    disabled={updateProgressMutation.isPending}
-                  />
-                  <span className="text-xs text-slate-600 group-hover:text-slate-800 whitespace-nowrap">
-                    {lvl === 'full_talk_through' ? 'Full' : lvl === 'prompted' ? 'Prompt' : 'Indep'}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
-        </div>
-      );
-    }
-
-    // Learner view - read-only
-    const stateLabel = progressStates.find(s => s.id === progress?.progressState)?.label;
-    return (
-      <div 
-        key={skill.id}
-        className="flex items-center justify-between p-3 rounded-lg"
-        style={{ marginLeft: `${level * 16}px` }}
-      >
-        <div className="flex items-center gap-3 flex-1">
-          <ChevronRight className={`w-4 h-4 text-slate-400 ${level > 0 ? 'opacity-50' : ''}`} />
-          <span className="text-sm text-slate-700">{skill.label}</span>
-        </div>
-        {progress && (
-          <Badge className={`${getProgressColor(progress.progressState)} text-xs`}>
-            {stateLabel}
-          </Badge>
-        )}
-      </div>
-    );
-  };
-
-  const renderTopic = (topic, level = 0) => {
-    if (topic.type === 'skill') {
-      return renderSkillItem(topic, level);
-    }
-
-    if (topic.type === 'group' && topic.subtopics) {
-      return (
-        <div key={topic.id} className="mb-2">
-          <div className="font-medium text-slate-600 text-sm mb-2" style={{ marginLeft: `${level * 16}px` }}>
-            {topic.label}
-          </div>
-          {topic.subtopics.map(subtopic => renderTopic(subtopic, level + 1))}
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  // SHARED PROGRESS CALCULATION - Based on 24 total DVSA skills
-  const calculateOverallProgress = () => {
-    const TOTAL_SKILLS = 24;
-    
-    if (!progressData || progressData.length === 0) {
-      return { total: TOTAL_SKILLS, independent: 0, percentage: 0 };
-    }
-
-    const progressValues = { full_talk_through: 33, prompted: 66, independent: 100 };
-    const totalProgress = progressData.reduce((sum, skill) => {
-      return sum + (progressValues[skill.progressState] || 0);
-    }, 0);
-    const percentage = Math.round(totalProgress / TOTAL_SKILLS);
-
-    const independentCount = progressData.filter(p => p.progressState === 'independent').length;
-
-    return {
-      total: TOTAL_SKILLS,
-      independent: independentCount,
-      percentage: percentage
-    };
-  };
-
-  const isSectionCompleted = (section) => {
-    const sectionSkills = [];
-    const extractSkills = (items) => {
-      items.forEach(item => {
-        if (item.type === 'skill') {
-          sectionSkills.push(item.id);
-        } else if (item.subtopics) {
-          extractSkills(item.subtopics);
+  // Auto-initialize skills if not present and migrate existing
+  React.useEffect(() => {
+    const initializeIfNeeded = async () => {
+      if (!pupilId || !instructorId) return;
+      if (skillsLoading) return;
+      
+      if (skills.length === 0) {
+        setIsInitializing(true);
+        try {
+          await initializeProgressSkills(pupilId, instructorId, PROGRESS_SKILLS_DATA);
+          queryClient.invalidateQueries(['progressSkills', pupilId]);
+          queryClient.invalidateQueries(['progressSummary', pupilId]);
+        } catch (error) {
+          console.error('Failed to initialize skills:', error);
+        } finally {
+          setIsInitializing(false);
         }
-      });
+      } else if (skills.length > 0 && skills.length !== 24) {
+        // Migrate/sync to canonical structure if count doesn't match
+        setIsInitializing(true);
+        try {
+          await initializeProgressSkills(pupilId, instructorId, PROGRESS_SKILLS_DATA);
+          queryClient.invalidateQueries(['progressSkills', pupilId]);
+          queryClient.invalidateQueries(['progressSummary', pupilId]);
+        } catch (error) {
+          console.error('Failed to migrate skills:', error);
+        } finally {
+          setIsInitializing(false);
+        }
+      } else {
+        // Recalculate existing skills on load
+        try {
+          const { recalculateProgressSkill } = await import('./progressHelper');
+          for (const skill of skills) {
+            await recalculateProgressSkill(skill.id);
+          }
+        } catch (error) {
+          console.error('Failed to recalculate skills:', error);
+        }
+      }
     };
-    extractSkills(section.topics);
+    initializeIfNeeded();
+  }, [pupilId, instructorId, skills.length, skillsLoading]);
 
-    if (sectionSkills.length === 0) return false;
-
-    return sectionSkills.every(skillId => {
-      const progress = getProgressForSkill(skillId);
-      return progress?.progressState === 'independent';
-    });
+  const handleInitialize = async () => {
+    if (!pupilId || !instructorId) return;
+    setIsInitializing(true);
+    try {
+      await initializeProgressSkills(pupilId, instructorId, PROGRESS_SKILLS_DATA);
+      queryClient.invalidateQueries(['progressSkills', pupilId]);
+      queryClient.invalidateQueries(['progressSummary', pupilId]);
+    } catch (error) {
+      console.error('Failed to initialize skills:', error);
+    } finally {
+      setIsInitializing(false);
+    }
   };
 
-  if (isLoading) {
+  const getStatusLabel = (status) => {
+    const labels = {
+      not_started: 'Not Started',
+      in_progress: 'In Progress',
+      completed: 'Completed'
+    };
+    return labels[status] || status;
+  };
+
+  if (skillsLoading || isInitializing) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[#F7B602]" />
+      <div className="space-y-4">
+        <Skeleton className="h-32 w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {[...Array(8)].map((_, i) => (
+            <Skeleton key={i} className="h-48 w-full" />
+          ))}
+        </div>
       </div>
     );
   }
 
-  const overallProgress = calculateOverallProgress();
+  if (skills.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-12 text-center">
+          <h3 className="text-lg font-semibold mb-2">No Skills Initialized</h3>
+          <p className="text-slate-600 mb-6">
+            Initialize the 24 driving skills to start tracking progress.
+          </p>
+          <Button onClick={handleInitialize} disabled={isInitializing} className="bg-[#F7B602] hover:bg-[#F0B429] text-[#071739]">
+            {isInitializing ? 'Initializing...' : 'Initialize Skills'}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const overallProgress = progressSummary?.overallPercent || 0;
+  const completedSkills = progressSummary?.completedParentSkills || 0;
 
   return (
-    <div className="space-y-6">
-      {/* Overall Progress Summary */}
-      <Card className="border-0 shadow-sm bg-gradient-to-br from-[#F7B602]/10 to-[#F7B602]/5">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-800 mb-1">Overall Progress</h3>
-              <p className="text-sm text-slate-600">
-                {overallProgress.independent} of {overallProgress.total} skills mastered
+    <>
+      <div className="space-y-6">
+        {/* Overall Progress Summary */}
+        <Card className="border-t-4 border-[#F7B602] shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl text-[#071739]">Driving Progress</CardTitle>
+            <p className="text-sm text-slate-600">
+              Skills Completed: {completedSkills}/24 ({overallProgress}%)
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Progress value={overallProgress} className="h-4" />
+              <p className="text-xs text-slate-500">
+                Overall progress increases only when a full skill is completed.
               </p>
             </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold text-[#071739]">{overallProgress.percentage}%</div>
-              <p className="text-xs text-slate-500">Independent</p>
-            </div>
-          </div>
-          <div className="mt-4 h-3 bg-slate-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-[#F7B602] to-[#d99f02] transition-all duration-500"
-              style={{ width: `${overallProgress.percentage}%` }}
-            />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Progress Legend */}
-      <Card className="border-0 shadow-sm">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-4 flex-wrap">
-            <span className="text-sm font-medium text-slate-600">Progress Levels:</span>
-            {progressStates.map(state => (
-              <Badge key={state.id} className={`${state.color} text-xs`}>
-                {state.label}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Skills Sections */}
-      <Accordion type="multiple" className="space-y-3">
-        {drivingSkillsSections.map((section, index) => (
-          <AccordionItem 
-            key={section.id} 
-            value={section.id}
-            className="border-0 shadow-sm rounded-lg bg-white overflow-hidden"
-          >
-            <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-slate-50">
-              <div className="flex items-center gap-3 flex-1">
-                <div className="w-8 h-8 rounded-full bg-[#F7B602]/20 flex items-center justify-center text-[#071739] font-semibold text-sm">
-                  {index + 1}
-                </div>
-                <span className="font-semibold text-slate-800">{section.title}</span>
-                {isSectionCompleted(section) && (
-                  <Badge className="bg-emerald-100 text-emerald-700 ml-2">
-                    <Check className="w-3 h-3 mr-1" />
-                    Completed
-                  </Badge>
-                )}
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-5 pb-4">
-              <div className="space-y-1">
-                {section.topics.map(topic => renderTopic(topic))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-
-      {/* Test Routes Section */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-[#F7B602]" />
-            Test Routes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(routeNumber => {
-              const route = testRoutes.find(r => r.routeNumber === routeNumber);
-              return (
-                <div 
-                  key={routeNumber}
-                  className={`p-4 border-2 rounded-lg min-h-[120px] cursor-pointer transition-colors ${
-                    isInstructor ? 'hover:border-[#F7B602]' : ''
-                  } ${route && (route.routeDetails || route.comments) ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
-                  onClick={() => {
-                    if (!isInstructor) return;
-                    setEditingRoute(routeNumber);
-                    setRouteData({
-                      routeDetails: route?.routeDetails || '',
-                      comments: route?.comments || ''
-                    });
-                  }}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-semibold text-slate-700">Route {routeNumber}</h4>
-                    {route && (route.routeDetails || route.comments) && <Check className="w-4 h-4 text-emerald-500" />}
+        {/* Skill Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {skills.map((skill, index) => {
+            const theme = SKILL_COLORS[index % SKILL_COLORS.length];
+            return (
+              <Card
+                key={skill.id}
+                className="hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:scale-105 hover:-translate-y-1"
+                style={{
+                  background: theme.background,
+                  borderColor: theme.border,
+                  borderWidth: '3px',
+                  borderRadius: '20px',
+                  minHeight: '180px'
+                }}
+                onClick={() => setSelectedSkillId(skill.id)}
+              >
+                <CardContent className="p-5 space-y-3 h-full flex flex-col justify-between">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-bold text-base text-slate-900 flex-1 leading-tight">
+                      {skill.title}
+                    </h3>
+                    <Badge
+                      className="shrink-0 font-semibold"
+                      style={{
+                        backgroundColor: theme.chip.bg,
+                        color: theme.chip.text,
+                        fontSize: '11px',
+                        padding: '4px 10px',
+                        borderRadius: '8px'
+                      }}
+                    >
+                      {getStatusLabel(skill.status)}
+                    </Badge>
                   </div>
-                  {route && (route.routeDetails || route.comments) ? (
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-slate-700 mb-3">
+                      {skill.subsectionsCompleted} / {skill.subsectionsTotal} sections
+                    </p>
                     <div className="space-y-2">
-                      {route.routeDetails && (
-                        <p className="text-sm text-slate-600">{route.routeDetails}</p>
-                      )}
-                      {route.comments && (
-                        <p className="text-xs text-slate-500 italic">{route.comments}</p>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-slate-400">Click to add route details</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Mock Tests Section */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-[#F7B602]" />
-            Mock Tests
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {mockTests.map(test => {
-              const result = mockTestResults.find(r => r.mockTestId === test.id);
-              return (
-                <div 
-                  key={test.id} 
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                    isInstructor ? 'hover:border-[#F7B602]' : ''
-                  } ${result && result.result ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
-                  onClick={() => {
-                    if (!isInstructor) return;
-                    setEditingMockTest(test.id);
-                    setMockTestData({
-                      result: result?.result || '',
-                      instructorComments: result?.instructorComments || '',
-                      pupilComments: result?.pupilComments || '',
-                      testDate: result?.testDate || moment().format('YYYY-MM-DD')
-                    });
-                  }}
-                >
-                  <h4 className="font-medium text-slate-700 mb-3">{test.label}</h4>
-                  {result && result.result ? (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        {result.result === 'pass' ? (
-                          <Badge className="bg-emerald-100 text-emerald-700">Pass</Badge>
-                        ) : (
-                          <Badge className="bg-rose-100 text-rose-700">Fail</Badge>
-                        )}
+                      <div className="w-full bg-white/70 rounded-full h-3 overflow-hidden shadow-inner">
+                        <div
+                          className="h-full rounded-full transition-all duration-500 shadow-sm"
+                          style={{
+                            width: `${skill.subsectionsRatio * 100}%`,
+                            backgroundColor: theme.accent
+                          }}
+                        />
                       </div>
-                      {result.testDate && (
-                        <p className="text-xs text-slate-500">{moment(result.testDate).format('D MMM YYYY')}</p>
-                      )}
-                      {result.instructorComments && (
-                        <p className="text-xs text-slate-600 mt-2">
-                          <span className="font-medium">Instructor: </span>
-                          {result.instructorComments}
-                        </p>
-                      )}
-                      {result.pupilComments && (
-                        <p className="text-xs text-slate-600 mt-1">
-                          <span className="font-medium">Pupil: </span>
-                          {result.pupilComments}
-                        </p>
-                      )}
+                      <p className="text-xs font-medium text-slate-600">
+                        {Math.round(skill.subsectionsRatio * 100)}% complete
+                      </p>
                     </div>
-                  ) : (
-                    <p className="text-sm text-slate-400">Not completed</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-
-
-      {/* Edit Mock Test Dialog */}
-      <Dialog open={!!editingMockTest} onOpenChange={() => setEditingMockTest(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Mock Test: {mockTests.find(t => t.id === editingMockTest)?.label}</DialogTitle>
-            <DialogDescription>
-              Record the mock test result and comments
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-3 block">Result</label>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setMockTestData({ ...mockTestData, result: mockTestData.result === 'pass' ? '' : 'pass' })}
-                  className={`flex-1 p-4 border-2 rounded-lg transition-colors ${
-                    mockTestData.result === 'pass' 
-                      ? 'border-emerald-500 bg-emerald-50' 
-                      : 'border-slate-200 hover:border-emerald-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    {mockTestData.result === 'pass' ? <CheckSquare className="w-5 h-5 text-emerald-600" /> : <Square className="w-5 h-5" />}
-                    <span className="font-medium">Pass</span>
                   </div>
-                </button>
-                <button
-                  onClick={() => setMockTestData({ ...mockTestData, result: mockTestData.result === 'fail' ? '' : 'fail' })}
-                  className={`flex-1 p-4 border-2 rounded-lg transition-colors ${
-                    mockTestData.result === 'fail' 
-                      ? 'border-rose-500 bg-rose-50' 
-                      : 'border-slate-200 hover:border-rose-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    {mockTestData.result === 'fail' ? <CheckSquare className="w-5 h-5 text-rose-600" /> : <Square className="w-5 h-5" />}
-                    <span className="font-medium">Fail</span>
-                  </div>
-                </button>
-              </div>
-            </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">Test Date</label>
-              <Input
-                type="date"
-                value={mockTestData.testDate}
-                onChange={(e) => setMockTestData({ ...mockTestData, testDate: e.target.value })}
-              />
-            </div>
+        {/* Mock Tests Section */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Mock Tests</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MockTestsSection pupilId={pupilId} />
+          </CardContent>
+        </Card>
 
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">Instructor Comments</label>
-              <Textarea
-                value={mockTestData.instructorComments}
-                onChange={(e) => setMockTestData({ ...mockTestData, instructorComments: e.target.value })}
-                placeholder="Add instructor comments..."
-                rows={3}
-              />
-            </div>
+        {/* Test Routes Section */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Test Routes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TestRoutesSection pupilId={pupilId} />
+          </CardContent>
+        </Card>
+      </div>
 
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">Pupil Comments</label>
-              <Textarea
-                value={mockTestData.pupilComments}
-                onChange={(e) => setMockTestData({ ...mockTestData, pupilComments: e.target.value })}
-                placeholder="Add pupil comments..."
-                rows={3}
-              />
-            </div>
-
-            <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setEditingMockTest(null)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => saveMockTestMutation.mutate({ mockTestId: editingMockTest, data: mockTestData })}
-                disabled={saveMockTestMutation.isPending}
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-              >
-                {saveMockTestMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Test Route Dialog */}
-      <Dialog open={!!editingRoute} onOpenChange={() => setEditingRoute(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Test Route {editingRoute}</DialogTitle>
-            <DialogDescription>
-              Add details about this test route
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">Route Details</label>
-              <Textarea
-                value={routeData.routeDetails}
-                onChange={(e) => setRouteData({ ...routeData, routeDetails: e.target.value })}
-                placeholder="Describe the route, key areas, directions..."
-                rows={4}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">Comments</label>
-              <Textarea
-                value={routeData.comments}
-                onChange={(e) => setRouteData({ ...routeData, comments: e.target.value })}
-                placeholder="Any additional notes or observations..."
-                rows={3}
-              />
-            </div>
-
-            <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setEditingRoute(null)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => saveRouteMutation.mutate({ routeNumber: editingRoute, data: routeData })}
-                disabled={saveRouteMutation.isPending}
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-              >
-                {saveRouteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+      <SkillDetailDrawer
+        skillId={selectedSkillId}
+        open={!!selectedSkillId}
+        onClose={() => setSelectedSkillId(null)}
+        pupilId={pupilId}
+      />
+    </>
   );
 }
