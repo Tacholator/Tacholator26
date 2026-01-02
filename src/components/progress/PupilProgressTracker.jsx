@@ -326,36 +326,85 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         </CardContent>
       </Card>
 
-      {/* Skills Sections */}
-      <Accordion type="multiple" className="space-y-3">
-        {drivingSkillsSections.map((section, index) => (
-          <AccordionItem 
-            key={section.id} 
-            value={section.id}
-            className="border-0 shadow-sm rounded-lg bg-white overflow-hidden"
-          >
-            <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-slate-50">
-              <div className="flex items-center gap-3 flex-1">
-                <div className="w-8 h-8 rounded-full bg-[#F7B602]/20 flex items-center justify-center text-[#071739] font-semibold text-sm">
-                  {index + 1}
+      {/* Skills Cards for Instructor / Accordion for Learner */}
+      {isInstructor ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {drivingSkillsSections.map((section, index) => {
+            const gradients = [
+              'from-amber-500 to-orange-500',
+              'from-rose-500 to-pink-500',
+              'from-purple-500 to-indigo-500',
+              'from-blue-500 to-cyan-500',
+              'from-teal-500 to-emerald-500',
+              'from-green-500 to-lime-500'
+            ];
+            const gradient = gradients[index % gradients.length];
+            const isCompleted = isSectionCompleted(section);
+
+            return (
+              <Card 
+                key={section.id}
+                className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
+              >
+                <div className={`h-2 bg-gradient-to-r ${gradient}`} />
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold`}>
+                        {index + 1}
+                      </div>
+                      <h3 className="font-semibold text-slate-800 text-base leading-tight">
+                        {section.title}
+                      </h3>
+                    </div>
+                  </div>
+                  
+                  {isCompleted && (
+                    <Badge className="bg-emerald-100 text-emerald-700 mb-3">
+                      <Check className="w-3 h-3 mr-1" />
+                      Completed
+                    </Badge>
+                  )}
+
+                  <div className="space-y-1 mt-3">
+                    {section.topics.map(topic => renderTopic(topic, 0))}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      ) : (
+        <Accordion type="multiple" className="space-y-3">
+          {drivingSkillsSections.map((section, index) => (
+            <AccordionItem 
+              key={section.id} 
+              value={section.id}
+              className="border-0 shadow-sm rounded-lg bg-white overflow-hidden"
+            >
+              <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-slate-50">
+                <div className="flex items-center gap-3 flex-1">
+                  <div className="w-8 h-8 rounded-full bg-[#F7B602]/20 flex items-center justify-center text-[#071739] font-semibold text-sm">
+                    {index + 1}
+                  </div>
+                  <span className="font-semibold text-slate-800">{section.title}</span>
+                  {isSectionCompleted(section) && (
+                    <Badge className="bg-emerald-100 text-emerald-700 ml-2">
+                      <Check className="w-3 h-3 mr-1" />
+                      Completed
+                    </Badge>
+                  )}
                 </div>
-                <span className="font-semibold text-slate-800">{section.title}</span>
-                {isSectionCompleted(section) && (
-                  <Badge className="bg-emerald-100 text-emerald-700 ml-2">
-                    <Check className="w-3 h-3 mr-1" />
-                    Completed
-                  </Badge>
-                )}
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-5 pb-4">
-              <div className="space-y-1">
-                {section.topics.map(topic => renderTopic(topic))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+              </AccordionTrigger>
+              <AccordionContent className="px-5 pb-4">
+                <div className="space-y-1">
+                  {section.topics.map(topic => renderTopic(topic))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      )}
 
       {/* Test Routes Section */}
       <Card className="border-0 shadow-sm">
