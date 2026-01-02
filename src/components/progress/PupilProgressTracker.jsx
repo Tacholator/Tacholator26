@@ -341,120 +341,88 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         </CardContent>
       </Card>
 
-      {/* Skills Cards for Instructor / Accordion for Learner */}
-      {isInstructor ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {drivingSkillsSections.map((section, index) => {
-            const gradients = [
-              'from-blue-500 to-cyan-600',
-              'from-yellow-500 to-amber-600',
-              'from-pink-500 to-rose-600',
-              'from-slate-500 to-gray-600',
-              'from-green-500 to-emerald-600',
-              'from-violet-500 to-purple-600',
-              'from-amber-600 to-orange-600',
-              'from-orange-500 to-red-600',
-              'from-purple-500 to-fuchsia-600',
-              'from-teal-500 to-cyan-600',
-              'from-rose-500 to-pink-600',
-              'from-lime-500 to-green-600',
-              'from-indigo-500 to-blue-600',
-              'from-fuchsia-500 to-pink-600',
-              'from-cyan-500 to-blue-600',
-              'from-emerald-500 to-teal-600',
-              'from-red-500 to-rose-600',
-              'from-amber-500 to-yellow-600',
-              'from-sky-500 to-blue-600',
-              'from-pink-600 to-fuchsia-700',
-              'from-violet-600 to-indigo-700',
-              'from-green-600 to-lime-700',
-              'from-orange-600 to-amber-700',
-              'from-blue-600 to-indigo-700'
-            ];
-            const gradient = gradients[index];
-            const sectionProgress = getSectionProgress(section);
+      {/* Skills Cards - Same for Both Instructor and Pupil */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {drivingSkillsSections.map((section, index) => {
+          const gradients = [
+            'from-blue-500 to-cyan-600',
+            'from-yellow-500 to-amber-600',
+            'from-pink-500 to-rose-600',
+            'from-slate-500 to-gray-600',
+            'from-green-500 to-emerald-600',
+            'from-violet-500 to-purple-600',
+            'from-amber-600 to-orange-600',
+            'from-orange-500 to-red-600',
+            'from-purple-500 to-fuchsia-600',
+            'from-teal-500 to-cyan-600',
+            'from-rose-500 to-pink-600',
+            'from-lime-500 to-green-600',
+            'from-indigo-500 to-blue-600',
+            'from-fuchsia-500 to-pink-600',
+            'from-cyan-500 to-blue-600',
+            'from-emerald-500 to-teal-600',
+            'from-red-500 to-rose-600',
+            'from-amber-500 to-yellow-600',
+            'from-sky-500 to-blue-600',
+            'from-pink-600 to-fuchsia-700',
+            'from-violet-600 to-indigo-700',
+            'from-green-600 to-lime-700',
+            'from-orange-600 to-amber-700',
+            'from-blue-600 to-indigo-700'
+          ];
+          const gradient = gradients[index];
+          const sectionProgress = getSectionProgress(section);
 
-            const statusConfig = {
-              not_started: { label: 'Not Started', color: 'bg-slate-100 text-slate-600' },
-              in_progress: { label: 'In Progress', color: 'bg-blue-100 text-blue-700' },
-              completed: { label: 'Completed', color: 'bg-emerald-100 text-emerald-700' }
-            };
+          const statusConfig = {
+            not_started: { label: 'Not Started', color: 'bg-slate-100 text-slate-600' },
+            in_progress: { label: 'In Progress', color: 'bg-blue-100 text-blue-700' },
+            completed: { label: 'Completed', color: 'bg-emerald-100 text-emerald-700' }
+          };
 
-            return (
-              <Card 
-                key={section.id}
-                className={`border-0 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden h-[280px] flex flex-col bg-gradient-to-br ${gradient}`}
-                onClick={() => setExpandedSection(section)}
-              >
-                <CardContent className="p-5 flex flex-col flex-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm">
-                        {index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-white text-sm leading-tight mb-1">
-                          {section.title}
-                        </h3>
-                        <p className="text-xs text-white/80">
-                          {sectionProgress.completed}/{sectionProgress.total} sections
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Badge className="bg-white/20 text-white backdrop-blur-sm mb-3 w-fit text-xs border-white/30">
-                    {statusConfig[sectionProgress.status].label}
-                  </Badge>
-
-                  <div className="mt-auto">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs text-white/90 font-medium">Progress</span>
-                      <span className="text-xs text-white font-semibold">{sectionProgress.percentage}%</span>
-                    </div>
-                    <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
-                      <div 
-                        className="h-full bg-white/90 transition-all duration-500"
-                        style={{ width: `${sectionProgress.percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      ) : (
-        <Accordion type="multiple" className="space-y-3">
-          {drivingSkillsSections.map((section, index) => (
-            <AccordionItem 
-              key={section.id} 
-              value={section.id}
-              className="border-0 shadow-sm rounded-lg bg-white overflow-hidden"
+          return (
+            <Card 
+              key={section.id}
+              className={`border-0 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden h-[280px] flex flex-col bg-gradient-to-br ${gradient}`}
+              onClick={() => setExpandedSection(section)}
             >
-              <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-slate-50">
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="w-8 h-8 rounded-full bg-[#F7B602]/20 flex items-center justify-center text-[#071739] font-semibold text-sm">
-                    {index + 1}
+              <CardContent className="p-5 flex flex-col flex-1">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-white text-sm leading-tight mb-1">
+                        {section.title}
+                      </h3>
+                      <p className="text-xs text-white/80">
+                        {sectionProgress.completed}/{sectionProgress.total} sections
+                      </p>
+                    </div>
                   </div>
-                  <span className="font-semibold text-slate-800">{section.title}</span>
-                  {isSectionCompleted(section) && (
-                    <Badge className="bg-emerald-100 text-emerald-700 ml-2">
-                      <Check className="w-3 h-3 mr-1" />
-                      Completed
-                    </Badge>
-                  )}
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-5 pb-4">
-                <div className="space-y-1">
-                  {section.topics.map(topic => renderTopic(topic))}
+
+                <Badge className="bg-white/20 text-white backdrop-blur-sm mb-3 w-fit text-xs border-white/30">
+                  {statusConfig[sectionProgress.status].label}
+                </Badge>
+
+                <div className="mt-auto">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-white/90 font-medium">Progress</span>
+                    <span className="text-xs text-white font-semibold">{sectionProgress.percentage}%</span>
+                  </div>
+                  <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+                    <div 
+                      className="h-full bg-white/90 transition-all duration-500"
+                      style={{ width: `${sectionProgress.percentage}%` }}
+                    />
+                  </div>
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      )}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
       {/* Test Routes Section */}
       <Card className="border-0 shadow-sm">
