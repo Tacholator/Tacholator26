@@ -104,30 +104,34 @@ export default function MockTestsSection({ pupilId, isInstructorView = true }) {
                       {mock.instructorComments && (
                         <p className="text-xs text-slate-600 line-clamp-2">{mock.instructorComments}</p>
                       )}
+                      {isInstructorView && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEdit(mock)}
+                          className="w-full mt-2"
+                        >
+                          <Edit className="w-3 h-3 mr-2" />
+                          Edit
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    isInstructorView && (
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleEdit(mock)}
-                        className="w-full mt-2"
+                        onClick={() => {
+                          setEditingMock(null);
+                          setFormData({ mockTestId: mockId, result: 'pass', instructorComments: '', pupilComments: '', testDate: '' });
+                          setShowModal(true);
+                        }}
+                        className="w-full"
                       >
-                        <Edit className="w-3 h-3 mr-2" />
-                        Edit
+                        <Plus className="w-3 h-3 mr-2" />
+                        Add Result
                       </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setEditingMock(null);
-                        setFormData({ mockTestId: mockId, result: 'pass', instructorComments: '', pupilComments: '', testDate: '' });
-                        setShowModal(true);
-                      }}
-                      className="w-full"
-                    >
-                      <Plus className="w-3 h-3 mr-2" />
-                      Add Result
-                    </Button>
+                    )
                   )}
                 </CardContent>
               </Card>
