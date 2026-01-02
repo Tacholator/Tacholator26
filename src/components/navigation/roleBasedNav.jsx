@@ -74,7 +74,7 @@ export const getPageForRole = (linkId, isInstructor) => {
 };
 
 // Build complete navigation array for a role
-export const buildNavigation = (isInstructor) => {
+export const buildNavigation = (isInstructor, isMainAdmin = false) => {
   const shared = sharedNavLinks.map(link => ({
     name: link.name,
     icon: link.icon,
