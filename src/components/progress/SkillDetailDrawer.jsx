@@ -38,7 +38,7 @@ const SKILL_COLORS = [
   { background: 'linear-gradient(135deg, #FFE6F0 0%, #FFB3D1 100%)', border: '#FF5599', accent: '#FF5599', chip: { bg: '#FFB3D1', text: '#660033' } }
 ];
 
-export default function SkillDetailDrawer({ skillId, open, onClose, pupilId, isInstructor = false }) {
+export default function SkillDetailDrawer({ skillId, open, onClose, pupilId }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -176,53 +176,37 @@ export default function SkillDetailDrawer({ skillId, open, onClose, pupilId, isI
 
                   <div className="space-y-2">
                     <Label className="text-sm text-slate-600">
-                      {isInstructor ? 'Mark progress level' : 'Progress level'}
+                      Mark as completed using one method
                     </Label>
-                    {isInstructor ? (
-                      <RadioGroup
-                        value={subsection.completedMethod || ''}
-                        onValueChange={(value) => handleMethodChange(subsection.id, value)}
-                      >
-                        <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200">
-                          <RadioGroupItem value="full_talkthrough" id={`${subsection.id}-full`} />
-                          <Label htmlFor={`${subsection.id}-full`} className="cursor-pointer flex-1 text-sm">
-                            Full Talkthrough
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200">
-                          <RadioGroupItem value="prompt" id={`${subsection.id}-prompt`} />
-                          <Label htmlFor={`${subsection.id}-prompt`} className="cursor-pointer flex-1 text-sm">
-                            Prompt
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200">
-                          <RadioGroupItem value="independent" id={`${subsection.id}-independent`} />
-                          <Label htmlFor={`${subsection.id}-independent`} className="cursor-pointer flex-1 text-sm">
-                            Independent
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    ) : (
-                      <div className="space-y-2">
-                        <div className={`p-3 rounded-lg ${subsection.completedMethod === 'full_talkthrough' ? 'bg-blue-50 border-2 border-blue-300' : 'bg-slate-50'}`}>
-                          <p className="text-sm font-medium text-slate-700">Full Talkthrough</p>
-                        </div>
-                        <div className={`p-3 rounded-lg ${subsection.completedMethod === 'prompt' ? 'bg-amber-50 border-2 border-amber-300' : 'bg-slate-50'}`}>
-                          <p className="text-sm font-medium text-slate-700">Prompt</p>
-                        </div>
-                        <div className={`p-3 rounded-lg ${subsection.completedMethod === 'independent' ? 'bg-emerald-50 border-2 border-emerald-300' : 'bg-slate-50'}`}>
-                          <p className="text-sm font-medium text-slate-700">Independent</p>
-                        </div>
+                    <RadioGroup
+                      value={subsection.completedMethod || ''}
+                      onValueChange={(value) => handleMethodChange(subsection.id, value)}
+                    >
+                      <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200">
+                        <RadioGroupItem value="full_talkthrough" id={`${subsection.id}-full`} />
+                        <Label htmlFor={`${subsection.id}-full`} className="cursor-pointer flex-1 text-sm">
+                          Full Talkthrough
+                        </Label>
                       </div>
-                    )}
+                      <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200">
+                        <RadioGroupItem value="prompt" id={`${subsection.id}-prompt`} />
+                        <Label htmlFor={`${subsection.id}-prompt`} className="cursor-pointer flex-1 text-sm">
+                          Prompt
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200">
+                        <RadioGroupItem value="independent" id={`${subsection.id}-independent`} />
+                        <Label htmlFor={`${subsection.id}-independent`} className="cursor-pointer flex-1 text-sm">
+                          Independent
+                        </Label>
+                      </div>
+                    </RadioGroup>
                     <p className="text-xs text-slate-500 italic">
-                      {isInstructor 
-                        ? 'Only "Independent" counts as fully completed. Select one option per subsection.'
-                        : 'Only "Independent" level means you have mastered this subsection.'}
+                      Selecting one option marks the sub-section as completed. Only one option can be selected.
                     </p>
                   </div>
 
-                  {isInstructor && subsection.isCompleted && (
+                  {subsection.isCompleted && (
                     <Button
                       variant="ghost"
                       size="sm"

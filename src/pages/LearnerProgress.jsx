@@ -4,11 +4,9 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Loader2, Car, ExternalLink } from 'lucide-react';
-import DrivingProgressV2Content from '@/components/progress/DrivingProgressV2Content';
-import MockTestsSection from '@/components/progress/MockTestsSection';
-import TestRoutesSection from '@/components/progress/TestRoutesSection';
+import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 
 export default function LearnerProgress() {
   const { data: user } = useQuery({
@@ -88,29 +86,11 @@ export default function LearnerProgress() {
           </Card>
         )}
 
-        <div className="space-y-6">
-          <DrivingProgressV2Content pupilId={pupil.id} isInstructor={false} />
-          
-          {/* Mock Tests Section */}
-          <Card className="border-l-4 border-l-[#F7B602]">
-            <CardHeader>
-              <CardTitle>Mock Tests</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <MockTestsSection pupilId={pupil.id} isInstructor={false} />
-            </CardContent>
-          </Card>
-
-          {/* Test Routes Section */}
-          <Card className="border-l-4 border-l-[#F7B602]">
-            <CardHeader>
-              <CardTitle>Test Routes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <TestRoutesSection pupilId={pupil.id} isInstructor={false} />
-            </CardContent>
-          </Card>
-        </div>
+        <PupilProgressTracker 
+          pupilId={pupil.id} 
+          instructorId={pupil.instructorId}
+          isInstructor={false}
+        />
       </div>
     </div>
   );

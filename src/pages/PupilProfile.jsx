@@ -36,9 +36,7 @@ import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
-import DrivingProgressV2Content from '@/components/progress/DrivingProgressV2Content';
-import MockTestsSection from '@/components/progress/MockTestsSection';
-import TestRoutesSection from '@/components/progress/TestRoutesSection';
+import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
@@ -466,29 +464,11 @@ export default function PupilProfile() {
                         </TabsList>
 
           <TabsContent value="progress">
-            <div className="space-y-6">
-              <DrivingProgressV2Content pupilId={pupilId} isInstructor={true} />
-              
-              {/* Mock Tests Section */}
-              <Card className="border-0 shadow-sm">
-                <CardHeader>
-                  <CardTitle>Mock Tests</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <MockTestsSection pupilId={pupilId} />
-                </CardContent>
-              </Card>
-
-              {/* Test Routes Section */}
-              <Card className="border-0 shadow-sm">
-                <CardHeader>
-                  <CardTitle>Test Routes</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <TestRoutesSection pupilId={pupilId} />
-                </CardContent>
-              </Card>
-            </div>
+            <PupilProgressTracker 
+              pupilId={pupilId} 
+              instructorId={pupil?.instructorId || currentUser?.id}
+              isInstructor={true}
+            />
           </TabsContent>
 
           <TabsContent value="checks">
