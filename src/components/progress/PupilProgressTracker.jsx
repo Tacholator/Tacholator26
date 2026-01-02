@@ -233,25 +233,19 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     return null;
   };
 
-  // SHARED PROGRESS CALCULATION - Based on 24 total DVSA skills
+  // SHARED PROGRESS CALCULATION - Based on 24 total parent cards/sections
   const calculateOverallProgress = () => {
-    const TOTAL_SKILLS = 24;
+    const TOTAL_CARDS = 24;
     
-    if (!progressData || progressData.length === 0) {
-      return { total: TOTAL_SKILLS, independent: 0, percentage: 0 };
-    }
+    const completedCards = drivingSkillsSections.filter(section => {
+      return getSectionProgress(section).status === 'completed';
+    }).length;
 
-    const progressValues = { full_talk_through: 33, prompted: 66, independent: 100 };
-    const totalProgress = progressData.reduce((sum, skill) => {
-      return sum + (progressValues[skill.progressState] || 0);
-    }, 0);
-    const percentage = Math.round(totalProgress / TOTAL_SKILLS);
-
-    const independentCount = progressData.filter(p => p.progressState === 'independent').length;
+    const percentage = Math.round((completedCards / TOTAL_CARDS) * 100);
 
     return {
-      total: TOTAL_SKILLS,
-      independent: independentCount,
+      total: TOTAL_CARDS,
+      independent: completedCards,
       percentage: percentage
     };
   };
@@ -352,14 +346,32 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {drivingSkillsSections.map((section, index) => {
             const gradients = [
-              'from-amber-500 to-orange-500',
-              'from-rose-500 to-pink-500',
-              'from-purple-500 to-indigo-500',
-              'from-blue-500 to-cyan-500',
-              'from-teal-500 to-emerald-500',
-              'from-green-500 to-lime-500'
+              'from-amber-500 to-orange-600',
+              'from-rose-500 to-pink-600',
+              'from-orange-500 to-red-500',
+              'from-yellow-500 to-amber-600',
+              'from-pink-500 to-rose-600',
+              'from-red-500 to-rose-600',
+              'from-amber-600 to-orange-700',
+              'from-orange-600 to-red-600',
+              'from-yellow-600 to-orange-500',
+              'from-rose-600 to-pink-700',
+              'from-pink-600 to-fuchsia-600',
+              'from-red-600 to-orange-600',
+              'from-amber-500 to-yellow-600',
+              'from-orange-400 to-amber-600',
+              'from-rose-400 to-red-600',
+              'from-pink-400 to-rose-500',
+              'from-yellow-500 to-orange-600',
+              'from-red-500 to-pink-600',
+              'from-orange-500 to-amber-700',
+              'from-amber-600 to-red-500',
+              'from-rose-500 to-orange-500',
+              'from-pink-500 to-amber-600',
+              'from-red-400 to-orange-700',
+              'from-yellow-600 to-red-500'
             ];
-            const gradient = gradients[index % gradients.length];
+            const gradient = gradients[index];
             const sectionProgress = getSectionProgress(section);
 
             const statusConfig = {
