@@ -28,7 +28,6 @@ import LearnerHomework from './pages/LearnerHomework';
 import LearnerLessons from './pages/LearnerLessons';
 import LearnerNotes from './pages/LearnerNotes';
 import LearnerNotifications from './pages/LearnerNotifications';
-import LearnerProgress from './pages/LearnerProgress';
 import LearnerResources from './pages/LearnerResources';
 import LearnerScheduledLessons from './pages/LearnerScheduledLessons';
 import LearnerSkillStudy from './pages/LearnerSkillStudy';
@@ -37,11 +36,12 @@ import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
-import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
+import LearnerProgress from './pages/LearnerProgress';
+import PupilProfile from './pages/PupilProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -76,7 +76,6 @@ export const PAGES = {
     "LearnerLessons": LearnerLessons,
     "LearnerNotes": LearnerNotes,
     "LearnerNotifications": LearnerNotifications,
-    "LearnerProgress": LearnerProgress,
     "LearnerResources": LearnerResources,
     "LearnerScheduledLessons": LearnerScheduledLessons,
     "LearnerSkillStudy": LearnerSkillStudy,
@@ -85,11 +84,12 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "ProfileSettings": ProfileSettings,
     "PupilList": PupilList,
-    "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
+    "LearnerProgress": LearnerProgress,
+    "PupilProfile": PupilProfile,
 }
 
 export const pagesConfig = {

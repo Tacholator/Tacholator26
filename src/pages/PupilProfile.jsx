@@ -466,29 +466,11 @@ export default function PupilProfile() {
                         </TabsList>
 
           <TabsContent value="progress">
-            <div className="space-y-6">
-              <DrivingProgressV2Content pupilId={pupilId} />
-              
-              {/* Mock Tests Section */}
-              <Card className="border-0 shadow-sm">
-                <CardHeader>
-                  <CardTitle>Mock Tests</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <MockTestsSection pupilId={pupilId} />
-                </CardContent>
-              </Card>
-
-              {/* Test Routes Section */}
-              <Card className="border-0 shadow-sm">
-                <CardHeader>
-                  <CardTitle>Test Routes</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <TestRoutesSection pupilId={pupilId} />
-                </CardContent>
-              </Card>
-            </div>
+            <PupilProgressTracker 
+              pupilId={pupilId} 
+              instructorId={pupil?.instructorId || currentUser?.id}
+              isInstructor={true}
+            />
           </TabsContent>
 
           <TabsContent value="checks">
