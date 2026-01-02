@@ -33,6 +33,7 @@ import {
   Users
 } from 'lucide-react';
 import moment from 'moment';
+import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
@@ -180,15 +181,60 @@ export default function LearnerDashboard() {
 
   const latestDiary = diaryEntries[0];
 
-  // Calculate overall progress from driving skills - Based on 24 total DVSA skills
+  // Helper to get progress for a skill
+  const getProgressForSkill = (skillId) => {
+    return drivingProgress.find(p => p.skillId === skillId);
+  };
+
+  // Helper to calculate section progress
+  const getSectionProgress = (section) => {
+    const sectionSkills = [];
+    const extractSkills = (items) => {
+      items.forEach(item => {
+        if (item.type === 'skill') {
+          sectionSkills.push(item.id);
+        } else if (item.subtopics) {
+          extractSkills(item.subtopics);
+        }
+      });
+    };
+    extractSkills(section.topics);
+
+    if (sectionSkills.length === 0) return { total: 0, completed: 0, percentage: 0, status: 'not_started' };
+
+    const completed = sectionSkills.filter(skillId => {
+      const progress = getProgressForSkill(skillId);
+      return progress?.progressState === 'independent';
+    }).length;
+
+    const started = sectionSkills.some(skillId => {
+      const progress = getProgressForSkill(skillId);
+      return progress?.progressState;
+    });
+
+    const percentage = Math.round((completed / sectionSkills.length) * 100);
+    
+    let status = 'not_started';
+    if (completed === sectionSkills.length) {
+      status = 'completed';
+    } else if (started) {
+      status = 'in_progress';
+    }
+
+    return { total: sectionSkills.length, completed, percentage, status };
+  };
+
+  // Calculate overall progress - Based on 24 total parent cards/sections
   const overallProgress = React.useMemo(() => {
-    const TOTAL_SKILLS = 24;
-    if (!drivingProgress.length) return 0;
-    const progressValues = { full_talk_through: 33, prompted: 66, independent: 100 };
-    const totalProgress = drivingProgress.reduce((sum, skill) => {
-      return sum + (progressValues[skill.progressState] || 0);
-    }, 0);
-    return Math.round(totalProgress / TOTAL_SKILLS);
+    const TOTAL_CARDS = 24;
+    
+    const completedCards = drivingSkillsSections.filter(section => {
+      return getSectionProgress(section).status === 'completed';
+    }).length;
+
+    const percentage = Math.round((completedCards / TOTAL_CARDS) * 100);
+
+    return percentage;
   }, [drivingProgress]);
 
   // Find next focus topic (first skill that's not independent)
