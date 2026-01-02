@@ -32,6 +32,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   const [mockTestData, setMockTestData] = useState({ result: '', instructorComments: '', pupilComments: '', testDate: '' });
   const [editingRoute, setEditingRoute] = useState(null);
   const [routeData, setRouteData] = useState({ routeDetails: '', comments: '' });
+  const [expandedSection, setExpandedSection] = useState(null);
 
   const { data: progressData = [], isLoading } = useQuery({
     queryKey: ['drivingProgress', pupilId],
@@ -255,7 +256,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     };
   };
 
-  const isSectionCompleted = (section) => {
+  const getSectionProgress = (section) => {
     const sectionSkills = [];
     const extractSkills = (items) => {
       items.forEach(item => {
@@ -268,12 +269,32 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     };
     extractSkills(section.topics);
 
-    if (sectionSkills.length === 0) return false;
+    if (sectionSkills.length === 0) return { total: 0, completed: 0, percentage: 0, status: 'not_started' };
 
-    return sectionSkills.every(skillId => {
+    const completed = sectionSkills.filter(skillId => {
       const progress = getProgressForSkill(skillId);
       return progress?.progressState === 'independent';
+    }).length;
+
+    const started = sectionSkills.some(skillId => {
+      const progress = getProgressForSkill(skillId);
+      return progress?.progressState;
     });
+
+    const percentage = Math.round((completed / sectionSkills.length) * 100);
+    
+    let status = 'not_started';
+    if (completed === sectionSkills.length) {
+      status = 'completed';
+    } else if (started) {
+      status = 'in_progress';
+    }
+
+    return { total: sectionSkills.length, completed, percentage, status };
+  };
+
+  const isSectionCompleted = (section) => {
+    return getSectionProgress(section).status === 'completed';
   };
 
   if (isLoading) {
@@ -339,35 +360,53 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               'from-green-500 to-lime-500'
             ];
             const gradient = gradients[index % gradients.length];
-            const isCompleted = isSectionCompleted(section);
+            const sectionProgress = getSectionProgress(section);
+
+            const statusConfig = {
+              not_started: { label: 'Not Started', color: 'bg-slate-100 text-slate-600' },
+              in_progress: { label: 'In Progress', color: 'bg-blue-100 text-blue-700' },
+              completed: { label: 'Completed', color: 'bg-emerald-100 text-emerald-700' }
+            };
 
             return (
               <Card 
                 key={section.id}
-                className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
+                className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden h-[280px] flex flex-col"
+                onClick={() => setExpandedSection(section)}
               >
                 <div className={`h-2 bg-gradient-to-r ${gradient}`} />
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between mb-4">
+                <CardContent className="p-5 flex flex-col flex-1">
+                  <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold`}>
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-sm`}>
                         {index + 1}
                       </div>
-                      <h3 className="font-semibold text-slate-800 text-base leading-tight">
-                        {section.title}
-                      </h3>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-slate-800 text-sm leading-tight mb-1">
+                          {section.title}
+                        </h3>
+                        <p className="text-xs text-slate-500">
+                          {sectionProgress.completed}/{sectionProgress.total} sections
+                        </p>
+                      </div>
                     </div>
                   </div>
                   
-                  {isCompleted && (
-                    <Badge className="bg-emerald-100 text-emerald-700 mb-3">
-                      <Check className="w-3 h-3 mr-1" />
-                      Completed
-                    </Badge>
-                  )}
+                  <Badge className={`${statusConfig[sectionProgress.status].color} mb-3 w-fit text-xs`}>
+                    {statusConfig[sectionProgress.status].label}
+                  </Badge>
 
-                  <div className="space-y-1 mt-3">
-                    {section.topics.map(topic => renderTopic(topic, 0))}
+                  <div className="mt-auto">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-slate-600 font-medium">Progress</span>
+                      <span className="text-xs text-slate-600 font-semibold">{sectionProgress.percentage}%</span>
+                    </div>
+                    <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full bg-gradient-to-r ${gradient} transition-all duration-500`}
+                        style={{ width: `${sectionProgress.percentage}%` }}
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -652,6 +691,26 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                 {saveRouteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Section Dialog */}
+      <Dialog open={!!expandedSection} onOpenChange={() => setExpandedSection(null)}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#F7B602] to-[#d99f02] flex items-center justify-center text-white font-bold">
+                {drivingSkillsSections.indexOf(expandedSection) + 1}
+              </div>
+              {expandedSection?.title}
+            </DialogTitle>
+            <DialogDescription>
+              Track progress for each section below
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-4">
+            {expandedSection?.topics.map(topic => renderTopic(topic, 0))}
           </div>
         </DialogContent>
       </Dialog>
