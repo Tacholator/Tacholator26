@@ -383,39 +383,38 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
             return (
               <Card 
                 key={section.id}
-                className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden h-[280px] flex flex-col"
+                className={`border-0 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden h-[280px] flex flex-col bg-gradient-to-br ${gradient}`}
                 onClick={() => setExpandedSection(section)}
               >
-                <div className={`h-2 bg-gradient-to-r ${gradient}`} />
                 <CardContent className="p-5 flex flex-col flex-1">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-sm`}>
+                      <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm">
                         {index + 1}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-slate-800 text-sm leading-tight mb-1">
+                        <h3 className="font-semibold text-white text-sm leading-tight mb-1">
                           {section.title}
                         </h3>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-white/80">
                           {sectionProgress.completed}/{sectionProgress.total} sections
                         </p>
                       </div>
                     </div>
                   </div>
-                  
-                  <Badge className={`${statusConfig[sectionProgress.status].color} mb-3 w-fit text-xs`}>
+
+                  <Badge className="bg-white/20 text-white backdrop-blur-sm mb-3 w-fit text-xs border-white/30">
                     {statusConfig[sectionProgress.status].label}
                   </Badge>
 
                   <div className="mt-auto">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs text-slate-600 font-medium">Progress</span>
-                      <span className="text-xs text-slate-600 font-semibold">{sectionProgress.percentage}%</span>
+                      <span className="text-xs text-white/90 font-medium">Progress</span>
+                      <span className="text-xs text-white font-semibold">{sectionProgress.percentage}%</span>
                     </div>
-                    <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
                       <div 
-                        className={`h-full bg-gradient-to-r ${gradient} transition-all duration-500`}
+                        className="h-full bg-white/90 transition-all duration-500"
                         style={{ width: `${sectionProgress.percentage}%` }}
                       />
                     </div>
