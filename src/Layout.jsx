@@ -60,12 +60,13 @@ export default function Layout({ children, currentPageName }) {
   const isMainAdmin = user?.email === 'fasobah@gmail.com';
   
   // Build navigation dynamically based on role
-  const baseNavItems = buildNavigation(isInstructor);
+  const baseNavItems = buildNavigation(isInstructor, isMainAdmin);
   
   // Add admin pages only for main admin
   const navItems = isInstructor && isMainAdmin
     ? [
         ...baseNavItems, 
+        { name: 'Role Management', icon: Settings, page: 'AdminRoleManagement' },
         { name: 'Instructor Calendars', icon: CalendarIcon, page: 'AdminInstructorCalendars' },
         { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' }
       ]

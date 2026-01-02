@@ -56,9 +56,10 @@ export default function PupilList() {
   });
 
   const { data: pupils = [], isLoading } = useQuery({
-    queryKey: ['pupils'],
+    queryKey: ['pupils', currentUser?.id],
     queryFn: async () => {
-      const allPupils = await base44.entities.Pupil.list();
+      // Only fetch pupils created by this instructor
+      const allPupils = await base44.entities.Pupil.filter({ instructorId: currentUser?.id });
       const users = await base44.entities.User.list();
       
       // Backfill signup status for existing pupils

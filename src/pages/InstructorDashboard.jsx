@@ -40,18 +40,21 @@ export default function InstructorDashboard() {
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['pupils'],
-    queryFn: () => base44.entities.Pupil.list()
+    queryKey: ['pupils', user?.id],
+    queryFn: () => base44.entities.Pupil.filter({ instructorId: user?.id }),
+    enabled: !!user?.id
   });
 
   const { data: lessons = [] } = useQuery({
-    queryKey: ['lessons'],
-    queryFn: () => base44.entities.Lesson.list('-date')
+    queryKey: ['lessons', user?.id],
+    queryFn: () => base44.entities.Lesson.filter({ instructorId: user?.id }, '-date'),
+    enabled: !!user?.id
   });
 
   const { data: bookings = [] } = useQuery({
-    queryKey: ['bookings'],
-    queryFn: () => base44.entities.LessonBooking.list('-startAtUtc')
+    queryKey: ['bookings', user?.id],
+    queryFn: () => base44.entities.LessonBooking.filter({ instructorId: user?.id }, '-startAtUtc'),
+    enabled: !!user?.id
   });
 
   const { data: dailyQuiz } = useQuery({
