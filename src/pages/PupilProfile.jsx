@@ -43,9 +43,7 @@ import { Link } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import DrivingProgressV2Content from '@/components/progress/DrivingProgressV2Content';
-import MockTestsSection from '@/components/progress/MockTestsSection';
-import TestRoutesSection from '@/components/progress/TestRoutesSection';
+
 
 
 
