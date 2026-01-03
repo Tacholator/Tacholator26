@@ -18,7 +18,7 @@ const instructorNavItems = [
     id: 'home',
     label: 'Home',
     icon: Home,
-    page: 'InstructorDashboard'
+    page: 'Home'
   },
   {
     id: 'calendar',
@@ -45,7 +45,7 @@ const pupilNavItems = [
     id: 'home',
     label: 'Home',
     icon: Home,
-    page: 'LearnerDashboard'
+    page: 'Home'
   },
   {
     id: 'book',

@@ -20,8 +20,8 @@ export const sharedNavLinks = [
     id: 'home',
     name: 'Home',
     icon: LayoutDashboard,
-    instructorPage: 'InstructorDashboard',
-    learnerPage: 'LearnerDashboard'
+    instructorPage: 'Home',
+    learnerPage: 'Home'
   },
   {
     id: 'homework',
