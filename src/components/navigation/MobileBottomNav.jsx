@@ -90,7 +90,8 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
       <div className="flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentPageName === item.page;
+          // Check if current page matches OR if it's the Home page (default)
+          const isActive = currentPageName === item.page || (item.id === 'home' && currentPageName === 'Home');
 
           return (
             <Link
