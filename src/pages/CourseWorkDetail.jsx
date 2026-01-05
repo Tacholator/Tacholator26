@@ -4355,7 +4355,7 @@ export default function CourseWorkDetail() {
      h.title?.toLowerCase().includes(topicIdStr?.toLowerCase()))
   );
   
-  // Default: full access unless explicitly restricted
+  // Admin has full access, otherwise check access permissions
   const hasStudyAccess = isInstructor || !access || access.grantStudyMaterial !== false || 
     (hasHomeworkAccess && myHomework.some(h => h.description?.toLowerCase().includes('study')));
   const hasMcqAccess = isInstructor || !access || access.grantPracticeQuestions !== false || 

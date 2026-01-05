@@ -41,19 +41,37 @@ export default function InstructorDashboard() {
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['pupils', user?.id],
-    queryFn: () => base44.entities.Pupil.filter({ instructorId: user?.id }),
+    queryFn: async () => {
+      // Main admin sees all pupils, other instructors see only their own
+      if (user?.email === 'fasobah@gmail.com') {
+        return base44.entities.Pupil.list();
+      }
+      return base44.entities.Pupil.filter({ instructorId: user?.id });
+    },
     enabled: !!user?.id
   });
 
   const { data: lessons = [] } = useQuery({
     queryKey: ['lessons', user?.id],
-    queryFn: () => base44.entities.Lesson.filter({ instructorId: user?.id }, '-date'),
+    queryFn: async () => {
+      // Main admin sees all lessons, other instructors see only their own
+      if (user?.email === 'fasobah@gmail.com') {
+        return base44.entities.Lesson.list('-date');
+      }
+      return base44.entities.Lesson.filter({ instructorId: user?.id }, '-date');
+    },
     enabled: !!user?.id
   });
 
   const { data: bookings = [] } = useQuery({
     queryKey: ['bookings', user?.id],
-    queryFn: () => base44.entities.LessonBooking.filter({ instructorId: user?.id }, '-startAtUtc'),
+    queryFn: async () => {
+      // Main admin sees all bookings, other instructors see only their own
+      if (user?.email === 'fasobah@gmail.com') {
+        return base44.entities.LessonBooking.list('-startAtUtc');
+      }
+      return base44.entities.LessonBooking.filter({ instructorId: user?.id }, '-startAtUtc');
+    },
     enabled: !!user?.id
   });
 
