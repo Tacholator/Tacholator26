@@ -58,10 +58,8 @@ export default function PupilList() {
   const { data: pupils = [], isLoading } = useQuery({
     queryKey: ['pupils', currentUser?.id],
     queryFn: async () => {
-      // Main admin sees all pupils, other instructors see only their own
-      const allPupils = currentUser?.email === 'fasobah@gmail.com'
-        ? await base44.entities.Pupil.list()
-        : await base44.entities.Pupil.filter({ instructorId: currentUser?.id });
+      // Only fetch pupils created by this instructor
+      const allPupils = await base44.entities.Pupil.filter({ instructorId: currentUser?.id });
       const users = await base44.entities.User.list();
       
       // Backfill signup status for existing pupils
@@ -110,15 +108,8 @@ export default function PupilList() {
   });
 
   const { data: lessons = [] } = useQuery({
-    queryKey: ['lessons', currentUser?.id],
-    queryFn: async () => {
-      // Main admin sees all lessons, other instructors see only their own
-      if (currentUser?.email === 'fasobah@gmail.com') {
-        return base44.entities.Lesson.list();
-      }
-      return base44.entities.Lesson.filter({ instructorId: currentUser?.id });
-    },
-    enabled: !!currentUser?.id
+    queryKey: ['lessons'],
+    queryFn: () => base44.entities.Lesson.list()
   });
 
   const createPupilMutation = useMutation({
