@@ -4592,7 +4592,7 @@ export default function CourseWorkDetail() {
 
         <Card className="border-0 shadow-sm mb-6">
           <CardContent className="p-8 space-y-8">
-            {content.sections.map((section, index) => (
+            {(content.sections || []).map((section, index) => (
               <div key={index} id={`section-${index}`}>
                 <h2 className="text-xl font-bold text-[#071739] mb-4">{section.heading}</h2>
                 <div className="text-slate-700 whitespace-pre-line leading-relaxed">
