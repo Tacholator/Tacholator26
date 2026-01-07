@@ -65,12 +65,12 @@ export default function Layout({ children, currentPageName }) {
   // Add admin pages only for main admin
   const navItems = isInstructor && isMainAdmin
     ? [
-        ...baseNavItems, 
+        ...(Array.isArray(baseNavItems) ? baseNavItems : []), 
         { name: 'Role Management', icon: Settings, page: 'AdminRoleManagement' },
         { name: 'Instructor Calendars', icon: CalendarIcon, page: 'AdminInstructorCalendars' },
         { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' }
       ]
-    : baseNavItems;
+    : (Array.isArray(baseNavItems) ? baseNavItems : []);
 
   const handleLogout = () => {
     base44.auth.logout();
