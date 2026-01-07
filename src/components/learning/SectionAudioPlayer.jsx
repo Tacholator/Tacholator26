@@ -1,13 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, RotateCcw, Volume2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Volume2, Settings2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 export default function SectionAudioPlayer({ text, sectionId, onPlay }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
+  const [selectedVoice, setSelectedVoice] = useState(() => {
+    return localStorage.getItem('study_material_voice') || 'neutral_female';
+  });
   const utteranceRef = useRef(null);
   const progressIntervalRef = useRef(null);
 
@@ -38,6 +53,29 @@ export default function SectionAudioPlayer({ text, sectionId, onPlay }) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const getVoice = () => {
+    const voices = window.speechSynthesis.getVoices();
+    const voicePreference = selectedVoice === 'neutral_male' ? 'male' : 'female';
+    
+    // Try to find UK English voice matching preference
+    let voice = voices.find(v => 
+      v.lang.startsWith('en-GB') && 
+      v.name.toLowerCase().includes(voicePreference)
+    );
+    
+    // Fallback to any UK English voice
+    if (!voice) {
+      voice = voices.find(v => v.lang.startsWith('en-GB'));
+    }
+    
+    // Fallback to any English voice
+    if (!voice) {
+      voice = voices.find(v => v.lang.startsWith('en'));
+    }
+    
+    return voice;
+  };
+
   const handlePlay = () => {
     if (!audioEnabled) return;
     
@@ -66,9 +104,15 @@ export default function SectionAudioPlayer({ text, sectionId, onPlay }) {
     window.speechSynthesis.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
+    utterance.rate = 0.95; // Moderate pace for clarity
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
+    
+    // Set voice based on user preference
+    const voice = getVoice();
+    if (voice) {
+      utterance.voice = voice;
+    }
     
     const duration = estimateDuration(text);
     setTotalTime(duration);
@@ -138,6 +182,16 @@ export default function SectionAudioPlayer({ text, sectionId, onPlay }) {
     }, 100);
   };
 
+  const handleVoiceChange = (voice) => {
+    setSelectedVoice(voice);
+    localStorage.setItem('study_material_voice', voice);
+    
+    // Stop current playback if any
+    if (isPlaying) {
+      handleStop();
+    }
+  };
+
   if (!audioEnabled) {
     return null;
   }
@@ -178,6 +232,35 @@ export default function SectionAudioPlayer({ text, sectionId, onPlay }) {
           {formatTime(currentTime)} / {formatTime(totalTime)}
         </span>
       </div>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Settings2 className="w-4 h-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-56" align="end">
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-medium text-slate-700 mb-2 block">
+                Study Material Voice
+              </label>
+              <Select value={selectedVoice} onValueChange={handleVoiceChange}>
+                <SelectTrigger className="h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="neutral_female">Female (UK)</SelectItem>
+                  <SelectItem value="neutral_male">Male (UK)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <p className="text-xs text-slate-500">
+              Voice changes apply immediately
+            </p>
+          </div>
+        </PopoverContent>
+      </Popover>
 
       <span className="text-xs text-slate-500 hidden md:block">Listen to this section</span>
     </div>
