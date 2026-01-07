@@ -75,33 +75,53 @@ export const getPageForRole = (linkId, isInstructor) => {
 
 // Build complete navigation array for a role
 export const buildNavigation = (isInstructor, isMainAdmin = false) => {
-  if (!sharedNavLinks || !Array.isArray(sharedNavLinks)) {
+  try {
+    if (!sharedNavLinks || !Array.isArray(sharedNavLinks)) {
+      return [];
+    }
+
+    const shared = sharedNavLinks.map(link => ({
+      name: link.name,
+      icon: link.icon,
+      page: isInstructor ? link.instructorPage : link.learnerPage,
+      isShared: true
+    }));
+
+    // Ensure roleSpecific is always an array
+    let roleSpecific = [];
+    if (isInstructor) {
+      roleSpecific = Array.isArray(instructorOnlyLinks) ? instructorOnlyLinks : [];
+    } else {
+      roleSpecific = Array.isArray(learnerOnlyLinks) ? learnerOnlyLinks : [];
+    }
+
+    // Combine: Home first, then role-specific items, then shared items (excluding Home)
+    const result = [];
+    
+    if (shared.length > 0) {
+      result.push(shared[0]); // Home
+    }
+    
+    // Safely add role-specific items
+    for (const item of roleSpecific) {
+      if (item && item.name && item.icon && item.page) {
+        result.push(item);
+      }
+    }
+    
+    // Safely add remaining shared items
+    if (shared.length > 1) {
+      const remaining = shared.slice(1);
+      for (const item of remaining) {
+        if (item && item.name && item.icon && item.page) {
+          result.push(item);
+        }
+      }
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error building navigation:', error);
     return [];
   }
-
-  const shared = sharedNavLinks.map(link => ({
-    name: link.name,
-    icon: link.icon,
-    page: isInstructor ? link.instructorPage : link.learnerPage,
-    isShared: true
-  }));
-
-  const roleSpecific = isInstructor ? (instructorOnlyLinks || []) : (learnerOnlyLinks || []);
-
-  // Combine: Home first, then role-specific items, then shared items (excluding Home)
-  const result = [];
-  
-  if (shared.length > 0) {
-    result.push(shared[0]); // Home
-  }
-  
-  if (Array.isArray(roleSpecific)) {
-    result.push(...roleSpecific);
-  }
-  
-  if (shared.length > 1) {
-    result.push(...shared.slice(1)); // Homework, Notifications, Chats
-  }
-  
-  return result;
 };
