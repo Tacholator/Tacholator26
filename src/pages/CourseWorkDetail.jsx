@@ -4247,9 +4247,9 @@ export default function CourseWorkDetail() {
   };
 
   // Combine all section content into one text for audio
-  const fullContentText = (content?.sections || []).map(section => 
-    `${section.heading}. ${section.body}`
-  ).join('. ');
+  const fullContentText = content?.sections 
+    ? content.sections.map(section => `${section.heading}. ${section.body}`).join('. ')
+    : '';
 
   // Cards that should NOT have sub-cards
   const excludedCards = [25, 28]; // Show Me Tell Me (25), Test Preparation (28)
