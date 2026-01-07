@@ -75,6 +75,10 @@ export const getPageForRole = (linkId, isInstructor) => {
 
 // Build complete navigation array for a role
 export const buildNavigation = (isInstructor, isMainAdmin = false) => {
+  if (!sharedNavLinks || !Array.isArray(sharedNavLinks)) {
+    return [];
+  }
+
   const shared = sharedNavLinks.map(link => ({
     name: link.name,
     icon: link.icon,
@@ -85,9 +89,19 @@ export const buildNavigation = (isInstructor, isMainAdmin = false) => {
   const roleSpecific = isInstructor ? (instructorOnlyLinks || []) : (learnerOnlyLinks || []);
 
   // Combine: Home first, then role-specific items, then shared items (excluding Home)
-  return [
-    shared[0], // Home
-    ...(roleSpecific || []),
-    ...(shared.slice(1) || []) // Homework, Notifications, Chats
-  ];
+  const result = [];
+  
+  if (shared.length > 0) {
+    result.push(shared[0]); // Home
+  }
+  
+  if (Array.isArray(roleSpecific)) {
+    result.push(...roleSpecific);
+  }
+  
+  if (shared.length > 1) {
+    result.push(...shared.slice(1)); // Homework, Notifications, Chats
+  }
+  
+  return result;
 };
