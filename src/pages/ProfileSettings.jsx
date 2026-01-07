@@ -7,7 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X, ClipboardCheck } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X, ClipboardCheck, Mic } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -31,6 +38,9 @@ export default function ProfileSettings() {
   const [isUploading, setIsUploading] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(() => {
     return localStorage.getItem('enable_audio_reading') !== 'false';
+  });
+  const [audioVoice, setAudioVoice] = useState(() => {
+    return localStorage.getItem('study_material_voice') || 'neutral_female';
   });
 
   useEffect(() => {
@@ -67,6 +77,11 @@ export default function ProfileSettings() {
     if (!checked) {
       window.speechSynthesis.cancel();
     }
+  };
+
+  const handleVoiceChange = (voice) => {
+    setAudioVoice(voice);
+    localStorage.setItem('study_material_voice', voice);
   };
 
   const handlePhotoUpload = async (e) => {
@@ -332,7 +347,7 @@ export default function ProfileSettings() {
                 Accessibility Settings
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <Label htmlFor="audio-reading" className="text-base font-medium">
@@ -348,6 +363,27 @@ export default function ProfileSettings() {
                   onCheckedChange={handleAudioToggle}
                 />
               </div>
+
+              {audioEnabled && (
+                <div className="space-y-2 pl-4 border-l-2 border-slate-200">
+                  <Label htmlFor="voice-select" className="flex items-center gap-2">
+                    <Mic className="w-4 h-4 text-slate-400" />
+                    Study Material Voice
+                  </Label>
+                  <Select value={audioVoice} onValueChange={handleVoiceChange}>
+                    <SelectTrigger id="voice-select">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="neutral_female">Female (UK)</SelectItem>
+                      <SelectItem value="neutral_male">Male (UK)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-slate-500">
+                    Choose the voice used when listening to study material
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
