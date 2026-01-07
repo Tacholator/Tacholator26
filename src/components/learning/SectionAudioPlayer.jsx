@@ -13,6 +13,7 @@ export default function SectionAudioPlayer({ text, sectionId, onPlay }) {
 
   // Check if audio is enabled in user settings
   const audioEnabled = localStorage.getItem('enable_audio_reading') !== 'false';
+  const voiceGender = localStorage.getItem('study_material_voice') || 'neutral_female';
 
   useEffect(() => {
     return () => {
@@ -69,6 +70,19 @@ export default function SectionAudioPlayer({ text, sectionId, onPlay }) {
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
+    utterance.lang = 'en-GB';
+    
+    // Set voice based on user preference
+    const voices = window.speechSynthesis.getVoices();
+    const preferMale = voiceGender === 'neutral_male';
+    const ukVoice = voices.find(v => 
+      v.lang.includes('en-GB') && 
+      (preferMale ? v.name.toLowerCase().includes('male') : v.name.toLowerCase().includes('female'))
+    ) || voices.find(v => v.lang.includes('en-GB')) || voices[0];
+    
+    if (ukVoice) {
+      utterance.voice = ukVoice;
+    }
     
     const duration = estimateDuration(text);
     setTotalTime(duration);
