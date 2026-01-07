@@ -110,7 +110,7 @@ export default function Layout({ children, currentPageName }) {
           {/* Navigation */}
           <nav className="flex flex-1 flex-col">
             <ul role="list" className="flex flex-1 flex-col gap-y-1">
-              {navItems.map((item) => {
+              {(navItems || []).map((item) => {
                 const isActive = currentPageName === item.page;
                 return (
                   <li key={item.name}>
@@ -318,7 +318,7 @@ export default function Layout({ children, currentPageName }) {
                 </button>
               </div>
               <nav className="px-4 py-2">
-                {navItems.map((item) => {
+                {(navItems || []).map((item) => {
                   const isActive = currentPageName === item.page;
                   return (
                     <Link
