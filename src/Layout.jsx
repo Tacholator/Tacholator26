@@ -60,17 +60,17 @@ export default function Layout({ children, currentPageName }) {
   const isMainAdmin = user?.email === 'fasobah@gmail.com';
   
   // Build navigation dynamically based on role
-  const baseNavItems = buildNavigation(isInstructor, isMainAdmin) || [];
+  const baseNavItems = buildNavigation(isInstructor, isMainAdmin);
   
   // Add admin pages only for main admin
   const navItems = isInstructor && isMainAdmin
     ? [
-        ...(Array.isArray(baseNavItems) ? baseNavItems : []), 
+        ...baseNavItems, 
         { name: 'Role Management', icon: Settings, page: 'AdminRoleManagement' },
         { name: 'Instructor Calendars', icon: CalendarIcon, page: 'AdminInstructorCalendars' },
         { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' }
       ]
-    : (Array.isArray(baseNavItems) ? baseNavItems : []);
+    : baseNavItems;
 
   const handleLogout = () => {
     base44.auth.logout();
@@ -110,7 +110,7 @@ export default function Layout({ children, currentPageName }) {
           {/* Navigation */}
           <nav className="flex flex-1 flex-col">
             <ul role="list" className="flex flex-1 flex-col gap-y-1">
-              {(navItems || []).map((item) => {
+              {navItems.map((item) => {
                 const isActive = currentPageName === item.page;
                 return (
                   <li key={item.name}>
@@ -318,7 +318,7 @@ export default function Layout({ children, currentPageName }) {
                 </button>
               </div>
               <nav className="px-4 py-2">
-                {(navItems || []).map((item) => {
+                {navItems.map((item) => {
                   const isActive = currentPageName === item.page;
                   return (
                     <Link

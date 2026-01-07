@@ -11,7 +11,6 @@ import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X
 import { Switch } from '@/components/ui/switch';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function ProfileSettings() {
   const queryClient = useQueryClient();
@@ -32,9 +31,6 @@ export default function ProfileSettings() {
   const [isUploading, setIsUploading] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(() => {
     return localStorage.getItem('enable_audio_reading') !== 'false';
-  });
-  const [voiceGender, setVoiceGender] = useState(() => {
-    return localStorage.getItem('study_material_voice') || 'neutral_female';
   });
 
   useEffect(() => {
@@ -71,12 +67,6 @@ export default function ProfileSettings() {
     if (!checked) {
       window.speechSynthesis.cancel();
     }
-  };
-
-  const handleVoiceChange = (value) => {
-    setVoiceGender(value);
-    localStorage.setItem('study_material_voice', value);
-    window.speechSynthesis.cancel(); // Stop current playback if any
   };
 
   const handlePhotoUpload = async (e) => {
@@ -342,7 +332,7 @@ export default function ProfileSettings() {
                 Accessibility Settings
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent>
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <Label htmlFor="audio-reading" className="text-base font-medium">
@@ -358,26 +348,6 @@ export default function ProfileSettings() {
                   onCheckedChange={handleAudioToggle}
                 />
               </div>
-
-              {audioEnabled && (
-                <div className="space-y-2 pl-4 border-l-2 border-teal-200">
-                  <Label htmlFor="voice-gender" className="text-base font-medium">
-                    Study Material Voice
-                  </Label>
-                  <p className="text-sm text-slate-500 mb-2">
-                    Choose the voice used when listening to study material
-                  </p>
-                  <Select value={voiceGender} onValueChange={handleVoiceChange}>
-                    <SelectTrigger id="voice-gender" className="w-full md:w-64">
-                      <SelectValue placeholder="Select voice" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="neutral_female">Female (UK)</SelectItem>
-                      <SelectItem value="neutral_male">Male (UK)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
             </CardContent>
           </Card>
         </motion.div>
