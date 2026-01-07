@@ -82,12 +82,12 @@ export const buildNavigation = (isInstructor, isMainAdmin = false) => {
     isShared: true
   }));
 
-  const roleSpecific = isInstructor ? instructorOnlyLinks : learnerOnlyLinks;
+  const roleSpecific = isInstructor ? (instructorOnlyLinks || []) : (learnerOnlyLinks || []);
 
   // Combine: Home first, then role-specific items, then shared items (excluding Home)
   return [
     shared[0], // Home
-    ...roleSpecific,
-    ...shared.slice(1) // Homework, Notifications, Chats
+    ...(roleSpecific || []),
+    ...(shared.slice(1) || []) // Homework, Notifications, Chats
   ];
 };
