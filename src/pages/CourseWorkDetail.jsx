@@ -3955,129 +3955,7 @@ Eco-safe driving benefits:
 • Other road users (smoother, safer driving).
 • The environment (reduced emissions and pollution).`
       },
-      {
-        heading: '2. What Eco-Safe Driving Means',
-        body: `Eco-safe driving does not mean:
-• Driving too slowly.
-• Obstructing traffic.
-• Ignoring road conditions.
-
-Eco-safe driving does mean:
-• Driving smoothly and progressively.
-• Anticipating hazards early.
-• Avoiding unnecessary acceleration and braking.
-• Maintaining good vehicle control.
-
-Eco-safe driving combines efficiency and safety.`
-      },
-      {
-        heading: '3. Why Eco-Safe Driving Is Important',
-        body: `Eco-safe driving helps to:
-• Reduce fuel consumption.
-• Lower CO₂ emissions.
-• Reduce wear and tear on the vehicle.
-• Improve passenger comfort.
-• Reduce driver stress.
-
-Many eco-safe driving techniques also support good hazard perception and planning.`
-      },
-      {
-        heading: '4. Smooth Use of Controls',
-        body: `4.1 Acceleration
-• Accelerate smoothly and progressively.
-• Avoid harsh or sudden acceleration.
-• Build speed gradually.
-
-4.2 Braking
-• Brake gently and early.
-• Avoid late, heavy braking.
-• Use engine braking where appropriate.
-
-Smooth control improves safety and saves fuel.`
-      },
-      {
-        heading: '5. Gear Use and Engine Efficiency',
-        body: `5.1 Manual Vehicles
-• Change up gears early when appropriate.
-• Use higher gears at lower engine speeds.
-• Avoid over-revving.
-
-5.2 Automatic Vehicles
-• Apply gentle accelerator pressure.
-• Allow the gearbox to change smoothly.
-• Avoid sudden kick-down unless necessary.
-
-Using the correct gear reduces fuel use and emissions.`
-      },
-      {
-        heading: '6. Planning and Anticipation',
-        body: `Eco-safe driving relies heavily on good planning.
-
-Key planning habits:
-• Look well ahead.
-• Anticipate traffic flow.
-• Adjust speed early.
-• Avoid unnecessary stopping.
-
-Using LADA (Look, Assess, Decide, Act) helps maintain smooth progress and reduces last-minute braking.`
-      },
-      {
-        heading: '7. Maintaining Safe and Steady Speed',
-        body: `To drive efficiently and safely:
-• Drive at an appropriate, steady speed where safe.
-• Avoid frequent speeding up and slowing down.
-• Use cruise control where appropriate (if fitted).
-
-Steady driving uses less fuel and reduces emissions.`
-      },
-      {
-        heading: '8. Eco-Safe Driving in Traffic',
-        body: `In traffic:
-• Keep a safe following distance.
-• Anticipate traffic lights and queues.
-• Move off smoothly.
-• Avoid stop-start driving where possible.
-
-Smooth traffic flow reduces fuel use, improves comfort and helps reduce stress.`
-      },
-      {
-        heading: '9. Vehicle Condition and Eco-Safe Driving',
-        body: `A well-maintained vehicle supports eco-safe driving:
-• Correct tyre pressures improve fuel efficiency.
-• Regular servicing keeps the engine efficient.
-• Removing unnecessary weight improves economy.
-
-Simple checks can make a noticeable difference to fuel use and safety.`
-      },
-      {
-        heading: '10. Eco-Safe Driving and Hazard Perception',
-        body: `Eco-safe driving supports stronger hazard perception:
-• Early anticipation reduces sudden reactions.
-• Smooth braking increases control.
-• Better planning gives more time to respond.
-
-Eco-safe driving and safe driving go hand-in-hand.`
-      },
-      {
-        heading: '11. Eco-Safe Driving and the DVSA Test',
-        body: `During the DVSA practical test, examiners look for:
-• Smooth acceleration and braking.
-• Good planning and anticipation.
-• Safe, steady progress.
-• Correct gear selection.
-
-Eco-safe driving techniques support positive test results and help demonstrate good driving habits.`
-      },
-      {
-        heading: '12. Common Eco-Safe Driving Mistakes',
-        body: `Common errors include:
-• Accelerating too harshly.
-• Braking late and heavily.
-• Driving in low gears unnecessarily.
-• Poor planning leading to stop-start driving.
-
-Most mistakes come from reacting late rather than planning early.`
-      },
+...
       {
         heading: '13. Summary',
         body: `Eco-safe driving requires:
@@ -4088,6 +3966,102 @@ Most mistakes come from reacting late rather than planning early.`
 • Awareness of fuel efficiency and safety.
 
 Eco-safe driving is not just about saving fuel—it promotes safer, calmer and more responsible driving. Mastering this skill helps protect the environment, reduce driving costs, and improve safety for everyone on the road.`
+      }
+    ]
+  },
+  25: {
+    title: 'Show Me, Tell Me Questions',
+    sections: [
+      {
+        heading: '1. Show Me, Tell Me – Overview',
+        body: `The Show Me, Tell Me questions form part of the DVSA practical driving test. They assess your basic vehicle safety knowledge and your ability to operate essential vehicle controls safely.
+
+You will be asked:
+• One "Tell Me" question before driving.
+• One "Show Me" question while driving.
+
+If you answer a question incorrectly, this results in one driving fault, not an automatic fail.`
+      },
+      {
+        heading: '2. "Tell Me" Questions - Before Driving',
+        body: `Tell Me questions require you to explain how you would carry out a safety check. You do not need to physically demonstrate unless asked to open the bonnet.
+
+Common Tell Me Questions:
+
+Q1: Tell me how you would check that the brakes are working before starting a journey.
+A: As you move off, apply the brakes. They should not feel spongy and the car should not pull to one side.
+
+Q2: Tell me where you'd find the information for the recommended tyre pressures and how they should be checked.
+A: The information can be found in the manufacturer's handbook. Tyre pressures should be checked when tyres are cold using a reliable gauge. Check the spare tyre and refit valve caps.
+
+Q3: Tell me how you'd make sure your head restraint is correctly adjusted.
+A: Adjust the head restraint so the centre is at least as high as the eyes or top of the ears and as close to the back of the head as comfortable.`
+      },
+      {
+        heading: '3. More "Tell Me" Questions',
+        body: `Q4: Tell me how you'd check the tyres to ensure they have sufficient tread depth and are safe.
+A: Tyres should have no cuts or bulges. The legal tread depth must be at least 1.6mm across the central three-quarters and around the entire circumference.
+
+Q5: Tell me how you'd check that the headlights and tail lights are working.
+A: Turn on the light switch and visually check by walking around the vehicle.
+
+Q6: Tell me how you'd know if there was a problem with the ABS.
+A: A warning light would illuminate on the dashboard if there is a fault.
+
+Q7: Tell me how you'd check the direction indicators are working.
+A: Operate the hazard warning lights and walk around the vehicle to check all indicators work.`
+      },
+      {
+        heading: '4. Additional "Tell Me" Questions',
+        body: `Q8: Tell me how you'd check the brake lights are working.
+A: Press the brake pedal and use reflections in windows or doors, or ask someone to help check.
+
+Q9: Tell me how you'd check the power-assisted steering is working.
+A: Apply gentle pressure to the steering wheel while starting the engine. The steering should move slightly as the system operates and feel light as the vehicle starts to move.
+
+Q10: Tell me how you'd switch on the rear fog lights and when you'd use them.
+A: Operate the fog light switch and check the warning light. Fog lights must only be used in poor visibility and turned off when conditions improve.
+
+Q11: Tell me how you'd switch headlights from dipped to main beam.
+A: Operate the main beam control and check for the blue warning light on the dashboard.`
+      },
+      {
+        heading: '5. Bonnet Checks',
+        body: `Q12: Open the bonnet and tell me how you'd check the engine oil level.
+A: Identify the dipstick, remove and wipe it clean. Reinsert fully, remove again and check the oil level is between the minimum and maximum markings.
+
+Q13: Open the bonnet and tell me how you'd check the engine coolant level.
+A: Identify the coolant expansion tank and check the level is between the minimum and maximum markings. Only remove the cap when the engine is cold.
+
+Q14: Open the bonnet and tell me how you'd check the brake fluid level.
+A: Identify the brake fluid reservoir and check the level is between the minimum and maximum markings.`
+      },
+      {
+        heading: '6. "Show Me" Questions - While Driving',
+        body: `Show Me questions require you to demonstrate a control when it is safe to do so.
+
+Common Show Me Questions:
+• Show me how you would wash and clean the rear windscreen
+• Show me how you would wash and clean the front windscreen
+• Show me how you would switch on your dipped headlights
+• Show me how you would set the rear demister
+• Show me how you would operate the horn
+• Show me how you would demist the front windscreen
+• Show me how you would open and close the side window
+
+Always prioritise control and safety. Only carry out the action when safe and without losing control.`
+      },
+      {
+        heading: '7. Tips for Success',
+        body: `Key Points:
+• One incorrect answer = one driving fault
+• Knowledge is more important than perfect wording
+• Stay calm and confident
+• For Show Me questions, wait until it is safe
+• Listen carefully to the examiner's instructions
+• If unsure, ask for the question to be repeated
+
+Regular practice of these questions builds confidence and ensures you can demonstrate basic vehicle safety knowledge on test day.`
       }
     ]
   },
