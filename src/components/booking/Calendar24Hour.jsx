@@ -348,7 +348,7 @@ export default function Calendar24Hour({
 
                 // Get pupil name for instructor view
                 let pupilName = null;
-                if (isInstructor && booking && (state === 'reserved_pending' || state === 'confirmed')) {
+                if (isInstructor && booking && (state === 'reserved_pending' || state === 'confirmed' || state === 'completed' || state === 'cancelled' || state === 'no_show')) {
                   const pupil = pupils.find(p => p.id === booking.pupilId);
                   if (pupil) {
                     pupilName = `${pupil.firstName} ${pupil.lastName}`;
