@@ -112,9 +112,31 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         }
         
         const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
+        
+        // Calculate financial deduction
+        const hourlyRate = pupil.hourlyRate || 0;
+        const lessonCost = durationHours * hourlyRate;
+        const newBalance = Math.max(0, (pupil.bulkPaymentBalance || 0) - lessonCost);
+        
+        // Update pupil with hours and new balance
         await base44.entities.Pupil.update(pupil.id, { 
-          hoursCompleted: newHoursCompleted 
+          hoursCompleted: newHoursCompleted,
+          bulkPaymentBalance: newBalance
         });
+        
+        // Create payment ledger entry
+        if (lessonCost > 0) {
+          await base44.entities.PaymentLedger.create({
+            userId: pupil.linkedUserId || pupil.id,
+            bookingId: bookingId || null,
+            type: 'charge',
+            reason: 'lesson_confirmed_charge',
+            amountGbp: lessonCost,
+            hours: durationHours,
+            createdByRole: 'instructor',
+            note: `Lesson completed: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
+          });
+        }
       }
     },
     onSuccess: () => {
