@@ -90,23 +90,40 @@ export default function GoogleTTSAudioPlayer({
   // Generate audio mutation
   const generateAudioMutation = useMutation({
     mutationFn: async ({ voice, rate }) => {
-      const response = await base44.functions.invoke('generateStudyMaterialAudio', {
-        materialId: topicId?.toString(),
-        sectionId,
-        sectionText: text,
-        voiceGender: voice,
-        speakingRate: rate
-      });
+      console.log('=== CALLING BACKEND FUNCTION ===');
+      console.log('Params:', { materialId: topicId, sectionId, voiceGender: voice, speakingRate: rate, textLength: text?.length });
       
-      console.log('Raw function response:', response);
-      console.log('Response data:', response.data);
-      
-      // Check if the response contains an error
-      if (response.data?.errorCode) {
-        throw new Error(JSON.stringify(response.data));
+      try {
+        const response = await base44.functions.invoke('generateStudyMaterialAudio', {
+          materialId: topicId?.toString(),
+          sectionId,
+          sectionText: text,
+          voiceGender: voice,
+          speakingRate: rate
+        });
+        
+        console.log('✓ Function call succeeded');
+        console.log('Raw response object:', response);
+        console.log('Response.data:', response.data);
+        console.log('Response.status:', response.status);
+        
+        // Check if the response contains an error in the data
+        if (response.data?.errorCode) {
+          console.error('Backend returned error in data:', response.data);
+          throw new Error(JSON.stringify(response.data));
+        }
+        
+        return response.data;
+      } catch (err) {
+        console.error('❌ Function invoke threw error');
+        console.error('Error type:', err.constructor.name);
+        console.error('Error message:', err.message);
+        console.error('Error object keys:', Object.keys(err));
+        console.error('err.response:', err.response);
+        console.error('err.response?.data:', err.response?.data);
+        console.error('err.data:', err.data);
+        throw err;
       }
-      
-      return response.data;
     }
   });
 
