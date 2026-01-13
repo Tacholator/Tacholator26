@@ -211,6 +211,18 @@ export default function GoogleTTSAudioPlayer({
     console.log('Setting up audio player with start position:', startPos);
     audioRef.current = setupAudio(urlToUse, startPos);
 
+    // Wait for audio to be ready before playing
+    await new Promise((resolve) => {
+      const checkReady = () => {
+        if (audioRef.current.readyState >= 2) { // HAVE_CURRENT_DATA
+          resolve();
+        } else {
+          audioRef.current.addEventListener('canplay', resolve, { once: true });
+        }
+      };
+      checkReady();
+    });
+
     try {
       console.log('Attempting to play...');
       await audioRef.current.play();
@@ -402,16 +414,19 @@ export default function GoogleTTSAudioPlayer({
         {/* Settings & Speed */}
         <div className="flex items-center gap-2">
           {/* Speed Control */}
-          <Select value={speakingRate.toString()} onValueChange={(val) => handleSpeedChange(parseFloat(val))}>
-            <SelectTrigger className="h-10 w-20 bg-white/10 border-white/20 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0.8">0.8x</SelectItem>
-              <SelectItem value="1.0">1.0x</SelectItem>
-              <SelectItem value="1.2">1.2x</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-col items-center">
+            <Select value={speakingRate.toString()} onValueChange={(val) => handleSpeedChange(parseFloat(val))}>
+              <SelectTrigger className="h-10 w-20 bg-white/10 border-white/20 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0.8">0.8x</SelectItem>
+                <SelectItem value="1.0">1.0x</SelectItem>
+                <SelectItem value="1.2">1.2x</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-[10px] text-white/60 mt-0.5">Speed</span>
+          </div>
 
           {/* Voice Settings */}
           <Popover>
