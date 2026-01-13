@@ -89,13 +89,13 @@ export default function GoogleTTSAudioPlayer({
 
   // Generate audio mutation
   const generateAudioMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({ voice, rate }) => {
       const response = await base44.functions.invoke('generateStudyMaterialAudio', {
         materialId: topicId?.toString(),
         sectionId,
         sectionText: text,
-        voiceGender,
-        speakingRate
+        voiceGender: voice,
+        speakingRate: rate
       });
       return response.data;
     }
@@ -104,7 +104,7 @@ export default function GoogleTTSAudioPlayer({
   // Setup audio with event listeners
   const setupAudio = (url, startPosition = 0) => {
     const audio = new Audio(url);
-    audio.playbackRate = speakingRate;
+    audio.playbackRate = 1.0; // Always use 1.0 for actual playback since speed is baked in
 
     audio.addEventListener('loadedmetadata', () => {
       setDuration(audio.duration);
@@ -126,7 +126,9 @@ export default function GoogleTTSAudioPlayer({
     audio.addEventListener('ended', () => {
       setIsPlaying(false);
       setProgress(100);
-      saveProgressMutation.mutate({ position: audio.duration, completed: true });
+      if (audio.duration > 0) {
+        saveProgressMutation.mutate({ position: audio.duration, completed: true });
+      }
     });
 
     audio.addEventListener('error', (e) => {
@@ -139,10 +141,10 @@ export default function GoogleTTSAudioPlayer({
   };
 
   // Load or generate audio
-  const loadAudio = async () => {
+  const loadAudio = async (voice = voiceGender, rate = speakingRate) => {
     setIsLoading(true);
     try {
-      const result = await generateAudioMutation.mutateAsync();
+      const result = await generateAudioMutation.mutateAsync({ voice, rate });
       setAudioUrl(result.audioUrl);
       return result.audioUrl;
     } catch (error) {
@@ -224,7 +226,7 @@ export default function GoogleTTSAudioPlayer({
 
     // If user was actively listening, regenerate and auto-restart
     if (wasPlaying) {
-      const url = await loadAudio();
+      const url = await loadAudio(newVoice, speakingRate);
       if (url) {
         audioRef.current = setupAudio(url, currentPos);
         try {
@@ -254,7 +256,7 @@ export default function GoogleTTSAudioPlayer({
 
     // Regenerate audio with new speed if user was actively listening
     if (wasPlaying) {
-      const url = await loadAudio();
+      const url = await loadAudio(voiceGender, newRate);
       if (url) {
         audioRef.current = setupAudio(url, currentPos);
         try {
