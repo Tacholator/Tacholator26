@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import SectionAudioPlayer from '@/components/learning/SectionAudioPlayer';
+import GoogleTTSAudioPlayer from '@/components/learning/GoogleTTSAudioPlayer';
 import McqQuiz from '@/components/coursework/McqQuiz';
 import { questionPacks } from '@/components/coursework/questionPacks';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
@@ -4707,9 +4708,11 @@ export default function CourseWorkDetail() {
           </Card>
         )}
 
-        <SectionAudioPlayer 
+        <GoogleTTSAudioPlayer 
           text={fullContentText} 
+          topicId={itemId}
           sectionId="full-content"
+          sectionTitle={content.title}
         />
 
         <Card className="border-0 shadow-sm mb-6">
