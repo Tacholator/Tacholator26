@@ -156,6 +156,8 @@ export default function GoogleTTSAudioPlayer({
 
   // Handle play/pause
   const handlePlayPause = async () => {
+    console.log('Play/Pause clicked. State:', { isPlaying, hasAudio: !!audioRef.current, audioUrl });
+    
     // If we have an audio object, just toggle play/pause
     if (audioRef.current) {
       if (isPlaying) {
@@ -174,19 +176,28 @@ export default function GoogleTTSAudioPlayer({
     }
 
     // Otherwise, load audio and create Audio object
+    console.log('Loading audio for the first time...');
     let urlToUse = audioUrl;
     if (!urlToUse) {
+      console.log('No cached URL, generating audio...');
       urlToUse = await loadAudio();
-      if (!urlToUse) return;
+      if (!urlToUse) {
+        console.error('Failed to get audio URL');
+        return;
+      }
+      console.log('Got audio URL:', urlToUse);
     }
 
     // Setup audio with saved position
     const startPos = savedProgress?.lastPosition || 0;
+    console.log('Setting up audio player with start position:', startPos);
     audioRef.current = setupAudio(urlToUse, startPos);
 
     try {
+      console.log('Attempting to play...');
       await audioRef.current.play();
       setIsPlaying(true);
+      console.log('Playing successfully');
     } catch (error) {
       console.error('Play error:', error);
       setIsLoading(false);
@@ -332,7 +343,7 @@ export default function GoogleTTSAudioPlayer({
             variant="ghost"
             size="sm"
             onClick={() => handleSeek(-10)}
-            disabled={!audioUrl}
+            disabled={!audioRef.current || isLoading}
             className="h-10 w-10 p-0 text-white hover:bg-white/10"
             aria-label="Rewind 10 seconds"
           >
@@ -343,7 +354,7 @@ export default function GoogleTTSAudioPlayer({
             variant="ghost"
             size="sm"
             onClick={() => handleSeek(10)}
-            disabled={!audioUrl}
+            disabled={!audioRef.current || isLoading}
             className="h-10 w-10 p-0 text-white hover:bg-white/10"
             aria-label="Forward 10 seconds"
           >
@@ -354,7 +365,7 @@ export default function GoogleTTSAudioPlayer({
             variant="ghost"
             size="sm"
             onClick={handleReplay}
-            disabled={!audioUrl}
+            disabled={!audioRef.current || isLoading}
             className="h-10 w-10 p-0 text-white hover:bg-white/10"
             aria-label="Restart audio"
           >
