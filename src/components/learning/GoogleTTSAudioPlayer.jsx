@@ -21,7 +21,9 @@ export default function GoogleTTSAudioPlayer({
   text, 
   topicId, 
   sectionId = 'full-content',
-  sectionTitle = 'Full Content'
+  sectionTitle = 'Full Content',
+  autoPlay = false,
+  onPause
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +33,7 @@ export default function GoogleTTSAudioPlayer({
   const [audioUrl, setAudioUrl] = useState(null);
   const [voiceGender, setVoiceGender] = useState('female');
   const [speakingRate, setSpeakingRate] = useState(1.0);
+  const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
   const audioRef = useRef(null);
   const queryClient = useQueryClient();
 
@@ -290,6 +293,7 @@ export default function GoogleTTSAudioPlayer({
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
+        if (onPause) onPause();
         saveProgressMutation.mutate({ position: currentTime, completed: false });
       } else {
         try {
@@ -420,6 +424,23 @@ export default function GoogleTTSAudioPlayer({
     return () => clearInterval(interval);
   }, [isPlaying, currentTime, user?.id]);
 
+  // Auto-play effect when text/section changes
+  useEffect(() => {
+    if (autoPlay && text && !hasAutoPlayed) {
+      // Trigger auto-play after a short delay
+      const timer = setTimeout(() => {
+        handlePlayPause();
+        setHasAutoPlayed(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [autoPlay, text, hasAutoPlayed]);
+
+  // Reset hasAutoPlayed when section changes
+  useEffect(() => {
+    setHasAutoPlayed(false);
+  }, [sectionId]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -510,12 +531,14 @@ export default function GoogleTTSAudioPlayer({
 
         {/* Settings & Speed */}
         <div className="flex items-center gap-2">
-          {/* Speed Control */}
+          {/* Speed Display & Control */}
           <div className="flex flex-col items-center">
             <span className="text-[10px] text-white/60 mb-0.5">Speed</span>
             <Select value={speakingRate.toString()} onValueChange={(val) => handleSpeedChange(parseFloat(val))}>
               <SelectTrigger className="h-9 w-[70px] bg-[#F7B602] border-none text-[#071739] font-bold">
-                <SelectValue />
+                <SelectValue>
+                  {speakingRate.toFixed(1)}x
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="0.8">0.8x</SelectItem>
