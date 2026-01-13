@@ -32,18 +32,7 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Google TTS has a 5000 character limit per request
-    if (sectionText.length > 5000) {
-      console.error('❌ VALIDATION_INPUT: Text too long', sectionText.length, 'chars');
-      return Response.json({ 
-        errorCode: 'TTS_TEXT_TOO_LONG',
-        errorStage: 'VALIDATION_INPUT',
-        errorMessage: `Text exceeds Google TTS limit (${sectionText.length} > 5000 characters)`,
-        httpStatus: 400
-      }, { status: 400 });
-    }
-
-    // Convert text to SSML
+    // Convert text to SSML first
     let ssml;
     try {
       ssml = convertToSSML(sectionText);
@@ -56,6 +45,11 @@ Deno.serve(async (req) => {
         errorMessage: `Failed to convert text to SSML: ${ssmlError.message}`,
         httpStatus: 500
       }, { status: 500 });
+    }
+
+    // Google TTS has a 5000 character limit - chunk if needed
+    if (ssml.length > 5000) {
+      console.log('⚠️ SSML too long (', ssml.length, 'chars), chunking into smaller pieces...');
     }
     
     // Create content hash for caching
@@ -81,6 +75,10 @@ Deno.serve(async (req) => {
     }
 
     console.log('No cache found, generating audio with Google TTS...');
+    
+    // If SSML is too long, we need to chunk it
+    const ssmlChunks = ssml.length > 5000 ? chunkSSML(ssml, 4500) : [ssml];
+    console.log('Number of SSML chunks:', ssmlChunks.length);
 
     // Get Google Cloud credentials
     let credentialsJson = Deno.env.get('GOOGLE_TTS_SERVICE_ACCOUNT_JSON');
@@ -159,30 +157,7 @@ Deno.serve(async (req) => {
     const voiceName = voiceMap[voiceGender] || 'en-GB-Neural2-A'; // Default to female
     console.log('Selected voice:', voiceName, 'for gender:', voiceGender);
 
-    // Prepare TTS request
-    const ttsRequest = {
-      input: { ssml },
-      voice: {
-        languageCode: 'en-GB',
-        name: voiceName,
-        ssmlGender: voiceGender.toUpperCase()
-      },
-      audioConfig: {
-        audioEncoding: 'MP3',
-        speakingRate: speakingRate,
-        pitch: 0.0,
-        volumeGainDb: 0.0
-      }
-    };
 
-    console.log('TTS Request payload:', {
-      inputLength: ssml.length,
-      voice: voiceName,
-      languageCode: 'en-GB',
-      speakingRate,
-      audioEncoding: 'MP3'
-    });
-    console.log('Calling Google TTS API...');
 
     // Get access token
     let accessToken;
@@ -199,114 +174,156 @@ Deno.serve(async (req) => {
       }, { status: 500 });
     }
 
-    // Call Google Cloud Text-to-Speech REST API
-    let response;
-    try {
-      response = await fetch(
-        'https://texttospeech.googleapis.com/v1/text:synthesize',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          },
-          body: JSON.stringify(ttsRequest)
+    // Process each chunk and combine audio
+    const audioChunks = [];
+    
+    for (let i = 0; i < ssmlChunks.length; i++) {
+      const chunk = ssmlChunks[i];
+      console.log(`Processing chunk ${i + 1}/${ssmlChunks.length}, length: ${chunk.length} chars`);
+      
+      const ttsRequest = {
+        input: { ssml: chunk },
+        voice: {
+          languageCode: 'en-GB',
+          name: voiceName,
+          ssmlGender: voiceGender.toUpperCase()
+        },
+        audioConfig: {
+          audioEncoding: 'MP3',
+          speakingRate: speakingRate,
+          pitch: 0.0,
+          volumeGainDb: 0.0
         }
-      );
-      console.log('✓ TTS API response status:', response.status);
-    } catch (fetchError) {
-      console.error('❌ TTS API network error:', fetchError.message);
-      return Response.json({ 
-        errorCode: 'NETWORK_ERROR',
-        errorSource: 'google_tts',
-        errorMessage: `Network error calling Google TTS: ${fetchError.message}`
-      }, { status: 500 });
-    }
+      };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ GOOGLE_TTS_CALL: API error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText,
-        voiceName,
-        speakingRate,
-        ssmlLength: ssml.length
-      });
-      
-      let errorCode = `TTS_GOOGLE_${response.status}`;
-      let errorMessage = `Google TTS API error (${response.status})`;
-      
-      // Parse Google error for specific issues
+      console.log(`Calling Google TTS API for chunk ${i + 1}...`);
+
+      // Call Google Cloud Text-to-Speech REST API
+      let response;
       try {
-        const errorData = JSON.parse(errorText);
-        if (errorData.error) {
-          errorMessage = errorData.error.message || errorMessage;
-          // Check for common issues
-          if (errorMessage.includes('API not enabled')) {
-            errorCode = 'TTS_API_NOT_ENABLED';
-            errorMessage = 'Google Text-to-Speech API is not enabled for this project';
-          } else if (errorMessage.includes('permission') || errorMessage.includes('Permission')) {
-            errorCode = 'TTS_PERMISSION_DENIED';
-            errorMessage = 'Service account lacks permission to call Text-to-Speech API';
-          } else if (errorMessage.includes('quota')) {
-            errorCode = 'TTS_QUOTA_EXCEEDED';
-            errorMessage = 'Google TTS quota exceeded';
-          } else if (errorMessage.includes('voice')) {
-            errorCode = 'TTS_VOICE_INVALID';
-            errorMessage = `Invalid voice name: ${voiceName}`;
+        response = await fetch(
+          'https://texttospeech.googleapis.com/v1/text:synthesize',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(ttsRequest)
           }
+        );
+        console.log(`✓ TTS API response for chunk ${i + 1}, status:`, response.status);
+      } catch (fetchError) {
+        console.error(`❌ GOOGLE_TTS_CALL: Network error on chunk ${i + 1}:`, fetchError.message);
+        return Response.json({ 
+          errorCode: 'TTS_NETWORK_ERROR',
+          errorStage: 'GOOGLE_TTS_CALL',
+          errorMessage: `Network error calling Google TTS: ${fetchError.message}`,
+          httpStatus: 500
+        }, { status: 500 });
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`❌ GOOGLE_TTS_CALL: API error on chunk ${i + 1}:`, {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+          voiceName,
+          speakingRate,
+          chunkLength: chunk.length
+        });
+        
+        let errorCode = `TTS_GOOGLE_${response.status}`;
+        let errorMessage = `Google TTS API error (${response.status})`;
+        
+        // Parse Google error for specific issues
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.error) {
+            errorMessage = errorData.error.message || errorMessage;
+            if (errorMessage.includes('API not enabled')) {
+              errorCode = 'TTS_API_NOT_ENABLED';
+              errorMessage = 'Google Text-to-Speech API is not enabled for this project';
+            } else if (errorMessage.includes('permission') || errorMessage.includes('Permission')) {
+              errorCode = 'TTS_PERMISSION_DENIED';
+              errorMessage = 'Service account lacks permission to call Text-to-Speech API';
+            } else if (errorMessage.includes('quota')) {
+              errorCode = 'TTS_QUOTA_EXCEEDED';
+              errorMessage = 'Google TTS quota exceeded';
+            } else if (errorMessage.includes('voice')) {
+              errorCode = 'TTS_VOICE_INVALID';
+              errorMessage = `Invalid voice name: ${voiceName}`;
+            }
+          }
+        } catch (e) {
+          // Not JSON, use generic error
         }
-      } catch (e) {
-        // Not JSON, use generic error
+        
+        return Response.json({ 
+          errorCode,
+          errorStage: 'GOOGLE_TTS_CALL',
+          errorMessage,
+          httpStatus: response.status,
+          details: errorText
+        }, { status: 500 });
       }
-      
-      return Response.json({ 
-        errorCode,
-        errorStage: 'GOOGLE_TTS_CALL',
-        errorMessage,
-        httpStatus: response.status,
-        details: errorText
-      }, { status: 500 });
+
+      let ttsResult;
+      try {
+        ttsResult = await response.json();
+        
+        if (!ttsResult.audioContent) {
+          console.error(`❌ GOOGLE_TTS_CALL: No audioContent in chunk ${i + 1}:`, Object.keys(ttsResult));
+          throw new Error('No audioContent in response');
+        }
+        console.log(`✓ Chunk ${i + 1} audioContent present, length:`, ttsResult.audioContent.length);
+      } catch (parseError) {
+        console.error(`❌ GOOGLE_TTS_CALL: Failed to parse TTS response for chunk ${i + 1}:`, parseError.message);
+        return Response.json({ 
+          errorCode: 'TTS_INVALID_RESPONSE',
+          errorStage: 'GOOGLE_TTS_CALL',
+          errorMessage: 'Invalid or empty response from Google TTS',
+          httpStatus: 500
+        }, { status: 500 });
+      }
+
+      let audioContentBytes;
+      try {
+        audioContentBytes = Uint8Array.from(atob(ttsResult.audioContent), c => c.charCodeAt(0));
+        console.log(`✓ Chunk ${i + 1} decoded, size:`, audioContentBytes.length, 'bytes');
+        
+        if (audioContentBytes.length === 0) {
+          console.error(`❌ GOOGLE_TTS_CALL: Decoded audio is empty for chunk ${i + 1}`);
+          throw new Error('Decoded audio content is empty');
+        }
+        
+        audioChunks.push(audioContentBytes);
+      } catch (decodeError) {
+        console.error(`❌ GOOGLE_TTS_CALL: Failed to decode audio for chunk ${i + 1}:`, decodeError.message);
+        return Response.json({ 
+          errorCode: 'TTS_DECODE_FAILED',
+          errorStage: 'GOOGLE_TTS_CALL',
+          errorMessage: 'Failed to decode audio content from Google TTS',
+          httpStatus: 500
+        }, { status: 500 });
+      }
     }
 
-    let ttsResult;
-    try {
-      ttsResult = await response.json();
-      console.log('✓ TTS response parsed');
-      
-      if (!ttsResult.audioContent) {
-        console.error('❌ GOOGLE_TTS_CALL: No audioContent in response:', Object.keys(ttsResult));
-        throw new Error('No audioContent in response');
-      }
-      console.log('✓ audioContent present, length:', ttsResult.audioContent.length);
-    } catch (parseError) {
-      console.error('❌ GOOGLE_TTS_CALL: Failed to parse TTS response:', parseError.message);
-      return Response.json({ 
-        errorCode: 'TTS_INVALID_RESPONSE',
-        errorStage: 'GOOGLE_TTS_CALL',
-        errorMessage: 'Invalid or empty response from Google TTS',
-        httpStatus: 500
-      }, { status: 500 });
-    }
-
+    // Combine all audio chunks
     let audioContent;
-    try {
-      audioContent = Uint8Array.from(atob(ttsResult.audioContent), c => c.charCodeAt(0));
-      console.log('✓ Audio decoded, size:', audioContent.length, 'bytes');
-      
-      if (audioContent.length === 0) {
-        console.error('❌ GOOGLE_TTS_CALL: Decoded audio is empty');
-        throw new Error('Decoded audio content is empty');
+    if (audioChunks.length === 1) {
+      audioContent = audioChunks[0];
+    } else {
+      console.log('Combining', audioChunks.length, 'audio chunks...');
+      const totalLength = audioChunks.reduce((sum, chunk) => sum + chunk.length, 0);
+      audioContent = new Uint8Array(totalLength);
+      let offset = 0;
+      for (const chunk of audioChunks) {
+        audioContent.set(chunk, offset);
+        offset += chunk.length;
       }
-    } catch (decodeError) {
-      console.error('❌ GOOGLE_TTS_CALL: Failed to decode audio:', decodeError.message);
-      return Response.json({ 
-        errorCode: 'TTS_DECODE_FAILED',
-        errorStage: 'GOOGLE_TTS_CALL',
-        errorMessage: 'Failed to decode audio content from Google TTS',
-        httpStatus: 500
-      }, { status: 500 });
+      console.log('✓ Combined audio size:', audioContent.length, 'bytes');
     }
 
     // Upload audio file to PRIVATE storage
@@ -542,4 +559,35 @@ function escapeXml(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
+}
+
+function chunkSSML(ssml, maxChunkSize = 4500) {
+  // Extract content between <speak> tags
+  const content = ssml.replace('<speak>', '').replace('</speak>', '');
+  
+  // Split by sentence/paragraph breaks
+  const segments = content.split(/(<break time="[0-9]+ms"\/>)/g).filter(s => s.trim());
+  
+  const chunks = [];
+  let currentChunk = '<speak>';
+  
+  for (const segment of segments) {
+    // Check if adding this segment would exceed limit
+    if ((currentChunk + segment + '</speak>').length > maxChunkSize && currentChunk.length > 20) {
+      // Close current chunk and start new one
+      currentChunk += '</speak>';
+      chunks.push(currentChunk);
+      currentChunk = '<speak>' + segment;
+    } else {
+      currentChunk += segment;
+    }
+  }
+  
+  // Add final chunk
+  if (currentChunk.length > 20) {
+    currentChunk += '</speak>';
+    chunks.push(currentChunk);
+  }
+  
+  return chunks;
 }
