@@ -23,7 +23,8 @@ export default function GoogleTTSAudioPlayer({
   sectionId = 'full-content',
   sectionTitle = 'Full Content',
   autoPlay = false,
-  onPause
+  onPlay,
+  onStop
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -293,12 +294,13 @@ export default function GoogleTTSAudioPlayer({
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
-        if (onPause) onPause();
+        if (onStop) onStop();
         saveProgressMutation.mutate({ position: currentTime, completed: false });
       } else {
         try {
           await audioRef.current.play();
           setIsPlaying(true);
+          if (onPlay) onPlay();
         } catch (error) {
           console.error('Play error:', error);
         }
@@ -328,6 +330,7 @@ export default function GoogleTTSAudioPlayer({
       console.log('Attempting to play...');
       await audioRef.current.play();
       setIsPlaying(true);
+      if (onPlay) onPlay();
       console.log('Playing successfully');
     } catch (error) {
       console.error('Play error:', error);

@@ -27,7 +27,8 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const [startedAt] = useState(new Date().toISOString());
   const [showResultsModal, setShowResultsModal] = useState(false);
   const [resultData, setResultData] = useState(null);
-  const [audioPausedByUser, setAudioPausedByUser] = useState(false);
+  const [hasUserStartedAudio, setHasUserStartedAudio] = useState(false);
+  const [autoReadEnabled, setAutoReadEnabled] = useState(false);
   const audioPlayerRef = useRef(null);
 
   const { data: user } = useQuery({
@@ -144,7 +145,7 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const handleNext = () => {
     if (currentQuestionIndex < shuffledQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setAudioPausedByUser(false);
+      // Auto-read continues only if enabled (user clicked Play and didn't stop)
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -152,9 +153,18 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setAudioPausedByUser(false);
+      // Auto-read continues only if enabled (user clicked Play and didn't stop)
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  };
+
+  const handleAudioPlay = () => {
+    setHasUserStartedAudio(true);
+    setAutoReadEnabled(true);
+  };
+
+  const handleAudioStop = () => {
+    setAutoReadEnabled(false);
   };
 
   const handleSubmit = async () => {
@@ -277,7 +287,8 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
     setSubmitted(false);
     setScore(0);
     setCurrentQuestionIndex(0);
-    setAudioPausedByUser(false);
+    setHasUserStartedAudio(false);
+    setAutoReadEnabled(false);
     if (questionPack.settings.shuffle_questions) {
       setShuffledQuestions([...questionPack.questions].sort(() => Math.random() - 0.5));
     }
@@ -536,8 +547,9 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
         topicId={`mcq_${questionPack.id}_q${currentQuestionIndex}`}
         sectionId={currentQuestion?.id}
         sectionTitle={`Question ${currentQuestionIndex + 1}`}
-        autoPlay={!audioPausedByUser}
-        onPause={() => setAudioPausedByUser(true)}
+        autoPlay={hasUserStartedAudio && autoReadEnabled}
+        onPlay={handleAudioPlay}
+        onStop={handleAudioStop}
       />
 
       {/* Question Card */}
