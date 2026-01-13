@@ -16,22 +16,47 @@ Deno.serve(async (req) => {
 
     const { materialId, sectionId, sectionText, voiceGender = 'female', speakingRate = 1.0 } = await req.json();
 
-    if (!sectionText) {
-      return Response.json({ 
-        errorCode: 'MISSING_TEXT',
-        errorSource: 'validation',
-        errorMessage: 'sectionText is required'
-      }, { status: 400 });
-    }
-
     console.log('=== TTS Request ===');
     console.log('User:', user.email);
     console.log('Material:', materialId, 'Section:', sectionId);
     console.log('Voice:', voiceGender, 'Rate:', speakingRate);
-    console.log('Text length:', sectionText.length, 'chars');
+    console.log('Text length:', sectionText?.length || 0, 'chars');
+
+    if (!sectionText || sectionText.trim().length === 0) {
+      console.error('❌ VALIDATION_INPUT: sectionText is empty');
+      return Response.json({ 
+        errorCode: 'TTS_MISSING_TEXT',
+        errorStage: 'VALIDATION_INPUT',
+        errorMessage: 'sectionText is required and cannot be empty',
+        httpStatus: 400
+      }, { status: 400 });
+    }
+
+    // Google TTS has a 5000 character limit per request
+    if (sectionText.length > 5000) {
+      console.error('❌ VALIDATION_INPUT: Text too long', sectionText.length, 'chars');
+      return Response.json({ 
+        errorCode: 'TTS_TEXT_TOO_LONG',
+        errorStage: 'VALIDATION_INPUT',
+        errorMessage: `Text exceeds Google TTS limit (${sectionText.length} > 5000 characters)`,
+        httpStatus: 400
+      }, { status: 400 });
+    }
 
     // Convert text to SSML
-    const ssml = convertToSSML(sectionText);
+    let ssml;
+    try {
+      ssml = convertToSSML(sectionText);
+      console.log('✓ SSML generated, length:', ssml.length, 'chars');
+    } catch (ssmlError) {
+      console.error('❌ SSML_BUILD failed:', ssmlError.message);
+      return Response.json({ 
+        errorCode: 'TTS_SSML_BUILD_FAILED',
+        errorStage: 'SSML_BUILD',
+        errorMessage: `Failed to convert text to SSML: ${ssmlError.message}`,
+        httpStatus: 500
+      }, { status: 500 });
+    }
     
     // Create content hash for caching
     const contentHash = createHash('sha256')
@@ -60,11 +85,12 @@ Deno.serve(async (req) => {
     // Get Google Cloud credentials
     let credentialsJson = Deno.env.get('GOOGLE_TTS_SERVICE_ACCOUNT_JSON');
     if (!credentialsJson) {
-      console.error('❌ GOOGLE_TTS_SERVICE_ACCOUNT_JSON not found in environment');
+      console.error('❌ VALIDATION_INPUT: GOOGLE_TTS_SERVICE_ACCOUNT_JSON not found in environment');
       return Response.json({ 
-        errorCode: 'MISSING_CREDENTIALS',
-        errorSource: 'validation',
-        errorMessage: 'Google TTS credentials not configured'
+        errorCode: 'TTS_MISSING_CREDENTIALS',
+        errorStage: 'VALIDATION_INPUT',
+        errorMessage: 'Google TTS credentials not configured. Please contact support.',
+        httpStatus: 500
       }, { status: 500 });
     }
 
@@ -81,12 +107,15 @@ Deno.serve(async (req) => {
     try {
       credentials = JSON.parse(credentialsJson);
       console.log('✓ Credentials parsed successfully');
+      console.log('Project ID:', credentials.project_id);
+      console.log('Client email:', credentials.client_email);
     } catch (parseError) {
-      console.error('❌ Failed to parse credentials JSON:', parseError.message);
+      console.error('❌ VALIDATION_INPUT: Failed to parse credentials JSON:', parseError.message);
       return Response.json({ 
-        errorCode: 'INVALID_CREDENTIALS',
-        errorSource: 'validation',
-        errorMessage: `Failed to parse credentials: ${parseError.message}`
+        errorCode: 'TTS_INVALID_CREDENTIALS',
+        errorStage: 'VALIDATION_INPUT',
+        errorMessage: `Failed to parse credentials: ${parseError.message}`,
+        httpStatus: 500
       }, { status: 500 });
     }
 
@@ -95,20 +124,22 @@ Deno.serve(async (req) => {
     const missingFields = requiredFields.filter(field => !credentials[field]);
     
     if (missingFields.length > 0) {
-      console.error('❌ Missing required credential fields:', missingFields);
+      console.error('❌ VALIDATION_INPUT: Missing required credential fields:', missingFields);
       return Response.json({ 
-        errorCode: 'INVALID_CREDENTIALS',
-        errorSource: 'validation',
-        errorMessage: `Missing required fields: ${missingFields.join(', ')}`
+        errorCode: 'TTS_INVALID_CREDENTIALS',
+        errorStage: 'VALIDATION_INPUT',
+        errorMessage: `Missing required credential fields: ${missingFields.join(', ')}`,
+        httpStatus: 500
       }, { status: 500 });
     }
 
     if (credentials.type !== 'service_account') {
-      console.error('❌ Invalid credential type:', credentials.type);
+      console.error('❌ VALIDATION_INPUT: Invalid credential type:', credentials.type);
       return Response.json({ 
-        errorCode: 'INVALID_CREDENTIALS',
-        errorSource: 'validation',
-        errorMessage: `Expected type "service_account", got "${credentials.type}"`
+        errorCode: 'TTS_INVALID_CREDENTIALS',
+        errorStage: 'VALIDATION_INPUT',
+        errorMessage: `Expected type "service_account", got "${credentials.type}"`,
+        httpStatus: 500
       }, { status: 500 });
     }
 
@@ -120,8 +151,13 @@ Deno.serve(async (req) => {
 
     console.log('✓ Credentials validated, project:', credentials.project_id);
     
-    // Voice configuration based on gender
-    const voiceName = voiceGender === 'male' ? 'en-GB-Neural2-B' : 'en-GB-Neural2-A';
+    // Voice configuration based on gender with fallback
+    const voiceMap = {
+      'male': 'en-GB-Neural2-B',
+      'female': 'en-GB-Neural2-A'
+    };
+    const voiceName = voiceMap[voiceGender] || 'en-GB-Neural2-A'; // Default to female
+    console.log('Selected voice:', voiceName, 'for gender:', voiceGender);
 
     // Prepare TTS request
     const ttsRequest = {
@@ -152,13 +188,14 @@ Deno.serve(async (req) => {
     let accessToken;
     try {
       accessToken = await getAccessToken(credentials);
-      console.log('✓ Access token obtained');
+      console.log('✓ OAuth access token obtained, length:', accessToken?.length || 0);
     } catch (tokenError) {
-      console.error('❌ Failed to get access token:', tokenError.message);
+      console.error('❌ GOOGLE_TTS_CALL: Failed to get access token:', tokenError.message);
       return Response.json({ 
-        errorCode: 'TOKEN_FAILED',
-        errorSource: 'google_tts',
-        errorMessage: `Failed to authenticate with Google: ${tokenError.message}`
+        errorCode: 'TTS_AUTH_FAILED',
+        errorStage: 'GOOGLE_TTS_CALL',
+        errorMessage: `Failed to authenticate with Google: ${tokenError.message}`,
+        httpStatus: 500
       }, { status: 500 });
     }
 
@@ -188,15 +225,47 @@ Deno.serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Google TTS API error:', {
+      console.error('❌ GOOGLE_TTS_CALL: API error:', {
         status: response.status,
         statusText: response.statusText,
-        body: errorText
+        body: errorText,
+        voiceName,
+        speakingRate,
+        ssmlLength: ssml.length
       });
+      
+      let errorCode = `TTS_GOOGLE_${response.status}`;
+      let errorMessage = `Google TTS API error (${response.status})`;
+      
+      // Parse Google error for specific issues
+      try {
+        const errorData = JSON.parse(errorText);
+        if (errorData.error) {
+          errorMessage = errorData.error.message || errorMessage;
+          // Check for common issues
+          if (errorMessage.includes('API not enabled')) {
+            errorCode = 'TTS_API_NOT_ENABLED';
+            errorMessage = 'Google Text-to-Speech API is not enabled for this project';
+          } else if (errorMessage.includes('permission') || errorMessage.includes('Permission')) {
+            errorCode = 'TTS_PERMISSION_DENIED';
+            errorMessage = 'Service account lacks permission to call Text-to-Speech API';
+          } else if (errorMessage.includes('quota')) {
+            errorCode = 'TTS_QUOTA_EXCEEDED';
+            errorMessage = 'Google TTS quota exceeded';
+          } else if (errorMessage.includes('voice')) {
+            errorCode = 'TTS_VOICE_INVALID';
+            errorMessage = `Invalid voice name: ${voiceName}`;
+          }
+        }
+      } catch (e) {
+        // Not JSON, use generic error
+      }
+      
       return Response.json({ 
-        errorCode: 'TTS_API_ERROR',
-        errorSource: 'google_tts',
-        errorMessage: `Google TTS failed (${response.status}): ${errorText}`,
+        errorCode,
+        errorStage: 'GOOGLE_TTS_CALL',
+        errorMessage,
+        httpStatus: response.status,
         details: errorText
       }, { status: 500 });
     }
@@ -204,16 +273,20 @@ Deno.serve(async (req) => {
     let ttsResult;
     try {
       ttsResult = await response.json();
+      console.log('✓ TTS response parsed');
+      
       if (!ttsResult.audioContent) {
+        console.error('❌ GOOGLE_TTS_CALL: No audioContent in response:', Object.keys(ttsResult));
         throw new Error('No audioContent in response');
       }
-      console.log('✓ TTS response received with audioContent');
+      console.log('✓ audioContent present, length:', ttsResult.audioContent.length);
     } catch (parseError) {
-      console.error('❌ Failed to parse TTS response:', parseError.message);
+      console.error('❌ GOOGLE_TTS_CALL: Failed to parse TTS response:', parseError.message);
       return Response.json({ 
-        errorCode: 'INVALID_TTS_RESPONSE',
-        errorSource: 'google_tts',
-        errorMessage: 'Invalid response from Google TTS'
+        errorCode: 'TTS_INVALID_RESPONSE',
+        errorStage: 'GOOGLE_TTS_CALL',
+        errorMessage: 'Invalid or empty response from Google TTS',
+        httpStatus: 500
       }, { status: 500 });
     }
 
@@ -221,12 +294,18 @@ Deno.serve(async (req) => {
     try {
       audioContent = Uint8Array.from(atob(ttsResult.audioContent), c => c.charCodeAt(0));
       console.log('✓ Audio decoded, size:', audioContent.length, 'bytes');
+      
+      if (audioContent.length === 0) {
+        console.error('❌ GOOGLE_TTS_CALL: Decoded audio is empty');
+        throw new Error('Decoded audio content is empty');
+      }
     } catch (decodeError) {
-      console.error('❌ Failed to decode audio:', decodeError.message);
+      console.error('❌ GOOGLE_TTS_CALL: Failed to decode audio:', decodeError.message);
       return Response.json({ 
-        errorCode: 'DECODE_ERROR',
-        errorSource: 'google_tts',
-        errorMessage: 'Failed to decode audio content'
+        errorCode: 'TTS_DECODE_FAILED',
+        errorStage: 'GOOGLE_TTS_CALL',
+        errorMessage: 'Failed to decode audio content from Google TTS',
+        httpStatus: 500
       }, { status: 500 });
     }
 
@@ -236,21 +315,25 @@ Deno.serve(async (req) => {
       const audioBlob = new Blob([audioContent], { type: 'audio/mpeg' });
       const audioFile = new File([audioBlob], `audio_${contentHash}.mp3`, { type: 'audio/mpeg' });
       
-      console.log('Uploading to private storage...');
+      console.log('Uploading to private storage, file size:', audioBlob.size, 'bytes');
       const uploadResult = await base44.asServiceRole.integrations.Core.UploadPrivateFile({ file: audioFile });
+      console.log('Upload result:', uploadResult);
+      
       file_uri = uploadResult.file_uri;
       
       if (!file_uri) {
+        console.error('❌ BASE44_FILE_UPLOAD: No file_uri in upload result:', uploadResult);
         throw new Error('No file_uri returned from UploadPrivateFile');
       }
       
       console.log('✓ Uploaded to private storage:', file_uri);
     } catch (uploadError) {
-      console.error('❌ File upload failed:', uploadError.message);
+      console.error('❌ BASE44_FILE_UPLOAD: Upload failed:', uploadError.message);
       return Response.json({ 
-        errorCode: 'UPLOAD_FAILED',
-        errorSource: 'base44_files',
-        errorMessage: `Failed to upload audio file: ${uploadError.message}`
+        errorCode: 'TTS_UPLOAD_FAILED',
+        errorStage: 'BASE44_FILE_UPLOAD',
+        errorMessage: `Failed to upload audio file: ${uploadError.message}`,
+        httpStatus: 500
       }, { status: 500 });
     }
 
@@ -272,36 +355,43 @@ Deno.serve(async (req) => {
     // Generate signed URL for immediate use
     let signed_url;
     try {
+      console.log('Creating signed URL for file_uri:', file_uri);
       const signResult = await base44.asServiceRole.integrations.Core.CreateFileSignedUrl({
         file_uri: file_uri,
         expires_in: 3600 // 1 hour
       });
+      console.log('Sign result:', signResult);
+      
       signed_url = signResult.signed_url;
       
       if (!signed_url) {
+        console.error('❌ SIGNED_URL: No signed_url in result:', signResult);
         throw new Error('No signed_url returned from CreateFileSignedUrl');
       }
       
       console.log('✓ Signed URL created, expires in 1 hour');
+      console.log('Signed URL preview:', signed_url.substring(0, 100) + '...');
     } catch (signError) {
-      console.error('❌ Failed to create signed URL:', signError.message);
+      console.error('❌ SIGNED_URL: Failed to create signed URL:', signError.message);
       return Response.json({ 
-        errorCode: 'SIGN_URL_FAILED',
-        errorSource: 'base44_files',
-        errorMessage: `Failed to create signed URL: ${signError.message}`
+        errorCode: 'TTS_SIGN_URL_FAILED',
+        errorStage: 'SIGNED_URL',
+        errorMessage: `Failed to create signed URL: ${signError.message}`,
+        httpStatus: 500
       }, { status: 500 });
     }
 
     console.log('=== TTS Complete ===');
     return Response.json({ audioUrl: signed_url, cached: false });
   } catch (error) {
-    console.error('=== TTS ERROR ===');
+    console.error('=== TTS UNEXPECTED ERROR ===');
     console.error('Error:', error.message);
     console.error('Stack:', error.stack);
     return Response.json({ 
-      errorCode: 'UNKNOWN_ERROR',
-      errorSource: 'unknown',
-      errorMessage: error.message,
+      errorCode: 'TTS_UNKNOWN_ERROR',
+      errorStage: 'UNKNOWN',
+      errorMessage: `Unexpected error: ${error.message}`,
+      httpStatus: 500,
       stack: error.stack 
     }, { status: 500 });
   }

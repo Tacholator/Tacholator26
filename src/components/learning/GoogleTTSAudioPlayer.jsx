@@ -200,6 +200,7 @@ export default function GoogleTTSAudioPlayer({
       return result.audioUrl;
     } catch (error) {
       console.error('❌ Failed to generate audio:', error);
+      console.error('Error full object:', JSON.stringify(error, null, 2));
       
       // Try to parse structured error from backend
       let errorData = null;
@@ -212,31 +213,53 @@ export default function GoogleTTSAudioPlayer({
       }
       
       errorData = errorData || error.response?.data || error.data;
-      let userMessage = 'Audio is temporarily unavailable for this section. Please try again later.';
+      
+      console.error('Parsed error data:', errorData);
+      
+      let userMessage = 'Audio is temporarily unavailable. Please try again.';
+      let debugCode = 'TTS_UNKNOWN';
       
       if (errorData?.errorCode) {
+        debugCode = errorData.errorCode;
+        
         console.error('Backend error details:', {
           code: errorData.errorCode,
-          source: errorData.errorSource,
-          message: errorData.errorMessage
+          stage: errorData.errorStage,
+          message: errorData.errorMessage,
+          httpStatus: errorData.httpStatus
         });
         
-        // Provide more specific user messages based on error
-        switch (errorData.errorSource) {
-          case 'google_tts':
-            userMessage = 'Unable to generate audio at this time. Please try again.';
+        // Provide user-friendly messages with debug codes
+        switch (errorData.errorStage) {
+          case 'VALIDATION_INPUT':
+            userMessage = errorData.errorMessage;
             break;
-          case 'base44_files':
-            userMessage = 'Unable to save audio file. Please try again.';
+          case 'GOOGLE_TTS_CALL':
+            if (errorData.errorCode === 'TTS_API_NOT_ENABLED') {
+              userMessage = 'Google Text-to-Speech API needs to be enabled. Please contact support.';
+            } else if (errorData.errorCode === 'TTS_PERMISSION_DENIED') {
+              userMessage = 'Service account lacks permission. Please contact support.';
+            } else if (errorData.errorCode === 'TTS_QUOTA_EXCEEDED') {
+              userMessage = 'TTS quota exceeded. Please try again later.';
+            } else if (errorData.errorCode === 'TTS_VOICE_INVALID') {
+              userMessage = 'Voice selection error. Please try a different voice.';
+            } else {
+              userMessage = 'Unable to generate audio. Please try again.';
+            }
             break;
-          case 'validation':
+          case 'BASE44_FILE_UPLOAD':
+            userMessage = 'Failed to save audio file. Please try again.';
+            break;
+          case 'SIGNED_URL':
+            userMessage = 'Failed to create audio URL. Please try again.';
+            break;
+          default:
             userMessage = errorData.errorMessage || userMessage;
-            break;
         }
       }
       
       setIsLoading(false);
-      alert(userMessage);
+      alert(`${userMessage}\n\nDebug Code: ${debugCode}`);
       return null;
     }
   };
