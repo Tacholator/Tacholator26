@@ -101,6 +101,43 @@ export default function GoogleTTSAudioPlayer({
     }
   });
 
+  // Setup audio with event listeners
+  const setupAudio = (url, startPosition = 0) => {
+    const audio = new Audio(url);
+    audio.playbackRate = speakingRate;
+
+    audio.addEventListener('loadedmetadata', () => {
+      setDuration(audio.duration);
+      setIsLoading(false);
+      
+      // Set start position
+      if (startPosition > 0 && startPosition < audio.duration) {
+        audio.currentTime = startPosition;
+        setCurrentTime(startPosition);
+        setProgress((startPosition / audio.duration) * 100);
+      }
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      setCurrentTime(audio.currentTime);
+      setProgress((audio.currentTime / audio.duration) * 100);
+    });
+
+    audio.addEventListener('ended', () => {
+      setIsPlaying(false);
+      setProgress(100);
+      saveProgressMutation.mutate({ position: audio.duration, completed: true });
+    });
+
+    audio.addEventListener('error', (e) => {
+      console.error('Audio error:', e);
+      setIsLoading(false);
+      setIsPlaying(false);
+    });
+
+    return audio;
+  };
+
   // Load or generate audio
   const loadAudio = async () => {
     setIsLoading(true);
@@ -117,50 +154,40 @@ export default function GoogleTTSAudioPlayer({
 
   // Handle play/pause
   const handlePlayPause = async () => {
-    let urlToUse = audioUrl;
-    
-    if (!urlToUse) {
-      urlToUse = await loadAudio();
-      if (!urlToUse) return;
-    }
-
-    if (!audioRef.current) {
-      audioRef.current = new Audio(urlToUse);
-      audioRef.current.playbackRate = speakingRate;
-
-      audioRef.current.addEventListener('loadedmetadata', () => {
-        setDuration(audioRef.current.duration);
-        setIsLoading(false);
-        
-        // Resume from saved position if available
-        if (savedProgress?.lastPosition && savedProgress.lastPosition > 0) {
-          audioRef.current.currentTime = savedProgress.lastPosition;
-          setCurrentTime(savedProgress.lastPosition);
-        }
-      });
-
-      audioRef.current.addEventListener('timeupdate', () => {
-        setCurrentTime(audioRef.current.currentTime);
-        setProgress((audioRef.current.currentTime / audioRef.current.duration) * 100);
-      });
-
-      audioRef.current.addEventListener('ended', () => {
-        setIsPlaying(false);
-        setProgress(100);
-        saveProgressMutation.mutate({ position: duration, completed: true });
-      });
-
-      await audioRef.current.play();
-      setIsPlaying(true);
-    } else {
+    // If we have an audio object, just toggle play/pause
+    if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
         saveProgressMutation.mutate({ position: currentTime, completed: false });
       } else {
-        await audioRef.current.play();
-        setIsPlaying(true);
+        try {
+          await audioRef.current.play();
+          setIsPlaying(true);
+        } catch (error) {
+          console.error('Play error:', error);
+        }
       }
+      return;
+    }
+
+    // Otherwise, load audio and create Audio object
+    let urlToUse = audioUrl;
+    if (!urlToUse) {
+      urlToUse = await loadAudio();
+      if (!urlToUse) return;
+    }
+
+    // Setup audio with saved position
+    const startPos = savedProgress?.lastPosition || 0;
+    audioRef.current = setupAudio(urlToUse, startPos);
+
+    try {
+      await audioRef.current.play();
+      setIsPlaying(true);
+    } catch (error) {
+      console.error('Play error:', error);
+      setIsLoading(false);
     }
   };
 
@@ -187,45 +214,26 @@ export default function GoogleTTSAudioPlayer({
     // Stop and cleanup current audio
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.src = '';
       audioRef.current = null;
     }
 
     setIsPlaying(false);
     setAudioUrl(null);
-    
-    // Update voice preference first
     setVoiceGender(newVoice);
 
-    // Regenerate audio will happen on next play
-    // If user was actively listening, auto-restart
+    // If user was actively listening, regenerate and auto-restart
     if (wasPlaying) {
-      setTimeout(async () => {
-        const url = await loadAudio();
-        if (url) {
-          audioRef.current = new Audio(url);
-          audioRef.current.playbackRate = speakingRate;
-          audioRef.current.currentTime = currentPos;
-          
-          audioRef.current.addEventListener('loadedmetadata', () => {
-            setDuration(audioRef.current.duration);
-            setIsLoading(false);
-          });
-
-          audioRef.current.addEventListener('timeupdate', () => {
-            setCurrentTime(audioRef.current.currentTime);
-            setProgress((audioRef.current.currentTime / audioRef.current.duration) * 100);
-          });
-
-          audioRef.current.addEventListener('ended', () => {
-            setIsPlaying(false);
-            setProgress(100);
-            saveProgressMutation.mutate({ position: duration, completed: true });
-          });
-
+      const url = await loadAudio();
+      if (url) {
+        audioRef.current = setupAudio(url, currentPos);
+        try {
           await audioRef.current.play();
           setIsPlaying(true);
+        } catch (error) {
+          console.error('Play error:', error);
         }
-      }, 100);
+      }
     }
   };
 
@@ -236,6 +244,7 @@ export default function GoogleTTSAudioPlayer({
     // Stop current audio
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.src = '';
       audioRef.current = null;
     }
 
@@ -245,33 +254,16 @@ export default function GoogleTTSAudioPlayer({
 
     // Regenerate audio with new speed if user was actively listening
     if (wasPlaying) {
-      setTimeout(async () => {
-        const url = await loadAudio();
-        if (url) {
-          audioRef.current = new Audio(url);
-          audioRef.current.playbackRate = newRate;
-          audioRef.current.currentTime = currentPos;
-
-          audioRef.current.addEventListener('loadedmetadata', () => {
-            setDuration(audioRef.current.duration);
-            setIsLoading(false);
-          });
-
-          audioRef.current.addEventListener('timeupdate', () => {
-            setCurrentTime(audioRef.current.currentTime);
-            setProgress((audioRef.current.currentTime / audioRef.current.duration) * 100);
-          });
-
-          audioRef.current.addEventListener('ended', () => {
-            setIsPlaying(false);
-            setProgress(100);
-            saveProgressMutation.mutate({ position: duration, completed: true });
-          });
-
+      const url = await loadAudio();
+      if (url) {
+        audioRef.current = setupAudio(url, currentPos);
+        try {
           await audioRef.current.play();
           setIsPlaying(true);
+        } catch (error) {
+          console.error('Play error:', error);
         }
-      }, 100);
+      }
     }
   };
 
