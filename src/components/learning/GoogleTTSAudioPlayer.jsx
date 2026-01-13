@@ -424,22 +424,35 @@ export default function GoogleTTSAudioPlayer({
     return () => clearInterval(interval);
   }, [isPlaying, currentTime, user?.id]);
 
-  // Auto-play effect when text/section changes
+  // Reset and cleanup when section changes
   useEffect(() => {
-    if (autoPlay && text && !hasAutoPlayed) {
-      // Trigger auto-play after a short delay
+    // Cleanup existing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      audioRef.current = null;
+    }
+    
+    // Reset states
+    setIsPlaying(false);
+    setProgress(0);
+    setCurrentTime(0);
+    setDuration(0);
+    setAudioUrl(null);
+    setHasAutoPlayed(false);
+    setIsLoading(false);
+  }, [sectionId]);
+
+  // Auto-play effect when ready
+  useEffect(() => {
+    if (autoPlay && text && !hasAutoPlayed && !isLoading && !audioRef.current) {
       const timer = setTimeout(() => {
         handlePlayPause();
         setHasAutoPlayed(true);
-      }, 500);
+      }, 600);
       return () => clearTimeout(timer);
     }
-  }, [autoPlay, text, hasAutoPlayed]);
-
-  // Reset hasAutoPlayed when section changes
-  useEffect(() => {
-    setHasAutoPlayed(false);
-  }, [sectionId]);
+  }, [autoPlay, text, hasAutoPlayed, isLoading]);
 
   // Cleanup on unmount
   useEffect(() => {
