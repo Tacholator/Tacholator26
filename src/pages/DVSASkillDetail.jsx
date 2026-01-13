@@ -23,11 +23,13 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote, UserX } from 'lucide-react';
+import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote, UserX, Volume2 } from 'lucide-react';
 import { getSkillById, DVSA_SKILLS_DATA } from '@/components/dvsa/dvsaSkillsData';
 import StudyMaterial from '@/components/dvsa/StudyMaterial';
 import McqQuiz from '@/components/dvsa/McqQuiz';
 import { Textarea } from '@/components/ui/textarea';
+import AudioPregenStatus from '@/components/learning/AudioPregenStatus';
+import GoogleTTSAudioPlayer from '@/components/learning/GoogleTTSAudioPlayer';
 
 export default function DVSASkillDetail() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -41,6 +43,7 @@ export default function DVSASkillDetail() {
   const [assignComponents, setAssignComponents] = useState('both');
   const [materialProgress, setMaterialProgress] = useState({ scrollDepth: 0, timeSpent: 0 });
   const [instructorNotes, setInstructorNotes] = useState('');
+  const [showAudioStatus, setShowAudioStatus] = useState(false);
 
   const queryClient = useQueryClient();
   const skill = getSkillById(skillId);
@@ -156,6 +159,15 @@ export default function DVSASkillDetail() {
   });
 
   const materialContent = skill?.learningMaterial || '<p>Content for this skill will be added soon.</p>';
+  
+  // Extract plain text from HTML for audio generation
+  const extractTextFromHtml = (html) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  };
+  
+  const materialPlainText = extractTextFromHtml(materialContent);
   
   React.useEffect(() => {
     if (skillNotes?.content) {
@@ -339,6 +351,54 @@ export default function DVSASkillDetail() {
           <TabsContent value="material">
             <Card className="border-0 shadow-sm">
               <CardContent className="p-8">
+                {/* Admin Audio Status */}
+                {user?.role === 'admin' && (
+                  <div className="mb-6 p-4 bg-slate-50 rounded-lg border">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Volume2 className="w-4 h-4 text-slate-600" />
+                        <h4 className="font-medium text-slate-700">Audio Pre-generation</h4>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowAudioStatus(!showAudioStatus)}
+                        className="text-xs"
+                      >
+                        {showAudioStatus ? 'Hide' : 'Show'} Details
+                      </Button>
+                    </div>
+                    
+                    <AudioPregenStatus
+                      materialId={skillId}
+                      sectionId="full-content"
+                      sectionText={materialPlainText}
+                    />
+                    
+                    {showAudioStatus && (
+                      <div className="mt-3 pt-3 border-t text-xs text-slate-500">
+                        <p>Pre-generated audio variants:</p>
+                        <ul className="list-disc list-inside mt-1 space-y-0.5">
+                          <li>Female voice @ 1.0x (default)</li>
+                          <li>Male voice @ 1.0x</li>
+                          <li>Female voice @ 0.8x (slow)</li>
+                          <li>Female voice @ 1.2x (fast)</li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Audio Player for Learners */}
+                {user?.role !== 'admin' && myAssignment && materialPlainText.length > 100 && (
+                  <GoogleTTSAudioPlayer
+                    text={materialPlainText}
+                    topicId={skillId}
+                    sectionId="full-content"
+                    sectionTitle={skill.skillTitle}
+                  />
+                )}
+                
                 {user?.role === 'admin' ? (
                   <StudyMaterial
                     content={materialContent}
