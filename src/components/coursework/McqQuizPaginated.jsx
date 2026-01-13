@@ -4,7 +4,24 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, RotateCcw, Trophy, AlertCircle, TrendingUp, ChevronRight, ChevronLeft } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { CheckCircle, XCircle, RotateCcw, Trophy, AlertCircle, TrendingUp, ChevronRight, ChevronLeft, Flag, List } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import moment from 'moment';
 import McqResultsModal from './McqResultsModal';
@@ -29,6 +46,9 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const [resultData, setResultData] = useState(null);
   const [hasUserStartedAudio, setHasUserStartedAudio] = useState(false);
   const [autoReadEnabled, setAutoReadEnabled] = useState(false);
+  const [flaggedQuestions, setFlaggedQuestions] = useState({});
+  const [showFlaggedReview, setShowFlaggedReview] = useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const audioPlayerRef = useRef(null);
 
   const { data: user } = useQuery({
@@ -145,7 +165,6 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const handleNext = () => {
     if (currentQuestionIndex < shuffledQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      // Auto-read continues only if enabled (user clicked Play and didn't stop)
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -153,9 +172,28 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-      // Auto-read continues only if enabled (user clicked Play and didn't stop)
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  };
+
+  const toggleFlag = (questionId) => {
+    setFlaggedQuestions(prev => ({
+      ...prev,
+      [questionId]: !prev[questionId]
+    }));
+  };
+
+  const flaggedCount = Object.values(flaggedQuestions).filter(Boolean).length;
+  const flaggedQuestionIds = shuffledQuestions
+    .map((q, idx) => ({ id: q.id, index: idx }))
+    .filter(q => flaggedQuestions[q.id]);
+
+  const goToQuestion = (index) => {
+    setCurrentQuestionIndex(index);
+    setShowFlaggedReview(false);
+    setAutoReadEnabled(false);
+    setHasUserStartedAudio(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleAudioPlay = () => {
@@ -167,11 +205,20 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
     setAutoReadEnabled(false);
   };
 
+  const handleSubmitClick = () => {
+    if (flaggedCount > 0) {
+      setShowSubmitConfirm(true);
+    } else {
+      handleSubmit();
+    }
+  };
+
   const handleSubmit = async () => {
     if (!pupil?.id) {
       console.error('Cannot submit: pupil data not loaded');
       return;
     }
+    setShowSubmitConfirm(false);
 
     let correctCount = 0;
     const answerArray = [];
@@ -294,6 +341,7 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
     setCurrentQuestionIndex(0);
     setHasUserStartedAudio(false);
     setAutoReadEnabled(false);
+    setFlaggedQuestions({});
     if (questionPack.settings.shuffle_questions) {
       setShuffledQuestions([...questionPack.questions].sort(() => Math.random() - 0.5));
     }
@@ -479,7 +527,78 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
 
   // Quiz in progress - show one question at a time
   return (
-    <div className="space-y-6">
+    <>
+      {/* Submit Confirmation Dialog */}
+      <AlertDialog open={showSubmitConfirm} onOpenChange={setShowSubmitConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Flagged questions remaining</AlertDialogTitle>
+            <AlertDialogDescription>
+              You still have {flaggedCount} flagged question(s). Would you like to review them before submitting?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <Button variant="outline" onClick={() => { setShowSubmitConfirm(false); setShowFlaggedReview(true); }}>
+              Review Flagged
+            </Button>
+            <AlertDialogAction onClick={handleSubmit}>
+              Submit Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Flagged Questions Review Sheet */}
+      <Sheet open={showFlaggedReview} onOpenChange={setShowFlaggedReview}>
+        <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Review Flagged Questions</SheetTitle>
+            <SheetDescription>
+              {flaggedCount} {flaggedCount === 1 ? 'question' : 'questions'} flagged for review
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-3">
+            {flaggedQuestionIds.length === 0 ? (
+              <p className="text-sm text-slate-500 text-center py-8">No flagged questions</p>
+            ) : (
+              flaggedQuestionIds.map(({ id, index }) => {
+                const question = shuffledQuestions[index];
+                const isAnswered = answers[id] !== undefined;
+                return (
+                  <Card key={id} className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Flag className="w-4 h-4 text-[#F7B602]" />
+                          <span className="font-semibold text-slate-800">Question {index + 1}</span>
+                          <Badge variant={isAnswered ? "default" : "secondary"}>
+                            {isAnswered ? 'Answered' : 'Unanswered'}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-slate-600 line-clamp-2">{question.question}</p>
+                      </div>
+                      <Button size="sm" onClick={() => goToQuestion(index)}>
+                        Go to
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })
+            )}
+          </div>
+          <div className="mt-6 flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => setShowFlaggedReview(false)}>
+              Back to Quiz
+            </Button>
+            <Button className="flex-1" onClick={handleSubmitClick} disabled={!allAnswered}>
+              Submit Answers
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <div className="space-y-6">
       {mcqStatus && currentQuestionIndex === 0 && (
         <Card className="border-l-4 border-l-indigo-500 bg-indigo-50/50">
           <CardContent className="p-6">
@@ -531,17 +650,29 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
           <CardContent className="p-6">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
-              <div>
+              <div className="flex-1">
                 <p className="font-medium text-slate-700">
                   Pass Mark: {questionPack.settings.pass_mark} out of {questionPack.settings.total_questions}
                 </p>
                 <p className="text-sm text-slate-600 mt-1">
-                  Answer each question and click Next to continue
+                  Answer each question and click Next to continue. Use the flag button to mark questions for review.
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Review Flagged Button */}
+      {flaggedCount > 0 && (
+        <Button
+          variant="outline"
+          onClick={() => setShowFlaggedReview(true)}
+          className="w-full gap-2"
+        >
+          <List className="w-4 h-4" />
+          Review {flaggedCount} Flagged {flaggedCount === 1 ? 'Question' : 'Questions'}
+        </Button>
       )}
 
       {/* Audio Player at the top */}
@@ -569,14 +700,33 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
           <Card className="border-0 shadow-md">
             <CardHeader>
               <div className="flex items-start justify-between gap-4">
-                <CardTitle className="text-lg font-semibold text-slate-800 flex-1">
-                  <span className="text-[#F7B602] mr-2">Question {currentQuestionIndex + 1} of {shuffledQuestions.length}</span>
-                </CardTitle>
-                <Badge className="bg-slate-100 text-slate-600">
-                  {Object.keys(answers).length}/{shuffledQuestions.length} Answered
-                </Badge>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CardTitle className="text-lg font-semibold text-slate-800">
+                      <span className="text-[#F7B602] mr-2">Question {currentQuestionIndex + 1} of {shuffledQuestions.length}</span>
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleFlag(currentQuestion.id)}
+                      className={`${flaggedQuestions[currentQuestion.id] ? 'text-[#F7B602]' : 'text-slate-400'}`}
+                    >
+                      <Flag className={`w-5 h-5 ${flaggedQuestions[currentQuestion.id] ? 'fill-current' : ''}`} />
+                    </Button>
+                  </div>
+                  <p className="text-slate-700 text-base mt-2">{currentQuestion?.question}</p>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Badge className="bg-slate-100 text-slate-600">
+                    {Object.keys(answers).length}/{shuffledQuestions.length} Answered
+                  </Badge>
+                  {flaggedCount > 0 && (
+                    <Badge className="bg-amber-100 text-amber-700">
+                      {flaggedCount} Flagged
+                    </Badge>
+                  )}
+                </div>
               </div>
-              <p className="text-slate-700 text-base mt-4">{currentQuestion?.question}</p>
             </CardHeader>
             <CardContent className="space-y-3">
               {currentQuestion?.options.map((option, optIndex) => {
@@ -629,7 +779,7 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
           
           {isLastQuestion ? (
             <Button
-              onClick={handleSubmit}
+              onClick={handleSubmitClick}
               disabled={!allAnswered}
               className="bg-[#071739] hover:bg-[#071739]/90 gap-2"
             >
@@ -648,6 +798,7 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
