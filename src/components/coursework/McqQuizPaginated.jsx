@@ -168,6 +168,11 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   };
 
   const handleSubmit = async () => {
+    if (!pupil?.id) {
+      console.error('Cannot submit: pupil data not loaded');
+      return;
+    }
+
     let correctCount = 0;
     const answerArray = [];
     
