@@ -365,8 +365,24 @@ export default function GoogleTTSAudioPlayer({
       console.log('Setting up audio player with start position:', startPos);
       audioRef.current = setupAudio(urlToUse, startPos);
 
-      // Auto-play immediately (user gesture allows this)
-      console.log('Attempting to auto-play after load...');
+      // Wait for audio to be ready before playing
+      console.log('Waiting for audio to be ready...');
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error('Audio load timeout')), 15000);
+        
+        audioRef.current.addEventListener('canplaythrough', () => {
+          clearTimeout(timeout);
+          resolve();
+        }, { once: true });
+        
+        audioRef.current.addEventListener('error', (e) => {
+          clearTimeout(timeout);
+          reject(e);
+        }, { once: true });
+      });
+
+      // Auto-play after audio is ready (user gesture allows this)
+      console.log('Audio ready, attempting to play...');
       await audioRef.current.play();
       setIsPlaying(true);
       setIsLoading(false);
