@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import SectionAudioPlayer from '@/components/learning/SectionAudioPlayer';
 import GoogleTTSAudioPlayer from '@/components/learning/GoogleTTSAudioPlayer';
-import McqQuiz from '@/components/coursework/McqQuiz';
+import McqQuizPaginated from '@/components/coursework/McqQuizPaginated';
 import { questionPacks } from '@/components/coursework/questionPacks';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 import LockedContentDialog from '@/components/coursework/LockedContentDialog';
@@ -4526,7 +4526,7 @@ export default function CourseWorkDetail() {
           </div>
           
           {questionPack ? (
-            <McqQuiz questionPack={questionPack} topicId={itemId} />
+            <McqQuizPaginated questionPack={questionPack} topicId={itemId} />
           ) : (
             <Card className="border-l-4 border-l-amber-500">
               <CardContent className="p-8 text-center">
