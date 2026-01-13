@@ -48,9 +48,10 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const currentTopic = courseWorkTopics.find(t => t.id === topicId);
   const topicIdStr = currentTopic?.topicId;
 
-  const { data: mcqStatus } = useQuery({
+  const { data: mcqStatus, isLoading: isLoadingStatus } = useQuery({
     queryKey: ['mcqStatus', pupil?.id, questionPack.id],
     queryFn: async () => {
+      if (!pupil?.id) return null;
       const statuses = await base44.entities.McqStatus.filter({ 
         pupilId: pupil.id, 
         mcqPackId: questionPack.id 
@@ -63,6 +64,7 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const { data: instructorSettings } = useQuery({
     queryKey: ['instructorSettings', pupil?.instructorId],
     queryFn: async () => {
+      if (!pupil?.instructorId) return null;
       const settings = await base44.entities.InstructorMcqSettings.filter({ 
         instructorId: pupil.instructorId 
       });
@@ -74,6 +76,7 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const { data: relatedHomework } = useQuery({
     queryKey: ['relatedHomework', pupil?.id, topicIdStr],
     queryFn: async () => {
+      if (!pupil?.id) return [];
       const allHomework = await base44.entities.HomeworkItem.filter({ pupilId: pupil.id });
       return allHomework.filter(h => 
         h.status !== 'Completed' && 
@@ -103,6 +106,18 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
       queryClient.invalidateQueries(['mcqStatus']);
     }
   });
+
+  // Show loading state while pupil data is being fetched
+  if (!pupil && user?.role === 'user') {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-[#F7B602] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-slate-600">Loading quiz...</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentQuestion = shuffledQuestions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === shuffledQuestions.length - 1;
