@@ -27,7 +27,6 @@ import moment from 'moment';
 import McqResultsModal from './McqResultsModal';
 import { courseWorkTopics } from './topicIndex';
 import GoogleTTSAudioPlayer from '../learning/GoogleTTSAudioPlayer';
-import { toast } from 'sonner';
 
 export default function McqQuizPaginated({ questionPack, topicId }) {
   const queryClient = useQueryClient();
@@ -178,25 +177,10 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   };
 
   const toggleFlag = (questionId) => {
-    const isNowFlagged = !flaggedQuestions[questionId];
     setFlaggedQuestions(prev => ({
       ...prev,
-      [questionId]: isNowFlagged
+      [questionId]: !prev[questionId]
     }));
-
-    if (isNowFlagged && currentQuestionIndex < shuffledQuestions.length - 1) {
-      toast.success('Question flagged for review', {
-        action: {
-          label: 'Next Question',
-          onClick: handleNext
-        },
-        duration: 3000
-      });
-    } else if (isNowFlagged) {
-      toast.success('Question flagged for review');
-    } else {
-      toast.info('Flag removed');
-    }
   };
 
   const flaggedCount = Object.values(flaggedQuestions).filter(Boolean).length;
