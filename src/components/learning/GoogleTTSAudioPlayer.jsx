@@ -97,6 +97,15 @@ export default function GoogleTTSAudioPlayer({
         voiceGender: voice,
         speakingRate: rate
       });
+      
+      console.log('Raw function response:', response);
+      console.log('Response data:', response.data);
+      
+      // Check if the response contains an error
+      if (response.data?.errorCode) {
+        throw new Error(JSON.stringify(response.data));
+      }
+      
       return response.data;
     }
   });
@@ -192,8 +201,17 @@ export default function GoogleTTSAudioPlayer({
     } catch (error) {
       console.error('❌ Failed to generate audio:', error);
       
-      // Check if it's a structured error from backend
-      const errorData = error.response?.data || error.data;
+      // Try to parse structured error from backend
+      let errorData = null;
+      try {
+        if (error.message && error.message.startsWith('{')) {
+          errorData = JSON.parse(error.message);
+        }
+      } catch (e) {
+        // Not a JSON error
+      }
+      
+      errorData = errorData || error.response?.data || error.data;
       let userMessage = 'Audio is temporarily unavailable for this section. Please try again later.';
       
       if (errorData?.errorCode) {
