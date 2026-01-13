@@ -7,19 +7,28 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
 
     if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      return Response.json({ 
+        errorCode: 'UNAUTHORIZED',
+        errorSource: 'validation',
+        errorMessage: 'User not authenticated'
+      }, { status: 401 });
     }
 
     const { materialId, sectionId, sectionText, voiceGender = 'female', speakingRate = 1.0 } = await req.json();
 
     if (!sectionText) {
-      return Response.json({ error: 'sectionText is required' }, { status: 400 });
+      return Response.json({ 
+        errorCode: 'MISSING_TEXT',
+        errorSource: 'validation',
+        errorMessage: 'sectionText is required'
+      }, { status: 400 });
     }
 
     console.log('=== TTS Request ===');
+    console.log('User:', user.email);
     console.log('Material:', materialId, 'Section:', sectionId);
     console.log('Voice:', voiceGender, 'Rate:', speakingRate);
-    console.log('Text length:', sectionText.length);
+    console.log('Text length:', sectionText.length, 'chars');
 
     // Convert text to SSML
     const ssml = convertToSSML(sectionText);
@@ -49,7 +58,28 @@ Deno.serve(async (req) => {
     console.log('No cache found, generating audio with Google TTS...');
 
     // Get Google Cloud credentials
-    const credentials = JSON.parse(Deno.env.get('GOOGLE_TTS_SERVICE_ACCOUNT_JSON'));
+    const credentialsJson = Deno.env.get('GOOGLE_TTS_SERVICE_ACCOUNT_JSON');
+    if (!credentialsJson) {
+      console.error('❌ GOOGLE_TTS_SERVICE_ACCOUNT_JSON not found in environment');
+      return Response.json({ 
+        errorCode: 'MISSING_CREDENTIALS',
+        errorSource: 'validation',
+        errorMessage: 'Google TTS credentials not configured'
+      }, { status: 500 });
+    }
+
+    let credentials;
+    try {
+      credentials = JSON.parse(credentialsJson);
+      console.log('✓ Credentials parsed, project:', credentials.project_id);
+    } catch (parseError) {
+      console.error('❌ Failed to parse credentials:', parseError.message);
+      return Response.json({ 
+        errorCode: 'INVALID_CREDENTIALS',
+        errorSource: 'validation',
+        errorMessage: 'Invalid Google TTS credentials format'
+      }, { status: 500 });
+    }
     
     // Voice configuration based on gender
     const voiceName = voiceGender === 'male' ? 'en-GB-Neural2-B' : 'en-GB-Neural2-A';
@@ -70,67 +100,171 @@ Deno.serve(async (req) => {
       }
     };
 
+    console.log('TTS Request payload:', {
+      inputLength: ssml.length,
+      voice: voiceName,
+      languageCode: 'en-GB',
+      speakingRate,
+      audioEncoding: 'MP3'
+    });
     console.log('Calling Google TTS API...');
 
+    // Get access token
+    let accessToken;
+    try {
+      accessToken = await getAccessToken(credentials);
+      console.log('✓ Access token obtained');
+    } catch (tokenError) {
+      console.error('❌ Failed to get access token:', tokenError.message);
+      return Response.json({ 
+        errorCode: 'TOKEN_FAILED',
+        errorSource: 'google_tts',
+        errorMessage: `Failed to authenticate with Google: ${tokenError.message}`
+      }, { status: 500 });
+    }
+
     // Call Google Cloud Text-to-Speech REST API
-    const response = await fetch(
-      'https://texttospeech.googleapis.com/v1/text:synthesize',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await getAccessToken(credentials)}`
-        },
-        body: JSON.stringify(ttsRequest)
-      }
-    );
+    let response;
+    try {
+      response = await fetch(
+        'https://texttospeech.googleapis.com/v1/text:synthesize',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          },
+          body: JSON.stringify(ttsRequest)
+        }
+      );
+      console.log('✓ TTS API response status:', response.status);
+    } catch (fetchError) {
+      console.error('❌ TTS API network error:', fetchError.message);
+      return Response.json({ 
+        errorCode: 'NETWORK_ERROR',
+        errorSource: 'google_tts',
+        errorMessage: `Network error calling Google TTS: ${fetchError.message}`
+      }, { status: 500 });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Google TTS API error:', errorText);
-      return Response.json({ error: 'TTS generation failed', details: errorText }, { status: 500 });
+      console.error('❌ Google TTS API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      return Response.json({ 
+        errorCode: 'TTS_API_ERROR',
+        errorSource: 'google_tts',
+        errorMessage: `Google TTS failed (${response.status}): ${errorText}`,
+        details: errorText
+      }, { status: 500 });
     }
 
-    const ttsResult = await response.json();
-    const audioContent = Uint8Array.from(atob(ttsResult.audioContent), c => c.charCodeAt(0));
+    let ttsResult;
+    try {
+      ttsResult = await response.json();
+      if (!ttsResult.audioContent) {
+        throw new Error('No audioContent in response');
+      }
+      console.log('✓ TTS response received with audioContent');
+    } catch (parseError) {
+      console.error('❌ Failed to parse TTS response:', parseError.message);
+      return Response.json({ 
+        errorCode: 'INVALID_TTS_RESPONSE',
+        errorSource: 'google_tts',
+        errorMessage: 'Invalid response from Google TTS'
+      }, { status: 500 });
+    }
 
-    console.log('✓ Audio generated, size:', audioContent.length, 'bytes');
+    let audioContent;
+    try {
+      audioContent = Uint8Array.from(atob(ttsResult.audioContent), c => c.charCodeAt(0));
+      console.log('✓ Audio decoded, size:', audioContent.length, 'bytes');
+    } catch (decodeError) {
+      console.error('❌ Failed to decode audio:', decodeError.message);
+      return Response.json({ 
+        errorCode: 'DECODE_ERROR',
+        errorSource: 'google_tts',
+        errorMessage: 'Failed to decode audio content'
+      }, { status: 500 });
+    }
 
     // Upload audio file to PRIVATE storage
-    const audioBlob = new Blob([audioContent], { type: 'audio/mpeg' });
-    const audioFile = new File([audioBlob], `audio_${contentHash}.mp3`, { type: 'audio/mpeg' });
-    
-    console.log('Uploading to private storage...');
-    const { file_uri } = await base44.asServiceRole.integrations.Core.UploadPrivateFile({ file: audioFile });
-
-    console.log('✓ Uploaded to private storage:', file_uri);
+    let file_uri;
+    try {
+      const audioBlob = new Blob([audioContent], { type: 'audio/mpeg' });
+      const audioFile = new File([audioBlob], `audio_${contentHash}.mp3`, { type: 'audio/mpeg' });
+      
+      console.log('Uploading to private storage...');
+      const uploadResult = await base44.asServiceRole.integrations.Core.UploadPrivateFile({ file: audioFile });
+      file_uri = uploadResult.file_uri;
+      
+      if (!file_uri) {
+        throw new Error('No file_uri returned from UploadPrivateFile');
+      }
+      
+      console.log('✓ Uploaded to private storage:', file_uri);
+    } catch (uploadError) {
+      console.error('❌ File upload failed:', uploadError.message);
+      return Response.json({ 
+        errorCode: 'UPLOAD_FAILED',
+        errorSource: 'base44_files',
+        errorMessage: `Failed to upload audio file: ${uploadError.message}`
+      }, { status: 500 });
+    }
 
     // Cache the file URI
-    await base44.asServiceRole.entities.AudioCache.create({
-      contentHash,
-      audioUrl: file_uri, // Store the private file URI
-      textLength: sectionText.length,
-      voiceGender,
-      speakingRate
-    });
-
-    console.log('✓ Cached in database');
+    try {
+      await base44.asServiceRole.entities.AudioCache.create({
+        contentHash,
+        audioUrl: file_uri,
+        textLength: sectionText.length,
+        voiceGender,
+        speakingRate
+      });
+      console.log('✓ Cached in database');
+    } catch (cacheError) {
+      console.error('⚠️ Failed to cache in database:', cacheError.message);
+      // Continue anyway - we have the file
+    }
 
     // Generate signed URL for immediate use
-    const { signed_url } = await base44.asServiceRole.integrations.Core.CreateFileSignedUrl({
-      file_uri: file_uri,
-      expires_in: 3600 // 1 hour
-    });
+    let signed_url;
+    try {
+      const signResult = await base44.asServiceRole.integrations.Core.CreateFileSignedUrl({
+        file_uri: file_uri,
+        expires_in: 3600 // 1 hour
+      });
+      signed_url = signResult.signed_url;
+      
+      if (!signed_url) {
+        throw new Error('No signed_url returned from CreateFileSignedUrl');
+      }
+      
+      console.log('✓ Signed URL created, expires in 1 hour');
+    } catch (signError) {
+      console.error('❌ Failed to create signed URL:', signError.message);
+      return Response.json({ 
+        errorCode: 'SIGN_URL_FAILED',
+        errorSource: 'base44_files',
+        errorMessage: `Failed to create signed URL: ${signError.message}`
+      }, { status: 500 });
+    }
 
-    console.log('✓ Signed URL created');
     console.log('=== TTS Complete ===');
-
     return Response.json({ audioUrl: signed_url, cached: false });
   } catch (error) {
     console.error('=== TTS ERROR ===');
     console.error('Error:', error.message);
     console.error('Stack:', error.stack);
-    return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
+    return Response.json({ 
+      errorCode: 'UNKNOWN_ERROR',
+      errorSource: 'unknown',
+      errorMessage: error.message,
+      stack: error.stack 
+    }, { status: 500 });
   }
 });
 

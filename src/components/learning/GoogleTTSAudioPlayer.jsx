@@ -182,16 +182,43 @@ export default function GoogleTTSAudioPlayer({
       console.log('Backend response:', result);
       
       if (!result.audioUrl) {
+        console.error('❌ No audio URL in response:', result);
         throw new Error('No audio URL received from backend');
       }
       
       setAudioUrl(result.audioUrl);
-      console.log('Audio URL set:', result.audioUrl);
+      console.log('✓ Audio URL set successfully');
       return result.audioUrl;
     } catch (error) {
       console.error('❌ Failed to generate audio:', error);
+      
+      // Check if it's a structured error from backend
+      const errorData = error.response?.data || error.data;
+      let userMessage = 'Audio is temporarily unavailable for this section. Please try again later.';
+      
+      if (errorData?.errorCode) {
+        console.error('Backend error details:', {
+          code: errorData.errorCode,
+          source: errorData.errorSource,
+          message: errorData.errorMessage
+        });
+        
+        // Provide more specific user messages based on error
+        switch (errorData.errorSource) {
+          case 'google_tts':
+            userMessage = 'Unable to generate audio at this time. Please try again.';
+            break;
+          case 'base44_files':
+            userMessage = 'Unable to save audio file. Please try again.';
+            break;
+          case 'validation':
+            userMessage = errorData.errorMessage || userMessage;
+            break;
+        }
+      }
+      
       setIsLoading(false);
-      alert('Failed to generate audio. Please check console and try again.');
+      alert(userMessage);
       return null;
     }
   };
