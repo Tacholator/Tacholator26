@@ -25,17 +25,14 @@ export default function GoogleTTSAudioPlayer({
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState('');
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [audioUrl, setAudioUrl] = useState(null);
   const [voiceGender, setVoiceGender] = useState('female');
   const [speakingRate, setSpeakingRate] = useState(1.0);
-  const [isPrefetched, setIsPrefetched] = useState(false);
   const audioRef = useRef(null);
   const queryClient = useQueryClient();
-  const playIntentRef = useRef(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -57,36 +54,13 @@ export default function GoogleTTSAudioPlayer({
     enabled: !!user?.id && !!topicId
   });
 
-  // Load saved preferences and prefetch audio
+  // Load saved preferences
   useEffect(() => {
     if (savedProgress) {
       setVoiceGender(savedProgress.voiceGender || 'female');
       setSpeakingRate(savedProgress.speakingRate || 1.0);
     }
-    
-    // Prefetch audio in background when component mounts
-    if (!isPrefetched && text) {
-      const prefetchAudio = async () => {
-        try {
-          console.log('🔄 Prefetching audio in background...');
-          setLoadingMessage('Preparing audio...');
-          const url = await loadAudio(savedProgress?.voiceGender || 'female', savedProgress?.speakingRate || 1.0);
-          if (url) {
-            console.log('✓ Audio prefetched successfully');
-            setIsPrefetched(true);
-            setLoadingMessage('');
-          }
-        } catch (error) {
-          console.log('Prefetch failed, will generate on play:', error);
-          setLoadingMessage('');
-        }
-      };
-      
-      // Start prefetch after a short delay to not block initial page load
-      const timer = setTimeout(prefetchAudio, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [savedProgress, isPrefetched, text]);
+  }, [savedProgress]);
 
   // Save progress mutation
   const saveProgressMutation = useMutation({
@@ -226,12 +200,8 @@ export default function GoogleTTSAudioPlayer({
   };
 
   // Load or generate audio
-  const loadAudio = async (voice = voiceGender, rate = speakingRate, showLoadingState = true) => {
-    if (showLoadingState) {
-      setIsLoading(true);
-      setLoadingMessage('Generating audio...');
-    }
-    
+  const loadAudio = async (voice = voiceGender, rate = speakingRate) => {
+    setIsLoading(true);
     try {
       console.log('Calling backend function to generate audio...');
       const result = await generateAudioMutation.mutateAsync({ voice, rate });
@@ -244,12 +214,10 @@ export default function GoogleTTSAudioPlayer({
       
       setAudioUrl(result.audioUrl);
       console.log('✓ Audio URL set successfully');
-      if (showLoadingState) {
-        setLoadingMessage('');
-      }
       return result.audioUrl;
     } catch (error) {
       console.error('❌ Failed to generate audio:', error);
+      console.error('Error full object:', JSON.stringify(error, null, 2));
       
       // Try to parse structured error from backend
       let errorData = null;
@@ -263,11 +231,20 @@ export default function GoogleTTSAudioPlayer({
       
       errorData = errorData || error.response?.data || error.data;
       
+      console.error('Parsed error data:', errorData);
+      
       let userMessage = 'Audio is temporarily unavailable. Please try again.';
       let debugCode = 'TTS_UNKNOWN';
       
       if (errorData?.errorCode) {
         debugCode = errorData.errorCode;
+        
+        console.error('Backend error details:', {
+          code: errorData.errorCode,
+          stage: errorData.errorStage,
+          message: errorData.errorMessage,
+          httpStatus: errorData.httpStatus
+        });
         
         // Provide user-friendly messages with debug codes
         switch (errorData.errorStage) {
@@ -299,92 +276,58 @@ export default function GoogleTTSAudioPlayer({
       }
       
       setIsLoading(false);
-      setLoadingMessage('');
-      if (showLoadingState) {
-        alert(`${userMessage}\n\nDebug Code: ${debugCode}`);
-      }
+      alert(`${userMessage}\n\nDebug Code: ${debugCode}`);
       return null;
     }
   };
 
-  // Handle play/pause - single click should work
+  // Handle play/pause
   const handlePlayPause = async () => {
-    console.log('Play/Pause clicked. State:', { isPlaying, hasAudio: !!audioRef.current, audioUrl, isLoading });
-    
-    // Prevent multiple clicks during loading
-    if (isLoading) {
-      console.log('Already loading, ignoring click');
-      return;
-    }
+    console.log('Play/Pause clicked. State:', { isPlaying, hasAudio: !!audioRef.current, audioUrl });
     
     // If we have an audio object, just toggle play/pause
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
-        playIntentRef.current = false;
         saveProgressMutation.mutate({ position: currentTime, completed: false });
       } else {
         try {
-          setLoadingMessage('Loading...');
           await audioRef.current.play();
           setIsPlaying(true);
-          playIntentRef.current = false;
-          setLoadingMessage('');
         } catch (error) {
           console.error('Play error:', error);
-          setLoadingMessage('');
-          alert('Unable to play audio. Please try again.');
         }
       }
       return;
     }
 
-    // First play - set loading state and intent flag
-    playIntentRef.current = true;
-    setIsLoading(true);
-    setLoadingMessage(audioUrl ? 'Loading...' : 'Generating audio...');
+    // Otherwise, load audio and create Audio object
+    console.log('Loading audio for the first time...');
+    let urlToUse = audioUrl;
+    if (!urlToUse) {
+      console.log('No cached URL, generating audio...');
+      urlToUse = await loadAudio();
+      if (!urlToUse) {
+        console.error('Failed to get audio URL');
+        return;
+      }
+      console.log('Got audio URL:', urlToUse);
+    }
+
+    // Setup audio with saved position
+    const startPos = savedProgress?.lastPosition || 0;
+    console.log('Setting up audio player with start position:', startPos);
+    audioRef.current = setupAudio(urlToUse, startPos);
 
     try {
-      // Load or use cached URL
-      let urlToUse = audioUrl;
-      if (!urlToUse) {
-        console.log('No cached URL, generating audio...');
-        urlToUse = await loadAudio(voiceGender, speakingRate, false);
-        if (!urlToUse) {
-          console.error('Failed to get audio URL');
-          setIsLoading(false);
-          setLoadingMessage('');
-          playIntentRef.current = false;
-          return;
-        }
-      }
-
-      // Setup audio with saved position
-      const startPos = savedProgress?.lastPosition || 0;
-      console.log('Setting up audio player with start position:', startPos);
-      audioRef.current = setupAudio(urlToUse, startPos);
-
-      // Auto-play immediately (user gesture allows this)
-      console.log('Attempting to auto-play after load...');
+      console.log('Attempting to play...');
       await audioRef.current.play();
       setIsPlaying(true);
-      setIsLoading(false);
-      setLoadingMessage('');
-      playIntentRef.current = false;
-      console.log('✓ Playing successfully on first click');
+      console.log('Playing successfully');
     } catch (error) {
-      console.error('Play error on first click:', error);
+      console.error('Play error:', error);
       setIsLoading(false);
-      setLoadingMessage('');
-      playIntentRef.current = false;
-      
-      // If autoplay failed, show user-friendly message
-      if (error.name === 'NotAllowedError') {
-        alert('Please click the play button again to start audio playback.');
-      } else {
-        alert('Unable to play audio. Please try again.');
-      }
     }
   };
 
@@ -418,7 +361,6 @@ export default function GoogleTTSAudioPlayer({
     setIsPlaying(false);
     setAudioUrl(null);
     setVoiceGender(newVoice);
-    setIsPrefetched(false);
 
     // If user was actively listening, regenerate and auto-restart
     if (wasPlaying) {
@@ -449,7 +391,6 @@ export default function GoogleTTSAudioPlayer({
     setIsPlaying(false);
     setAudioUrl(null);
     setSpeakingRate(newRate);
-    setIsPrefetched(false);
 
     // Regenerate audio with new speed if user was actively listening
     if (wasPlaying) {
@@ -503,9 +444,6 @@ export default function GoogleTTSAudioPlayer({
       <div className="flex items-center gap-3 mb-3">
         <Volume2 className="w-5 h-5 text-[#F7B602]" />
         <h3 className="text-white font-semibold">Listen to {sectionTitle}</h3>
-        {isPrefetched && !audioRef.current && (
-          <span className="text-xs text-green-400 bg-green-500/20 px-2 py-0.5 rounded-full">Ready</span>
-        )}
       </div>
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -516,7 +454,7 @@ export default function GoogleTTSAudioPlayer({
             size="sm"
             onClick={handlePlayPause}
             disabled={isLoading}
-            className="h-10 w-10 p-0 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] disabled:opacity-50"
+            className="h-10 w-10 p-0 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
             aria-label={isPlaying ? 'Pause audio' : 'Play audio'}
           >
             {isLoading ? (
@@ -570,31 +508,28 @@ export default function GoogleTTSAudioPlayer({
           </span>
         </div>
 
-        {/* Speed Display & Controls */}
+        {/* Settings & Speed */}
         <div className="flex items-center gap-2">
-          {/* Current Speed - Always Visible */}
-          <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg">
-            <Settings2 className="w-3.5 h-3.5 text-[#F7B602]" />
-            <span className="text-sm font-bold text-[#F7B602]">{speakingRate}x</span>
-          </div>
-
           {/* Speed Control */}
-          <Select value={speakingRate.toString()} onValueChange={(val) => handleSpeedChange(parseFloat(val))}>
-            <SelectTrigger className="h-9 w-[70px] bg-[#F7B602] border-none text-[#071739] font-bold">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0.8">0.8x</SelectItem>
-              <SelectItem value="1.0">1.0x</SelectItem>
-              <SelectItem value="1.2">1.2x</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-white/60 mb-0.5">Speed</span>
+            <Select value={speakingRate.toString()} onValueChange={(val) => handleSpeedChange(parseFloat(val))}>
+              <SelectTrigger className="h-9 w-[70px] bg-[#F7B602] border-none text-[#071739] font-bold">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0.8">0.8x</SelectItem>
+                <SelectItem value="1.0">1.0x</SelectItem>
+                <SelectItem value="1.2">1.2x</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Voice Settings */}
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="sm" className="h-10 w-10 p-0 text-white hover:bg-white/10">
-                <Volume2 className="w-4 h-4" />
+                <Settings2 className="w-4 h-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-56" align="end">
@@ -622,16 +557,8 @@ export default function GoogleTTSAudioPlayer({
         </div>
       </div>
 
-      {/* Loading Message */}
-      {loadingMessage && (
-        <div className="mt-3 text-xs text-[#F7B602] bg-[#F7B602]/10 rounded-lg p-2 flex items-center gap-2">
-          <div className="w-3 h-3 border-2 border-[#F7B602] border-t-transparent rounded-full animate-spin" />
-          <span>{loadingMessage}</span>
-        </div>
-      )}
-
       {/* Continue Listening Hint */}
-      {hasSavedProgress && !isPlaying && !audioRef.current && !loadingMessage && (
+      {hasSavedProgress && !isPlaying && !audioUrl && (
         <div className="mt-3 text-xs text-white/70 bg-white/10 rounded-lg p-2 flex items-center gap-2">
           <Volume2 className="w-3 h-3" />
           <span>You left off at {formatTime(savedProgress.lastPosition)}. Click play to continue.</span>
