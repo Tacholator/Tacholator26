@@ -16,23 +16,37 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'sectionText is required' }, { status: 400 });
     }
 
-    console.log('Generating audio for:', { materialId, sectionId, voiceGender, speakingRate, textLength: sectionText.length });
+    console.log('=== TTS Request ===');
+    console.log('Material:', materialId, 'Section:', sectionId);
+    console.log('Voice:', voiceGender, 'Rate:', speakingRate);
+    console.log('Text length:', sectionText.length);
 
+    // Convert text to SSML
+    const ssml = convertToSSML(sectionText);
+    
     // Create content hash for caching
     const contentHash = createHash('sha256')
-      .update(`${sectionText}_${voiceGender}_${speakingRate}`)
+      .update(`${ssml}_${voiceGender}_${speakingRate}`)
       .digest('hex');
+
+    console.log('Content hash:', contentHash);
 
     // Check if we already have this audio cached
     const cachedAudio = await base44.asServiceRole.entities.AudioCache.filter({ contentHash });
     if (cachedAudio.length > 0) {
-      console.log('Using cached audio:', cachedAudio[0].audioUrl);
-      return Response.json({ audioUrl: cachedAudio[0].audioUrl, cached: true });
+      console.log('✓ Found cached audio, generating signed URL...');
+      
+      // Generate signed URL for the cached private file
+      const { signed_url } = await base44.asServiceRole.integrations.Core.CreateFileSignedUrl({
+        file_uri: cachedAudio[0].audioUrl,
+        expires_in: 3600 // 1 hour
+      });
+      
+      console.log('✓ Signed URL created');
+      return Response.json({ audioUrl: signed_url, cached: true });
     }
 
-    // Convert text to SSML with proper pauses
-    const ssml = convertToSSML(sectionText);
-    console.log('Generated SSML length:', ssml.length);
+    console.log('No cache found, generating audio with Google TTS...');
 
     // Get Google Cloud credentials
     const credentials = JSON.parse(Deno.env.get('GOOGLE_TTS_SERVICE_ACCOUNT_JSON'));
@@ -56,6 +70,8 @@ Deno.serve(async (req) => {
       }
     };
 
+    console.log('Calling Google TTS API...');
+
     // Call Google Cloud Text-to-Speech REST API
     const response = await fetch(
       'https://texttospeech.googleapis.com/v1/text:synthesize',
@@ -78,28 +94,42 @@ Deno.serve(async (req) => {
     const ttsResult = await response.json();
     const audioContent = Uint8Array.from(atob(ttsResult.audioContent), c => c.charCodeAt(0));
 
-    console.log('Audio generated, size:', audioContent.length);
+    console.log('✓ Audio generated, size:', audioContent.length, 'bytes');
 
-    // Upload audio file
+    // Upload audio file to PRIVATE storage
     const audioBlob = new Blob([audioContent], { type: 'audio/mpeg' });
     const audioFile = new File([audioBlob], `audio_${contentHash}.mp3`, { type: 'audio/mpeg' });
     
-    const { file_url } = await base44.asServiceRole.integrations.Core.UploadFile({ file: audioFile });
+    console.log('Uploading to private storage...');
+    const { file_uri } = await base44.asServiceRole.integrations.Core.UploadPrivateFile({ file: audioFile });
 
-    console.log('Audio uploaded:', file_url);
+    console.log('✓ Uploaded to private storage:', file_uri);
 
-    // Cache the audio URL
+    // Cache the file URI
     await base44.asServiceRole.entities.AudioCache.create({
       contentHash,
-      audioUrl: file_url,
+      audioUrl: file_uri, // Store the private file URI
       textLength: sectionText.length,
       voiceGender,
       speakingRate
     });
 
-    return Response.json({ audioUrl: file_url, cached: false });
+    console.log('✓ Cached in database');
+
+    // Generate signed URL for immediate use
+    const { signed_url } = await base44.asServiceRole.integrations.Core.CreateFileSignedUrl({
+      file_uri: file_uri,
+      expires_in: 3600 // 1 hour
+    });
+
+    console.log('✓ Signed URL created');
+    console.log('=== TTS Complete ===');
+
+    return Response.json({ audioUrl: signed_url, cached: false });
   } catch (error) {
-    console.error('TTS Error:', error);
+    console.error('=== TTS ERROR ===');
+    console.error('Error:', error.message);
+    console.error('Stack:', error.stack);
     return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
   }
 });
@@ -188,6 +218,9 @@ function convertToSSML(text) {
   cleaned = cleaned.replace(/<\/p>/gi, '\n\n');
   cleaned = cleaned.replace(/<[^>]+>/g, '');
   cleaned = cleaned.replace(/&nbsp;/g, ' ');
+  cleaned = cleaned.replace(/&amp;/g, '&');
+  cleaned = cleaned.replace(/&lt;/g, '<');
+  cleaned = cleaned.replace(/&gt;/g, '>');
   
   // Split into paragraphs
   const paragraphs = cleaned.split('\n\n').filter(p => p.trim());
@@ -195,30 +228,28 @@ function convertToSSML(text) {
   // Build SSML
   let ssml = '<speak>';
   
-  paragraphs.forEach((para, idx) => {
+  paragraphs.forEach((para) => {
     const trimmed = para.trim();
     if (!trimmed) return;
     
     // Check if it's a heading (short line, possibly all caps or title case)
     const isHeading = trimmed.length < 100 && (
       trimmed === trimmed.toUpperCase() || 
-      /^[A-Z][a-z]+(\s[A-Z][a-z]+)*$/.test(trimmed)
+      /^[A-Z0-9][A-Za-z0-9\s\-:()]+$/.test(trimmed)
     );
     
     if (isHeading) {
-      ssml += `<break time="800ms"/><emphasis level="strong">${escapeXml(trimmed)}</emphasis><break time="600ms"/>`;
+      ssml += `<break time="700ms"/><emphasis level="strong">${escapeXml(trimmed)}</emphasis><break time="500ms"/>`;
     } else {
-      // Regular paragraph with natural pauses
-      const sentences = trimmed.split(/([.!?]+\s+)/);
+      // Regular paragraph - add natural pauses at sentence boundaries
+      const sentences = trimmed.match(/[^.!?]+[.!?]+/g) || [trimmed];
       sentences.forEach(sentence => {
-        if (sentence.trim()) {
-          ssml += escapeXml(sentence);
-          if (/[.!?]$/.test(sentence.trim())) {
-            ssml += '<break time="400ms"/>';
-          }
+        const cleaned = sentence.trim();
+        if (cleaned) {
+          ssml += escapeXml(cleaned) + '<break time="400ms"/>';
         }
       });
-      ssml += '<break time="800ms"/>';
+      ssml += '<break time="700ms"/>'; // Longer pause after paragraph
     }
   });
   

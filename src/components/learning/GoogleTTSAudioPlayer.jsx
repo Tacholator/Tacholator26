@@ -103,10 +103,13 @@ export default function GoogleTTSAudioPlayer({
 
   // Setup audio with event listeners
   const setupAudio = (url, startPosition = 0) => {
+    console.log('Setting up audio with URL:', url);
     const audio = new Audio(url);
-    audio.playbackRate = 1.0; // Always use 1.0 for actual playback since speed is baked in
-
-    audio.addEventListener('loadedmetadata', () => {
+    audio.playbackRate = 1.0;
+    audio.preload = 'auto';
+    
+    const handleLoadedMetadata = () => {
+      console.log('✓ Audio metadata loaded. Duration:', audio.duration);
       setDuration(audio.duration);
       setIsLoading(false);
       
@@ -115,27 +118,42 @@ export default function GoogleTTSAudioPlayer({
         audio.currentTime = startPosition;
         setCurrentTime(startPosition);
         setProgress((startPosition / audio.duration) * 100);
+        console.log('Set start position to:', startPosition);
       }
-    });
+    };
 
-    audio.addEventListener('timeupdate', () => {
+    const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
       setProgress((audio.currentTime / audio.duration) * 100);
-    });
+    };
 
-    audio.addEventListener('ended', () => {
+    const handleEnded = () => {
+      console.log('Audio ended');
       setIsPlaying(false);
       setProgress(100);
       if (audio.duration > 0) {
         saveProgressMutation.mutate({ position: audio.duration, completed: true });
       }
-    });
+    };
 
-    audio.addEventListener('error', (e) => {
-      console.error('Audio error:', e);
+    const handleError = (e) => {
+      console.error('Audio error:', e, audio.error);
       setIsLoading(false);
       setIsPlaying(false);
-    });
+    };
+
+    const handleCanPlay = () => {
+      console.log('✓ Audio can play');
+    };
+
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
+    audio.addEventListener('canplay', handleCanPlay);
+
+    // Load the audio
+    audio.load();
 
     return audio;
   };
