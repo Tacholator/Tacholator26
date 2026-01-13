@@ -104,9 +104,11 @@ export default function GoogleTTSAudioPlayer({
   // Setup audio with event listeners
   const setupAudio = (url, startPosition = 0) => {
     console.log('Setting up audio with URL:', url);
-    const audio = new Audio(url);
+    const audio = new Audio();
+    audio.src = url;
     audio.playbackRate = 1.0;
     audio.preload = 'auto';
+    audio.crossOrigin = 'anonymous';
     
     const handleLoadedMetadata = () => {
       console.log('✓ Audio metadata loaded. Duration:', audio.duration);
@@ -137,23 +139,36 @@ export default function GoogleTTSAudioPlayer({
     };
 
     const handleError = (e) => {
-      console.error('Audio error:', e, audio.error);
+      console.error('❌ Audio error:', e);
+      console.error('Audio error details:', {
+        code: audio.error?.code,
+        message: audio.error?.message,
+        url: url
+      });
       setIsLoading(false);
       setIsPlaying(false);
+      alert('Audio playback failed. Please try again.');
     };
 
     const handleCanPlay = () => {
-      console.log('✓ Audio can play');
+      console.log('✓ Audio can play, ready for playback');
     };
 
+    const handleLoadStart = () => {
+      console.log('Loading audio...');
+    };
+
+    const handleLoadedData = () => {
+      console.log('✓ Audio data loaded');
+    };
+
+    audio.addEventListener('loadstart', handleLoadStart);
+    audio.addEventListener('loadeddata', handleLoadedData);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('canplay', handleCanPlay);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
-    audio.addEventListener('canplay', handleCanPlay);
-
-    // Load the audio
-    audio.load();
 
     return audio;
   };
@@ -162,12 +177,21 @@ export default function GoogleTTSAudioPlayer({
   const loadAudio = async (voice = voiceGender, rate = speakingRate) => {
     setIsLoading(true);
     try {
+      console.log('Calling backend function to generate audio...');
       const result = await generateAudioMutation.mutateAsync({ voice, rate });
+      console.log('Backend response:', result);
+      
+      if (!result.audioUrl) {
+        throw new Error('No audio URL received from backend');
+      }
+      
       setAudioUrl(result.audioUrl);
+      console.log('Audio URL set:', result.audioUrl);
       return result.audioUrl;
     } catch (error) {
-      console.error('Failed to generate audio:', error);
+      console.error('❌ Failed to generate audio:', error);
       setIsLoading(false);
+      alert('Failed to generate audio. Please check console and try again.');
       return null;
     }
   };
@@ -402,16 +426,19 @@ export default function GoogleTTSAudioPlayer({
         {/* Settings & Speed */}
         <div className="flex items-center gap-2">
           {/* Speed Control */}
-          <Select value={speakingRate.toString()} onValueChange={(val) => handleSpeedChange(parseFloat(val))}>
-            <SelectTrigger className="h-10 w-20 bg-white/10 border-white/20 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0.8">0.8x</SelectItem>
-              <SelectItem value="1.0">1.0x</SelectItem>
-              <SelectItem value="1.2">1.2x</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-white/60 mb-0.5">Speed</span>
+            <Select value={speakingRate.toString()} onValueChange={(val) => handleSpeedChange(parseFloat(val))}>
+              <SelectTrigger className="h-9 w-[70px] bg-[#F7B602] border-none text-[#071739] font-bold">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0.8">0.8x</SelectItem>
+                <SelectItem value="1.0">1.0x</SelectItem>
+                <SelectItem value="1.2">1.2x</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Voice Settings */}
           <Popover>
