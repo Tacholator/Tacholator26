@@ -282,15 +282,6 @@ export default function GoogleTTSAudioPlayer({
     return () => clearInterval(interval);
   }, [isPlaying, currentTime, user?.id]);
 
-  // Auto-play on mount (for testing/demo)
-  useEffect(() => {
-    const autoPlay = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      handlePlayPause();
-    };
-    autoPlay();
-  }, []);
-
   // Cleanup on unmount
   useEffect(() => {
     return () => {

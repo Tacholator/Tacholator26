@@ -1,5 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import { TextToSpeechClient } from 'npm:@google-cloud/text-to-speech@5.4.0';
 import { createHash } from 'node:crypto';
 
 Deno.serve(async (req) => {
@@ -17,6 +16,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'sectionText is required' }, { status: 400 });
     }
 
+    console.log('Generating audio for:', { materialId, sectionId, voiceGender, speakingRate, textLength: sectionText.length });
+
     // Create content hash for caching
     const contentHash = createHash('sha256')
       .update(`${sectionText}_${voiceGender}_${speakingRate}`)
@@ -25,20 +26,22 @@ Deno.serve(async (req) => {
     // Check if we already have this audio cached
     const cachedAudio = await base44.asServiceRole.entities.AudioCache.filter({ contentHash });
     if (cachedAudio.length > 0) {
+      console.log('Using cached audio:', cachedAudio[0].audioUrl);
       return Response.json({ audioUrl: cachedAudio[0].audioUrl, cached: true });
     }
 
     // Convert text to SSML with proper pauses
     const ssml = convertToSSML(sectionText);
+    console.log('Generated SSML length:', ssml.length);
 
-    // Initialize Google TTS client
+    // Get Google Cloud credentials
     const credentials = JSON.parse(Deno.env.get('GOOGLE_TTS_SERVICE_ACCOUNT_JSON'));
-    const client = new TextToSpeechClient({ credentials });
-
+    
     // Voice configuration based on gender
     const voiceName = voiceGender === 'male' ? 'en-GB-Neural2-B' : 'en-GB-Neural2-A';
 
-    const request = {
+    // Prepare TTS request
+    const ttsRequest = {
       input: { ssml },
       voice: {
         languageCode: 'en-GB',
@@ -53,15 +56,37 @@ Deno.serve(async (req) => {
       }
     };
 
-    // Generate audio
-    const [response] = await client.synthesizeSpeech(request);
-    const audioContent = response.audioContent;
+    // Call Google Cloud Text-to-Speech REST API
+    const response = await fetch(
+      'https://texttospeech.googleapis.com/v1/text:synthesize',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await getAccessToken(credentials)}`
+        },
+        body: JSON.stringify(ttsRequest)
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Google TTS API error:', errorText);
+      return Response.json({ error: 'TTS generation failed', details: errorText }, { status: 500 });
+    }
+
+    const ttsResult = await response.json();
+    const audioContent = Uint8Array.from(atob(ttsResult.audioContent), c => c.charCodeAt(0));
+
+    console.log('Audio generated, size:', audioContent.length);
 
     // Upload audio file
     const audioBlob = new Blob([audioContent], { type: 'audio/mpeg' });
     const audioFile = new File([audioBlob], `audio_${contentHash}.mp3`, { type: 'audio/mpeg' });
     
     const { file_url } = await base44.asServiceRole.integrations.Core.UploadFile({ file: audioFile });
+
+    console.log('Audio uploaded:', file_url);
 
     // Cache the audio URL
     await base44.asServiceRole.entities.AudioCache.create({
@@ -75,9 +100,87 @@ Deno.serve(async (req) => {
     return Response.json({ audioUrl: file_url, cached: false });
   } catch (error) {
     console.error('TTS Error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
   }
 });
+
+// Get OAuth2 access token from service account
+async function getAccessToken(credentials) {
+  const header = {
+    alg: 'RS256',
+    typ: 'JWT'
+  };
+
+  const now = Math.floor(Date.now() / 1000);
+  const claim = {
+    iss: credentials.client_email,
+    scope: 'https://www.googleapis.com/auth/cloud-platform',
+    aud: 'https://oauth2.googleapis.com/token',
+    exp: now + 3600,
+    iat: now
+  };
+
+  const encodedHeader = base64UrlEncode(JSON.stringify(header));
+  const encodedClaim = base64UrlEncode(JSON.stringify(claim));
+  const unsignedToken = `${encodedHeader}.${encodedClaim}`;
+
+  // Import private key
+  const privateKey = await crypto.subtle.importKey(
+    'pkcs8',
+    pemToDer(credentials.private_key),
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  // Sign the token
+  const signature = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5',
+    privateKey,
+    new TextEncoder().encode(unsignedToken)
+  );
+
+  const encodedSignature = base64UrlEncode(signature);
+  const jwt = `${unsignedToken}.${encodedSignature}`;
+
+  // Exchange JWT for access token
+  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt
+    })
+  });
+
+  const tokenData = await tokenResponse.json();
+  return tokenData.access_token;
+}
+
+function pemToDer(pem) {
+  const pemContents = pem
+    .replace('-----BEGIN PRIVATE KEY-----', '')
+    .replace('-----END PRIVATE KEY-----', '')
+    .replace(/\s/g, '');
+  const binaryString = atob(pemContents);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+function base64UrlEncode(data) {
+  let base64;
+  if (typeof data === 'string') {
+    base64 = btoa(data);
+  } else if (data instanceof ArrayBuffer) {
+    base64 = btoa(String.fromCharCode(...new Uint8Array(data)));
+  } else {
+    base64 = btoa(String.fromCharCode(...data));
+  }
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
 
 function convertToSSML(text) {
   // Remove HTML tags but preserve structure
@@ -103,13 +206,13 @@ function convertToSSML(text) {
     );
     
     if (isHeading) {
-      ssml += `<break time="800ms"/><emphasis level="strong">${trimmed}</emphasis><break time="600ms"/>`;
+      ssml += `<break time="800ms"/><emphasis level="strong">${escapeXml(trimmed)}</emphasis><break time="600ms"/>`;
     } else {
       // Regular paragraph with natural pauses
       const sentences = trimmed.split(/([.!?]+\s+)/);
       sentences.forEach(sentence => {
         if (sentence.trim()) {
-          ssml += sentence;
+          ssml += escapeXml(sentence);
           if (/[.!?]$/.test(sentence.trim())) {
             ssml += '<break time="400ms"/>';
           }
@@ -121,4 +224,13 @@ function convertToSSML(text) {
   
   ssml += '</speak>';
   return ssml;
+}
+
+function escapeXml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
