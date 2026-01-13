@@ -356,7 +356,22 @@ async function getAccessToken(credentials) {
     })
   });
 
+  if (!tokenResponse.ok) {
+    const errorText = await tokenResponse.text();
+    console.error('Token exchange failed:', {
+      status: tokenResponse.status,
+      body: errorText
+    });
+    throw new Error(`OAuth token exchange failed (${tokenResponse.status}): ${errorText}`);
+  }
+
   const tokenData = await tokenResponse.json();
+  
+  if (!tokenData.access_token) {
+    console.error('No access_token in response:', tokenData);
+    throw new Error('No access token received from Google OAuth');
+  }
+  
   return tokenData.access_token;
 }
 
