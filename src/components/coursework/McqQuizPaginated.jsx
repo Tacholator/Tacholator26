@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, RotateCcw, Trophy, AlertCircle, TrendingUp, ChevronRight } from 'lucide-react';
+import { CheckCircle, XCircle, RotateCcw, Trophy, AlertCircle, TrendingUp, ChevronRight, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import moment from 'moment';
 import McqResultsModal from './McqResultsModal';
@@ -129,7 +129,14 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const handleNext = () => {
     if (currentQuestionIndex < shuffledQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      // Reset user pause state for next question (auto-play will resume)
+      setAudioPausedByUser(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
       setAudioPausedByUser(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -508,6 +515,7 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
 
       {/* Audio Player at the top */}
       <GoogleTTSAudioPlayer
+        key={`audio-${currentQuestion?.id}`}
         ref={audioPlayerRef}
         text={audioText}
         topicId={`mcq_${questionPack.id}_q${currentQuestionIndex}`}
@@ -570,12 +578,23 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Next / Submit Button */}
+      {/* Navigation Buttons */}
       <div className="sticky bottom-6 bg-white rounded-lg shadow-lg border border-slate-200 p-4">
         <div className="flex items-center justify-between">
+          <Button
+            onClick={handlePrevious}
+            disabled={currentQuestionIndex === 0}
+            variant="outline"
+            className="gap-2"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Previous
+          </Button>
+          
           <div className="text-sm text-slate-600">
-            Progress: <span className="font-semibold">{currentQuestionIndex + 1}</span> / {shuffledQuestions.length}
+            <span className="font-semibold">{currentQuestionIndex + 1}</span> / {shuffledQuestions.length}
           </div>
+          
           {isLastQuestion ? (
             <Button
               onClick={handleSubmit}
