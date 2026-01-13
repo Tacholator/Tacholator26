@@ -165,6 +165,7 @@ export default function GoogleTTSAudioPlayer({
     const handleLoadedMetadata = () => {
       console.log('✓ Audio metadata loaded. Duration:', audio.duration);
       setDuration(audio.duration);
+      setIsLoading(false);
       
       // Set start position
       if (startPosition > 0 && startPosition < audio.duration) {
@@ -197,35 +198,29 @@ export default function GoogleTTSAudioPlayer({
         url: url
       });
       setIsLoading(false);
-      setLoadingMessage('');
       setIsPlaying(false);
       alert('Audio playback failed. Please try again.');
     };
 
-    const handleWaiting = () => {
-      console.log('Audio buffering...');
-      setLoadingMessage('Buffering...');
+    const handleCanPlay = () => {
+      console.log('✓ Audio can play, ready for playback');
     };
 
-    const handlePlaying = () => {
-      console.log('✓ Audio playing');
-      setIsLoading(false);
-      setLoadingMessage('');
-      setIsPlaying(true);
+    const handleLoadStart = () => {
+      console.log('Loading audio...');
     };
 
-    const handlePause = () => {
-      console.log('Audio paused');
-      setIsPlaying(false);
+    const handleLoadedData = () => {
+      console.log('✓ Audio data loaded');
     };
 
+    audio.addEventListener('loadstart', handleLoadStart);
+    audio.addEventListener('loadeddata', handleLoadedData);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('canplay', handleCanPlay);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
-    audio.addEventListener('waiting', handleWaiting);
-    audio.addEventListener('playing', handlePlaying);
-    audio.addEventListener('pause', handlePause);
 
     return audio;
   };
@@ -345,7 +340,8 @@ export default function GoogleTTSAudioPlayer({
       return;
     }
 
-    // First play - set loading state
+    // First play - set loading state and intent flag
+    playIntentRef.current = true;
     setIsLoading(true);
     setLoadingMessage(audioUrl ? 'Loading...' : 'Generating audio...');
 
@@ -359,6 +355,7 @@ export default function GoogleTTSAudioPlayer({
           console.error('Failed to get audio URL');
           setIsLoading(false);
           setLoadingMessage('');
+          playIntentRef.current = false;
           return;
         }
       }
@@ -368,14 +365,19 @@ export default function GoogleTTSAudioPlayer({
       console.log('Setting up audio player with start position:', startPos);
       audioRef.current = setupAudio(urlToUse, startPos);
 
-      // Start playing - the 'playing' event will clear loading state
-      console.log('Attempting to play...');
+      // Auto-play immediately (user gesture allows this)
+      console.log('Attempting to auto-play after load...');
       await audioRef.current.play();
-      console.log('✓ Play initiated successfully');
+      setIsPlaying(true);
+      setIsLoading(false);
+      setLoadingMessage('');
+      playIntentRef.current = false;
+      console.log('✓ Playing successfully on first click');
     } catch (error) {
       console.error('Play error on first click:', error);
       setIsLoading(false);
       setLoadingMessage('');
+      playIntentRef.current = false;
       
       // If autoplay failed, show user-friendly message
       if (error.name === 'NotAllowedError') {
