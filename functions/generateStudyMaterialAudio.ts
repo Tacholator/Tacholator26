@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
     console.log('No cache found, generating audio with Google TTS...');
 
     // Get Google Cloud credentials
-    const credentialsJson = Deno.env.get('GOOGLE_TTS_SERVICE_ACCOUNT_JSON');
+    let credentialsJson = Deno.env.get('GOOGLE_TTS_SERVICE_ACCOUNT_JSON');
     if (!credentialsJson) {
       console.error('❌ GOOGLE_TTS_SERVICE_ACCOUNT_JSON not found in environment');
       return Response.json({ 
@@ -68,18 +68,57 @@ Deno.serve(async (req) => {
       }, { status: 500 });
     }
 
+    // Remove wrapping quotes if present
+    credentialsJson = credentialsJson.trim();
+    if ((credentialsJson.startsWith('"') && credentialsJson.endsWith('"')) ||
+        (credentialsJson.startsWith("'") && credentialsJson.endsWith("'"))) {
+      credentialsJson = credentialsJson.slice(1, -1);
+      console.log('Removed wrapping quotes from credentials');
+    }
+
+    // Parse credentials
     let credentials;
     try {
       credentials = JSON.parse(credentialsJson);
-      console.log('✓ Credentials parsed, project:', credentials.project_id);
+      console.log('✓ Credentials parsed successfully');
     } catch (parseError) {
-      console.error('❌ Failed to parse credentials:', parseError.message);
+      console.error('❌ Failed to parse credentials JSON:', parseError.message);
       return Response.json({ 
         errorCode: 'INVALID_CREDENTIALS',
         errorSource: 'validation',
-        errorMessage: 'Invalid Google TTS credentials format'
+        errorMessage: `Failed to parse credentials: ${parseError.message}`
       }, { status: 500 });
     }
+
+    // Validate required fields
+    const requiredFields = ['type', 'project_id', 'client_email', 'private_key', 'token_uri'];
+    const missingFields = requiredFields.filter(field => !credentials[field]);
+    
+    if (missingFields.length > 0) {
+      console.error('❌ Missing required credential fields:', missingFields);
+      return Response.json({ 
+        errorCode: 'INVALID_CREDENTIALS',
+        errorSource: 'validation',
+        errorMessage: `Missing required fields: ${missingFields.join(', ')}`
+      }, { status: 500 });
+    }
+
+    if (credentials.type !== 'service_account') {
+      console.error('❌ Invalid credential type:', credentials.type);
+      return Response.json({ 
+        errorCode: 'INVALID_CREDENTIALS',
+        errorSource: 'validation',
+        errorMessage: `Expected type "service_account", got "${credentials.type}"`
+      }, { status: 500 });
+    }
+
+    // Fix private key if it has literal \n characters
+    if (credentials.private_key.includes('\\n')) {
+      credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+      console.log('✓ Converted literal \\n to newlines in private_key');
+    }
+
+    console.log('✓ Credentials validated, project:', credentials.project_id);
     
     // Voice configuration based on gender
     const voiceName = voiceGender === 'male' ? 'en-GB-Neural2-B' : 'en-GB-Neural2-A';
