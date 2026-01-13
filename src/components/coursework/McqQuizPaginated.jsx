@@ -177,10 +177,25 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   };
 
   const toggleFlag = (questionId) => {
+    const isNowFlagged = !flaggedQuestions[questionId];
     setFlaggedQuestions(prev => ({
       ...prev,
-      [questionId]: !prev[questionId]
+      [questionId]: isNowFlagged
     }));
+
+    if (isNowFlagged && currentQuestionIndex < shuffledQuestions.length - 1) {
+      toast.success('Question flagged for review', {
+        action: {
+          label: 'Next Question',
+          onClick: handleNext
+        },
+        duration: 3000
+      });
+    } else if (isNowFlagged) {
+      toast.success('Question flagged for review');
+    } else {
+      toast.info('Flag removed');
+    }
   };
 
   const flaggedCount = Object.values(flaggedQuestions).filter(Boolean).length;
