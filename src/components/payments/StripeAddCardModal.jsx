@@ -3,10 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, AlertCircle } from 'lucide-react';
-import { loadStripe } from 'npm:@stripe/stripe-js@5.3.0';
-import { Elements, PaymentElement, useStripe, useElements } from 'npm:@stripe/react-stripe-js@3.1.0';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-const stripePromise = loadStripe(Deno.env.get('PUBLISHABLE_KEY'));
+const stripePromise = loadStripe(import.meta.env.VITE_PUBLISHABLE_KEY || 'pk_test_51QPf7Z04n7pXnZlA4C1qzfHw9AoqxG3fQRNF5kOkN3OIXu2lW3o4dQPaVZkW3C7Yc5eJ8bMt9qMz6rXh2pKm5qZ000dHq3J8yL');
 
 function AddCardForm({ onSuccess, onCancel }) {
   const stripe = useStripe();
