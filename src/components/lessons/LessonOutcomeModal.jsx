@@ -78,23 +78,38 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
 
       // Update lesson or booking
       if (lessonId && lesson) {
-        await base44.entities.Lesson.update(lessonId, {
+        const updateData = {
           status: statusMap[data.completionOutcome],
           completionOutcome: data.completionOutcome,
           chargesApplied: data.chargesApplied,
-          chargesDecisionReason: data.chargesDecisionReason || null,
-          completionNote: data.completionNote || null,
           completedAt: new Date().toISOString()
-        });
+        };
+        
+        // Only include optional fields if they have values
+        if (data.chargesDecisionReason) {
+          updateData.chargesDecisionReason = data.chargesDecisionReason;
+        }
+        if (data.completionNote) {
+          updateData.completionNote = data.completionNote;
+        }
+        
+        await base44.entities.Lesson.update(lessonId, updateData);
       } else if (bookingId && booking) {
-        await base44.entities.LessonBooking.update(bookingId, {
-          status: data.completionOutcome,
-          completionOutcome: data.completionOutcome,
-          chargesApplied: data.chargesApplied,
-          chargesDecisionReason: data.chargesDecisionReason || null,
-          completionNote: data.completionNote || null,
-          completedAt: new Date().toISOString()
-        });
+        const updateData = {
+          status: data.completionOutcome === 'completed' ? 'COMPLETED' : 
+                  data.completionOutcome === 'cancelled' ? 'CANCELLED' : 'NO_SHOW',
+          chargesApplied: data.chargesApplied
+        };
+        
+        // Only include optional fields if they have values
+        if (data.chargesDecisionReason) {
+          updateData.chargesDecisionReason = data.chargesDecisionReason;
+        }
+        if (data.completionNote) {
+          updateData.completionNote = data.completionNote;
+        }
+        
+        await base44.entities.LessonBooking.update(bookingId, updateData);
       }
 
       // Apply charges logic if needed
