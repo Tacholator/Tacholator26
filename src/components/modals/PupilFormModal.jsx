@@ -38,34 +38,45 @@ const DVSA_SKILLS = [
   { code: '27', name: 'Independent driving / Following routes & Sat Nav' }
 ];
 
+const defaultFormData = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  pickupAddress: '',
+  preferredDaysTimes: '',
+  status: 'Active',
+  provisionalLicenceNumber: '',
+  theoryTestDate: '',
+  theoryTestNotBooked: false,
+  theoryTestPassed: false,
+  practicalTestDate: '',
+  practicalTestTime: '',
+  practicalTestNotBooked: false,
+  practicalTestPassed: false,
+  practicalTestCentre: '',
+  targetHours: 45,
+  hoursCompleted: 0,
+  hourlyRate: 0,
+  bulkAmountPaid: 0,
+  bulkPaymentBalance: 0,
+  tags: []
+};
+
 export default function PupilFormModal({ open, onClose, existingPupil, onSave }) {
-  const [formData, setFormData] = useState(existingPupil || {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    pickupAddress: '',
-    preferredDaysTimes: '',
-    status: 'Active',
-    provisionalLicenceNumber: '',
-    theoryTestDate: '',
-    theoryTestNotBooked: false,
-    theoryTestPassed: false,
-    practicalTestDate: '',
-    practicalTestTime: '',
-    practicalTestNotBooked: false,
-    practicalTestPassed: false,
-    practicalTestCentre: '',
-    targetHours: 45,
-    hoursCompleted: 0,
-    hourlyRate: 0,
-    bulkAmountPaid: 0,
-    bulkPaymentBalance: 0,
-    tags: []
-  });
+  const [formData, setFormData] = useState(existingPupil || defaultFormData);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
   const [validationErrors, setValidationErrors] = useState({});
+
+  // Reset form when modal opens/closes or when existingPupil changes
+  React.useEffect(() => {
+    if (open) {
+      setFormData(existingPupil || defaultFormData);
+      setValidationErrors({});
+      setActiveTab('personal');
+    }
+  }, [open, existingPupil]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
