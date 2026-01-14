@@ -6,7 +6,8 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-const stripePromise = loadStripe(import.meta.env.VITE_PUBLISHABLE_KEY || 'pk_test_51QPf7Z04n7pXnZlA4C1qzfHw9AoqxG3fQRNF5kOkN3OIXu2lW3o4dQPaVZkW3C7Yc5eJ8bMt9qMz6rXh2pKm5qZ000dHq3J8yL');
+const STRIPE_KEY = import.meta.env.VITE_PUBLISHABLE_KEY || import.meta.env.VITE_PUBLISHABLE_KEY || 'pk_test_51QPf7Z04n7pXnZlA4C1qzfHw9AoqxG3fQRNF5kOkN3OIXu2lW3o4dQPaVZkW3C7Yc5eJ8bMt9qMz6rXh2pKm5qZ000dHq3J8yL';
+const stripePromise = STRIPE_KEY ? loadStripe(STRIPE_KEY) : null;
 
 function AddCardForm({ onSuccess, onCancel }) {
   const stripe = useStripe();
@@ -86,6 +87,21 @@ export default function StripeAddCardModal({ open, onOpenChange, clientSecret, o
       }
     }
   };
+
+  if (!stripePromise) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Configuration Error</DialogTitle>
+            <DialogDescription>
+              Stripe is not configured. Please contact support.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
