@@ -125,7 +125,7 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
     const canonicalTitles = skillData.subsections.map(s => normalizeTitle(s.title));
     const matchedSubsectionIds = new Set();
     
-    for (const subsectionData of skillData.subsections) {
+    for (const subsectionData of (skillData.subsections || [])) {
       // Apply alias mapping
       const targetTitle = applyAliasMap(skillData.skillKey, subsectionData.title);
       

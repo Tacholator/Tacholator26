@@ -84,7 +84,7 @@ export async function initializeSkillsForPupil(pupilId, instructorId, skillsData
       });
     }
 
-    for (const subsectionData of skillData.subsections) {
+    for (const subsectionData of (skillData.subsections || [])) {
       const existingSubsection = await base44.entities.SkillSubsection.filter({
         skillId: skill.id,
         title: subsectionData.title
@@ -94,6 +94,7 @@ export async function initializeSkillsForPupil(pupilId, instructorId, skillsData
         await base44.entities.SkillSubsection.create({
           skillId: skill.id,
           pupilId,
+          instructorId,
           title: subsectionData.title || 'Untitled Section',
           order: subsectionData.order || 0,
           status: 'not_started'
