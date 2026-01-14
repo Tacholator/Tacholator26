@@ -97,11 +97,11 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
       skill = await base44.entities.ProgressSkill.create({
         pupilId,
         instructorId,
-        skillKey: skillData.skillKey,
-        title: skillData.title,
-        order: skillData.order,
+        skillKey: skillData.skillKey || 'unknown',
+        title: skillData.title || 'Untitled Skill',
+        order: skillData.order || 0,
         status: 'not_started',
-        subsectionsTotal: skillData.subsections.length,
+        subsectionsTotal: skillData.subsections?.length || 0,
         subsectionsCompleted: 0,
         subsectionsRatio: 0
       });
@@ -146,8 +146,8 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
         await base44.entities.ProgressSubsection.create({
           skillId: skill.id,
           pupilId,
-          title: targetTitle,
-          order: subsectionData.order,
+          title: targetTitle || 'Untitled Section',
+          order: subsectionData.order || 0,
           isCompleted: false
         });
       } else {
