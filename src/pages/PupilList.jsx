@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/use-toast';
 import {
   Select,
   SelectContent,
@@ -44,6 +45,7 @@ export default function PupilList() {
   const [editingPupil, setEditingPupil] = useState(null);
 
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
@@ -114,12 +116,26 @@ export default function PupilList() {
 
   const createPupilMutation = useMutation({
     mutationFn: (data) => base44.entities.Pupil.create(data),
-    onSuccess: () => queryClient.invalidateQueries(['pupils'])
+    onSuccess: () => {
+      queryClient.invalidateQueries(['pupils']);
+      toast({
+        title: "Pupil added",
+        description: "The pupil has been added successfully.",
+        duration: 3000,
+      });
+    }
   });
 
   const updatePupilMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Pupil.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries(['pupils'])
+    onSuccess: () => {
+      queryClient.invalidateQueries(['pupils']);
+      toast({
+        title: "Pupil updated",
+        description: "The pupil details have been updated successfully.",
+        duration: 3000,
+      });
+    }
   });
 
   const createSkillsMutation = useMutation({
@@ -128,7 +144,14 @@ export default function PupilList() {
 
   const deletePupilMutation = useMutation({
     mutationFn: (id) => base44.entities.Pupil.delete(id),
-    onSuccess: () => queryClient.invalidateQueries(['pupils'])
+    onSuccess: () => {
+      queryClient.invalidateQueries(['pupils']);
+      toast({
+        title: "Pupil deleted",
+        description: "The pupil has been removed successfully.",
+        duration: 3000,
+      });
+    }
   });
 
   const handleSavePupil = async (data, isNew) => {
