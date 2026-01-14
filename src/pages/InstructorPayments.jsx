@@ -1,20 +1,32 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, AlertTriangle, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
+import { Loader2, AlertTriangle, TrendingUp, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
 export default function InstructorPayments() {
   const [activeTab, setActiveTab] = useState('overview');
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
+  });
+
+  const { data: instructor } = useQuery({
+    queryKey: ['instructor', currentUser?.id],
+    queryFn: async () => {
+      const instructors = await base44.entities.Instructor.list();
+      return instructors.find(i => i.created_by === currentUser.id);
+    },
+    enabled: !!currentUser?.id
   });
 
   const { data: payouts = [], isLoading: loadingPayouts } = useQuery({
@@ -65,6 +77,46 @@ export default function InstructorPayments() {
   
   const failedPaymentsCount = transactions.filter(t => t.status === 'failed').length;
   const openDisputesCount = disputes.filter(d => ['needs_response', 'under_review'].includes(d.status)).length;
+
+  const createConnectAccountMutation = useMutation({
+    mutationFn: async () => {
+      const response = await base44.functions.invoke('stripeConnectAccount', {
+        action: 'create',
+        instructorId: currentUser.id
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.onboardingUrl) {
+        window.location.href = data.onboardingUrl;
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to setup payout details',
+        variant: 'destructive'
+      });
+    }
+  });
+
+  const refreshConnectStatusMutation = useMutation({
+    mutationFn: async () => {
+      if (!instructor?.stripeConnectAccountId) return null;
+      const response = await base44.functions.invoke('stripeConnectAccount', {
+        action: 'status',
+        accountId: instructor.stripeConnectAccountId
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['instructor']);
+      toast({
+        title: 'Status Updated',
+        description: 'Payout status has been refreshed'
+      });
+    }
+  });
 
   const isLoading = loadingPayouts || loadingTransactions || loadingPackages || loadingInvoices || loadingDisputes;
 
@@ -223,17 +275,64 @@ export default function InstructorPayments() {
                 <CardDescription>Manage how you receive payments</CardDescription>
               </CardHeader>
               <CardContent>
-                <Alert className="mb-6">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Payout Setup Required</AlertTitle>
-                  <AlertDescription>
-                    Add your bank details to receive payments from lessons.
-                  </AlertDescription>
-                </Alert>
+                {instructor?.connectStatus === 'verified' ? (
+                  <Alert className="mb-6">
+                    <CheckCircle className="h-4 w-4 text-emerald-600" />
+                    <AlertTitle>Payout Account Active</AlertTitle>
+                    <AlertDescription>
+                      Your bank account is connected and ready to receive payouts.
+                    </AlertDescription>
+                  </Alert>
+                ) : instructor?.connectStatus === 'pending' ? (
+                  <Alert className="mb-6">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Setup In Progress</AlertTitle>
+                    <AlertDescription>
+                      Complete your payout setup to start receiving payments.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <Alert className="mb-6">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Payout Setup Required</AlertTitle>
+                    <AlertDescription>
+                      Add your bank details to receive payments from lessons.
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-                <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
-                  Setup Payout Details
-                </Button>
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={() => createConnectAccountMutation.mutate()}
+                    disabled={createConnectAccountMutation.isPending}
+                    className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                  >
+                    {createConnectAccountMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Setting up...
+                      </>
+                    ) : instructor?.stripeConnectAccountId ? (
+                      'Continue Setup'
+                    ) : (
+                      'Setup Payout Details'
+                    )}
+                  </Button>
+                  
+                  {instructor?.stripeConnectAccountId && (
+                    <Button 
+                      variant="outline"
+                      onClick={() => refreshConnectStatusMutation.mutate()}
+                      disabled={refreshConnectStatusMutation.isPending}
+                    >
+                      {refreshConnectStatusMutation.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        'Refresh Status'
+                      )}
+                    </Button>
+                  )}
+                </div>
 
                 {payouts.length > 0 && (
                   <div className="mt-8">

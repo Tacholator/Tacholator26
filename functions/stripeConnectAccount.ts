@@ -12,12 +12,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const url = new URL(req.url);
-    const method = req.method;
+    const { action, instructorId, accountId } = await req.json();
 
-    // POST - Create Connect account
-    if (method === 'POST' && url.pathname.includes('/create-account')) {
-      const { instructorId } = await req.json();
+    // Create Connect account
+    if (action === 'create') {
 
       // Get instructor data
       const instructors = await base44.asServiceRole.entities.Instructor.list();
@@ -62,6 +60,7 @@ Deno.serve(async (req) => {
       });
 
       // Create account link
+      const url = new URL(req.url);
       const accountLink = await stripe.accountLinks.create({
         account: account.id,
         refresh_url: `${url.origin}/InstructorPayments`,
@@ -75,10 +74,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    // POST - Create onboarding link
-    if (method === 'POST' && url.pathname.includes('/onboarding-link')) {
-      const { accountId } = await req.json();
+    // Create onboarding link
+    if (action === 'onboarding') {
 
+      const url = new URL(req.url);
       const accountLink = await stripe.accountLinks.create({
         account: accountId,
         refresh_url: `${url.origin}/InstructorPayments`,
@@ -89,9 +88,8 @@ Deno.serve(async (req) => {
       return Response.json({ onboardingUrl: accountLink.url });
     }
 
-    // GET - Check account status
-    if (method === 'GET' && url.pathname.includes('/status')) {
-      const accountId = url.searchParams.get('accountId');
+    // Check account status
+    if (action === 'status') {
 
       const account = await stripe.accounts.retrieve(accountId);
 
@@ -118,7 +116,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    return Response.json({ error: 'Method not allowed' }, { status: 405 });
+    return Response.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error) {
     console.error('Connect account error:', error);
     return Response.json({ error: error.message }, { status: 500 });

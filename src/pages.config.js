@@ -18,6 +18,7 @@ import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
 import InstructorNotifications from './pages/InstructorNotifications';
+import InstructorPayments from './pages/InstructorPayments';
 import InstructorPupilNotes from './pages/InstructorPupilNotes';
 import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
 import InstructorQuizPreview from './pages/InstructorQuizPreview';
@@ -31,6 +32,7 @@ import LearnerHomework from './pages/LearnerHomework';
 import LearnerLessons from './pages/LearnerLessons';
 import LearnerNotes from './pages/LearnerNotes';
 import LearnerNotifications from './pages/LearnerNotifications';
+import LearnerPayments from './pages/LearnerPayments';
 import LearnerProgress from './pages/LearnerProgress';
 import LearnerResources from './pages/LearnerResources';
 import LearnerScheduledLessons from './pages/LearnerScheduledLessons';
@@ -45,8 +47,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import LearnerPayments from './pages/LearnerPayments';
-import InstructorPayments from './pages/InstructorPayments';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +71,7 @@ export const PAGES = {
     "InstructorDashboard": InstructorDashboard,
     "InstructorMcqReporting": InstructorMcqReporting,
     "InstructorNotifications": InstructorNotifications,
+    "InstructorPayments": InstructorPayments,
     "InstructorPupilNotes": InstructorPupilNotes,
     "InstructorPupilNotesList": InstructorPupilNotesList,
     "InstructorQuizPreview": InstructorQuizPreview,
@@ -84,6 +85,7 @@ export const PAGES = {
     "LearnerLessons": LearnerLessons,
     "LearnerNotes": LearnerNotes,
     "LearnerNotifications": LearnerNotifications,
+    "LearnerPayments": LearnerPayments,
     "LearnerProgress": LearnerProgress,
     "LearnerResources": LearnerResources,
     "LearnerScheduledLessons": LearnerScheduledLessons,
@@ -98,8 +100,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "LearnerPayments": LearnerPayments,
-    "InstructorPayments": InstructorPayments,
 }
 
 export const pagesConfig = {
