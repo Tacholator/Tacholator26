@@ -181,11 +181,11 @@ export default function PupilList() {
       const result = await createPupilMutation.mutateAsync(pupilData);
       
       // Create DVSA skills for new pupil
-      const skills = DVSA_SKILLS.map(skill => ({
+      const skills = DVSA_SKILLS.map((skill, index) => ({
         pupilId: result.id,
-        skillCode: skill.code,
-        skillName: skill.name,
-        status: 'NotStarted'
+        instructorId: currentUser?.id,
+        title: skill.name,
+        order: parseInt(skill.code)
       }));
       await createSkillsMutation.mutateAsync(skills);
       
