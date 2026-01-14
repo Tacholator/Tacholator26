@@ -112,9 +112,11 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
     setIsSaving(true);
     try {
       await onSave(formData, !existingPupil);
+      // Success - clear errors and close modal
       setValidationErrors({});
-      // Don't call onClose here - parent will handle it after successful save
+      onClose();
     } catch (error) {
+      // Error - keep modal open and show error
       if (error.message?.includes('email already exists')) {
         setValidationErrors({ 
           duplicate: 'A pupil with this email already exists. Please use a different email address.' 

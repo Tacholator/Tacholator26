@@ -155,101 +155,88 @@ export default function PupilList() {
   });
 
   const handleSavePupil = async (data, isNew) => {
-    try {
-      if (isNew) {
-        // Check for duplicate pupil by email
-        const duplicateEmail = pupils.find(
-          p => p.email?.toLowerCase() === data.email?.toLowerCase()
-        );
-        
-        if (duplicateEmail) {
-          throw new Error('A pupil with this email already exists');
-        }
-
-        // Check for duplicate pupil by first name and last name
-        const duplicateName = pupils.find(
-          p => p.firstName?.toLowerCase() === data.firstName?.toLowerCase() && 
-               p.lastName?.toLowerCase() === data.lastName?.toLowerCase()
-        );
-        
-        if (duplicateName) {
-          throw new Error('A pupil with this name already exists');
-        }
-
-        // Check if a learner account exists with the same email
-        let linkedUserId = null;
-        if (data.email) {
-          const matchingUser = allUsers.find(
-            u => u.email?.toLowerCase() === data.email.toLowerCase() && u.role === 'user'
-          );
-          if (matchingUser) {
-            linkedUserId = matchingUser.id;
-          }
-        }
-
-        // Add instructor info to the pupil record
-        const pupilData = {
-          ...data,
-          instructorId: currentUser?.id,
-          instructorEmail: currentUser?.email,
-          instructorName: currentUser?.full_name,
-          linkedUserId: linkedUserId
-        };
-        const result = await createPupilMutation.mutateAsync(pupilData);
-        
-        // Create DVSA skills for new pupil
-        const skills = DVSA_SKILLS.map(skill => ({
-          pupilId: result.id,
-          skillCode: skill.code,
-          skillName: skill.name,
-          status: 'NotStarted'
-        }));
-        await createSkillsMutation.mutateAsync(skills);
-        
-        // Success - close modal
-        setShowPupilModal(false);
-        setEditingPupil(null);
-      } else {
-        // Check for duplicate email when updating (excluding current pupil)
-        const duplicateEmail = pupils.find(
-          p => p.id !== editingPupil.id && p.email?.toLowerCase() === data.email?.toLowerCase()
-        );
-        
-        if (duplicateEmail) {
-          throw new Error('A pupil with this email already exists');
-        }
-
-        // Check for duplicate name when updating (excluding current pupil)
-        const duplicateName = pupils.find(
-          p => p.id !== editingPupil.id && 
-               p.firstName?.toLowerCase() === data.firstName?.toLowerCase() && 
-               p.lastName?.toLowerCase() === data.lastName?.toLowerCase()
-        );
-        
-        if (duplicateName) {
-          throw new Error('A pupil with this name already exists');
-        }
-
-        // When updating, also check for linked user if email changed
-        let linkedUserId = editingPupil.linkedUserId;
-        if (data.email && data.email !== editingPupil.email) {
-          const matchingUser = allUsers.find(
-            u => u.email?.toLowerCase() === data.email.toLowerCase() && u.role === 'user'
-          );
-          linkedUserId = matchingUser ? matchingUser.id : null;
-        }
-        await updatePupilMutation.mutateAsync({ 
-          id: editingPupil.id, 
-          data: { ...data, linkedUserId } 
-        });
-        
-        // Success - close modal
-        setShowPupilModal(false);
-        setEditingPupil(null);
+    if (isNew) {
+      // Check for duplicate pupil by email
+      const duplicateEmail = pupils.find(
+        p => p.email?.toLowerCase() === data.email?.toLowerCase()
+      );
+      
+      if (duplicateEmail) {
+        throw new Error('A pupil with this email already exists');
       }
-    } catch (error) {
-      // Re-throw error to be caught by the modal's handleSubmit
-      throw error;
+
+      // Check for duplicate pupil by first name and last name
+      const duplicateName = pupils.find(
+        p => p.firstName?.toLowerCase() === data.firstName?.toLowerCase() && 
+             p.lastName?.toLowerCase() === data.lastName?.toLowerCase()
+      );
+      
+      if (duplicateName) {
+        throw new Error('A pupil with this name already exists');
+      }
+
+      // Check if a learner account exists with the same email
+      let linkedUserId = null;
+      if (data.email) {
+        const matchingUser = allUsers.find(
+          u => u.email?.toLowerCase() === data.email.toLowerCase() && u.role === 'user'
+        );
+        if (matchingUser) {
+          linkedUserId = matchingUser.id;
+        }
+      }
+
+      // Add instructor info to the pupil record
+      const pupilData = {
+        ...data,
+        instructorId: currentUser?.id,
+        instructorEmail: currentUser?.email,
+        instructorName: currentUser?.full_name,
+        linkedUserId: linkedUserId
+      };
+      const result = await createPupilMutation.mutateAsync(pupilData);
+      
+      // Create DVSA skills for new pupil
+      const skills = DVSA_SKILLS.map(skill => ({
+        pupilId: result.id,
+        skillCode: skill.code,
+        skillName: skill.name,
+        status: 'NotStarted'
+      }));
+      await createSkillsMutation.mutateAsync(skills);
+    } else {
+      // Check for duplicate email when updating (excluding current pupil)
+      const duplicateEmail = pupils.find(
+        p => p.id !== editingPupil.id && p.email?.toLowerCase() === data.email?.toLowerCase()
+      );
+      
+      if (duplicateEmail) {
+        throw new Error('A pupil with this email already exists');
+      }
+
+      // Check for duplicate name when updating (excluding current pupil)
+      const duplicateName = pupils.find(
+        p => p.id !== editingPupil.id && 
+             p.firstName?.toLowerCase() === data.firstName?.toLowerCase() && 
+             p.lastName?.toLowerCase() === data.lastName?.toLowerCase()
+      );
+      
+      if (duplicateName) {
+        throw new Error('A pupil with this name already exists');
+      }
+
+      // When updating, also check for linked user if email changed
+      let linkedUserId = editingPupil.linkedUserId;
+      if (data.email && data.email !== editingPupil.email) {
+        const matchingUser = allUsers.find(
+          u => u.email?.toLowerCase() === data.email.toLowerCase() && u.role === 'user'
+        );
+        linkedUserId = matchingUser ? matchingUser.id : null;
+      }
+      await updatePupilMutation.mutateAsync({ 
+        id: editingPupil.id, 
+        data: { ...data, linkedUserId } 
+      });
     }
   };
 
