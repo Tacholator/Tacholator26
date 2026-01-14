@@ -115,27 +115,11 @@ export default function PupilList() {
   });
 
   const createPupilMutation = useMutation({
-    mutationFn: (data) => base44.entities.Pupil.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['pupils']);
-      toast({
-        title: "Pupil added",
-        description: "The pupil has been added successfully.",
-        duration: 3000,
-      });
-    }
+    mutationFn: (data) => base44.entities.Pupil.create(data)
   });
 
   const updatePupilMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Pupil.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['pupils']);
-      toast({
-        title: "Pupil updated",
-        description: "The pupil details have been updated successfully.",
-        duration: 3000,
-      });
-    }
+    mutationFn: ({ id, data }) => base44.entities.Pupil.update(id, data)
   });
 
   const createSkillsMutation = useMutation({
@@ -204,6 +188,16 @@ export default function PupilList() {
         status: 'NotStarted'
       }));
       await createSkillsMutation.mutateAsync(skills);
+      
+      // All successful - close modal, show toast, refresh list
+      setShowPupilModal(false);
+      setEditingPupil(null);
+      queryClient.invalidateQueries(['pupils']);
+      toast({
+        title: "Pupil added",
+        description: "The pupil has been added successfully.",
+        duration: 3000,
+      });
     } else {
       // Check for duplicate email when updating (excluding current pupil)
       const duplicateEmail = pupils.find(
@@ -236,6 +230,16 @@ export default function PupilList() {
       await updatePupilMutation.mutateAsync({ 
         id: editingPupil.id, 
         data: { ...data, linkedUserId } 
+      });
+      
+      // Update successful - close modal, show toast, refresh list
+      setShowPupilModal(false);
+      setEditingPupil(null);
+      queryClient.invalidateQueries(['pupils']);
+      toast({
+        title: "Pupil updated",
+        description: "The pupil details have been updated successfully.",
+        duration: 3000,
       });
     }
   };

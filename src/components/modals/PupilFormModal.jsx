@@ -112,9 +112,8 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
     setIsSaving(true);
     try {
       await onSave(formData, !existingPupil);
-      // Success - clear errors and close modal
+      // Success - parent component handles modal close and toast
       setValidationErrors({});
-      onClose();
     } catch (error) {
       // Error - keep modal open and show error
       if (error.message?.includes('email already exists')) {
