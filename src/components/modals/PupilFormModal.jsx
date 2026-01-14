@@ -113,7 +113,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
     try {
       await onSave(formData, !existingPupil);
       setValidationErrors({});
-      onClose();
+      // Don't call onClose here - parent will handle it after successful save
     } catch (error) {
       if (error.message?.includes('email already exists')) {
         setValidationErrors({ 
@@ -123,6 +123,12 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
       } else if (error.message?.includes('name already exists')) {
         setValidationErrors({ 
           duplicate: 'A pupil with this name already exists. Please use a different name or check if this pupil has already been added.' 
+        });
+        setActiveTab('personal');
+      } else {
+        // Show generic error
+        setValidationErrors({ 
+          duplicate: error.message || 'An error occurred while saving. Please try again.' 
         });
         setActiveTab('personal');
       }
