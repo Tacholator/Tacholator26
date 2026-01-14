@@ -94,7 +94,11 @@ export default function InstructorPayments() {
     onError: (error) => {
       toast({
         title: 'Error',
-        description: error.message || 'Failed to setup payout details',
+        description: error.response?.status === 404 
+          ? "We couldn't process your request. Please refresh and try again."
+          : error.response?.status === 401
+          ? "Your session expired. Please sign in again."
+          : error.message || 'Failed to setup payout details',
         variant: 'destructive'
       });
     }
@@ -102,7 +106,9 @@ export default function InstructorPayments() {
 
   const refreshConnectStatusMutation = useMutation({
     mutationFn: async () => {
-      if (!instructor?.stripeConnectAccountId) return null;
+      if (!instructor?.stripeConnectAccountId) {
+        throw new Error('No Connect account found');
+      }
       const response = await base44.functions.invoke('stripeConnectAccount', {
         action: 'status',
         accountId: instructor.stripeConnectAccountId
@@ -114,6 +120,32 @@ export default function InstructorPayments() {
       toast({
         title: 'Status Updated',
         description: 'Payout status has been refreshed'
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: error.response?.status === 404 
+          ? "Couldn't find your payout account. Please try setting it up again."
+          : error.response?.status === 401
+          ? "Your session expired. Please sign in again."
+          : "Failed to refresh status. Please try again.",
+        variant: 'destructive'
+      });
+    }
+  });
+
+  const downloadInvoiceMutation = useMutation({
+    mutationFn: async (invoice) => {
+      const url = invoice.pdfUrl || invoice.receiptUrl;
+      if (!url) throw new Error('No download URL available');
+      window.open(url, '_blank');
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to download invoice',
+        variant: 'destructive'
       });
     }
   });
@@ -504,8 +536,17 @@ export default function InstructorPayments() {
                         </div>
                         <div className="flex items-center gap-3">
                           <p className="font-semibold text-slate-800">£{invoice.total.toFixed(2)}</p>
-                          <Button variant="outline" size="sm" disabled={!invoice.pdfUrl}>
-                            Download
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            disabled={!invoice.pdfUrl && !invoice.receiptUrl}
+                            onClick={() => downloadInvoiceMutation.mutate(invoice)}
+                          >
+                            {downloadInvoiceMutation.isPending ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              'Download'
+                            )}
                           </Button>
                         </div>
                       </div>

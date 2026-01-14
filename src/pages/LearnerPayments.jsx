@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, CreditCard, Package, Receipt, AlertCircle, Plus } from 'lucide-react';
+import { Loader2, CreditCard, Package, Receipt, AlertCircle, Plus, Trash2, Download } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
+import AddPaymentMethodModal from '../components/payments/AddPaymentMethodModal';
+import PayOutstandingModal from '../components/payments/PayOutstandingModal';
+import RemovePaymentMethodModal from '../components/payments/RemovePaymentMethodModal';
 
 export default function LearnerPayments() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [showAddMethodModal, setShowAddMethodModal] = useState(false);
+  const [showPayModal, setShowPayModal] = useState(false);
+  const [methodToRemove, setMethodToRemove] = useState(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
@@ -54,6 +63,49 @@ export default function LearnerPayments() {
   const outstandingBalance = pupil?.bulkPaymentBalance < 0 ? Math.abs(pupil.bulkPaymentBalance) : 0;
   const creditsBalance = pupil?.bulkPaymentBalance > 0 ? pupil.bulkPaymentBalance : 0;
   const activePackage = packages.find(p => p.status === 'active');
+
+  const setDefaultMutation = useMutation({
+    mutationFn: async (methodId) => {
+      // Set all to false first
+      const updates = paymentMethods.map(m => 
+        base44.entities.PaymentMethod.update(m.id, { isDefault: false })
+      );
+      await Promise.all(updates);
+      // Set selected to true
+      await base44.entities.PaymentMethod.update(methodId, { isDefault: true });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['paymentMethods']);
+      toast({
+        title: 'Success',
+        description: 'Default payment method updated'
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: error.response?.status === 404 
+          ? "Payment method not found. Please refresh and try again."
+          : "Failed to update default payment method.",
+        variant: 'destructive'
+      });
+    }
+  });
+
+  const downloadInvoiceMutation = useMutation({
+    mutationFn: async (invoice) => {
+      const url = invoice.pdfUrl || invoice.receiptUrl;
+      if (!url) throw new Error('No download URL available');
+      window.open(url, '_blank');
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to download invoice',
+        variant: 'destructive'
+      });
+    }
+  });
 
   const isLoading = loadingMethods || loadingTransactions || loadingPackages || loadingInvoices;
 
@@ -111,10 +163,11 @@ export default function LearnerPayments() {
                     £{outstandingBalance.toFixed(2)}
                   </div>
                   <Button 
-                    disabled={outstandingBalance <= 0}
+                    disabled={outstandingBalance <= 0 || paymentMethods.length === 0}
+                    onClick={() => setShowPayModal(true)}
                     className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
                   >
-                    Pay Outstanding
+                    {paymentMethods.length === 0 ? 'Add Payment Method First' : 'Pay Outstanding'}
                   </Button>
                 </CardContent>
               </Card>
@@ -210,7 +263,10 @@ export default function LearnerPayments() {
                     <CreditCard className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                     <h3 className="text-lg font-medium text-slate-800 mb-2">No payment method yet</h3>
                     <p className="text-slate-500 mb-6">Add a card to pay for lessons and packages.</p>
-                    <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
+                    <Button 
+                      onClick={() => setShowAddMethodModal(true)}
+                      className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                    >
                       <Plus className="w-4 h-4 mr-2" />
                       Add Payment Method
                     </Button>
@@ -231,16 +287,41 @@ export default function LearnerPayments() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          {method.isDefault && (
+                          {method.isDefault ? (
                             <Badge variant="secondary">Default</Badge>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setDefaultMutation.mutate(method.id)}
+                              disabled={setDefaultMutation.isPending}
+                            >
+                              {setDefaultMutation.isPending ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                'Set Default'
+                              )}
+                            </Button>
                           )}
                           {method.status === 'requires_action' && (
                             <Badge variant="destructive">Action needed</Badge>
                           )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setMethodToRemove(method)}
+                            disabled={paymentMethods.length === 1 && outstandingBalance > 0}
+                          >
+                            <Trash2 className="w-4 h-4 text-red-600" />
+                          </Button>
                         </div>
                       </div>
                     ))}
-                    <Button variant="outline" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => setShowAddMethodModal(true)}
+                    >
                       <Plus className="w-4 h-4 mr-2" />
                       Add Payment Method
                     </Button>
@@ -359,8 +440,17 @@ export default function LearnerPayments() {
                         </div>
                         <div className="flex items-center gap-3">
                           <p className="font-semibold text-slate-800">£{invoice.total.toFixed(2)}</p>
-                          <Button variant="outline" size="sm" disabled={!invoice.pdfUrl}>
-                            <Receipt className="w-4 h-4 mr-2" />
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            disabled={!invoice.pdfUrl && !invoice.receiptUrl}
+                            onClick={() => downloadInvoiceMutation.mutate(invoice)}
+                          >
+                            {downloadInvoiceMutation.isPending ? (
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            ) : (
+                              <Download className="w-4 h-4 mr-2" />
+                            )}
                             Download
                           </Button>
                         </div>
@@ -372,6 +462,28 @@ export default function LearnerPayments() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Modals */}
+        <AddPaymentMethodModal
+          open={showAddMethodModal}
+          onOpenChange={setShowAddMethodModal}
+          userId={currentUser?.id}
+        />
+
+        <PayOutstandingModal
+          open={showPayModal}
+          onOpenChange={setShowPayModal}
+          amount={outstandingBalance}
+          paymentMethods={paymentMethods}
+          userId={currentUser?.id}
+        />
+
+        <RemovePaymentMethodModal
+          open={!!methodToRemove}
+          onOpenChange={(open) => !open && setMethodToRemove(null)}
+          method={methodToRemove}
+          hasOutstanding={outstandingBalance > 0 && paymentMethods.length === 1}
+        />
       </div>
     </div>
   );
