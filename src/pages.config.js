@@ -11,6 +11,7 @@ import DVSASkills from './pages/DVSASkills';
 import DrivingProgressV2 from './pages/DrivingProgressV2';
 import Home from './pages/Home';
 import HomeworkLibrary from './pages/HomeworkLibrary';
+import InstructorAnalytics from './pages/InstructorAnalytics';
 import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
 import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
@@ -43,7 +44,7 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import InstructorAnalytics from './pages/InstructorAnalytics';
+import InstructorBookings from './pages/InstructorBookings';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +62,7 @@ export const PAGES = {
     "DrivingProgressV2": DrivingProgressV2,
     "Home": Home,
     "HomeworkLibrary": HomeworkLibrary,
+    "InstructorAnalytics": InstructorAnalytics,
     "InstructorBookingCalendar": InstructorBookingCalendar,
     "InstructorChats": InstructorChats,
     "InstructorDashboard": InstructorDashboard,
@@ -93,7 +95,7 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "InstructorAnalytics": InstructorAnalytics,
+    "InstructorBookings": InstructorBookings,
 }
 
 export const pagesConfig = {
