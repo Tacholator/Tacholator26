@@ -94,8 +94,8 @@ export async function initializeSkillsForPupil(pupilId, instructorId, skillsData
         await base44.entities.SkillSubsection.create({
           skillId: skill.id,
           pupilId,
-          title: subsectionData.title,
-          order: subsectionData.order,
+          title: subsectionData.title || 'Untitled Section',
+          order: subsectionData.order || 0,
           status: 'not_started'
         });
       }
