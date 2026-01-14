@@ -20,10 +20,14 @@ Deno.serve(async (req) => {
 
       // Get instructor data
       const instructors = await base44.asServiceRole.entities.Instructor.list();
-      const instructor = instructors.find(i => i.created_by === instructorId);
+      let instructor = instructors.find(i => i.created_by === instructorId);
 
+      // Create instructor record if it doesn't exist
       if (!instructor) {
-        return Response.json({ error: 'Instructor not found' }, { status: 404 });
+        instructor = await base44.asServiceRole.entities.Instructor.create({
+          name: user.full_name || 'Instructor',
+          created_by: instructorId
+        });
       }
 
       // Check if already has account
