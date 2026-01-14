@@ -142,6 +142,10 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         await base44.entities.Lesson.update(lessonId, updateData);
       } else if (bookingId && booking) {
         const updateData = {
+          instructorId: booking.instructorId,
+          pupilId: booking.pupilId,
+          startAt: booking.startAt,
+          endAt: booking.endAt,
           status: data.completionOutcome === 'completed' ? 'COMPLETED' : 
                   data.completionOutcome === 'cancelled' ? 'CANCELLED' : 'NO_SHOW',
           chargesApplied: data.chargesApplied
