@@ -13,6 +13,7 @@ Deno.serve(async (req) => {
     }
 
     const { action, instructorId, accountId } = await req.json();
+    const url = new URL(req.url);
 
     // Create Connect account
     if (action === 'create') {
@@ -60,7 +61,6 @@ Deno.serve(async (req) => {
       });
 
       // Create account link
-      const url = new URL(req.url);
       const accountLink = await stripe.accountLinks.create({
         account: account.id,
         refresh_url: `${url.origin}/InstructorPayments`,
@@ -77,7 +77,6 @@ Deno.serve(async (req) => {
     // Create onboarding link
     if (action === 'onboarding') {
 
-      const url = new URL(req.url);
       const accountLink = await stripe.accountLinks.create({
         account: accountId,
         refresh_url: `${url.origin}/InstructorPayments`,
