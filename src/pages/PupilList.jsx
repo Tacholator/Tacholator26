@@ -134,12 +134,22 @@ export default function PupilList() {
   const handleSavePupil = async (data, isNew) => {
     if (isNew) {
       // Check for duplicate pupil by email
-      const duplicatePupil = pupils.find(
+      const duplicateEmail = pupils.find(
         p => p.email?.toLowerCase() === data.email?.toLowerCase()
       );
       
-      if (duplicatePupil) {
+      if (duplicateEmail) {
         throw new Error('A pupil with this email already exists');
+      }
+
+      // Check for duplicate pupil by first name and last name
+      const duplicateName = pupils.find(
+        p => p.firstName?.toLowerCase() === data.firstName?.toLowerCase() && 
+             p.lastName?.toLowerCase() === data.lastName?.toLowerCase()
+      );
+      
+      if (duplicateName) {
+        throw new Error('A pupil with this name already exists');
       }
 
       // Check if a learner account exists with the same email
@@ -172,12 +182,23 @@ export default function PupilList() {
       await createSkillsMutation.mutateAsync(skills);
     } else {
       // Check for duplicate email when updating (excluding current pupil)
-      const duplicatePupil = pupils.find(
+      const duplicateEmail = pupils.find(
         p => p.id !== editingPupil.id && p.email?.toLowerCase() === data.email?.toLowerCase()
       );
       
-      if (duplicatePupil) {
+      if (duplicateEmail) {
         throw new Error('A pupil with this email already exists');
+      }
+
+      // Check for duplicate name when updating (excluding current pupil)
+      const duplicateName = pupils.find(
+        p => p.id !== editingPupil.id && 
+             p.firstName?.toLowerCase() === data.firstName?.toLowerCase() && 
+             p.lastName?.toLowerCase() === data.lastName?.toLowerCase()
+      );
+      
+      if (duplicateName) {
+        throw new Error('A pupil with this name already exists');
       }
 
       // When updating, also check for linked user if email changed

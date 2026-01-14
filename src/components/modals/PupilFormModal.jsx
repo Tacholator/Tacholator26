@@ -115,9 +115,14 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
       setValidationErrors({});
       onClose();
     } catch (error) {
-      if (error.message?.includes('duplicate') || error.message?.includes('already exists')) {
+      if (error.message?.includes('email already exists')) {
         setValidationErrors({ 
           duplicate: 'A pupil with this email already exists. Please use a different email address.' 
+        });
+        setActiveTab('personal');
+      } else if (error.message?.includes('name already exists')) {
+        setValidationErrors({ 
+          duplicate: 'A pupil with this name already exists. Please use a different name or check if this pupil has already been added.' 
         });
         setActiveTab('personal');
       }

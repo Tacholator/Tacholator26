@@ -13,6 +13,7 @@ import Home from './pages/Home';
 import HomeworkLibrary from './pages/HomeworkLibrary';
 import InstructorAnalytics from './pages/InstructorAnalytics';
 import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
+import InstructorBookings from './pages/InstructorBookings';
 import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
@@ -44,7 +45,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import InstructorBookings from './pages/InstructorBookings';
 import __Layout from './Layout.jsx';
 
 
@@ -64,6 +64,7 @@ export const PAGES = {
     "HomeworkLibrary": HomeworkLibrary,
     "InstructorAnalytics": InstructorAnalytics,
     "InstructorBookingCalendar": InstructorBookingCalendar,
+    "InstructorBookings": InstructorBookings,
     "InstructorChats": InstructorChats,
     "InstructorDashboard": InstructorDashboard,
     "InstructorMcqReporting": InstructorMcqReporting,
@@ -95,7 +96,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "InstructorBookings": InstructorBookings,
 }
 
 export const pagesConfig = {
