@@ -86,6 +86,8 @@ export default function LearnerBookingCalendar() {
       const booking = await base44.entities.LessonBooking.create({
         instructorId: pupil.instructorId,
         pupilId: pupil.id,
+        startAt: startMoment.utc().format(),
+        endAt: endMoment.utc().format(),
         startAtUtc: startMoment.utc().format(),
         endAtUtc: endMoment.utc().format(),
         durationHours,
@@ -137,7 +139,10 @@ export default function LearnerBookingCalendar() {
         cancelledByRole: 'pupil',
         lateCancellation: isLate,
         penaltyAmountGbp: isLate ? booking.totalPriceGbp : 0,
-        penaltyHours: isLate ? booking.durationHours : 0
+        penaltyHours: isLate ? booking.durationHours : 0,
+        startAt: booking.startAtUtc || booking.startAt,
+        endAt: booking.endAtUtc || booking.endAt,
+        instructorId: booking.instructorId
       };
 
       await base44.entities.LessonBooking.update(bookingId, updates);

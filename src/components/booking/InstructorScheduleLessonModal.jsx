@@ -86,6 +86,8 @@ export default function InstructorScheduleLessonModal({
         instructorId: user.id,
         pupilId: selectedPupilId,
         slotInstanceId: slotInstance.id,
+        startAt: slotInstance.startAtUtc,
+        endAt: slotInstance.endAtUtc,
         startAtUtc: slotInstance.startAtUtc,
         endAtUtc: slotInstance.endAtUtc,
         pickupLocation,
