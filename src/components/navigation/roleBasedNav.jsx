@@ -58,7 +58,6 @@ export const sharedNavLinks = [
 // Instructor-only navigation items
 export const instructorOnlyLinks = [
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
-  { name: 'Bookings', icon: ClipboardList, page: 'InstructorBookings' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
   { name: 'Analytics', icon: TrendingUp, page: 'InstructorAnalytics' },
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
