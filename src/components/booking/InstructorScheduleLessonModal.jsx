@@ -23,6 +23,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { Calendar, Clock, Loader2, Search } from 'lucide-react';
 import moment from 'moment';
+import { useMaintenance } from '@/components/maintenance/MaintenanceProvider';
 
 export default function InstructorScheduleLessonModal({ 
   open, 
@@ -31,6 +32,7 @@ export default function InstructorScheduleLessonModal({
 }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isMaintenanceError, handleMaintenanceError } = useMaintenance();
   
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
@@ -138,11 +140,15 @@ export default function InstructorScheduleLessonModal({
       handleClose();
     },
     onError: (error) => {
-      toast({ 
-        title: 'Failed to schedule lesson', 
-        description: error.message,
-        variant: 'destructive'
-      });
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('scheduleLesson', () => scheduleLessonMutation.mutate(), null);
+      } else {
+        toast({ 
+          title: 'Failed to schedule lesson', 
+          description: error.message,
+          variant: 'destructive'
+        });
+      }
     }
   });
 

@@ -21,10 +21,12 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 import moment from 'moment';
+import { useMaintenance } from '@/components/maintenance/MaintenanceProvider';
 
 export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isMaintenanceError, handleMaintenanceError } = useMaintenance();
   const [formData, setFormData] = useState({
     completionOutcome: 'completed',
     chargesApplied: true,
@@ -174,11 +176,15 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
     },
     onError: (error) => {
       setConfirmDialogOpen(false);
-      toast({ 
-        title: 'Failed to save outcome', 
-        description: error.message || 'Please try again',
-        variant: 'destructive' 
-      });
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('setLessonOutcome', () => updateOutcomeMutation.mutate(formData), formData);
+      } else {
+        toast({ 
+          title: 'Failed to save outcome', 
+          description: error.message || 'Please try again',
+          variant: 'destructive' 
+        });
+      }
     }
   });
 
