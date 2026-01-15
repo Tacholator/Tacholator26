@@ -15,8 +15,8 @@ const SLOT_COLORS = {
   unavailable: '#FFB3B3',
   outside_working_hours: '#E8E8E8',
   reserved_pending: '#B39DDB',
-  // Light grey base for other pupils' bookings (dark hatched overlay added separately)
-  reserved_confirmed_other: '#D3D3D3'
+  // Light grey for others viewing pending/confirmed
+  reserved_confirmed_other: '#F2F2F2'
 };
 
 export default function Calendar24Hour({ 
@@ -98,12 +98,7 @@ export default function Calendar24Hour({
       if (overlappingBooking.status === 'completed') {
         return { state: 'completed', booking: overlappingBooking, blockType: 'booking' };
       }
-      // All cancellation statuses
-      if (overlappingBooking.status === 'cancelled' || 
-          overlappingBooking.status === 'cancelled_by_pupil' ||
-          overlappingBooking.status === 'cancelled_late_by_pupil' ||
-          overlappingBooking.status === 'cancelled_by_instructor' ||
-          overlappingBooking.status === 'declined_by_instructor') {
+      if (overlappingBooking.status === 'cancelled') {
         return { state: 'cancelled', booking: overlappingBooking, blockType: 'booking' };
       }
       if (overlappingBooking.status === 'no_show') {
@@ -341,19 +336,15 @@ export default function Calendar24Hour({
                   unavailable: 'Unavailable'
                 };
 
-                // For non-instructors (pupils): filter visibility
-                // Show only: their own bookings (pending/confirmed/completed/cancelled) or available slots
-                // Hide: other pupils' bookings (show as unavailable)
+                // For non-instructors viewing pending/confirmed slots
+                // If it's their own confirmed booking, show as normal confirmed
+                // If it's someone else's, show as unavailable with grey hatch
                 const isOwnBooking = !isInstructor && booking && booking.pupilId === currentPupilId;
-                const isOthersBooking = !isInstructor && booking && !isOwnBooking;
-                
-                // If it's another pupil's booking (pending, confirmed, completed, cancelled), show as unavailable
-                const isOthersReserved = isOthersBooking && ['reserved_pending', 'confirmed', 'completed', 'cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'cancelled_by_instructor', 'declined_by_instructor'].includes(state);
-                
-                const displayColor = isOthersReserved ? SLOT_COLORS.unavailable : SLOT_COLORS[state];
+                const isOthersReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed') && !isOwnBooking;
+                const displayColor = isOthersReserved ? SLOT_COLORS.reserved_confirmed_other : SLOT_COLORS[state];
 
-                // Override status label for other pupils' bookings
-                const displayStatusLabel = isOthersReserved ? 'Unavailable' : (statusLabels[state] || state);
+                // Override status label for others' confirmed slots
+                const displayStatusLabel = isOthersReserved && state === 'confirmed' ? 'Unavailable' : (statusLabels[state] || state);
 
                 // Get pupil name for instructor view
                 let pupilName = null;
@@ -448,10 +439,11 @@ export default function Calendar24Hour({
                     }
                   };
 
-                  // Show delete icon for instructors on available and confirmed slots only
+                  // Show delete icon for instructors on available, confirmed, and completed slots
                   const showDeleteIcon = isInstructor && (
                     state === 'available' || 
-                    state === 'confirmed'
+                    state === 'confirmed' || 
+                    state === 'completed'
                   );
 
                   return (
@@ -473,7 +465,7 @@ export default function Calendar24Hour({
                           clickable ? 'group-hover:shadow-md transition-shadow' : ''
                         }`}
                         style={{ 
-                          borderColor: isOthersReserved ? '#999999' : borderColors[state],
+                          borderColor: isOthersReserved ? '#E0E0E0' : borderColors[state],
                           backgroundColor: displayColor,
                           height: '100%'
                         }}
@@ -487,9 +479,10 @@ export default function Calendar24Hour({
                                 45deg,
                                 transparent,
                                 transparent 8px,
-                                #6B6B6B 8px,
-                                #6B6B6B 10px
-                              )`
+                                #D9D9D9 8px,
+                                #D9D9D9 10px
+                              )`,
+                              opacity: 0.7
                             }}
                           />
                         )}
@@ -505,19 +498,19 @@ export default function Calendar24Hour({
                         {/* Content */}
                         <div className={`${isOthersReserved ? 'pl-2' : 'pl-3'} pr-2 py-2 h-full flex flex-col justify-center relative z-10`}>
                           {pupilName && (
-                            <div className={`text-xs font-bold ${isOthersReserved ? 'text-slate-700' : 'text-slate-800'} mb-1`}>
+                            <div className={`text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-1`}>
                               {pupilName}
                             </div>
                           )}
-                          <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-700' : 'text-slate-700'}`}>
+                          <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
                           <div className="mt-1">
                             <span 
                               className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
                               style={{ 
-                                backgroundColor: isOthersReserved ? '#5A5A5A' : `${accentColors[state]}20`,
-                                color: isOthersReserved ? '#FFFFFF' : accentColors[state]
+                                backgroundColor: isOthersReserved ? '#E0E0E0' : `${accentColors[state]}20`,
+                                color: isOthersReserved ? '#999999' : accentColors[state]
                               }}
                             >
                               {displayStatusLabel}

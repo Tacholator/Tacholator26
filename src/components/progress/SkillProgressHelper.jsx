@@ -75,16 +75,16 @@ export async function initializeSkillsForPupil(pupilId, instructorId, skillsData
       skill = await base44.entities.Skill.create({
         pupilId,
         instructorId,
-        title: skillData.title || 'Untitled Skill',
-        order: skillData.order || 0,
+        title: skillData.title,
+        order: skillData.order,
         status: 'not_started',
-        subsectionsTotal: skillData.subsections?.length || 0,
+        subsectionsTotal: skillData.subsections.length,
         subsectionsCompleted: 0,
         subsectionsCompletionRatio: 0
       });
     }
 
-    for (const subsectionData of (skillData.subsections || [])) {
+    for (const subsectionData of skillData.subsections) {
       const existingSubsection = await base44.entities.SkillSubsection.filter({
         skillId: skill.id,
         title: subsectionData.title
@@ -94,9 +94,8 @@ export async function initializeSkillsForPupil(pupilId, instructorId, skillsData
         await base44.entities.SkillSubsection.create({
           skillId: skill.id,
           pupilId,
-          instructorId,
-          title: subsectionData.title || 'Untitled Section',
-          order: subsectionData.order || 0,
+          title: subsectionData.title,
+          order: subsectionData.order,
           status: 'not_started'
         });
       }

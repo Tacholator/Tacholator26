@@ -24,7 +24,6 @@ import InstructorScheduleLessonModal from '@/components/booking/InstructorSchedu
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
-import { useMaintenance } from '@/components/maintenance/MaintenanceProvider';
 
 export default function InstructorBookingCalendar() {
   const [viewMode, setViewMode] = useState('week');
@@ -40,7 +39,6 @@ export default function InstructorBookingCalendar() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { isMaintenanceError, handleMaintenanceError } = useMaintenance();
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -50,28 +48,25 @@ export default function InstructorBookingCalendar() {
   const { data: rules = [], isLoading: rulesLoading } = useQuery({
     queryKey: ['calendarRules', user?.id],
     queryFn: () => base44.entities.CalendarRule.filter({ instructorId: user.id }),
-    enabled: !!user?.id,
-    refetchInterval: 5000
+    enabled: !!user?.id
   });
 
   const { data: bookings = [], isLoading: bookingsLoading } = useQuery({
     queryKey: ['lessonBookings', user?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: user.id }),
-    enabled: !!user?.id,
-    refetchInterval: 5000
+    enabled: !!user?.id
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['pupils', user?.id],
-    queryFn: () => base44.entities.Pupil.filter({ instructorId: user.id }),
+    queryKey: ['pupils'],
+    queryFn: () => base44.entities.Pupil.list(),
     enabled: !!user?.id
   });
 
   const { data: slotInstances = [] } = useQuery({
     queryKey: ['slotInstances', user?.id],
     queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: user.id }),
-    enabled: !!user?.id,
-    refetchInterval: 5000
+    enabled: !!user?.id
   });
 
   const createRuleMutation = useMutation({
@@ -85,13 +80,6 @@ export default function InstructorBookingCalendar() {
       setShowWorkingHoursModal(false);
       setShowUnavailableModal(false);
       setShowLunchModal(false);
-    },
-    onError: (error) => {
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('createCalendarRule', (data) => createRuleMutation.mutate(data), null);
-      } else {
-        toast({ title: 'Failed to save rule', description: error.message, variant: 'destructive' });
-      }
     }
   });
 
@@ -100,10 +88,7 @@ export default function InstructorBookingCalendar() {
       const booking = bookings.find(b => b.id === bookingId);
       await base44.entities.LessonBooking.update(bookingId, {
         status: 'confirmed',
-        confirmedAt: new Date().toISOString(),
-        startAt: booking.startAtUtc || booking.startAt,
-        endAt: booking.endAtUtc || booking.endAt,
-        instructorId: booking.instructorId
+        confirmedAt: new Date().toISOString()
       });
       
       // Create payment ledger entry
@@ -130,13 +115,6 @@ export default function InstructorBookingCalendar() {
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);
       toast({ title: 'Booking confirmed' });
-    },
-    onError: (error) => {
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('confirmBooking', () => confirmBookingMutation.mutate(), null);
-      } else {
-        toast({ title: 'Failed to confirm booking', description: error.message, variant: 'destructive' });
-      }
     }
   });
 
@@ -147,10 +125,7 @@ export default function InstructorBookingCalendar() {
         status: 'declined_by_instructor',
         cancelledAt: new Date().toISOString(),
         cancelledByRole: 'instructor',
-        cancellationReason: reason,
-        startAt: booking.startAtUtc || booking.startAt,
-        endAt: booking.endAtUtc || booking.endAt,
-        instructorId: booking.instructorId
+        cancellationReason: reason
       });
 
       // Create notification for pupil
@@ -165,13 +140,6 @@ export default function InstructorBookingCalendar() {
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);
       toast({ title: 'Booking declined' });
-    },
-    onError: (error) => {
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('declineBooking', (reason) => declineBookingMutation.mutate({ bookingId: booking?.id, reason }), null);
-      } else {
-        toast({ title: 'Failed to decline booking', description: error.message, variant: 'destructive' });
-      }
     }
   });
 
@@ -214,9 +182,7 @@ export default function InstructorBookingCalendar() {
       if (slotInstance) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
-          bookingId: null,
-          startAtUtc: slotInstance.startAtUtc,
-          endAtUtc: slotInstance.endAtUtc
+          bookingId: null
         });
       }
     },
@@ -231,11 +197,7 @@ export default function InstructorBookingCalendar() {
       setDeleteTarget(null);
     },
     onError: (error) => {
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('deleteBooking', () => deleteBookingMutation.mutate(deleteTarget), deleteTarget);
-      } else {
-        toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
-      }
+      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
     }
   });
 

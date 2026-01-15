@@ -38,101 +38,43 @@ const DVSA_SKILLS = [
   { code: '27', name: 'Independent driving / Following routes & Sat Nav' }
 ];
 
-const defaultFormData = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
-  pickupAddress: '',
-  preferredDaysTimes: '',
-  status: 'Active',
-  provisionalLicenceNumber: '',
-  theoryTestDate: '',
-  theoryTestNotBooked: false,
-  theoryTestPassed: false,
-  practicalTestDate: '',
-  practicalTestTime: '',
-  practicalTestNotBooked: false,
-  practicalTestPassed: false,
-  practicalTestCentre: '',
-  targetHours: 45,
-  hoursCompleted: 0,
-  hourlyRate: 0,
-  bulkAmountPaid: 0,
-  bulkPaymentBalance: 0,
-  tags: []
-};
-
 export default function PupilFormModal({ open, onClose, existingPupil, onSave }) {
-  const [formData, setFormData] = useState(existingPupil || defaultFormData);
+  const [formData, setFormData] = useState(existingPupil || {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    pickupAddress: '',
+    preferredDaysTimes: '',
+    status: 'Active',
+    provisionalLicenceNumber: '',
+    theoryTestDate: '',
+    theoryTestNotBooked: false,
+    theoryTestPassed: false,
+    practicalTestDate: '',
+    practicalTestTime: '',
+    practicalTestNotBooked: false,
+    practicalTestPassed: false,
+    practicalTestCentre: '',
+    targetHours: 45,
+    hoursCompleted: 0,
+    hourlyRate: 0,
+    bulkAmountPaid: 0,
+    bulkPaymentBalance: 0,
+    tags: []
+  });
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
-  const [validationErrors, setValidationErrors] = useState({});
-
-  // Reset form when modal opens/closes or when existingPupil changes
-  React.useEffect(() => {
-    if (open) {
-      setFormData(existingPupil || defaultFormData);
-      setValidationErrors({});
-      setActiveTab('personal');
-    }
-  }, [open, existingPupil]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const validateForm = () => {
-    const errors = {};
-    
-    // Required fields validation
-    if (!formData.firstName?.trim()) {
-      errors.firstName = 'First name is required';
-    }
-    if (!formData.lastName?.trim()) {
-      errors.lastName = 'Last name is required';
-    }
-    if (!formData.email?.trim()) {
-      errors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-    
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
   const handleSubmit = async () => {
-    // Validate form before submission
-    if (!validateForm()) {
-      setActiveTab('personal'); // Switch to personal tab where required fields are
-      return;
-    }
-
     setIsSaving(true);
     try {
       await onSave(formData, !existingPupil);
-      // Success - parent component handles modal close and toast
-      setValidationErrors({});
-    } catch (error) {
-      // Error - keep modal open and show error
-      if (error.message?.includes('email already exists')) {
-        setValidationErrors({ 
-          duplicate: 'A pupil with this email already exists. Please use a different email address.' 
-        });
-        setActiveTab('personal');
-      } else if (error.message?.includes('name already exists')) {
-        setValidationErrors({ 
-          duplicate: 'A pupil with this name already exists. Please use a different name or check if this pupil has already been added.' 
-        });
-        setActiveTab('personal');
-      } else {
-        // Show generic error
-        setValidationErrors({ 
-          duplicate: error.message || 'An error occurred while saving. Please try again.' 
-        });
-        setActiveTab('personal');
-      }
+      onClose();
     } finally {
       setIsSaving(false);
     }
@@ -168,12 +110,6 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
           </TabsList>
 
           <TabsContent value="personal" className="space-y-4 mt-4">
-            {validationErrors.duplicate && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-sm">
-                {validationErrors.duplicate}
-              </div>
-            )}
-            
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name *</Label>
@@ -182,11 +118,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                   value={formData.firstName}
                   onChange={(e) => handleChange('firstName', e.target.value)}
                   placeholder="John"
-                  className={validationErrors.firstName ? 'border-rose-500' : ''}
                 />
-                {validationErrors.firstName && (
-                  <p className="text-xs text-rose-600">{validationErrors.firstName}</p>
-                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name *</Label>
@@ -195,11 +127,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                   value={formData.lastName}
                   onChange={(e) => handleChange('lastName', e.target.value)}
                   placeholder="Smith"
-                  className={validationErrors.lastName ? 'border-rose-500' : ''}
                 />
-                {validationErrors.lastName && (
-                  <p className="text-xs text-rose-600">{validationErrors.lastName}</p>
-                )}
               </div>
             </div>
 
@@ -212,15 +140,10 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                   value={formData.email}
                   onChange={(e) => handleChange('email', e.target.value)}
                   placeholder="john@example.com"
-                  className={validationErrors.email ? 'border-rose-500' : ''}
                 />
-                {validationErrors.email ? (
-                  <p className="text-xs text-rose-600">{validationErrors.email}</p>
-                ) : (
-                  <p className="text-xs text-slate-500">
-                    This email will be used to link the learner's account
-                  </p>
-                )}
+                <p className="text-xs text-slate-500">
+                  This email will be used to link the learner's account
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone</Label>
@@ -531,7 +454,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
           </Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={isSaving} 
+            disabled={isSaving || !formData.firstName || !formData.lastName} 
             className="bg-teal-600 hover:bg-teal-700 gap-2"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}

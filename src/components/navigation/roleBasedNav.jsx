@@ -11,9 +11,7 @@ import {
   FileText,
   Lock,
   StickyNote,
-  Notebook,
-  TrendingUp,
-  Wallet
+  Notebook
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -45,13 +43,6 @@ export const sharedNavLinks = [
     icon: MessageCircle,
     instructorPage: 'InstructorChats',
     learnerPage: 'LearnerChats'
-  },
-  {
-    id: 'payments',
-    name: 'Payment Management',
-    icon: Wallet,
-    instructorPage: 'InstructorPayments',
-    learnerPage: 'LearnerPayments'
   }
 ];
 
@@ -59,7 +50,6 @@ export const sharedNavLinks = [
 export const instructorOnlyLinks = [
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
-  { name: 'Analytics', icon: TrendingUp, page: 'InstructorAnalytics' },
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
   { name: 'Pupil Notes', icon: Notebook, page: 'InstructorPupilNotes' },
   { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },

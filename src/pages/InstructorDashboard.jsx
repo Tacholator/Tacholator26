@@ -45,6 +45,12 @@ export default function InstructorDashboard() {
     enabled: !!user?.id
   });
 
+  const { data: lessons = [] } = useQuery({
+    queryKey: ['lessons', user?.id],
+    queryFn: () => base44.entities.Lesson.filter({ instructorId: user?.id }, '-date'),
+    enabled: !!user?.id
+  });
+
   const { data: bookings = [] } = useQuery({
     queryKey: ['bookings', user?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: user?.id }, '-startAtUtc'),
@@ -72,10 +78,19 @@ export default function InstructorDashboard() {
   const today = moment().format('YYYY-MM-DD');
   const now = moment();
 
-  // Bookings needing outcome (past bookings not marked as completed/cancelled/no_show)
+  const todayLessons = lessons
+    .filter(l => l.date === today)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+  const nextLesson = todayLessons.find(l => {
+    const lessonTime = moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm');
+    return lessonTime.isAfter(now) && l.status === 'Scheduled';
+  });
+
+  // Lessons needing outcome (past lessons not marked as completed/cancelled/no_show)
   const lessonsNeedingOutcome = bookings.filter(b => {
     const endTime = moment(b.endAtUtc);
-    return endTime.isBefore(now) && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
+    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
   }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
 
   // Today's bookings that are upcoming or need outcome
@@ -91,7 +106,7 @@ export default function InstructorDashboard() {
       const endTime = moment(b.endAtUtc);
       const isUpcoming = startTime.isAfter(now);
       const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
-      return (isUpcoming || isOngoing) && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
+      return (isUpcoming || isOngoing) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
     })
     .sort((a, b) => {
       // Sort by how close they are to current time
@@ -104,42 +119,39 @@ export default function InstructorDashboard() {
     const startTime = moment(b.startAtUtc);
     // Exclude the next relevant booking from this list
     return startTime.isAfter(now) && 
-           ['reserved_pending_instructor', 'confirmed'].includes(b.status) &&
+           ['pending', 'confirmed', 'in_progress'].includes(b.status) &&
            b.id !== nextRelevantBooking?.id;
   }).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
 
   const todayNeedingOutcome = todayBookings.filter(b => {
     const endTime = moment(b.endAtUtc);
-    return endTime.isBefore(now) && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
+    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
   }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
 
   const getStatusColor = (status) => {
     const colors = {
-      reserved_pending_instructor: 'bg-purple-100 text-purple-700',
+      pending: 'bg-slate-100 text-slate-700',
       confirmed: 'bg-blue-100 text-blue-700',
+      in_progress: 'bg-amber-100 text-amber-700',
       completed: 'bg-slate-300 text-slate-700',
       cancelled: 'bg-rose-100 text-rose-700',
-      cancelled_by_pupil: 'bg-rose-100 text-rose-700',
-      cancelled_late_by_pupil: 'bg-rose-100 text-rose-700',
-      cancelled_by_instructor: 'bg-rose-100 text-rose-700',
-      declined_by_instructor: 'bg-rose-100 text-rose-700',
       no_show: 'bg-red-100 text-red-700'
     };
     return colors[status] || 'bg-slate-100 text-slate-700';
   };
 
-  // Context booking for quick action (ongoing or just finished within 3 hours)
-  const contextBooking = todayBookings.find(b => {
-    const startTime = moment(b.startAtUtc).local();
-    const endTime = moment(b.endAtUtc).local();
+  // Context lesson for quick action (ongoing or just finished within 3 hours)
+  const contextLesson = todayLessons.find(l => {
+    const startTime = moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm');
+    const endTime = moment(`${l.date} ${l.endTime}`, 'YYYY-MM-DD HH:mm');
     
-    // Ongoing booking
-    if (startTime.isSameOrBefore(now) && endTime.isAfter(now) && b.status === 'confirmed') {
+    // Ongoing lesson
+    if (startTime.isSameOrBefore(now) && endTime.isAfter(now) && l.status === 'Scheduled') {
       return true;
     }
     
     // Just finished within 3 hours
-    if (endTime.isSameOrBefore(now) && now.diff(endTime, 'minutes') <= 180 && b.status === 'confirmed') {
+    if (endTime.isSameOrBefore(now) && now.diff(endTime, 'minutes') <= 180 && l.status === 'Scheduled') {
       return true;
     }
     
@@ -179,11 +191,11 @@ export default function InstructorDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
-        {/* Quick Action - Mark Booking (contextual) */}
-        {contextBooking && (
+        {/* Quick Action - Mark Lesson (contextual) */}
+        {contextLesson && (
           <div className="mb-4">
             <Button 
-              onClick={() => handleMarkLesson(contextBooking.id)}
+              onClick={() => handleMarkLesson(contextLesson.id)}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
             >
               <CheckCircle className="w-4 h-4" />
@@ -249,7 +261,7 @@ export default function InstructorDashboard() {
                     </p>
                     <div className="flex items-center gap-2 mt-2">
                       <Badge className={getStatusColor(nextRelevantBooking.status)}>
-                        {nextRelevantBooking.status === 'reserved_pending_instructor' ? 'Pending' : nextRelevantBooking.status}
+                        {nextRelevantBooking.status}
                       </Badge>
                       <span className="text-sm text-slate-600">
                         {nextRelevantBooking.durationHours}h
@@ -299,7 +311,7 @@ export default function InstructorDashboard() {
                                 {moment(booking.startAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
                               </p>
                               <Badge className={`${getStatusColor(booking.status)} text-xs mt-1`}>
-                                {booking.status === 'reserved_pending_instructor' ? 'Pending' : booking.status}
+                                {booking.status}
                               </Badge>
                             </div>
                             <span className="text-xs text-slate-500">{booking.durationHours}h</span>

@@ -37,7 +37,6 @@ import {
 } from 'lucide-react';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
-import { MaintenanceProvider } from '@/components/maintenance/MaintenanceProvider';
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -94,8 +93,7 @@ export default function Layout({ children, currentPageName }) {
   }
 
   return (
-    <MaintenanceProvider>
-      <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[#071739] border-r border-[#071739] px-6 pb-4">
@@ -387,6 +385,5 @@ export default function Layout({ children, currentPageName }) {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-    </MaintenanceProvider>
   );
 }

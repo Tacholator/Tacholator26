@@ -30,7 +30,6 @@ export default function PupilReserveLessonModal({
   const [drivingExperience, setDrivingExperience] = useState('');
   const [transmissionType, setTransmissionType] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [showValidationError, setShowValidationError] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -67,11 +66,6 @@ export default function PupilReserveLessonModal({
   const isFirstBooking = existingBookings.length === 0;
 
   const handleReserve = () => {
-    if (!isFormValid) {
-      setShowValidationError(true);
-      return;
-    }
-    
     const dropoffFinal = dropoffSameAsPickup ? pickupLocation : dropoffLocation;
     
     onReserve({
@@ -98,7 +92,7 @@ export default function PupilReserveLessonModal({
 
   return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Request a Lesson</DialogTitle>
           <DialogDescription>
@@ -293,23 +287,6 @@ export default function PupilReserveLessonModal({
               I agree to the Lesson Terms & Conditions and understand the 48-hour cancellation policy *
             </label>
           </div>
-
-          {/* Validation Error */}
-          {showValidationError && !isFormValid && (
-            <div className="bg-rose-50 border border-rose-200 rounded-lg p-3 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
-              <div className="text-sm text-rose-700">
-                <p className="font-medium">Please complete all required fields:</p>
-                <ul className="list-disc list-inside mt-1 space-y-0.5">
-                  {!pickupLocation.trim() && <li>Pickup location</li>}
-                  {!dropoffSameAsPickup && !dropoffLocation.trim() && <li>Drop-off location</li>}
-                  {isFirstBooking && !drivingExperience && <li>Driving experience</li>}
-                  {isFirstBooking && !transmissionType && <li>Transmission type</li>}
-                  {!agreeTerms && <li>Accept terms and conditions</li>}
-                </ul>
-              </div>
-            </div>
-          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>

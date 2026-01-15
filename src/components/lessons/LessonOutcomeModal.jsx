@@ -21,12 +21,10 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 import moment from 'moment';
-import { useMaintenance } from '@/components/maintenance/MaintenanceProvider';
 
 export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isMaintenanceError, handleMaintenanceError } = useMaintenance();
   const [formData, setFormData] = useState({
     completionOutcome: 'completed',
     chargesApplied: true,
@@ -67,7 +65,6 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         chargesDecisionReason: '',
         completionNote: ''
       });
-      setConfirmDialogOpen(false);
     }
   }, [open]);
 
@@ -79,7 +76,28 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         no_show: 'no_show'
       };
 
-      // Apply charges logic first if needed (before updating status)
+      // Update lesson or booking
+      if (lessonId && lesson) {
+        await base44.entities.Lesson.update(lessonId, {
+          status: statusMap[data.completionOutcome],
+          completionOutcome: data.completionOutcome,
+          chargesApplied: data.chargesApplied,
+          chargesDecisionReason: data.chargesDecisionReason || null,
+          completionNote: data.completionNote || null,
+          completedAt: new Date().toISOString()
+        });
+      } else if (bookingId && booking) {
+        await base44.entities.LessonBooking.update(bookingId, {
+          status: data.completionOutcome,
+          completionOutcome: data.completionOutcome,
+          chargesApplied: data.chargesApplied,
+          chargesDecisionReason: data.chargesDecisionReason || null,
+          completionNote: data.completionNote || null,
+          completedAt: new Date().toISOString()
+        });
+      }
+
+      // Apply charges logic if needed
       const pupilId = lesson?.pupilId || booking?.pupilId;
       const pupil = pupils.find(p => p.id === pupilId);
       
@@ -93,74 +111,32 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
           durationHours = booking.durationHours || 0;
         }
         
-        if (durationHours > 0) {
-          const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
-          
-          // Calculate financial deduction
-          const hourlyRate = pupil.hourlyRate || 0;
-          const lessonCost = durationHours * hourlyRate;
-          const currentBalance = pupil.bulkPaymentBalance || 0;
-          const newBalance = currentBalance - lessonCost;
-          
-          // Update pupil with hours and new balance
-          await base44.entities.Pupil.update(pupil.id, { 
-            hoursCompleted: newHoursCompleted,
-            bulkPaymentBalance: newBalance
+        const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
+        
+        // Calculate financial deduction
+        const hourlyRate = pupil.hourlyRate || 0;
+        const lessonCost = durationHours * hourlyRate;
+        const newBalance = Math.max(0, (pupil.bulkPaymentBalance || 0) - lessonCost);
+        
+        // Update pupil with hours and new balance
+        await base44.entities.Pupil.update(pupil.id, { 
+          hoursCompleted: newHoursCompleted,
+          bulkPaymentBalance: newBalance
+        });
+        
+        // Create payment ledger entry
+        if (lessonCost > 0) {
+          await base44.entities.PaymentLedger.create({
+            userId: pupil.linkedUserId || pupil.id,
+            bookingId: bookingId || null,
+            type: 'charge',
+            reason: 'lesson_confirmed_charge',
+            amountGbp: lessonCost,
+            hours: durationHours,
+            createdByRole: 'instructor',
+            note: `Lesson completed: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
           });
-          
-          // Create payment ledger entry if there's a cost
-          if (lessonCost > 0) {
-            await base44.entities.PaymentLedger.create({
-              userId: pupil.linkedUserId || pupil.id,
-              bookingId: bookingId || null,
-              type: 'charge',
-              reason: 'lesson_confirmed_charge',
-              amountGbp: lessonCost,
-              hours: durationHours,
-              createdByRole: 'instructor',
-              note: `Lesson completed: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
-            });
-          }
         }
-      }
-
-      // Update lesson or booking
-      if (lessonId && lesson) {
-        const updateData = {
-          status: statusMap[data.completionOutcome],
-          completionOutcome: data.completionOutcome,
-          chargesApplied: data.chargesApplied,
-          completedAt: new Date().toISOString()
-        };
-        
-        // Only include optional fields if they have values
-        if (data.chargesDecisionReason) {
-          updateData.chargesDecisionReason = data.chargesDecisionReason;
-        }
-        if (data.completionNote) {
-          updateData.completionNote = data.completionNote;
-        }
-        
-        await base44.entities.Lesson.update(lessonId, updateData);
-      } else if (bookingId && booking) {
-        const updateData = {
-          instructorId: booking.instructorId,
-          startAt: booking.startAtUtc || booking.startAt,
-          endAt: booking.endAtUtc || booking.endAt,
-          status: data.completionOutcome === 'completed' ? 'COMPLETED' : 
-                  data.completionOutcome === 'cancelled' ? 'CANCELLED' : 'NO_SHOW',
-          chargesApplied: data.chargesApplied
-        };
-        
-        // Only include optional fields if they have values
-        if (data.chargesDecisionReason) {
-          updateData.chargesDecisionReason = data.chargesDecisionReason;
-        }
-        if (data.completionNote) {
-          updateData.completionNote = data.completionNote;
-        }
-        
-        await base44.entities.LessonBooking.update(bookingId, updateData);
       }
     },
     onSuccess: () => {
@@ -169,22 +145,11 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
       queryClient.invalidateQueries(['bookings']);
       queryClient.invalidateQueries(['booking', bookingId]);
       queryClient.invalidateQueries(['pupils']);
-      queryClient.invalidateQueries(['lessonBookings']);
-      toast({ title: 'Lesson outcome saved', duration: 3000 });
-      setConfirmDialogOpen(false);
+      toast({ title: 'Lesson updated' });
       onClose();
     },
-    onError: (error) => {
-      setConfirmDialogOpen(false);
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('setLessonOutcome', () => updateOutcomeMutation.mutate(formData), formData);
-      } else {
-        toast({ 
-          title: 'Failed to save outcome', 
-          description: error.message || 'Please try again',
-          variant: 'destructive' 
-        });
-      }
+    onError: () => {
+      toast({ title: 'Failed to update lesson', variant: 'destructive' });
     }
   });
 
@@ -207,7 +172,7 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
   };
 
   const handleConfirm = () => {
-    // Keep dialog open while saving, it will close on success/error
+    setConfirmDialogOpen(false);
     updateOutcomeMutation.mutate(formData);
   };
 
@@ -390,20 +355,9 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleConfirm} 
-              disabled={isLoading}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                'Confirm'
-              )}
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirm} className="bg-emerald-600 hover:bg-emerald-700">
+              Confirm
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

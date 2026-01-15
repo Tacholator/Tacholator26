@@ -21,7 +21,6 @@ import Calendar24Hour from '@/components/booking/Calendar24Hour';
 import PupilReserveLessonModal from '@/components/booking/PupilReserveLessonModal';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
-import { useMaintenance } from '@/components/maintenance/MaintenanceProvider';
 
 export default function LearnerBookingCalendar() {
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -31,7 +30,6 @@ export default function LearnerBookingCalendar() {
   const [cancellingBooking, setCancellingBooking] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { isMaintenanceError, handleMaintenanceError } = useMaintenance();
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -55,19 +53,10 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
-  // Only fetch pupil's own bookings (excluding NO_SHOW) for visibility in calendar
   const { data: bookings = [] } = useQuery({
-    queryKey: ['myBookingsForCalendar', pupil?.id],
-    queryFn: async () => {
-      if (!pupil?.id || !pupil?.instructorId) return [];
-      const allBookings = await base44.entities.LessonBooking.filter({ 
-        pupilId: pupil.id,
-        instructorId: pupil.instructorId 
-      });
-      // Filter out NO_SHOW bookings - these should never be visible to pupils
-      return allBookings.filter(b => b.status !== 'NO_SHOW');
-    },
-    enabled: !!pupil?.id && !!pupil?.instructorId,
+    queryKey: ['instructorBookings', pupil?.instructorId],
+    queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
+    enabled: !!pupil?.instructorId,
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
@@ -79,35 +68,26 @@ export default function LearnerBookingCalendar() {
   });
 
   const { data: myBookings = [] } = useQuery({
-    queryKey: ['myBookings', pupil?.id],
-    queryFn: async () => {
-      if (!pupil?.id) return [];
-      const allBookings = await base44.entities.LessonBooking.filter({ pupilId: pupil.id });
-      // Filter out NO_SHOW bookings - these should never be visible to pupils
-      return allBookings.filter(b => b.status !== 'NO_SHOW');
-    },
-    enabled: !!pupil?.id,
-    refetchInterval: 5000
+    queryKey: ['myBookings', user?.id],
+    queryFn: () => base44.entities.LessonBooking.filter({ pupilId: pupil.id }),
+    enabled: !!pupil?.id
   });
 
   const reserveBookingMutation = useMutation({
     mutationFn: async ({ pickupLocation, dropoffLocation, notesFromPupil, firstTimeData }) => {
       // Use slot instance times as source of truth
       const startMoment = selectedSlotInstance 
-        ? moment(selectedSlotInstance.startAtUtc)
+        ? moment(selectedSlotInstance.startAtUtc).local()
         : moment(selectedSlot);
       const endMoment = selectedSlotInstance
-        ? moment(selectedSlotInstance.endAtUtc)
+        ? moment(selectedSlotInstance.endAtUtc).local()
         : startMoment.clone().add(1, 'hours');
       const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
-      
       const booking = await base44.entities.LessonBooking.create({
         instructorId: pupil.instructorId,
         pupilId: pupil.id,
-        startAt: startMoment.toISOString(),
-        endAt: endMoment.toISOString(),
-        startAtUtc: startMoment.toISOString(),
-        endAtUtc: endMoment.toISOString(),
+        startAtUtc: startMoment.utc().format(),
+        endAtUtc: endMoment.utc().format(),
         durationHours,
         status: 'reserved_pending_instructor',
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
@@ -138,20 +118,13 @@ export default function LearnerBookingCalendar() {
       return booking;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['myBookingsForCalendar']);
+      queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowReserveModal(false);
       setSelectedSlot(null);
       setSelectedSlotInstance(null);
       toast({ title: 'Booking request sent', description: 'Awaiting instructor confirmation' });
-    },
-    onError: (error) => {
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('reserveBooking', (data) => reserveBookingMutation.mutate(data), null);
-      } else {
-        toast({ title: 'Booking failed', description: error.message, variant: 'destructive' });
-      }
     }
   });
 
@@ -164,10 +137,7 @@ export default function LearnerBookingCalendar() {
         cancelledByRole: 'pupil',
         lateCancellation: isLate,
         penaltyAmountGbp: isLate ? booking.totalPriceGbp : 0,
-        penaltyHours: isLate ? booking.durationHours : 0,
-        startAt: booking.startAtUtc || booking.startAt,
-        endAt: booking.endAtUtc || booking.endAt,
-        instructorId: booking.instructorId
+        penaltyHours: isLate ? booking.durationHours : 0
       };
 
       await base44.entities.LessonBooking.update(bookingId, updates);
@@ -196,7 +166,7 @@ export default function LearnerBookingCalendar() {
     },
     onSuccess: (_, { isLate }) => {
       queryClient.invalidateQueries(['myBookings']);
-      queryClient.invalidateQueries(['myBookingsForCalendar']);
+      queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowLateCancelDialog(false);
       setCancellingBooking(null);
@@ -206,13 +176,7 @@ export default function LearnerBookingCalendar() {
       });
     },
     onError: (error) => {
-      setShowLateCancelDialog(false);
-      setCancellingBooking(null);
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('cancelBooking', () => cancelBookingMutation.mutate({ bookingId: cancellingBooking?.id, isLate: false }), { bookingId: cancellingBooking?.id, isLate: false });
-      } else {
-        toast({ title: 'Cancellation failed', description: error.message, variant: 'destructive' });
-      }
+      toast({ title: 'Booking failed', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -233,11 +197,10 @@ export default function LearnerBookingCalendar() {
     }
   };
 
-  // Upcoming bookings: only pending and confirmed, future only
   const upcomingBookings = myBookings.filter(b => 
     ['reserved_pending_instructor', 'confirmed'].includes(b.status) &&
-    moment(b.startAtUtc || b.startAt).isAfter(moment())
-  ).sort((a, b) => moment(a.startAtUtc || a.startAt).diff(moment(b.startAtUtc || b.startAt)));
+    moment(b.startAtUtc).isAfter(moment())
+  ).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
 
   if (!pupil) {
     return (

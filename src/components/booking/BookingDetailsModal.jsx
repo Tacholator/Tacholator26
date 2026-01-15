@@ -19,7 +19,6 @@ import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, 
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useMaintenance } from '@/components/maintenance/MaintenanceProvider';
 import {
   Select,
   SelectContent,
@@ -37,7 +36,6 @@ export default function BookingDetailsModal({
 }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { isMaintenanceError, handleMaintenanceError } = useMaintenance();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showReassignDialog, setShowReassignDialog] = useState(false);
@@ -87,13 +85,10 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status - preserve required fields
+      // Update booking status
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'confirmed',
-        confirmedAt: new Date().toISOString(),
-        startAt: booking.startAtUtc || booking.startAt,
-        endAt: booking.endAtUtc || booking.endAt,
-        instructorId: booking.instructorId
+        confirmedAt: new Date().toISOString()
       });
 
       // Update slot instance status if exists
@@ -122,12 +117,8 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
+      toast({ title: 'Confirmation failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('confirmBooking', () => confirmMutation.mutate(), null);
-      } else {
-        toast({ title: 'Confirmation failed', description: error.message, variant: 'destructive' });
-      }
     }
   });
 
@@ -135,12 +126,9 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status - preserve required fields
+      // Update booking status
       await base44.entities.LessonBooking.update(booking.id, {
-        status: 'declined_by_instructor',
-        startAt: booking.startAtUtc || booking.startAt,
-        endAt: booking.endAtUtc || booking.endAt,
-        instructorId: booking.instructorId
+        status: 'declined_by_instructor'
       });
 
       // Release slot instance if exists
@@ -148,9 +136,7 @@ export default function BookingDetailsModal({
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
           reservedByPupilId: null,
-          bookingId: null,
-          startAtUtc: slotInstance.startAtUtc,
-          endAtUtc: slotInstance.endAtUtc
+          bookingId: null
         });
       }
 
@@ -174,12 +160,8 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
+      toast({ title: 'Decline failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('declineBooking', () => declineMutation.mutate(), null);
-      } else {
-        toast({ title: 'Decline failed', description: error.message, variant: 'destructive' });
-      }
     }
   });
 
@@ -187,22 +169,17 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status - preserve required fields
+      // Update booking status
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'cancelled_by_instructor',
-        cancelledAt: new Date().toISOString(),
-        startAt: booking.startAtUtc || booking.startAt,
-        endAt: booking.endAtUtc || booking.endAt,
-        instructorId: booking.instructorId
+        cancelledAt: new Date().toISOString()
       });
 
       // Release slot instance if exists - make it available again
       if (slotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
-          bookingId: null,
-          startAtUtc: slotInstance.startAtUtc,
-          endAtUtc: slotInstance.endAtUtc
+          bookingId: null
         });
       }
 
@@ -230,13 +207,9 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
+      toast({ title: 'Cancellation failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
       setShowCancelDialog(false);
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('cancelBooking', () => cancelMutation.mutate(), null);
-      } else {
-        toast({ title: 'Cancellation failed', description: error.message, variant: 'destructive' });
-      }
     }
   });
 
@@ -287,12 +260,8 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
+      toast({ title: 'Reassignment failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('reassignBooking', () => reassignMutation.mutate(selectedPupilId), selectedPupilId);
-      } else {
-        toast({ title: 'Reassignment failed', description: error.message, variant: 'destructive' });
-      }
     }
   });
 
@@ -300,23 +269,18 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status - preserve required fields
+      // Update booking status
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'cancelled_by_instructor',
-        cancelledAt: new Date().toISOString(),
-        startAt: booking.startAtUtc || booking.startAt,
-        endAt: booking.endAtUtc || booking.endAt,
-        instructorId: booking.instructorId
+        cancelledAt: new Date().toISOString()
       });
 
-      // Release slot instance - keep all required fields
+      // Release slot instance
       if (slotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
           bookingId: null,
-          reservedByPupilId: null,
-          startAtUtc: slotInstance.startAtUtc,
-          endAtUtc: slotInstance.endAtUtc
+          reservedByPupilId: null
         });
       }
 
@@ -344,13 +308,9 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
+      toast({ title: 'Removal failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
       setShowRemoveDialog(false);
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('removePupil', () => removeMutation.mutate(), null);
-      } else {
-        toast({ title: 'Removal failed', description: error.message, variant: 'destructive' });
-      }
     }
   });
 
@@ -358,23 +318,18 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status - preserve required fields
+      // Update booking status
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'cancelled_by_instructor',
-        cancelledAt: new Date().toISOString(),
-        startAt: booking.startAtUtc || booking.startAt,
-        endAt: booking.endAtUtc || booking.endAt,
-        instructorId: booking.instructorId
+        cancelledAt: new Date().toISOString()
       });
 
-      // Release slot instance - keep all required fields
+      // Release slot instance
       if (slotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
           bookingId: null,
-          reservedByPupilId: null,
-          startAtUtc: slotInstance.startAtUtc,
-          endAtUtc: slotInstance.endAtUtc
+          reservedByPupilId: null
         });
       }
 
@@ -402,13 +357,9 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
+      toast({ title: 'Deletion failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
       setShowDeleteDialog(false);
-      if (isMaintenanceError(error)) {
-        handleMaintenanceError('deleteBooking', () => deleteMutation.mutate(), null);
-      } else {
-        toast({ title: 'Deletion failed', description: error.message, variant: 'destructive' });
-      }
     }
   });
 

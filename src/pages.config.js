@@ -6,19 +6,15 @@ import AdminRoleManagement from './pages/AdminRoleManagement';
 import Calendar from './pages/Calendar';
 import CourseWork from './pages/CourseWork';
 import CourseWorkDetail from './pages/CourseWorkDetail';
-import DVSASkillDetail from './pages/DVSASkillDetail';
 import DVSASkills from './pages/DVSASkills';
 import DrivingProgressV2 from './pages/DrivingProgressV2';
 import Home from './pages/Home';
 import HomeworkLibrary from './pages/HomeworkLibrary';
-import InstructorAnalytics from './pages/InstructorAnalytics';
 import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
-import InstructorBookings from './pages/InstructorBookings';
 import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
 import InstructorNotifications from './pages/InstructorNotifications';
-import InstructorPayments from './pages/InstructorPayments';
 import InstructorPupilNotes from './pages/InstructorPupilNotes';
 import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
 import InstructorQuizPreview from './pages/InstructorQuizPreview';
@@ -32,7 +28,6 @@ import LearnerHomework from './pages/LearnerHomework';
 import LearnerLessons from './pages/LearnerLessons';
 import LearnerNotes from './pages/LearnerNotes';
 import LearnerNotifications from './pages/LearnerNotifications';
-import LearnerPayments from './pages/LearnerPayments';
 import LearnerProgress from './pages/LearnerProgress';
 import LearnerResources from './pages/LearnerResources';
 import LearnerScheduledLessons from './pages/LearnerScheduledLessons';
@@ -47,6 +42,7 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
+import DVSASkillDetail from './pages/DVSASkillDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -59,19 +55,15 @@ export const PAGES = {
     "Calendar": Calendar,
     "CourseWork": CourseWork,
     "CourseWorkDetail": CourseWorkDetail,
-    "DVSASkillDetail": DVSASkillDetail,
     "DVSASkills": DVSASkills,
     "DrivingProgressV2": DrivingProgressV2,
     "Home": Home,
     "HomeworkLibrary": HomeworkLibrary,
-    "InstructorAnalytics": InstructorAnalytics,
     "InstructorBookingCalendar": InstructorBookingCalendar,
-    "InstructorBookings": InstructorBookings,
     "InstructorChats": InstructorChats,
     "InstructorDashboard": InstructorDashboard,
     "InstructorMcqReporting": InstructorMcqReporting,
     "InstructorNotifications": InstructorNotifications,
-    "InstructorPayments": InstructorPayments,
     "InstructorPupilNotes": InstructorPupilNotes,
     "InstructorPupilNotesList": InstructorPupilNotesList,
     "InstructorQuizPreview": InstructorQuizPreview,
@@ -85,7 +77,6 @@ export const PAGES = {
     "LearnerLessons": LearnerLessons,
     "LearnerNotes": LearnerNotes,
     "LearnerNotifications": LearnerNotifications,
-    "LearnerPayments": LearnerPayments,
     "LearnerProgress": LearnerProgress,
     "LearnerResources": LearnerResources,
     "LearnerScheduledLessons": LearnerScheduledLessons,
@@ -100,6 +91,7 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
+    "DVSASkillDetail": DVSASkillDetail,
 }
 
 export const pagesConfig = {

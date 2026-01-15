@@ -97,11 +97,11 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
       skill = await base44.entities.ProgressSkill.create({
         pupilId,
         instructorId,
-        skillKey: skillData.skillKey || 'unknown',
-        title: skillData.title || 'Untitled Skill',
-        order: skillData.order || 0,
+        skillKey: skillData.skillKey,
+        title: skillData.title,
+        order: skillData.order,
         status: 'not_started',
-        subsectionsTotal: skillData.subsections?.length || 0,
+        subsectionsTotal: skillData.subsections.length,
         subsectionsCompleted: 0,
         subsectionsRatio: 0
       });
@@ -125,7 +125,7 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
     const canonicalTitles = skillData.subsections.map(s => normalizeTitle(s.title));
     const matchedSubsectionIds = new Set();
     
-    for (const subsectionData of (skillData.subsections || [])) {
+    for (const subsectionData of skillData.subsections) {
       // Apply alias mapping
       const targetTitle = applyAliasMap(skillData.skillKey, subsectionData.title);
       
@@ -146,8 +146,8 @@ export async function initializeProgressSkills(pupilId, instructorId, skillsData
         await base44.entities.ProgressSubsection.create({
           skillId: skill.id,
           pupilId,
-          title: targetTitle || 'Untitled Section',
-          order: subsectionData.order || 0,
+          title: targetTitle,
+          order: subsectionData.order,
           isCompleted: false
         });
       } else {

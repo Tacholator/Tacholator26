@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/use-toast';
 import {
   Select,
   SelectContent,
@@ -45,7 +44,6 @@ export default function PupilList() {
   const [editingPupil, setEditingPupil] = useState(null);
 
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
@@ -115,11 +113,13 @@ export default function PupilList() {
   });
 
   const createPupilMutation = useMutation({
-    mutationFn: (data) => base44.entities.Pupil.create(data)
+    mutationFn: (data) => base44.entities.Pupil.create(data),
+    onSuccess: () => queryClient.invalidateQueries(['pupils'])
   });
 
   const updatePupilMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Pupil.update(id, data)
+    mutationFn: ({ id, data }) => base44.entities.Pupil.update(id, data),
+    onSuccess: () => queryClient.invalidateQueries(['pupils'])
   });
 
   const createSkillsMutation = useMutation({
@@ -128,37 +128,11 @@ export default function PupilList() {
 
   const deletePupilMutation = useMutation({
     mutationFn: (id) => base44.entities.Pupil.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['pupils']);
-      toast({
-        title: "Pupil deleted",
-        description: "The pupil has been removed successfully.",
-        duration: 3000,
-      });
-    }
+    onSuccess: () => queryClient.invalidateQueries(['pupils'])
   });
 
   const handleSavePupil = async (data, isNew) => {
     if (isNew) {
-      // Check for duplicate pupil by email
-      const duplicateEmail = pupils.find(
-        p => p.email?.toLowerCase() === data.email?.toLowerCase()
-      );
-      
-      if (duplicateEmail) {
-        throw new Error('A pupil with this email already exists');
-      }
-
-      // Check for duplicate pupil by first name and last name
-      const duplicateName = pupils.find(
-        p => p.firstName?.toLowerCase() === data.firstName?.toLowerCase() && 
-             p.lastName?.toLowerCase() === data.lastName?.toLowerCase()
-      );
-      
-      if (duplicateName) {
-        throw new Error('A pupil with this name already exists');
-      }
-
       // Check if a learner account exists with the same email
       let linkedUserId = null;
       if (data.email) {
@@ -179,46 +153,15 @@ export default function PupilList() {
         linkedUserId: linkedUserId
       };
       const result = await createPupilMutation.mutateAsync(pupilData);
-      
       // Create DVSA skills for new pupil
-      const skills = DVSA_SKILLS.map((skill, index) => ({
+      const skills = DVSA_SKILLS.map(skill => ({
         pupilId: result.id,
-        instructorId: currentUser?.id,
-        title: skill.name,
-        order: parseInt(skill.code)
+        skillCode: skill.code,
+        skillName: skill.name,
+        status: 'NotStarted'
       }));
       await createSkillsMutation.mutateAsync(skills);
-      
-      // All successful - close modal, show toast, refresh list
-      setShowPupilModal(false);
-      setEditingPupil(null);
-      queryClient.invalidateQueries(['pupils']);
-      toast({
-        title: "Pupil added",
-        description: "The pupil has been added successfully.",
-        duration: 3000,
-      });
     } else {
-      // Check for duplicate email when updating (excluding current pupil)
-      const duplicateEmail = pupils.find(
-        p => p.id !== editingPupil.id && p.email?.toLowerCase() === data.email?.toLowerCase()
-      );
-      
-      if (duplicateEmail) {
-        throw new Error('A pupil with this email already exists');
-      }
-
-      // Check for duplicate name when updating (excluding current pupil)
-      const duplicateName = pupils.find(
-        p => p.id !== editingPupil.id && 
-             p.firstName?.toLowerCase() === data.firstName?.toLowerCase() && 
-             p.lastName?.toLowerCase() === data.lastName?.toLowerCase()
-      );
-      
-      if (duplicateName) {
-        throw new Error('A pupil with this name already exists');
-      }
-
       // When updating, also check for linked user if email changed
       let linkedUserId = editingPupil.linkedUserId;
       if (data.email && data.email !== editingPupil.email) {
@@ -230,16 +173,6 @@ export default function PupilList() {
       await updatePupilMutation.mutateAsync({ 
         id: editingPupil.id, 
         data: { ...data, linkedUserId } 
-      });
-      
-      // Update successful - close modal, show toast, refresh list
-      setShowPupilModal(false);
-      setEditingPupil(null);
-      queryClient.invalidateQueries(['pupils']);
-      toast({
-        title: "Pupil updated",
-        description: "The pupil details have been updated successfully.",
-        duration: 3000,
       });
     }
   };
