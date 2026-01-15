@@ -136,7 +136,9 @@ export default function BookingDetailsModal({
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
           reservedByPupilId: null,
-          bookingId: null
+          bookingId: null,
+          startAtUtc: slotInstance.startAtUtc,
+          endAtUtc: slotInstance.endAtUtc
         });
       }
 
@@ -179,7 +181,9 @@ export default function BookingDetailsModal({
       if (slotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
-          bookingId: null
+          bookingId: null,
+          startAtUtc: slotInstance.startAtUtc,
+          endAtUtc: slotInstance.endAtUtc
         });
       }
 
@@ -275,12 +279,14 @@ export default function BookingDetailsModal({
         cancelledAt: new Date().toISOString()
       });
 
-      // Release slot instance
+      // Release slot instance - keep all required fields
       if (slotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
           bookingId: null,
-          reservedByPupilId: null
+          reservedByPupilId: null,
+          startAtUtc: slotInstance.startAtUtc,
+          endAtUtc: slotInstance.endAtUtc
         });
       }
 
@@ -324,12 +330,14 @@ export default function BookingDetailsModal({
         cancelledAt: new Date().toISOString()
       });
 
-      // Release slot instance
+      // Release slot instance - keep all required fields
       if (slotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
           bookingId: null,
-          reservedByPupilId: null
+          reservedByPupilId: null,
+          startAtUtc: slotInstance.startAtUtc,
+          endAtUtc: slotInstance.endAtUtc
         });
       }
 

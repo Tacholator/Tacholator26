@@ -182,7 +182,9 @@ export default function InstructorBookingCalendar() {
       if (slotInstance) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
-          bookingId: null
+          bookingId: null,
+          startAtUtc: slotInstance.startAtUtc,
+          endAtUtc: slotInstance.endAtUtc
         });
       }
     },
