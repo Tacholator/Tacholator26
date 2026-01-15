@@ -486,11 +486,10 @@ export default function Calendar24Hour({
                               backgroundImage: `repeating-linear-gradient(
                                 45deg,
                                 transparent,
-                                transparent 8px,
-                                #5A5A5A 8px,
-                                #5A5A5A 10px
-                              )`,
-                              opacity: 0.7
+                                transparent 6px,
+                                rgba(90, 90, 90, 0.5) 6px,
+                                rgba(90, 90, 90, 0.5) 8px
+                              )`
                             }}
                           />
                         )}
