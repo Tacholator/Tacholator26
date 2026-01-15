@@ -21,6 +21,7 @@ import Calendar24Hour from '@/components/booking/Calendar24Hour';
 import PupilReserveLessonModal from '@/components/booking/PupilReserveLessonModal';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
+import { useMaintenance } from '@/components/maintenance/MaintenanceProvider';
 
 export default function LearnerBookingCalendar() {
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -30,6 +31,7 @@ export default function LearnerBookingCalendar() {
   const [cancellingBooking, setCancellingBooking] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { isMaintenanceError, handleMaintenanceError } = useMaintenance();
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -53,10 +55,14 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
+  // Only fetch pupil's own bookings for visibility in calendar
   const { data: bookings = [] } = useQuery({
-    queryKey: ['instructorBookings', pupil?.instructorId],
-    queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
-    enabled: !!pupil?.instructorId,
+    queryKey: ['myBookingsForCalendar', pupil?.id],
+    queryFn: () => base44.entities.LessonBooking.filter({ 
+      pupilId: pupil.id,
+      instructorId: pupil.instructorId 
+    }),
+    enabled: !!pupil?.id && !!pupil?.instructorId,
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
@@ -68,9 +74,10 @@ export default function LearnerBookingCalendar() {
   });
 
   const { data: myBookings = [] } = useQuery({
-    queryKey: ['myBookings', user?.id],
+    queryKey: ['myBookings', pupil?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ pupilId: pupil.id }),
-    enabled: !!pupil?.id
+    enabled: !!pupil?.id,
+    refetchInterval: 5000
   });
 
   const reserveBookingMutation = useMutation({
@@ -120,7 +127,7 @@ export default function LearnerBookingCalendar() {
       return booking;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['instructorBookings']);
+      queryClient.invalidateQueries(['myBookingsForCalendar']);
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowReserveModal(false);
@@ -171,7 +178,7 @@ export default function LearnerBookingCalendar() {
     },
     onSuccess: (_, { isLate }) => {
       queryClient.invalidateQueries(['myBookings']);
-      queryClient.invalidateQueries(['instructorBookings']);
+      queryClient.invalidateQueries(['myBookingsForCalendar']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowLateCancelDialog(false);
       setCancellingBooking(null);
@@ -181,7 +188,13 @@ export default function LearnerBookingCalendar() {
       });
     },
     onError: (error) => {
-      toast({ title: 'Booking failed', description: error.message, variant: 'destructive' });
+      setShowLateCancelDialog(false);
+      setCancellingBooking(null);
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('cancelBooking', () => cancelBookingMutation.mutate({ bookingId: cancellingBooking?.id, isLate: false }), { bookingId: cancellingBooking?.id, isLate: false });
+      } else {
+        toast({ title: 'Cancellation failed', description: error.message, variant: 'destructive' });
+      }
     }
   });
 
