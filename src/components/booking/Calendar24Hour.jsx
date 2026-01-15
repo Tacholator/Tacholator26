@@ -210,7 +210,7 @@ export default function Calendar24Hour({
   const days = getDaysInView();
   const timeSlots = getTimeSlots();
 
-  const isSlotClickable = (state, slotInstance, booking) => {
+  const isSlotClickable = (state, slotInstance, booking, blockType) => {
     if (isInstructor) {
       // Instructors can click any booking to view details
       if (booking && blockType === 'booking') {
@@ -320,7 +320,7 @@ export default function Calendar24Hour({
                 {days.map((day, dayIdx) => {
                 const slotStateData = getSlotState(day, timeSlot);
                 const { state, booking, slotInstance, rule, blockType } = slotStateData;
-                const clickable = isSlotClickable(state, slotInstance, booking);
+                const clickable = isSlotClickable(state, slotInstance, booking, blockType);
                 const dateStr = day.format('YYYY-MM-DD');
                 const slotDateTime = `${dateStr}T${timeSlot}:00`;
 
