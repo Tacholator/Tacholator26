@@ -6,6 +6,7 @@ import AdminRoleManagement from './pages/AdminRoleManagement';
 import Calendar from './pages/Calendar';
 import CourseWork from './pages/CourseWork';
 import CourseWorkDetail from './pages/CourseWorkDetail';
+import DVSASkillDetail from './pages/DVSASkillDetail';
 import DVSASkills from './pages/DVSASkills';
 import DrivingProgressV2 from './pages/DrivingProgressV2';
 import Home from './pages/Home';
@@ -42,7 +43,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import DVSASkillDetail from './pages/DVSASkillDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -55,6 +55,7 @@ export const PAGES = {
     "Calendar": Calendar,
     "CourseWork": CourseWork,
     "CourseWorkDetail": CourseWorkDetail,
+    "DVSASkillDetail": DVSASkillDetail,
     "DVSASkills": DVSASkills,
     "DrivingProgressV2": DrivingProgressV2,
     "Home": Home,
@@ -91,7 +92,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "DVSASkillDetail": DVSASkillDetail,
 }
 
 export const pagesConfig = {

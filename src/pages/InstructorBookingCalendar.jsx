@@ -22,6 +22,7 @@ import LunchBreakModal from '@/components/booking/LunchBreakModal';
 import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
 import InstructorScheduleLessonModal from '@/components/booking/InstructorScheduleLessonModal';
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
+import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModal';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
@@ -37,6 +38,8 @@ export default function InstructorBookingCalendar() {
   const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [showCreateSlotModal, setShowCreateSlotModal] = useState(false);
+  const [clickedSlotDateTime, setClickedSlotDateTime] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -150,6 +153,10 @@ export default function InstructorBookingCalendar() {
       // Available slot clicked - open schedule modal
       setSelectedSlotForSchedule(slotInstance);
       setShowScheduleLessonModal(true);
+    } else if (typeof slotInstance === 'string' || !slotInstance) {
+      // Empty area clicked - open create slot modal
+      setClickedSlotDateTime(slotDateTime);
+      setShowCreateSlotModal(true);
     }
   };
 
@@ -158,6 +165,72 @@ export default function InstructorBookingCalendar() {
     setSelectedSlotInstance(slotInstance);
     setShowBookingDetailsModal(true);
   };
+
+  const createSlotMutation = useMutation({
+    mutationFn: async (slotData) => {
+      const { title, startDate, startTime, endTime, repeatWeekly, selectedDays, stopDate } = slotData;
+      
+      if (repeatWeekly) {
+        // Create template
+        const template = await base44.entities.BookableSlotTemplate.create({
+          instructorId: user.id,
+          title: title || 'Available Slot',
+          daysOfWeek: selectedDays,
+          startTimeLocal: startTime,
+          endTimeLocal: endTime,
+          startDate: startDate,
+          endDate: stopDate || null,
+          isActive: true
+        });
+
+        // Generate instances from template
+        const instances = [];
+        const start = moment(startDate);
+        const end = stopDate ? moment(stopDate) : moment(startDate).add(12, 'weeks');
+        
+        while (start.isSameOrBefore(end)) {
+          const dayOfWeek = start.format('ddd').toLowerCase();
+          if (selectedDays.includes(dayOfWeek)) {
+            const startAtUtc = moment(`${start.format('YYYY-MM-DD')} ${startTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
+            const endAtUtc = moment(`${start.format('YYYY-MM-DD')} ${endTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
+            
+            instances.push({
+              instructorId: user.id,
+              templateId: template.id,
+              startAtUtc,
+              endAtUtc,
+              status: 'available',
+              title: title || 'Available Slot'
+            });
+          }
+          start.add(1, 'day');
+        }
+
+        await Promise.all(instances.map(inst => base44.entities.BookableSlotInstance.create(inst)));
+      } else {
+        // Create single instance
+        const startAtUtc = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
+        const endAtUtc = moment(`${startDate} ${endTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
+        
+        await base44.entities.BookableSlotInstance.create({
+          instructorId: user.id,
+          startAtUtc,
+          endAtUtc,
+          status: 'available',
+          title: title || 'Available Slot'
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['slotInstances']);
+      toast({ title: 'Bookable slot created successfully' });
+      setShowCreateSlotModal(false);
+      setClickedSlotDateTime(null);
+    },
+    onError: (error) => {
+      toast({ title: 'Failed to create slot', description: error.message, variant: 'destructive' });
+    }
+  });
 
   const deleteBookingMutation = useMutation({
     mutationFn: async ({ booking, slotInstance }) => {
@@ -327,6 +400,14 @@ export default function InstructorBookingCalendar() {
           onConfirm={confirmBookingMutation.mutate}
           onDecline={(reason) => declineBookingMutation.mutate({ bookingId: selectedBooking?.id, reason })}
           isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending}
+        />
+
+        <CreateBookableSlotModal
+          open={showCreateSlotModal}
+          onOpenChange={setShowCreateSlotModal}
+          onSave={(data) => createSlotMutation.mutate(data)}
+          isSaving={createSlotMutation.isPending}
+          slotDateTime={clickedSlotDateTime}
         />
 
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
