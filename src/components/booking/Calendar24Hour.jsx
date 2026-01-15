@@ -15,8 +15,8 @@ const SLOT_COLORS = {
   unavailable: '#FFB3B3',
   outside_working_hours: '#E8E8E8',
   reserved_pending: '#B39DDB',
-  // Light grey for others viewing pending/confirmed
-  reserved_confirmed_other: '#F2F2F2'
+  // Dark grey for other pupils' bookings
+  reserved_confirmed_other: '#6B6B6B'
 };
 
 export default function Calendar24Hour({ 
@@ -473,7 +473,7 @@ export default function Calendar24Hour({
                           clickable ? 'group-hover:shadow-md transition-shadow' : ''
                         }`}
                         style={{ 
-                          borderColor: isOthersReserved ? '#E0E0E0' : borderColors[state],
+                          borderColor: isOthersReserved ? '#4A4A4A' : borderColors[state],
                           backgroundColor: displayColor,
                           height: '100%'
                         }}
@@ -486,11 +486,11 @@ export default function Calendar24Hour({
                               backgroundImage: `repeating-linear-gradient(
                                 45deg,
                                 transparent,
-                                transparent 8px,
-                                #D9D9D9 8px,
-                                #D9D9D9 10px
+                                transparent 6px,
+                                #4A4A4A 6px,
+                                #4A4A4A 8px
                               )`,
-                              opacity: 0.7
+                              opacity: 0.8
                             }}
                           />
                         )}
@@ -506,19 +506,19 @@ export default function Calendar24Hour({
                         {/* Content */}
                         <div className={`${isOthersReserved ? 'pl-2' : 'pl-3'} pr-2 py-2 h-full flex flex-col justify-center relative z-10`}>
                           {pupilName && (
-                            <div className={`text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-1`}>
+                            <div className={`text-xs font-bold ${isOthersReserved ? 'text-white' : 'text-slate-800'} mb-1`}>
                               {pupilName}
                             </div>
                           )}
-                          <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
+                          <div className={`text-xs font-semibold ${isOthersReserved ? 'text-white' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
                           <div className="mt-1">
                             <span 
                               className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
                               style={{ 
-                                backgroundColor: isOthersReserved ? '#E0E0E0' : `${accentColors[state]}20`,
-                                color: isOthersReserved ? '#999999' : accentColors[state]
+                                backgroundColor: isOthersReserved ? '#4A4A4A' : `${accentColors[state]}20`,
+                                color: isOthersReserved ? '#FFFFFF' : accentColors[state]
                               }}
                             >
                               {displayStatusLabel}
