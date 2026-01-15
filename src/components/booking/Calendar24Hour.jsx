@@ -219,8 +219,14 @@ export default function Calendar24Hour({
       }
       return state === 'available';
     }
-    // For pupils, only available slots from instances are clickable
-    return state === 'available' && slotInstance;
+    // For pupils: available slots OR their own pending/confirmed bookings are clickable
+    if (state === 'available' && slotInstance) {
+      return true;
+    }
+    if ((state === 'reserved_pending' || state === 'confirmed') && isOwnBooking) {
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -427,7 +433,13 @@ export default function Calendar24Hour({
                     // If instructor clicking any booking, open booking details
                     if (isInstructor && booking) {
                       onPendingSlotClick && onPendingSlotClick(booking, slotInstance);
-                    } else {
+                    } 
+                    // If pupil clicking their own pending/confirmed booking, open booking details
+                    else if (!isInstructor && booking && isOwnBooking && (state === 'reserved_pending' || state === 'confirmed')) {
+                      onPendingSlotClick && onPendingSlotClick(booking, slotInstance);
+                    }
+                    // Otherwise open slot booking modal
+                    else {
                       onSlotClick && onSlotClick(slotDateTime, slotInstance || state);
                     }
                   };

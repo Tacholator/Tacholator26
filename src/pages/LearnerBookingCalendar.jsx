@@ -19,6 +19,7 @@ import {
 import { ArrowLeft, Clock, Calendar, Loader2, XCircle, AlertTriangle } from 'lucide-react';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
 import PupilReserveLessonModal from '@/components/booking/PupilReserveLessonModal';
+import PupilBookingDetailsModal from '@/components/booking/PupilBookingDetailsModal';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
@@ -26,6 +27,8 @@ export default function LearnerBookingCalendar() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
   const [showReserveModal, setShowReserveModal] = useState(false);
+  const [showBookingDetailsModal, setShowBookingDetailsModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const [showLateCancelDialog, setShowLateCancelDialog] = useState(false);
   const [cancellingBooking, setCancellingBooking] = useState(null);
   const queryClient = useQueryClient();
@@ -148,6 +151,15 @@ export default function LearnerBookingCalendar() {
 
       await base44.entities.LessonBooking.update(bookingId, updates);
 
+      // Free up the slot instance if linked
+      if (booking.slotInstanceId) {
+        await base44.entities.BookableSlotInstance.update(booking.slotInstanceId, {
+          status: 'available',
+          bookingId: null,
+          reservedByPupilId: null
+        });
+      }
+
       if (isLate) {
         await base44.entities.PaymentLedger.create({
           userId: pupil.id,
@@ -175,14 +187,16 @@ export default function LearnerBookingCalendar() {
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowLateCancelDialog(false);
+      setShowBookingDetailsModal(false);
       setCancellingBooking(null);
+      setSelectedBooking(null);
       toast({ 
         title: 'Lesson cancelled', 
         description: isLate ? 'Full deduction applied due to late cancellation' : 'No penalty applied'
       });
     },
     onError: (error) => {
-      toast({ title: 'Booking failed', description: error.message, variant: 'destructive' });
+      toast({ title: 'Cancellation failed', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -190,6 +204,21 @@ export default function LearnerBookingCalendar() {
     setSelectedSlot(slotDateTime);
     setSelectedSlotInstance(slotInstance);
     setShowReserveModal(true);
+  };
+
+  const handleBookingClick = (booking) => {
+    setSelectedBooking(booking);
+    setShowBookingDetailsModal(true);
+  };
+
+  const handleCancelFromModal = (booking, isLate) => {
+    setShowBookingDetailsModal(false);
+    if (isLate) {
+      setCancellingBooking(booking);
+      setShowLateCancelDialog(true);
+    } else {
+      cancelBookingMutation.mutate({ bookingId: booking.id, isLate: false });
+    }
   };
 
   const handleCancelClick = (booking) => {
@@ -293,6 +322,7 @@ export default function LearnerBookingCalendar() {
               slotInstances={slotInstances}
               availabilityMode="published_slots_only"
               onSlotClick={handleSlotClick}
+              onPendingSlotClick={handleBookingClick}
               isInstructor={false}
               currentPupilId={pupil?.id}
               pupils={[]}
@@ -309,6 +339,15 @@ export default function LearnerBookingCalendar() {
           slotDateTime={selectedSlot}
           slotInstance={selectedSlotInstance}
           hourlyRate={pupil.hourlyRate || 50}
+        />
+
+        {/* Booking Details Modal */}
+        <PupilBookingDetailsModal
+          open={showBookingDetailsModal}
+          onOpenChange={setShowBookingDetailsModal}
+          booking={selectedBooking}
+          onCancel={handleCancelFromModal}
+          isCancelling={cancelBookingMutation.isPending}
         />
 
         {/* Late Cancellation Dialog */}
