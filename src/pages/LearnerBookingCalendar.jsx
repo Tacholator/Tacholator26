@@ -84,19 +84,20 @@ export default function LearnerBookingCalendar() {
     mutationFn: async ({ pickupLocation, dropoffLocation, notesFromPupil, firstTimeData }) => {
       // Use slot instance times as source of truth
       const startMoment = selectedSlotInstance 
-        ? moment(selectedSlotInstance.startAtUtc).local()
+        ? moment(selectedSlotInstance.startAtUtc)
         : moment(selectedSlot);
       const endMoment = selectedSlotInstance
-        ? moment(selectedSlotInstance.endAtUtc).local()
+        ? moment(selectedSlotInstance.endAtUtc)
         : startMoment.clone().add(1, 'hours');
       const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
+      
       const booking = await base44.entities.LessonBooking.create({
         instructorId: pupil.instructorId,
         pupilId: pupil.id,
-        startAt: startMoment.utc().format(),
-        endAt: endMoment.utc().format(),
-        startAtUtc: startMoment.utc().format(),
-        endAtUtc: endMoment.utc().format(),
+        startAt: startMoment.toISOString(),
+        endAt: endMoment.toISOString(),
+        startAtUtc: startMoment.toISOString(),
+        endAtUtc: endMoment.toISOString(),
         durationHours,
         status: 'reserved_pending_instructor',
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
