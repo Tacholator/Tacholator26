@@ -46,18 +46,20 @@ export default function LearnerScheduledLessons() {
   const now = moment();
   
   const upcomingBookings = bookings
-    .filter(b => 
-      (b.status === 'confirmed' || b.status === 'reserved_pending_instructor') && 
-      moment(b.endAtUtc).isAfter(now)
-    )
-    .sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
+    .filter(b => {
+      const isCancelled = ['cancelled_by_pupil', 'cancelled_late_by_pupil', 'cancelled_by_instructor', 'declined_by_instructor'].includes(b.status);
+      const isUpcoming = moment(b.endAtUtc || b.endAt).isAfter(now);
+      return !isCancelled && isUpcoming && (b.status === 'confirmed' || b.status === 'reserved_pending_instructor');
+    })
+    .sort((a, b) => moment(a.startAtUtc || a.startAt).diff(moment(b.startAtUtc || b.startAt)));
 
   const pastBookings = bookings
-    .filter(b => 
-      (b.status === 'completed' || b.status === 'cancelled' || b.status === 'declined_by_instructor') || 
-      moment(b.endAtUtc).isBefore(now)
-    )
-    .sort((a, b) => moment(b.startAtUtc).diff(moment(a.startAtUtc)));
+    .filter(b => {
+      const isCancelled = ['cancelled_by_pupil', 'cancelled_late_by_pupil', 'cancelled_by_instructor', 'declined_by_instructor'].includes(b.status);
+      const isPast = moment(b.endAtUtc || b.endAt).isBefore(now);
+      return b.status === 'completed' || isCancelled || isPast;
+    })
+    .sort((a, b) => moment(b.startAtUtc || b.startAt).diff(moment(a.startAtUtc || a.startAt)));
 
   const handleBookingClick = (booking) => {
     // Navigate to calendar with booking details
@@ -81,16 +83,22 @@ export default function LearnerScheduledLessons() {
       confirmed: 'bg-emerald-100 text-emerald-700',
       reserved_pending_instructor: 'bg-amber-100 text-amber-700',
       completed: 'bg-blue-100 text-blue-700',
-      cancelled: 'bg-slate-100 text-slate-700',
-      declined_by_instructor: 'bg-rose-100 text-rose-700'
+      cancelled_by_pupil: 'bg-slate-100 text-slate-700',
+      cancelled_late_by_pupil: 'bg-rose-100 text-rose-700',
+      cancelled_by_instructor: 'bg-amber-100 text-amber-700',
+      declined_by_instructor: 'bg-rose-100 text-rose-700',
+      no_show: 'bg-red-100 text-red-700'
     };
 
     const statusLabels = {
       confirmed: 'Confirmed',
       reserved_pending_instructor: 'Pending Confirmation',
       completed: 'Completed',
-      cancelled: 'Cancelled',
-      declined_by_instructor: 'Declined'
+      cancelled_by_pupil: 'Cancelled',
+      cancelled_late_by_pupil: 'Cancelled (Late)',
+      cancelled_by_instructor: 'Cancelled by Instructor',
+      declined_by_instructor: 'Declined',
+      no_show: 'No Show'
     };
 
     return (
@@ -132,8 +140,24 @@ export default function LearnerScheduledLessons() {
             )}
             {booking.totalPriceGbp && (
               <div className="flex items-center justify-between text-sm pt-2 border-t">
-                <span className="text-slate-600">Lesson cost</span>
-                <span className="font-semibold text-slate-800">£{booking.totalPriceGbp}</span>
+                <span className="text-slate-600">
+                  {booking.status === 'cancelled_late_by_pupil' ? 'Penalty charged' : 'Lesson cost'}
+                </span>
+                <span className={`font-semibold ${booking.status === 'cancelled_late_by_pupil' ? 'text-rose-600' : 'text-slate-800'}`}>
+                  £{booking.status === 'cancelled_late_by_pupil' && booking.penaltyAmountGbp 
+                    ? booking.penaltyAmountGbp.toFixed(2) 
+                    : booking.totalPriceGbp.toFixed(2)}
+                </span>
+              </div>
+            )}
+            {booking.lateCancellation && booking.cancelledAt && (
+              <div className="text-xs text-rose-600 mt-2 pt-2 border-t">
+                Late cancellation on {moment(booking.cancelledAt).format('D MMM [at] HH:mm')}
+              </div>
+            )}
+            {booking.status === 'cancelled_by_instructor' && booking.cancelledAt && (
+              <div className="text-xs text-amber-600 mt-2 pt-2 border-t">
+                Cancelled by instructor on {moment(booking.cancelledAt).format('D MMM [at] HH:mm')}
               </div>
             )}
           </div>

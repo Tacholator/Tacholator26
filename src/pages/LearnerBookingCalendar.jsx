@@ -202,10 +202,11 @@ export default function LearnerBookingCalendar() {
     }
   };
 
-  const upcomingBookings = myBookings.filter(b => 
-    ['reserved_pending_instructor', 'confirmed'].includes(b.status) &&
-    moment(b.startAtUtc).isAfter(moment())
-  ).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
+  const upcomingBookings = myBookings.filter(b => {
+    const isCancelled = ['cancelled_by_pupil', 'cancelled_late_by_pupil', 'cancelled_by_instructor', 'declined_by_instructor'].includes(b.status);
+    const isUpcoming = moment(b.startAtUtc || b.startAt).isAfter(moment());
+    return !isCancelled && isUpcoming && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
+  }).sort((a, b) => moment(a.startAtUtc || a.startAt).diff(moment(b.startAtUtc || b.startAt)));
 
   if (!pupil) {
     return (
@@ -249,10 +250,22 @@ export default function LearnerBookingCalendar() {
                       </span>
                       <Badge className={
                         booking.status === 'confirmed' 
-                          ? 'bg-blue-100 text-blue-700' 
+                          ? 'bg-emerald-100 text-emerald-700' 
+                          : booking.status === 'cancelled_by_pupil' || booking.status === 'cancelled_late_by_pupil'
+                          ? 'bg-rose-100 text-rose-700'
+                          : booking.status === 'cancelled_by_instructor' || booking.status === 'declined_by_instructor'
+                          ? 'bg-amber-100 text-amber-700'
                           : 'bg-purple-100 text-purple-700'
                       }>
-                        {booking.status === 'confirmed' ? 'Confirmed' : 'Pending'}
+                        {booking.status === 'confirmed' 
+                          ? 'Confirmed' 
+                          : booking.status === 'cancelled_by_pupil' || booking.status === 'cancelled_late_by_pupil'
+                          ? 'Cancelled'
+                          : booking.status === 'cancelled_by_instructor'
+                          ? 'Cancelled by Instructor'
+                          : booking.status === 'declined_by_instructor'
+                          ? 'Declined'
+                          : 'Pending Confirmation'}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-600">
@@ -266,16 +279,23 @@ export default function LearnerBookingCalendar() {
                       £{booking.totalPriceGbp.toFixed(2)}
                     </div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleCancelClick(booking)}
-                    disabled={cancelBookingMutation.isPending}
-                    className="text-rose-600 hover:text-rose-700"
-                  >
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Cancel
-                  </Button>
+                  {!['cancelled_by_pupil', 'cancelled_late_by_pupil', 'cancelled_by_instructor', 'declined_by_instructor'].includes(booking.status) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleCancelClick(booking)}
+                      disabled={cancelBookingMutation.isPending}
+                      className="text-rose-600 hover:text-rose-700"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Cancel
+                    </Button>
+                  )}
+                  {booking.lateCancellation && (
+                    <div className="text-xs text-rose-600 mt-2">
+                      Late cancellation penalty: £{booking.penaltyAmountGbp?.toFixed(2) || booking.totalPriceGbp?.toFixed(2)}
+                    </div>
+                  )}
                 </div>
               ))}
             </CardContent>
