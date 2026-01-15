@@ -341,15 +341,19 @@ export default function Calendar24Hour({
                   unavailable: 'Unavailable'
                 };
 
-                // For non-instructors viewing pending/confirmed slots
-                // If it's their own confirmed booking, show as normal confirmed
-                // If it's someone else's, show as unavailable with grey hatch
+                // For non-instructors (pupils): filter visibility
+                // Show only: their own bookings (pending/confirmed/completed/cancelled) or available slots
+                // Hide: other pupils' bookings (show as unavailable)
                 const isOwnBooking = !isInstructor && booking && booking.pupilId === currentPupilId;
-                const isOthersReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed') && !isOwnBooking;
-                const displayColor = isOthersReserved ? SLOT_COLORS.reserved_confirmed_other : SLOT_COLORS[state];
+                const isOthersBooking = !isInstructor && booking && !isOwnBooking;
+                
+                // If it's another pupil's booking (pending, confirmed, completed, cancelled), show as unavailable
+                const isOthersReserved = isOthersBooking && ['reserved_pending', 'confirmed', 'completed', 'cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'cancelled_by_instructor', 'declined_by_instructor'].includes(state);
+                
+                const displayColor = isOthersReserved ? SLOT_COLORS.unavailable : SLOT_COLORS[state];
 
-                // Override status label for others' confirmed slots
-                const displayStatusLabel = isOthersReserved && state === 'confirmed' ? 'Unavailable' : (statusLabels[state] || state);
+                // Override status label for other pupils' bookings
+                const displayStatusLabel = isOthersReserved ? 'Unavailable' : (statusLabels[state] || state);
 
                 // Get pupil name for instructor view
                 let pupilName = null;
