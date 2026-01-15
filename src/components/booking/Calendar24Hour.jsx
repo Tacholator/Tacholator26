@@ -223,6 +223,8 @@ export default function Calendar24Hour({
     if (state === 'available' && slotInstance) {
       return true;
     }
+    // Check if booking belongs to current pupil
+    const isOwnBooking = booking && booking.pupilId === currentPupilId;
     if ((state === 'reserved_pending' || state === 'confirmed') && isOwnBooking) {
       return true;
     }
