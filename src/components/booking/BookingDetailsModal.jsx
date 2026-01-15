@@ -19,6 +19,7 @@ import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, 
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useMaintenance } from '@/components/maintenance/MaintenanceProvider';
 import {
   Select,
   SelectContent,
@@ -36,6 +37,7 @@ export default function BookingDetailsModal({
 }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { isMaintenanceError, handleMaintenanceError } = useMaintenance();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showReassignDialog, setShowReassignDialog] = useState(false);
@@ -120,8 +122,12 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
-      toast({ title: 'Confirmation failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('confirmBooking', () => confirmMutation.mutate(), null);
+      } else {
+        toast({ title: 'Confirmation failed', description: error.message, variant: 'destructive' });
+      }
     }
   });
 
@@ -168,8 +174,12 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
-      toast({ title: 'Decline failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('declineBooking', () => declineMutation.mutate(), null);
+      } else {
+        toast({ title: 'Decline failed', description: error.message, variant: 'destructive' });
+      }
     }
   });
 
@@ -220,9 +230,13 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
-      toast({ title: 'Cancellation failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
       setShowCancelDialog(false);
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('cancelBooking', () => cancelMutation.mutate(), null);
+      } else {
+        toast({ title: 'Cancellation failed', description: error.message, variant: 'destructive' });
+      }
     }
   });
 
@@ -273,8 +287,12 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
-      toast({ title: 'Reassignment failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('reassignBooking', () => reassignMutation.mutate(selectedPupilId), selectedPupilId);
+      } else {
+        toast({ title: 'Reassignment failed', description: error.message, variant: 'destructive' });
+      }
     }
   });
 
@@ -326,9 +344,13 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
-      toast({ title: 'Removal failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
       setShowRemoveDialog(false);
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('removePupil', () => removeMutation.mutate(), null);
+      } else {
+        toast({ title: 'Removal failed', description: error.message, variant: 'destructive' });
+      }
     }
   });
 
@@ -380,9 +402,13 @@ export default function BookingDetailsModal({
       onOpenChange(false);
     },
     onError: (error) => {
-      toast({ title: 'Deletion failed', description: error.message, variant: 'destructive' });
       setIsProcessing(false);
       setShowDeleteDialog(false);
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('deleteBooking', () => deleteMutation.mutate(), null);
+      } else {
+        toast({ title: 'Deletion failed', description: error.message, variant: 'destructive' });
+      }
     }
   });
 

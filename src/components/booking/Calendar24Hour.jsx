@@ -98,7 +98,12 @@ export default function Calendar24Hour({
       if (overlappingBooking.status === 'completed') {
         return { state: 'completed', booking: overlappingBooking, blockType: 'booking' };
       }
-      if (overlappingBooking.status === 'cancelled') {
+      // All cancellation statuses
+      if (overlappingBooking.status === 'cancelled' || 
+          overlappingBooking.status === 'cancelled_by_pupil' ||
+          overlappingBooking.status === 'cancelled_late_by_pupil' ||
+          overlappingBooking.status === 'cancelled_by_instructor' ||
+          overlappingBooking.status === 'declined_by_instructor') {
         return { state: 'cancelled', booking: overlappingBooking, blockType: 'booking' };
       }
       if (overlappingBooking.status === 'no_show') {
