@@ -8,11 +8,19 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
 
-    if (!user || user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user) {
+      return Response.json({ error: 'Not authenticated. Please sign in again.' }, { status: 401 });
+    }
+
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Only instructors can setup payout details.' }, { status: 403 });
     }
 
     const { action, instructorId, accountId } = await req.json();
+    
+    if (!instructorId && action === 'create') {
+      return Response.json({ error: 'Instructor ID is required.' }, { status: 400 });
+    }
     const url = new URL(req.url);
 
     // Create Connect account
@@ -122,6 +130,22 @@ Deno.serve(async (req) => {
     return Response.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error) {
     console.error('Connect account error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    
+    // Specific Stripe error handling
+    if (error.type === 'StripeInvalidRequestError') {
+      return Response.json({ 
+        error: `Stripe setup error: ${error.message}` 
+      }, { status: 400 });
+    }
+    
+    if (error.type === 'StripeAuthenticationError') {
+      return Response.json({ 
+        error: 'Stripe authentication failed. Please contact support.' 
+      }, { status: 500 });
+    }
+    
+    return Response.json({ 
+      error: error.message || 'Failed to setup payout details. Please try again.' 
+    }, { status: 500 });
   }
 });

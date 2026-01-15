@@ -92,13 +92,15 @@ export default function InstructorPayments() {
       }
     },
     onError: (error) => {
+      console.error('Setup payout error:', error);
+      
+      const errorMessage = error.response?.data?.error 
+        || error.message 
+        || 'Failed to setup payout details. Please try again.';
+      
       toast({
-        title: 'Error',
-        description: error.response?.status === 404 
-          ? "We couldn't process your request. Please refresh and try again."
-          : error.response?.status === 401
-          ? "Your session expired. Please sign in again."
-          : error.message || 'Failed to setup payout details',
+        title: 'Setup Failed',
+        description: errorMessage,
         variant: 'destructive'
       });
     }
@@ -123,13 +125,15 @@ export default function InstructorPayments() {
       });
     },
     onError: (error) => {
+      console.error('Refresh status error:', error);
+      
+      const errorMessage = error.response?.data?.error 
+        || error.message 
+        || 'Failed to refresh status. Please try again.';
+      
       toast({
-        title: 'Error',
-        description: error.response?.status === 404 
-          ? "Couldn't find your payout account. Please try setting it up again."
-          : error.response?.status === 401
-          ? "Your session expired. Please sign in again."
-          : "Failed to refresh status. Please try again.",
+        title: 'Refresh Failed',
+        description: errorMessage,
         variant: 'destructive'
       });
     }
@@ -336,7 +340,7 @@ export default function InstructorPayments() {
                 <div className="flex gap-3">
                   <Button 
                     onClick={() => createConnectAccountMutation.mutate()}
-                    disabled={createConnectAccountMutation.isPending}
+                    disabled={createConnectAccountMutation.isPending || !currentUser?.id}
                     className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
                   >
                     {createConnectAccountMutation.isPending ? (
