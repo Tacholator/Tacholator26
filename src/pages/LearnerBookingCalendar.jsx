@@ -55,13 +55,18 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
-  // Only fetch pupil's own bookings for visibility in calendar
+  // Only fetch pupil's own bookings (excluding NO_SHOW) for visibility in calendar
   const { data: bookings = [] } = useQuery({
     queryKey: ['myBookingsForCalendar', pupil?.id],
-    queryFn: () => base44.entities.LessonBooking.filter({ 
-      pupilId: pupil.id,
-      instructorId: pupil.instructorId 
-    }),
+    queryFn: async () => {
+      if (!pupil?.id || !pupil?.instructorId) return [];
+      const allBookings = await base44.entities.LessonBooking.filter({ 
+        pupilId: pupil.id,
+        instructorId: pupil.instructorId 
+      });
+      // Filter out NO_SHOW bookings - these should never be visible to pupils
+      return allBookings.filter(b => b.status !== 'NO_SHOW');
+    },
     enabled: !!pupil?.id && !!pupil?.instructorId,
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
@@ -75,7 +80,12 @@ export default function LearnerBookingCalendar() {
 
   const { data: myBookings = [] } = useQuery({
     queryKey: ['myBookings', pupil?.id],
-    queryFn: () => base44.entities.LessonBooking.filter({ pupilId: pupil.id }),
+    queryFn: async () => {
+      if (!pupil?.id) return [];
+      const allBookings = await base44.entities.LessonBooking.filter({ pupilId: pupil.id });
+      // Filter out NO_SHOW bookings - these should never be visible to pupils
+      return allBookings.filter(b => b.status !== 'NO_SHOW');
+    },
     enabled: !!pupil?.id,
     refetchInterval: 5000
   });
@@ -223,10 +233,11 @@ export default function LearnerBookingCalendar() {
     }
   };
 
+  // Upcoming bookings: only pending and confirmed, future only
   const upcomingBookings = myBookings.filter(b => 
     ['reserved_pending_instructor', 'confirmed'].includes(b.status) &&
-    moment(b.startAtUtc).isAfter(moment())
-  ).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
+    moment(b.startAtUtc || b.startAt).isAfter(moment())
+  ).sort((a, b) => moment(a.startAtUtc || a.startAt).diff(moment(b.startAtUtc || b.startAt)));
 
   if (!pupil) {
     return (
