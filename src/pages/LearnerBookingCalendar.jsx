@@ -134,6 +134,13 @@ export default function LearnerBookingCalendar() {
       setSelectedSlot(null);
       setSelectedSlotInstance(null);
       toast({ title: 'Booking request sent', description: 'Awaiting instructor confirmation' });
+    },
+    onError: (error) => {
+      if (isMaintenanceError(error)) {
+        handleMaintenanceError('reserveBooking', (data) => reserveBookingMutation.mutate(data), null);
+      } else {
+        toast({ title: 'Booking failed', description: error.message, variant: 'destructive' });
+      }
     }
   });
 
