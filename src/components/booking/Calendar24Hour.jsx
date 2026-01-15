@@ -210,7 +210,7 @@ export default function Calendar24Hour({
   const days = getDaysInView();
   const timeSlots = getTimeSlots();
 
-  const isSlotClickable = (state, slotInstance, booking) => {
+  const isSlotClickable = (state, slotInstance, booking, blockType) => {
     if (isInstructor) {
       // Instructors can click any booking to view details
       if (booking && blockType === 'booking') {
@@ -320,7 +320,7 @@ export default function Calendar24Hour({
                 {days.map((day, dayIdx) => {
                 const slotStateData = getSlotState(day, timeSlot);
                 const { state, booking, slotInstance, rule, blockType } = slotStateData;
-                const clickable = isSlotClickable(state, slotInstance, booking);
+                const clickable = isSlotClickable(state, slotInstance, booking, blockType);
                 const dateStr = day.format('YYYY-MM-DD');
                 const slotDateTime = `${dateStr}T${timeSlot}:00`;
 
@@ -353,9 +353,9 @@ export default function Calendar24Hour({
                 // Override status label for other pupils' bookings
                 const displayStatusLabel = isOthersReserved ? 'Unavailable' : (statusLabels[state] || state);
 
-                // Get pupil name for instructor view
+                // Get pupil name for instructor view (for all booking statuses)
                 let pupilName = null;
-                if (isInstructor && booking && (state === 'reserved_pending' || state === 'confirmed' || state === 'completed' || state === 'cancelled' || state === 'no_show')) {
+                if (isInstructor && booking && blockType === 'booking') {
                   const pupil = pupils.find(p => p.id === booking.pupilId);
                   if (pupil) {
                     pupilName = `${pupil.firstName} ${pupil.lastName}`;
@@ -446,10 +446,10 @@ export default function Calendar24Hour({
                     }
                   };
 
-                  // Show delete icon for instructors on available and confirmed slots only
+                  // Show delete icon for instructors on available slots and confirmed bookings only
                   const showDeleteIcon = isInstructor && (
-                    state === 'available' || 
-                    state === 'confirmed'
+                    (state === 'available' && blockType === 'slotInstance') || 
+                    (state === 'confirmed' && blockType === 'booking')
                   );
 
                   return (
@@ -503,13 +503,18 @@ export default function Calendar24Hour({
                         {/* Content */}
                         <div className={`${isOthersReserved ? 'pl-2' : 'pl-3'} pr-2 py-2 h-full flex flex-col justify-center relative z-10`}>
                           {pupilName && (
-                            <div className={`text-xs font-bold ${isOthersReserved ? 'text-slate-700' : 'text-slate-800'} mb-1`}>
+                            <div className={`text-xs font-bold ${isOthersReserved ? 'text-slate-700' : 'text-slate-800'} mb-1 truncate`}>
                               {pupilName}
                             </div>
                           )}
                           <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-700' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
+                          {booking && booking.durationHours && (
+                            <div className="text-[10px] text-slate-600 mt-0.5">
+                              {booking.durationHours}h lesson
+                            </div>
+                          )}
                           <div className="mt-1">
                             <span 
                               className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
