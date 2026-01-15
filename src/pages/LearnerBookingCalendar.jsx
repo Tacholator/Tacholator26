@@ -53,12 +53,15 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
-  const { data: bookings = [] } = useQuery({
+  const { data: allInstructorBookings = [] } = useQuery({
     queryKey: ['instructorBookings', pupil?.instructorId],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
+
+  // Filter out deleted bookings
+  const bookings = allInstructorBookings.filter(b => !b.isDeleted);
 
   const { data: slotInstances = [] } = useQuery({
     queryKey: ['instructorSlotInstances', pupil?.instructorId],
@@ -67,11 +70,14 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
-  const { data: myBookings = [] } = useQuery({
+  const { data: allMyBookings = [] } = useQuery({
     queryKey: ['myBookings', user?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ pupilId: pupil.id }),
     enabled: !!pupil?.id
   });
+
+  // Filter out deleted bookings
+  const myBookings = allMyBookings.filter(b => !b.isDeleted);
 
   const reserveBookingMutation = useMutation({
     mutationFn: async ({ pickupLocation, dropoffLocation, notesFromPupil, firstTimeData }) => {

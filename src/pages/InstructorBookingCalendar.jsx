@@ -54,11 +54,14 @@ export default function InstructorBookingCalendar() {
     enabled: !!user?.id
   });
 
-  const { data: bookings = [], isLoading: bookingsLoading } = useQuery({
+  const { data: allBookings = [], isLoading: bookingsLoading } = useQuery({
     queryKey: ['lessonBookings', user?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: user.id }),
     enabled: !!user?.id
   });
+
+  // Filter out deleted bookings
+  const bookings = allBookings.filter(b => !b.isDeleted);
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['pupils'],
@@ -237,8 +240,22 @@ export default function InstructorBookingCalendar() {
       if (booking) {
         const pupil = pupils.find(p => p.id === booking.pupilId);
         
-        // Hard delete the booking
-        await base44.entities.LessonBooking.delete(booking.id);
+        // Soft delete the booking - mark as deleted
+        await base44.entities.LessonBooking.update(booking.id, {
+          isDeleted: true,
+          deletedAt: new Date().toISOString(),
+          deletedByRole: 'instructor',
+          status: 'deleted'
+        });
+
+        // Free up the slot instance if linked
+        if (booking.slotInstanceId) {
+          await base44.entities.BookableSlotInstance.update(booking.slotInstanceId, {
+            status: 'available',
+            bookingId: null,
+            reservedByPupilId: null
+          });
+        }
 
         // Notify pupil
         if (pupil?.linkedUserId) {
@@ -252,10 +269,12 @@ export default function InstructorBookingCalendar() {
         }
       }
 
-      if (slotInstance) {
+      // Handle slot instance only deletions (no booking attached)
+      if (slotInstance && !booking) {
         await base44.entities.BookableSlotInstance.update(slotInstance.id, {
           status: 'available',
-          bookingId: null
+          bookingId: null,
+          reservedByPupilId: null
         });
       }
     },
