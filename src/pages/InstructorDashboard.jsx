@@ -87,10 +87,10 @@ export default function InstructorDashboard() {
     return lessonTime.isAfter(now) && l.status === 'Scheduled';
   });
 
-  // Lessons needing outcome (past lessons not marked as completed/cancelled/no_show)
+  // Lessons needing outcome (past bookings not marked as completed/cancelled/no_show)
   const lessonsNeedingOutcome = bookings.filter(b => {
     const endTime = moment(b.endAtUtc);
-    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+    return endTime.isBefore(now) && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
   }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
 
   // Today's bookings that are upcoming or need outcome
@@ -106,7 +106,7 @@ export default function InstructorDashboard() {
       const endTime = moment(b.endAtUtc);
       const isUpcoming = startTime.isAfter(now);
       const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
-      return (isUpcoming || isOngoing) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+      return (isUpcoming || isOngoing) && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
     })
     .sort((a, b) => {
       // Sort by how close they are to current time
@@ -119,22 +119,25 @@ export default function InstructorDashboard() {
     const startTime = moment(b.startAtUtc);
     // Exclude the next relevant booking from this list
     return startTime.isAfter(now) && 
-           ['pending', 'confirmed', 'in_progress'].includes(b.status) &&
+           ['reserved_pending_instructor', 'confirmed'].includes(b.status) &&
            b.id !== nextRelevantBooking?.id;
   }).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
 
   const todayNeedingOutcome = todayBookings.filter(b => {
     const endTime = moment(b.endAtUtc);
-    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+    return endTime.isBefore(now) && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
   }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
 
   const getStatusColor = (status) => {
     const colors = {
-      pending: 'bg-slate-100 text-slate-700',
+      reserved_pending_instructor: 'bg-purple-100 text-purple-700',
       confirmed: 'bg-blue-100 text-blue-700',
-      in_progress: 'bg-amber-100 text-amber-700',
       completed: 'bg-slate-300 text-slate-700',
       cancelled: 'bg-rose-100 text-rose-700',
+      cancelled_by_pupil: 'bg-rose-100 text-rose-700',
+      cancelled_late_by_pupil: 'bg-rose-100 text-rose-700',
+      cancelled_by_instructor: 'bg-rose-100 text-rose-700',
+      declined_by_instructor: 'bg-rose-100 text-rose-700',
       no_show: 'bg-red-100 text-red-700'
     };
     return colors[status] || 'bg-slate-100 text-slate-700';
@@ -261,7 +264,7 @@ export default function InstructorDashboard() {
                     </p>
                     <div className="flex items-center gap-2 mt-2">
                       <Badge className={getStatusColor(nextRelevantBooking.status)}>
-                        {nextRelevantBooking.status}
+                        {nextRelevantBooking.status === 'reserved_pending_instructor' ? 'Pending' : nextRelevantBooking.status}
                       </Badge>
                       <span className="text-sm text-slate-600">
                         {nextRelevantBooking.durationHours}h
@@ -311,7 +314,7 @@ export default function InstructorDashboard() {
                                 {moment(booking.startAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
                               </p>
                               <Badge className={`${getStatusColor(booking.status)} text-xs mt-1`}>
-                                {booking.status}
+                                {booking.status === 'reserved_pending_instructor' ? 'Pending' : booking.status}
                               </Badge>
                             </div>
                             <span className="text-xs text-slate-500">{booking.durationHours}h</span>
