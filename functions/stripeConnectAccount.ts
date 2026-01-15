@@ -42,8 +42,8 @@ Deno.serve(async (req) => {
       if (instructor.stripeConnectAccountId) {
         const accountLink = await stripe.accountLinks.create({
           account: instructor.stripeConnectAccountId,
-          refresh_url: `${url.origin}/InstructorPayments`,
-          return_url: `${url.origin}/InstructorPayments`,
+          refresh_url: `${url.origin}/InstructorPayments?stripe_return=true`,
+          return_url: `${url.origin}/InstructorPayments?stripe_return=true`,
           type: 'account_onboarding'
         });
 
@@ -75,8 +75,8 @@ Deno.serve(async (req) => {
       // Create account link
       const accountLink = await stripe.accountLinks.create({
         account: account.id,
-        refresh_url: `${url.origin}/InstructorPayments`,
-        return_url: `${url.origin}/InstructorPayments`,
+        refresh_url: `${url.origin}/InstructorPayments?stripe_return=true`,
+        return_url: `${url.origin}/InstructorPayments?stripe_return=true`,
         type: 'account_onboarding'
       });
 
@@ -91,8 +91,8 @@ Deno.serve(async (req) => {
 
       const accountLink = await stripe.accountLinks.create({
         account: accountId,
-        refresh_url: `${url.origin}/InstructorPayments`,
-        return_url: `${url.origin}/InstructorPayments`,
+        refresh_url: `${url.origin}/InstructorPayments?stripe_return=true`,
+        return_url: `${url.origin}/InstructorPayments?stripe_return=true`,
         type: 'account_onboarding'
       });
 

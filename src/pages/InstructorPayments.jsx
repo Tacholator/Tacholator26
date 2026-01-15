@@ -20,7 +20,7 @@ export default function InstructorPayments() {
     queryFn: () => base44.auth.me()
   });
 
-  const { data: instructor } = useQuery({
+  const { data: instructor, refetch: refetchInstructor } = useQuery({
     queryKey: ['instructor', currentUser?.id],
     queryFn: async () => {
       const instructors = await base44.entities.Instructor.list();
@@ -28,6 +28,16 @@ export default function InstructorPayments() {
     },
     enabled: !!currentUser?.id
   });
+
+  // Auto-refresh status when returning from Stripe onboarding
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('stripe_return') === 'true' && instructor?.stripeConnectAccountId) {
+      refreshConnectStatusMutation.mutate();
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [instructor?.stripeConnectAccountId]);
 
   const { data: payouts = [], isLoading: loadingPayouts } = useQuery({
     queryKey: ['payouts', currentUser?.id],
@@ -332,7 +342,7 @@ export default function InstructorPayments() {
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Payout Setup Required</AlertTitle>
                     <AlertDescription>
-                      Add your bank details to receive payments from lessons.
+                      Click below to securely add your bank details with Stripe. You'll be able to receive payments from completed lessons directly to your bank account.
                     </AlertDescription>
                   </Alert>
                 )}
