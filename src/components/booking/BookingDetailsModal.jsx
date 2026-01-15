@@ -85,10 +85,13 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status
+      // Update booking status - preserve required fields
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'confirmed',
-        confirmedAt: new Date().toISOString()
+        confirmedAt: new Date().toISOString(),
+        startAt: booking.startAtUtc || booking.startAt,
+        endAt: booking.endAtUtc || booking.endAt,
+        instructorId: booking.instructorId
       });
 
       // Update slot instance status if exists
@@ -126,9 +129,12 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status
+      // Update booking status - preserve required fields
       await base44.entities.LessonBooking.update(booking.id, {
-        status: 'declined_by_instructor'
+        status: 'declined_by_instructor',
+        startAt: booking.startAtUtc || booking.startAt,
+        endAt: booking.endAtUtc || booking.endAt,
+        instructorId: booking.instructorId
       });
 
       // Release slot instance if exists
@@ -171,10 +177,13 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status
+      // Update booking status - preserve required fields
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'cancelled_by_instructor',
-        cancelledAt: new Date().toISOString()
+        cancelledAt: new Date().toISOString(),
+        startAt: booking.startAtUtc || booking.startAt,
+        endAt: booking.endAtUtc || booking.endAt,
+        instructorId: booking.instructorId
       });
 
       // Release slot instance if exists - make it available again
@@ -273,10 +282,13 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status
+      // Update booking status - preserve required fields
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'cancelled_by_instructor',
-        cancelledAt: new Date().toISOString()
+        cancelledAt: new Date().toISOString(),
+        startAt: booking.startAtUtc || booking.startAt,
+        endAt: booking.endAtUtc || booking.endAt,
+        instructorId: booking.instructorId
       });
 
       // Release slot instance - keep all required fields
@@ -324,10 +336,13 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status
+      // Update booking status - preserve required fields
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'cancelled_by_instructor',
-        cancelledAt: new Date().toISOString()
+        cancelledAt: new Date().toISOString(),
+        startAt: booking.startAtUtc || booking.startAt,
+        endAt: booking.endAtUtc || booking.endAt,
+        instructorId: booking.instructorId
       });
 
       // Release slot instance - keep all required fields

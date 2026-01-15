@@ -88,7 +88,10 @@ export default function InstructorBookingCalendar() {
       const booking = bookings.find(b => b.id === bookingId);
       await base44.entities.LessonBooking.update(bookingId, {
         status: 'confirmed',
-        confirmedAt: new Date().toISOString()
+        confirmedAt: new Date().toISOString(),
+        startAt: booking.startAtUtc || booking.startAt,
+        endAt: booking.endAtUtc || booking.endAt,
+        instructorId: booking.instructorId
       });
       
       // Create payment ledger entry
@@ -125,7 +128,10 @@ export default function InstructorBookingCalendar() {
         status: 'declined_by_instructor',
         cancelledAt: new Date().toISOString(),
         cancelledByRole: 'instructor',
-        cancellationReason: reason
+        cancellationReason: reason,
+        startAt: booking.startAtUtc || booking.startAt,
+        endAt: booking.endAtUtc || booking.endAt,
+        instructorId: booking.instructorId
       });
 
       // Create notification for pupil
