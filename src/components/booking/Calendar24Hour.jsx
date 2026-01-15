@@ -115,6 +115,8 @@ export default function Calendar24Hour({
       if (overlappingBooking.status === 'reserved_pending_instructor') {
         return { state: 'reserved_pending', booking: overlappingBooking, blockType: 'booking' };
       }
+      // Catch-all for any other booking status
+      return { state: overlappingBooking.status, booking: overlappingBooking, blockType: 'booking' };
     }
 
     // Check for published slots mode
@@ -211,11 +213,7 @@ export default function Calendar24Hour({
   const isSlotClickable = (state, slotInstance, booking) => {
     if (isInstructor) {
       // Instructors can click any booking to view details
-      if (booking) {
-        return true;
-      }
-      // Instructors can click pending/confirmed slots to view booking details
-      if ((state === 'reserved_pending' || state === 'confirmed') && booking) {
+      if (booking && blockType === 'booking') {
         return true;
       }
       // In published slots mode, instructors can click available slots or anywhere to create new slots
@@ -327,7 +325,7 @@ export default function Calendar24Hour({
                 const slotDateTime = `${dateStr}T${timeSlot}:00`;
 
                 // Determine if this should be rendered as a card
-                const shouldRenderAsCard = state !== 'outside_working_hours' && (blockType === 'booking' || blockType === 'slotInstance' || blockType === 'rule');
+                const shouldRenderAsCard = state !== 'outside_working_hours' && state !== 'available' && (blockType === 'booking' || blockType === 'slotInstance' || blockType === 'rule');
 
                 // Define status labels first
                 const statusLabels = {
@@ -434,7 +432,7 @@ export default function Calendar24Hour({
                     if (!clickable) return;
 
                     // If instructor clicking any booking, open booking details
-                    if (isInstructor && booking) {
+                    if (isInstructor && booking && blockType === 'booking') {
                       onPendingSlotClick && onPendingSlotClick(booking, slotInstance);
                     } else {
                       onSlotClick && onSlotClick(slotDateTime, slotInstance || state);
