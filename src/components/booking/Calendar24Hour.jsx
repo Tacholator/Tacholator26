@@ -444,11 +444,10 @@ export default function Calendar24Hour({
                     }
                   };
 
-                  // Show delete icon for instructors on available, confirmed, and completed slots
+                  // Show delete icon for instructors on available and confirmed slots only
                   const showDeleteIcon = isInstructor && (
                     state === 'available' || 
-                    state === 'confirmed' || 
-                    state === 'completed'
+                    state === 'confirmed'
                   );
 
                   return (
