@@ -45,12 +45,6 @@ export default function InstructorDashboard() {
     enabled: !!user?.id
   });
 
-  const { data: lessons = [] } = useQuery({
-    queryKey: ['lessons', user?.id],
-    queryFn: () => base44.entities.Lesson.filter({ instructorId: user?.id }, '-date'),
-    enabled: !!user?.id
-  });
-
   const { data: bookings = [] } = useQuery({
     queryKey: ['bookings', user?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: user?.id }, '-startAtUtc'),
@@ -78,16 +72,7 @@ export default function InstructorDashboard() {
   const today = moment().format('YYYY-MM-DD');
   const now = moment();
 
-  const todayLessons = lessons
-    .filter(l => l.date === today)
-    .sort((a, b) => a.startTime.localeCompare(b.startTime));
-
-  const nextLesson = todayLessons.find(l => {
-    const lessonTime = moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm');
-    return lessonTime.isAfter(now) && l.status === 'Scheduled';
-  });
-
-  // Lessons needing outcome (past bookings not marked as completed/cancelled/no_show)
+  // Bookings needing outcome (past bookings not marked as completed/cancelled/no_show)
   const lessonsNeedingOutcome = bookings.filter(b => {
     const endTime = moment(b.endAtUtc);
     return endTime.isBefore(now) && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
@@ -143,18 +128,18 @@ export default function InstructorDashboard() {
     return colors[status] || 'bg-slate-100 text-slate-700';
   };
 
-  // Context lesson for quick action (ongoing or just finished within 3 hours)
-  const contextLesson = todayLessons.find(l => {
-    const startTime = moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm');
-    const endTime = moment(`${l.date} ${l.endTime}`, 'YYYY-MM-DD HH:mm');
+  // Context booking for quick action (ongoing or just finished within 3 hours)
+  const contextBooking = todayBookings.find(b => {
+    const startTime = moment(b.startAtUtc).local();
+    const endTime = moment(b.endAtUtc).local();
     
-    // Ongoing lesson
-    if (startTime.isSameOrBefore(now) && endTime.isAfter(now) && l.status === 'Scheduled') {
+    // Ongoing booking
+    if (startTime.isSameOrBefore(now) && endTime.isAfter(now) && b.status === 'confirmed') {
       return true;
     }
     
     // Just finished within 3 hours
-    if (endTime.isSameOrBefore(now) && now.diff(endTime, 'minutes') <= 180 && l.status === 'Scheduled') {
+    if (endTime.isSameOrBefore(now) && now.diff(endTime, 'minutes') <= 180 && b.status === 'confirmed') {
       return true;
     }
     
@@ -194,11 +179,11 @@ export default function InstructorDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
-        {/* Quick Action - Mark Lesson (contextual) */}
-        {contextLesson && (
+        {/* Quick Action - Mark Booking (contextual) */}
+        {contextBooking && (
           <div className="mb-4">
             <Button 
-              onClick={() => handleMarkLesson(contextLesson.id)}
+              onClick={() => handleMarkLesson(contextBooking.id)}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
             >
               <CheckCircle className="w-4 h-4" />
