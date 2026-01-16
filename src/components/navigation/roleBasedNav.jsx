@@ -11,7 +11,8 @@ import {
   FileText,
   Lock,
   StickyNote,
-  Notebook
+  Notebook,
+  CreditCard
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -29,6 +30,13 @@ export const sharedNavLinks = [
     icon: ClipboardList,
     instructorPage: 'HomeworkLibrary',
     learnerPage: 'LearnerHomework'
+  },
+  {
+    id: 'payments',
+    name: 'Payments',
+    icon: CreditCard,
+    instructorPage: 'InstructorPayments',
+    learnerPage: 'LearnerPayments'
   },
   {
     id: 'notifications',
