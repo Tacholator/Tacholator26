@@ -97,11 +97,11 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         });
       }
 
-      // Apply charges logic if needed
+      // Apply charges and update hours logic
       const pupilId = lesson?.pupilId || booking?.pupilId;
       const pupil = pupils.find(p => p.id === pupilId);
       
-      if (data.chargesApplied && data.completionOutcome === 'completed' && pupil) {
+      if (pupil) {
         let durationHours = 0;
         if (lesson) {
           const startMoment = moment(lesson.startTime, 'HH:mm');
@@ -111,31 +111,96 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
           durationHours = booking.durationHours || 0;
         }
         
-        const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
-        
-        // Calculate financial deduction
         const hourlyRate = pupil.hourlyRate || 0;
         const lessonCost = durationHours * hourlyRate;
-        const newBalance = Math.max(0, (pupil.bulkPaymentBalance || 0) - lessonCost);
         
-        // Update pupil with hours and new balance
-        await base44.entities.Pupil.update(pupil.id, { 
-          hoursCompleted: newHoursCompleted,
-          bulkPaymentBalance: newBalance
-        });
-        
-        // Create payment ledger entry
-        if (lessonCost > 0) {
-          await base44.entities.PaymentLedger.create({
-            userId: pupil.linkedUserId || pupil.id,
-            bookingId: bookingId || null,
-            type: 'charge',
-            reason: 'lesson_confirmed_charge',
-            amountGbp: lessonCost,
-            hours: durationHours,
-            createdByRole: 'instructor',
-            note: `Lesson completed: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
-          });
+        // Handle COMPLETED lessons
+        if (data.completionOutcome === 'completed') {
+          if (data.chargesApplied) {
+            // Add to actual lesson hours and deduct payment
+            const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
+            const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
+            
+            await base44.entities.Pupil.update(pupil.id, { 
+              hoursCompleted: newHoursCompleted,
+              bulkPaymentBalance: newBalance
+            });
+            
+            // Create payment ledger entry
+            if (lessonCost > 0) {
+              await base44.entities.PaymentLedger.create({
+                userId: pupil.linkedUserId || pupil.id,
+                bookingId: bookingId || null,
+                type: 'charge',
+                reason: 'lesson_confirmed_charge',
+                amountGbp: lessonCost,
+                hours: durationHours,
+                createdByRole: 'instructor',
+                note: `Lesson completed: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
+              });
+            }
+          }
+        } 
+        // Handle NO_SHOW lessons
+        else if (data.completionOutcome === 'no_show') {
+          // Track in audit hours (not lesson hours)
+          const newAuditNoShowHours = (pupil.auditNoShowHours || 0) + durationHours;
+          
+          if (data.chargesApplied) {
+            // Deduct payment but don't add to lesson hours
+            const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
+            
+            await base44.entities.Pupil.update(pupil.id, { 
+              auditNoShowHours: newAuditNoShowHours,
+              bulkPaymentBalance: newBalance
+            });
+            
+            // Create payment ledger entry
+            if (lessonCost > 0) {
+              await base44.entities.PaymentLedger.create({
+                userId: pupil.linkedUserId || pupil.id,
+                bookingId: bookingId || null,
+                type: 'charge',
+                reason: 'late_cancellation_penalty',
+                amountGbp: lessonCost,
+                hours: durationHours,
+                createdByRole: 'instructor',
+                note: `No show penalty: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
+              });
+            }
+          } else {
+            // Just track audit hours, no payment
+            await base44.entities.Pupil.update(pupil.id, { 
+              auditNoShowHours: newAuditNoShowHours
+            });
+          }
+        }
+        // Handle CANCELLED lessons
+        else if (data.completionOutcome === 'cancelled') {
+          if (data.chargesApplied) {
+            // Track as late cancellation in audit hours
+            const newAuditLateCancellationHours = (pupil.auditLateCancellationHours || 0) + durationHours;
+            const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
+            
+            await base44.entities.Pupil.update(pupil.id, { 
+              auditLateCancellationHours: newAuditLateCancellationHours,
+              bulkPaymentBalance: newBalance
+            });
+            
+            // Create payment ledger entry
+            if (lessonCost > 0) {
+              await base44.entities.PaymentLedger.create({
+                userId: pupil.linkedUserId || pupil.id,
+                bookingId: bookingId || null,
+                type: 'charge',
+                reason: 'late_cancellation_penalty',
+                amountGbp: lessonCost,
+                hours: durationHours,
+                createdByRole: 'instructor',
+                note: `Late cancellation penalty: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
+              });
+            }
+          }
         }
       }
     },

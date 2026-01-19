@@ -382,12 +382,32 @@ export default function PupilProfile() {
 
                 {/* Payment Info */}
                                       {(pupil.hourlyRate > 0 || pupil.bulkPaymentBalance !== 0) && (
-                                        <div className="flex items-center gap-2 text-sm">
-                                          <div className={`px-2 py-1 rounded-lg ${pupil.bulkPaymentBalance < 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                                            Balance: £{(pupil.bulkPaymentBalance || 0).toFixed(2)}
+                                        <div className="space-y-1">
+                                          <div className="flex items-center gap-2 text-sm">
+                                            <div className={`px-2 py-1 rounded-lg ${pupil.bulkPaymentBalance < 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                                              Balance: £{(pupil.bulkPaymentBalance || 0).toFixed(2)}
+                                            </div>
+                                            {pupil.hourlyRate > 0 && (
+                                              <span className="text-slate-400">@ £{pupil.hourlyRate}/hr</span>
+                                            )}
                                           </div>
-                                          {pupil.hourlyRate > 0 && (
-                                            <span className="text-slate-400">@ £{pupil.hourlyRate}/hr</span>
+                                          
+                                          {/* Audit Hours */}
+                                          {((pupil.auditNoShowHours || 0) > 0 || (pupil.auditLateCancellationHours || 0) > 0) && (
+                                            <div className="text-xs text-slate-500 space-y-0.5">
+                                              {(pupil.auditNoShowHours || 0) > 0 && (
+                                                <div className="flex items-center gap-1">
+                                                  <span className="text-amber-600">No-show:</span>
+                                                  <span>{pupil.auditNoShowHours.toFixed(1)}h</span>
+                                                </div>
+                                              )}
+                                              {(pupil.auditLateCancellationHours || 0) > 0 && (
+                                                <div className="flex items-center gap-1">
+                                                  <span className="text-amber-600">Late cancellation:</span>
+                                                  <span>{pupil.auditLateCancellationHours.toFixed(1)}h</span>
+                                                </div>
+                                              )}
+                                            </div>
                                           )}
                                         </div>
                                       )}
@@ -464,6 +484,47 @@ export default function PupilProfile() {
                         </TabsList>
 
           <TabsContent value="progress">
+            {/* Audit Hours Section */}
+            {((pupil?.auditNoShowHours || 0) > 0 || (pupil?.auditLateCancellationHours || 0) > 0) && (
+              <Card className="mb-6 border-amber-200 bg-amber-50/50">
+                <CardHeader>
+                  <CardTitle className="text-amber-900 flex items-center gap-2">
+                    <Clock className="w-5 h-5" />
+                    Audit Hours (Not Included in Progress)
+                  </CardTitle>
+                  <p className="text-sm text-amber-700">
+                    These hours are tracked for record-keeping only and do not count toward lesson completion.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(pupil?.auditNoShowHours || 0) > 0 && (
+                      <div className="p-4 bg-white rounded-lg border border-amber-200">
+                        <div className="text-sm text-amber-600 font-medium mb-1">No-Show Hours</div>
+                        <div className="text-2xl font-bold text-amber-900">
+                          {pupil.auditNoShowHours.toFixed(1)}h
+                        </div>
+                        <div className="text-xs text-amber-600 mt-1">
+                          Lessons where pupil did not attend
+                        </div>
+                      </div>
+                    )}
+                    {(pupil?.auditLateCancellationHours || 0) > 0 && (
+                      <div className="p-4 bg-white rounded-lg border border-amber-200">
+                        <div className="text-sm text-amber-600 font-medium mb-1">Late Cancellation Hours</div>
+                        <div className="text-2xl font-bold text-amber-900">
+                          {pupil.auditLateCancellationHours.toFixed(1)}h
+                        </div>
+                        <div className="text-xs text-amber-600 mt-1">
+                          Lessons cancelled within 48 hours
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <PupilProgressTracker 
               pupilId={pupilId} 
               instructorId={pupil?.instructorId || currentUser?.id}
