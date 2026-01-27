@@ -56,8 +56,8 @@ Deno.serve(async (req) => {
       // Create ledger entry
       await base44.asServiceRole.entities.PaymentLedger.create({
         userId: pupilId,
-        type: 'refund',
-        reason: 'manual_adjustment',
+        type: 'payment',
+        reason: 'balance_top_up',
         amountGbp: parseFloat(amount),
         createdByRole: 'system',
         note: `Top-up payment via Stripe (Session: ${session.id})`
