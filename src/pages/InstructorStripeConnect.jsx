@@ -16,6 +16,7 @@ import {
 
 export default function InstructorStripeConnect() {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -58,17 +59,24 @@ export default function InstructorStripeConnect() {
     },
     onSuccess: (data) => {
       if (data.url) {
+        setErrorMessage(null);
         window.location.href = data.url;
+      } else {
+        setErrorMessage('Failed to get Stripe connection URL. Please try again.');
+        setIsConnecting(false);
       }
     },
     onError: (error) => {
       console.error('Connection error:', error);
+      const errorMsg = error.response?.data?.error || error.message || 'Failed to connect to Stripe';
+      setErrorMessage(errorMsg);
       setIsConnecting(false);
     }
   });
 
   const handleConnect = () => {
     setIsConnecting(true);
+    setErrorMessage(null);
     connectMutation.mutate();
   };
 
@@ -180,6 +188,15 @@ export default function InstructorStripeConnect() {
             )}
 
             <div className="space-y-4">
+              {errorMessage && (
+                <Alert className="border-rose-200 bg-rose-50">
+                  <AlertCircle className="w-4 h-4 text-rose-600" />
+                  <AlertDescription className="text-rose-800">
+                    {errorMessage}
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <div className="bg-slate-50 rounded-lg p-4 space-y-3 text-sm">
                 <h3 className="font-medium text-slate-800">What you'll need:</h3>
                 <ul className="space-y-2 text-slate-600">
