@@ -27,7 +27,22 @@ export default function InstructorStripeConnect() {
     queryKey: ['instructor', user?.id],
     queryFn: async () => {
       const instructors = await base44.entities.Instructor.filter({ created_by: user.email });
-      return instructors[0] || null;
+      
+      if (instructors.length > 0) {
+        return instructors[0];
+      }
+      
+      // Auto-create instructor profile for admin users
+      if (user.role === 'admin') {
+        const newInstructor = await base44.entities.Instructor.create({
+          name: user.full_name || user.email,
+          phone: '',
+          stripeAccountStatus: 'not_connected'
+        });
+        return newInstructor;
+      }
+      
+      return null;
     },
     enabled: !!user
   });
