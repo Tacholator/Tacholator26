@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -14,7 +17,11 @@ import {
   Clock,
   Search,
   DollarSign,
-  Wallet
+  Wallet,
+  Settings,
+  CheckCircle2,
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 import moment from 'moment';
 
@@ -103,6 +110,75 @@ export default function InstructorPayments() {
           <h1 className="text-3xl font-bold text-[#071739]">Payment Management</h1>
           <p className="text-slate-600 mt-2">Track pupil balances and payment activity</p>
         </div>
+
+        {/* Stripe Connect Status Banner */}
+        {instructor.stripeAccountStatus === 'not_connected' && (
+          <Alert className="border-amber-200 bg-amber-50">
+            <AlertCircle className="w-4 h-4 text-amber-600" />
+            <AlertDescription className="flex items-center justify-between">
+              <span className="text-amber-800">
+                Set up your payment details to receive payouts from lesson payments
+              </span>
+              <Link to={createPageUrl('InstructorStripeConnect')}>
+                <Button size="sm" className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Set Up Payments
+                </Button>
+              </Link>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {instructor.stripeAccountStatus === 'pending' && (
+          <Alert className="border-amber-200 bg-amber-50">
+            <AlertCircle className="w-4 h-4 text-amber-600" />
+            <AlertDescription className="flex items-center justify-between">
+              <span className="text-amber-800">
+                Complete your payment setup to start receiving payouts
+              </span>
+              <Link to={createPageUrl('InstructorStripeConnect')}>
+                <Button size="sm" variant="outline">
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Complete Setup
+                </Button>
+              </Link>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {instructor.stripeAccountStatus === 'active' && (
+          <Alert className="border-emerald-200 bg-emerald-50">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <AlertDescription className="flex items-center justify-between">
+              <span className="text-emerald-800">
+                Your payment account is active and ready to receive payouts
+              </span>
+              <Link to={createPageUrl('InstructorStripeConnect')}>
+                <Button size="sm" variant="ghost" className="text-emerald-700 hover:text-emerald-800">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Manage
+                </Button>
+              </Link>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {instructor.stripeAccountStatus === 'restricted' && (
+          <Alert className="border-rose-200 bg-rose-50">
+            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertDescription className="flex items-center justify-between">
+              <span className="text-rose-800">
+                Your payment account requires attention. Please complete the required actions.
+              </span>
+              <Link to={createPageUrl('InstructorStripeConnect')}>
+                <Button size="sm" variant="destructive">
+                  <AlertCircle className="w-4 h-4 mr-2" />
+                  Fix Issues
+                </Button>
+              </Link>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
