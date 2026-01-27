@@ -193,6 +193,12 @@ export default function InstructorStripeConnect() {
                   <AlertCircle className="w-4 h-4 text-rose-600" />
                   <AlertDescription className="text-rose-800">
                     {errorMessage}
+                    {errorMessage.includes('Invalid API Key') && (
+                      <span className="block mt-2 text-sm">
+                        Please check that your Stripe secret key is correctly configured in the dashboard settings. 
+                        It should start with "sk_test_" or "sk_live_".
+                      </span>
+                    )}
                   </AlertDescription>
                 </Alert>
               )}
