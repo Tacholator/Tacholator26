@@ -12,7 +12,8 @@ import {
   Lock,
   StickyNote,
   Notebook,
-  CreditCard
+  CreditCard,
+  Wallet
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -62,7 +63,8 @@ export const instructorOnlyLinks = [
   { name: 'Pupil Notes', icon: Notebook, page: 'InstructorPupilNotes' },
   { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
   { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
-  { name: 'Resources', icon: BookOpen, page: 'InstructorResources' }
+  { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
+  { name: 'Payment Setup', icon: Wallet, page: 'InstructorStripeConnect' }
 ];
 
 // Learner-only navigation items
