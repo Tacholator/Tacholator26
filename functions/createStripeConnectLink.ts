@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import Stripe from 'npm:stripe@17.7.0';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), {
-  apiVersion: '2024-12-18.acacia'
+  apiVersion: '2024-11-20.acacia'
 });
 
 Deno.serve(async (req) => {
@@ -57,9 +57,11 @@ Deno.serve(async (req) => {
       account: accountId,
       refresh_url: refreshUrl,
       return_url: returnUrl,
-      type: 'account_onboarding'
+      type: 'account_onboarding',
+      collect: 'currently_due'
     });
 
+    console.log('Created account link:', accountLink.url);
     return Response.json({ url: accountLink.url });
   } catch (error) {
     console.error('Stripe Connect error:', error);
