@@ -31,11 +31,16 @@ Deno.serve(async (req) => {
       const account = await stripe.accounts.create({
         type: 'express',
         email: user.email,
+        country: 'GB',
         capabilities: {
           card_payments: { requested: true },
           transfers: { requested: true }
         },
-        business_type: 'individual'
+        business_type: 'individual',
+        metadata: {
+          instructor_id: instructor.id,
+          user_email: user.email
+        }
       });
 
       accountId = account.id;
