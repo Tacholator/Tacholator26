@@ -26,6 +26,17 @@ Deno.serve(async (req) => {
 
     let accountId = instructor.stripeAccountId;
 
+    // If account exists, check if it's valid, otherwise create new
+    if (accountId) {
+      try {
+        const existingAccount = await stripe.accounts.retrieve(accountId);
+        console.log('Existing account status:', existingAccount.details_submitted, existingAccount.charges_enabled);
+      } catch (error) {
+        console.error('Failed to retrieve account, will create new:', error.message);
+        accountId = null;
+      }
+    }
+
     // Create Stripe Connect account if doesn't exist
     if (!accountId) {
       const account = await stripe.accounts.create({
@@ -36,7 +47,6 @@ Deno.serve(async (req) => {
           card_payments: { requested: true },
           transfers: { requested: true }
         },
-        business_type: 'individual',
         metadata: {
           instructor_id: instructor.id,
           user_email: user.email
@@ -44,6 +54,7 @@ Deno.serve(async (req) => {
       });
 
       accountId = account.id;
+      console.log('Created new Stripe account:', accountId);
 
       // Update instructor with account ID
       await base44.entities.Instructor.update(instructor.id, {
