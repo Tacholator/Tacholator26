@@ -167,6 +167,26 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
               />
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select 
+                value={formData.status || 'Active'}
+                onValueChange={(value) => handleChange('status', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="OnHold">On Hold</SelectItem>
+                  <SelectItem value="Passed">Passed</SelectItem>
+                  <SelectItem value="Stopped">New Intake</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-slate-500">
+                Non-active pupils can only access the booking calendar
+              </p>
+            </div>
 
           </TabsContent>
 
