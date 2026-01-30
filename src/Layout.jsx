@@ -59,8 +59,20 @@ export default function Layout({ children, currentPageName }) {
   const isInstructor = user?.role === 'admin';
   const isMainAdmin = user?.email === 'fasobah@gmail.com';
   
-  // Build navigation dynamically based on role
-  const baseNavItems = buildNavigation(isInstructor, isMainAdmin);
+  // Fetch pupil status for learners
+  const { data: pupilProfile } = useQuery({
+    queryKey: ['learnerPupilProfile', user?.id],
+    queryFn: async () => {
+      if (isInstructor || !user?.id) return null;
+      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      return pupils.length > 0 ? pupils[0] : null;
+    },
+    enabled: !!user?.id && !isInstructor
+  });
+  
+  // Build navigation dynamically based on role and pupil status
+  const pupilStatus = pupilProfile?.status || 'Active';
+  const baseNavItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus);
   
   // Add admin pages only for main admin
   const navItems = isInstructor && isMainAdmin
