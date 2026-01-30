@@ -84,7 +84,7 @@ export const getPageForRole = (linkId, isInstructor) => {
 };
 
 // Build complete navigation array for a role
-export const buildNavigation = (isInstructor, isMainAdmin = false) => {
+export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active') => {
   const shared = sharedNavLinks.map(link => ({
     name: link.name,
     icon: link.icon,
@@ -93,6 +93,23 @@ export const buildNavigation = (isInstructor, isMainAdmin = false) => {
   }));
 
   const roleSpecific = isInstructor ? instructorOnlyLinks : learnerOnlyLinks;
+
+  // For non-active pupils, only show: Home, Book a Lesson, Payments, Notifications, Chats
+  if (!isInstructor && pupilStatus !== 'Active') {
+    const allowedIds = ['home', 'payments', 'notifications', 'chats'];
+    const allowedShared = shared.filter(link => 
+      allowedIds.includes(sharedNavLinks.find(s => 
+        (isInstructor ? s.instructorPage : s.learnerPage) === link.page
+      )?.id)
+    );
+    const bookLessonLink = learnerOnlyLinks.find(l => l.page === 'LearnerCalendar');
+    
+    return [
+      shared[0], // Home
+      bookLessonLink, // Book a Lesson
+      ...allowedShared.filter(s => s.page !== (isInstructor ? 'Home' : 'Home')) // Payments, Notifications, Chats
+    ];
+  }
 
   // Combine: Home first, then role-specific items, then shared items (excluding Home)
   return [
