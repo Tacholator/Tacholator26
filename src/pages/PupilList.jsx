@@ -194,7 +194,7 @@ export default function PupilList() {
   const activePupils = pupils.filter(p => p.status === 'Active');
   const onHoldPupils = pupils.filter(p => p.status === 'OnHold');
   const passedPupils = pupils.filter(p => p.status === 'Passed');
-  const stoppedPupils = pupils.filter(p => p.status === 'Stopped');
+  const newIntakePupils = pupils.filter(p => p.status === 'Stopped');
 
   if (isLoading) {
     return (
@@ -279,13 +279,13 @@ export default function PupilList() {
             onClick={() => setStatusFilter('Stopped')}
             className={`p-4 rounded-xl border-2 transition-all ${
               statusFilter === 'Stopped'
-                ? 'border-rose-500 bg-rose-50'
-                : 'border-slate-200 bg-white hover:border-rose-300'
+                ? 'border-purple-500 bg-purple-50'
+                : 'border-slate-200 bg-white hover:border-purple-300'
             }`}
           >
             <div className="text-left">
-              <div className="text-2xl font-bold text-rose-600">{stoppedPupils.length}</div>
-              <div className="text-sm text-slate-600 mt-1">Stopped</div>
+              <div className="text-2xl font-bold text-purple-600">{newIntakePupils.length}</div>
+              <div className="text-sm text-slate-600 mt-1">New Intake</div>
             </div>
           </button>
         </div>
