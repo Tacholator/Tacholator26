@@ -41,11 +41,15 @@ Deno.serve(async (req) => {
     if (!accountId) {
       const account = await stripe.accounts.create({
         type: 'express',
-        email: user.email,
         country: 'GB',
+        email: user.email,
         capabilities: {
           card_payments: { requested: true },
           transfers: { requested: true }
+        },
+        business_profile: {
+          mcc: '8299',
+          product_description: 'Driving lesson instruction services'
         },
         metadata: {
           instructor_id: instructor.id,
