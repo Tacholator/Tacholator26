@@ -63,24 +63,6 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
-  // Filter bookings for pupil view:
-  // - Future: pupil's own pending/confirmed bookings
-  // - Past: pupil's own completed bookings
-  const now = moment();
-  const bookings = allInstructorBookings.filter(b => {
-    if (b.isDeleted) return false;
-    const isPupilsBooking = b.pupilId === pupil?.id;
-    const bookingStart = moment(b.startAtUtc);
-    
-    if (bookingStart.isAfter(now)) {
-      // Future: only pupil's own pending/confirmed bookings
-      return isPupilsBooking && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
-    } else {
-      // Past: only pupil's own completed bookings
-      return isPupilsBooking && b.status === 'completed';
-    }
-  });
-
   const { data: allSlotInstances = [] } = useQuery({
     queryKey: ['instructorSlotInstances', pupil?.instructorId],
     queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: pupil.instructorId }),
@@ -88,20 +70,31 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
-  // Filter slots for pupil view:
-  // - Future: available slots + pupil's own pending/confirmed slots
-  // - Past: only pupil's own completed slots
+  // Filter bookings and slots for pupil view
   const now = moment();
+  
+  // Bookings: Future (pupil's own pending/confirmed) | Past (pupil's own completed)
+  const bookings = allInstructorBookings.filter(b => {
+    if (b.isDeleted) return false;
+    const isPupilsBooking = b.pupilId === pupil?.id;
+    const bookingStart = moment(b.startAtUtc);
+    
+    if (bookingStart.isAfter(now)) {
+      return isPupilsBooking && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
+    } else {
+      return isPupilsBooking && b.status === 'completed';
+    }
+  });
+
+  // Slots: Future (available + pupil's own pending/confirmed) | Past (pupil's own completed)
   const slotInstances = allSlotInstances.filter(slot => {
     const slotStart = moment(slot.startAtUtc);
     const isPupilsSlot = slot.reservedByPupilId === pupil?.id;
     
     if (slotStart.isAfter(now)) {
-      // Future: available OR pupil's own pending/confirmed
       return slot.status === 'available' || 
              (isPupilsSlot && ['reserved_pending', 'confirmed'].includes(slot.status));
     } else {
-      // Past: only pupil's own completed slots
       return isPupilsSlot && slot.status === 'completed';
     }
   });
