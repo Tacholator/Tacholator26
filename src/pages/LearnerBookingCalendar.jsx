@@ -63,8 +63,23 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
   });
 
-  // Filter out deleted bookings
-  const bookings = allInstructorBookings.filter(b => !b.isDeleted);
+  // Filter bookings for pupil view:
+  // - Future: pupil's own pending/confirmed bookings
+  // - Past: pupil's own completed bookings
+  const now = moment();
+  const bookings = allInstructorBookings.filter(b => {
+    if (b.isDeleted) return false;
+    const isPupilsBooking = b.pupilId === pupil?.id;
+    const bookingStart = moment(b.startAtUtc);
+    
+    if (bookingStart.isAfter(now)) {
+      // Future: only pupil's own pending/confirmed bookings
+      return isPupilsBooking && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
+    } else {
+      // Past: only pupil's own completed bookings
+      return isPupilsBooking && b.status === 'completed';
+    }
+  });
 
   const { data: allSlotInstances = [] } = useQuery({
     queryKey: ['instructorSlotInstances', pupil?.instructorId],
@@ -74,17 +89,20 @@ export default function LearnerBookingCalendar() {
   });
 
   // Filter slots for pupil view:
-  // - Future: only show available slots
-  // - Past: only show completed slots
+  // - Future: available slots + pupil's own pending/confirmed slots
+  // - Past: only pupil's own completed slots
   const now = moment();
   const slotInstances = allSlotInstances.filter(slot => {
     const slotStart = moment(slot.startAtUtc);
+    const isPupilsSlot = slot.reservedByPupilId === pupil?.id;
+    
     if (slotStart.isAfter(now)) {
-      // Future: only available slots
-      return slot.status === 'available';
+      // Future: available OR pupil's own pending/confirmed
+      return slot.status === 'available' || 
+             (isPupilsSlot && ['reserved_pending', 'confirmed'].includes(slot.status));
     } else {
-      // Past: only completed slots
-      return slot.status === 'completed';
+      // Past: only pupil's own completed slots
+      return isPupilsSlot && slot.status === 'completed';
     }
   });
 
