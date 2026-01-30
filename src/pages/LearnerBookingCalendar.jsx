@@ -66,11 +66,26 @@ export default function LearnerBookingCalendar() {
   // Filter out deleted bookings
   const bookings = allInstructorBookings.filter(b => !b.isDeleted);
 
-  const { data: slotInstances = [] } = useQuery({
+  const { data: allSlotInstances = [] } = useQuery({
     queryKey: ['instructorSlotInstances', pupil?.instructorId],
     queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
     refetchInterval: 5000 // Poll every 5 seconds for real-time updates
+  });
+
+  // Filter slots for pupil view:
+  // - Future: only show available slots
+  // - Past: only show completed slots
+  const now = moment();
+  const slotInstances = allSlotInstances.filter(slot => {
+    const slotStart = moment(slot.startAtUtc);
+    if (slotStart.isAfter(now)) {
+      // Future: only available slots
+      return slot.status === 'available';
+    } else {
+      // Past: only completed slots
+      return slot.status === 'completed';
+    }
   });
 
   const { data: allMyBookings = [] } = useQuery({
