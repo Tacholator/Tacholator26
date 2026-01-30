@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FileText, Lock, UserPlus } from 'lucide-react';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 import CourseWorkAssignmentModal from '@/components/homework/CourseWorkAssignmentModal';
+import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
 
 const cardColors = [
   'bg-gradient-to-br from-blue-100 to-blue-200',
@@ -169,6 +170,11 @@ export default function CourseWork() {
     setAssignmentModalOpen(false);
     setSelectedTopic(null);
   };
+
+  // Restrict access for non-active pupils
+  if (!isInstructor && pupil && pupil.status !== 'Active') {
+    return <RestrictedAccessMessage pupilStatus={pupil.status} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50/30 p-6 lg:p-8">

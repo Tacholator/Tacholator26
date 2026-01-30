@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Loader2, Car, ExternalLink } from 'lucide-react';
 import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
+import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
 
 export default function LearnerProgress() {
   const { data: user } = useQuery({
@@ -54,6 +55,11 @@ export default function LearnerProgress() {
         </Card>
       </div>
     );
+  }
+
+  // Restrict access for non-active pupils
+  if (pupil.status !== 'Active') {
+    return <RestrictedAccessMessage pupilStatus={pupil.status} />;
   }
 
   return (
