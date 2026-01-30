@@ -309,7 +309,7 @@ export default function PupilList() {
             <TableHeader>
               <TableRow className="bg-slate-50">
                 <TableHead className="font-semibold">Pupil</TableHead>
-                <TableHead className="font-semibold">Account Status</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
                 <TableHead className="font-semibold">Progress</TableHead>
                 <TableHead className="font-semibold">Next Lesson</TableHead>
                 <TableHead className="font-semibold">Test Date</TableHead>
@@ -349,21 +349,18 @@ export default function PupilList() {
                       <TableCell>
                         <div className="space-y-1">
                           <Badge className={{
-                            'active_recently': 'bg-emerald-100 text-emerald-700',
-                            'active_but_quiet': 'bg-amber-100 text-amber-700',
-                            'signed_up_only': 'bg-slate-100 text-slate-600',
-                            'inactive': 'bg-rose-100 text-rose-700',
-                            'not_signed_up': 'bg-rose-100 text-rose-700'
-                          }[pupil.signupStatus || 'not_signed_up']}>
-                            {pupil.signupStatus === 'active_recently' ? 'Active' : 
-                             pupil.signupStatus === 'active_but_quiet' ? 'Quiet' :
-                             pupil.signupStatus === 'signed_up_only' ? 'Signed Up' :
-                             pupil.signupStatus === 'inactive' ? 'Inactive' :
-                             'Not Signed Up'}
+                            'Active': 'bg-emerald-100 text-emerald-700',
+                            'OnHold': 'bg-amber-100 text-amber-700',
+                            'Passed': 'bg-blue-100 text-blue-700',
+                            'Stopped': 'bg-purple-100 text-purple-700'
+                          }[pupil.status || 'Active']}>
+                            {pupil.status === 'OnHold' ? 'On Hold' : 
+                             pupil.status === 'Stopped' ? 'New Intake' : 
+                             pupil.status || 'Active'}
                           </Badge>
                           {pupil.lastLoginTimestamp && (
                             <p className="text-xs text-slate-400">
-                              {moment(pupil.lastLoginTimestamp).fromNow()}
+                              Last login: {moment(pupil.lastLoginTimestamp).fromNow()}
                             </p>
                           )}
                         </div>
