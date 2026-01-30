@@ -73,7 +73,12 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
   const handleSubmit = async () => {
     setIsSaving(true);
     try {
-      await onSave(formData, !existingPupil);
+      // If marking as Passed, automatically set practicalTestPassed to true
+      const dataToSave = { ...formData };
+      if (dataToSave.status === 'Passed') {
+        dataToSave.practicalTestPassed = true;
+      }
+      await onSave(dataToSave, !existingPupil);
       onClose();
     } finally {
       setIsSaving(false);

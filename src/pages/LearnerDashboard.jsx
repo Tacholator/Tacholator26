@@ -348,6 +348,47 @@ export default function LearnerDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Congratulations Banner for Passed Pupils */}
+        {pupil.status === 'Passed' && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 p-8 text-white shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent" />
+            <div className="relative z-10 text-center space-y-4">
+              <div className="flex justify-center">
+                <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <Award className="w-12 h-12 text-white" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-4xl font-bold tracking-tight">
+                  🎉 Congratulations! 🎉
+                </h2>
+                <p className="text-xl font-semibold">
+                  You've passed your driving test!
+                </p>
+                <p className="text-white/90 text-lg max-w-2xl mx-auto">
+                  This is an incredible achievement! All your hard work, dedication, and practice has paid off. 
+                  You're now a qualified driver - drive safely and enjoy the freedom of the open road!
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3 pt-4">
+                <div className="px-6 py-3 rounded-full bg-white/20 backdrop-blur-sm">
+                  <span className="text-sm font-semibold">🚗 Licensed Driver</span>
+                </div>
+                <div className="px-6 py-3 rounded-full bg-white/20 backdrop-blur-sm">
+                  <span className="text-sm font-semibold">✨ Test Passed</span>
+                </div>
+                <div className="px-6 py-3 rounded-full bg-white/20 backdrop-blur-sm">
+                  <span className="text-sm font-semibold">🎯 Goal Achieved</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* 1. Personal Greeting */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -358,7 +399,9 @@ export default function LearnerDashboard() {
             Good {getTimeOfDay()}, {user?.firstName || pupil.firstName}
           </h1>
           <p className="text-slate-500 mt-2">
-            Let's keep you moving towards test success 🚗
+            {pupil.status === 'Passed' 
+              ? 'Welcome back, qualified driver! 🚗✨' 
+              : "Let's keep you moving towards test success 🚗"}
           </p>
         </motion.div>
 
