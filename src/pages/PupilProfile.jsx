@@ -282,9 +282,11 @@ export default function PupilProfile() {
                     'Active': 'bg-emerald-100 text-emerald-700',
                     'OnHold': 'bg-amber-100 text-amber-700',
                     'Passed': 'bg-blue-100 text-blue-700',
-                    'Stopped': 'bg-rose-100 text-rose-700'
+                    'Stopped': 'bg-purple-100 text-purple-700'
                   }[pupil.status || 'Active']}>
-                    {pupil.status === 'OnHold' ? 'On Hold' : pupil.status || 'Active'}
+                    {pupil.status === 'OnHold' ? 'On Hold' : 
+                     pupil.status === 'Stopped' ? 'New Intake' : 
+                     pupil.status || 'Active'}
                   </Badge>
                   <Badge className={{
                     'active_recently': 'bg-emerald-100 text-emerald-700',
@@ -333,7 +335,7 @@ export default function PupilProfile() {
                     <SelectItem value="Active">Active</SelectItem>
                     <SelectItem value="OnHold">On Hold</SelectItem>
                     <SelectItem value="Passed">Passed</SelectItem>
-                    <SelectItem value="Stopped">Stopped</SelectItem>
+                    <SelectItem value="Stopped">New Intake</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button 
