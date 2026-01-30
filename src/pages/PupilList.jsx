@@ -39,7 +39,7 @@ import moment from 'moment';
 
 export default function PupilList() {
   const [search, setSearch] = useState('');
-  
+  const [statusFilter, setStatusFilter] = useState('Active');
   const [showPupilModal, setShowPupilModal] = useState(false);
   const [editingPupil, setEditingPupil] = useState(null);
 
@@ -186,8 +186,15 @@ export default function PupilList() {
   };
 
   const filteredPupils = pupils.filter(pupil => {
-    return `${pupil.firstName} ${pupil.lastName}`.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = `${pupil.firstName} ${pupil.lastName}`.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = pupil.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
+
+  const activePupils = pupils.filter(p => p.status === 'Active');
+  const onHoldPupils = pupils.filter(p => p.status === 'OnHold');
+  const passedPupils = pupils.filter(p => p.status === 'Passed');
+  const stoppedPupils = pupils.filter(p => p.status === 'Stopped');
 
   if (isLoading) {
     return (
@@ -204,7 +211,12 @@ export default function PupilList() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-800">Pupils</h1>
-            <p className="text-slate-500 mt-1">{pupils.length} total pupils</p>
+            <div className="flex gap-4 mt-2">
+              <p className="text-slate-500">{pupils.length} total</p>
+              <p className="text-emerald-600 font-medium">{activePupils.length} active</p>
+              <p className="text-amber-600 font-medium">{onHoldPupils.length} on hold</p>
+              <p className="text-blue-600 font-medium">{passedPupils.length} passed</p>
+            </div>
           </div>
           
           <Button
@@ -219,7 +231,66 @@ export default function PupilList() {
           </Button>
         </div>
 
-        {/* Filters */}
+        {/* Status Filter Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <button
+            onClick={() => setStatusFilter('Active')}
+            className={`p-4 rounded-xl border-2 transition-all ${
+              statusFilter === 'Active'
+                ? 'border-emerald-500 bg-emerald-50'
+                : 'border-slate-200 bg-white hover:border-emerald-300'
+            }`}
+          >
+            <div className="text-left">
+              <div className="text-2xl font-bold text-emerald-600">{activePupils.length}</div>
+              <div className="text-sm text-slate-600 mt-1">Active</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setStatusFilter('OnHold')}
+            className={`p-4 rounded-xl border-2 transition-all ${
+              statusFilter === 'OnHold'
+                ? 'border-amber-500 bg-amber-50'
+                : 'border-slate-200 bg-white hover:border-amber-300'
+            }`}
+          >
+            <div className="text-left">
+              <div className="text-2xl font-bold text-amber-600">{onHoldPupils.length}</div>
+              <div className="text-sm text-slate-600 mt-1">On Hold</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setStatusFilter('Passed')}
+            className={`p-4 rounded-xl border-2 transition-all ${
+              statusFilter === 'Passed'
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-slate-200 bg-white hover:border-blue-300'
+            }`}
+          >
+            <div className="text-left">
+              <div className="text-2xl font-bold text-blue-600">{passedPupils.length}</div>
+              <div className="text-sm text-slate-600 mt-1">Passed</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setStatusFilter('Stopped')}
+            className={`p-4 rounded-xl border-2 transition-all ${
+              statusFilter === 'Stopped'
+                ? 'border-rose-500 bg-rose-50'
+                : 'border-slate-200 bg-white hover:border-rose-300'
+            }`}
+          >
+            <div className="text-left">
+              <div className="text-2xl font-bold text-rose-600">{stoppedPupils.length}</div>
+              <div className="text-sm text-slate-600 mt-1">Stopped</div>
+            </div>
+          </button>
+        </div>
+
+        {/* Search */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -230,7 +301,6 @@ export default function PupilList() {
               className="pl-10"
             />
           </div>
-          
         </div>
 
         {/* Table */}
@@ -239,7 +309,7 @@ export default function PupilList() {
             <TableHeader>
               <TableRow className="bg-slate-50">
                 <TableHead className="font-semibold">Pupil</TableHead>
-                <TableHead className="font-semibold">Status</TableHead>
+                <TableHead className="font-semibold">Account Status</TableHead>
                 <TableHead className="font-semibold">Progress</TableHead>
                 <TableHead className="font-semibold">Next Lesson</TableHead>
                 <TableHead className="font-semibold">Test Date</TableHead>
