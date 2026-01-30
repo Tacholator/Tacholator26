@@ -288,6 +288,11 @@ export default function PupilProfile() {
                      pupil.status === 'Stopped' ? 'New Intake' : 
                      pupil.status || 'Active'}
                   </Badge>
+                  {!pupil.hasSignedUp && !pupil.linkedUserId && (
+                    <Badge className="bg-rose-100 text-rose-700">
+                      Not Signed Up
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-4 text-sm text-slate-500">
                   {pupil.phone && (

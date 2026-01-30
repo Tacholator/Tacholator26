@@ -347,7 +347,7 @@ export default function PupilList() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="space-y-1">
+                        <div className="flex flex-col gap-1">
                           <Badge className={{
                             'Active': 'bg-emerald-100 text-emerald-700',
                             'OnHold': 'bg-amber-100 text-amber-700',
@@ -358,6 +358,11 @@ export default function PupilList() {
                              pupil.status === 'Stopped' ? 'New Intake' : 
                              pupil.status || 'Active'}
                           </Badge>
+                          {!pupil.hasSignedUp && !pupil.linkedUserId && (
+                            <Badge className="bg-rose-100 text-rose-700">
+                              Not Signed Up
+                            </Badge>
+                          )}
                           {pupil.lastLoginTimestamp && (
                             <p className="text-xs text-slate-400">
                               Last login: {moment(pupil.lastLoginTimestamp).fromNow()}
