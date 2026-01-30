@@ -323,30 +323,14 @@ export default function PupilProfile() {
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Select 
-                  value={pupil.status || 'Active'}
-                  onValueChange={(value) => updatePupilMutation.mutate({ status: value })}
-                >
-                  <SelectTrigger className="w-36">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="OnHold">On Hold</SelectItem>
-                    <SelectItem value="Passed">Passed</SelectItem>
-                    <SelectItem value="Stopped">New Intake</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowEditModal(true)}
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
-              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowEditModal(true)}
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
             </div>
 
             {/* Progress Ring */}
