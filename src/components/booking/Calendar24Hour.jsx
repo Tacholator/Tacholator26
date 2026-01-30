@@ -85,12 +85,9 @@ export default function Calendar24Hour({
     const dayOfWeek = day.format('ddd').toLowerCase();
     const dateStr = day.format('YYYY-MM-DD');
     const slotDateTime = moment(`${dateStr} ${timeSlot}`, 'YYYY-MM-DD HH:mm');
-    const now = moment();
 
     // Check if there's a booking at this time
     const slotEnd = slotDateTime.clone().add(30, 'minutes');
-    const isPast = slotEnd.isSameOrBefore(now);
-
     const overlappingBooking = bookings.find(b => {
       const bookingStart = moment(b.startAtUtc).local();
       const bookingEnd = moment(b.endAtUtc).local();
@@ -124,10 +121,6 @@ export default function Calendar24Hour({
       });
 
       if (overlappingInstance) {
-        // If slot is in the past and available, mark as unavailable
-        if (overlappingInstance.status === 'available' && isPast) {
-          return { state: 'unavailable', slotInstance: overlappingInstance, blockType: 'slotInstance' };
-        }
         if (overlappingInstance.status === 'available') {
           return { state: 'available', slotInstance: overlappingInstance, blockType: 'slotInstance' };
         }
