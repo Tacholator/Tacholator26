@@ -68,7 +68,25 @@ const pupilNavItems = [
 ];
 
 export default function MobileBottomNav({ userId, currentPageName, isInstructor }) {
-  const navItems = isInstructor ? instructorNavItems : pupilNavItems;
+  // Fetch pupil status for learners
+  const { data: pupilProfile } = useQuery({
+    queryKey: ['learnerPupilProfile', userId],
+    queryFn: async () => {
+      if (isInstructor || !userId) return null;
+      const pupils = await base44.entities.Pupil.filter({ linkedUserId: userId });
+      return pupils.length > 0 ? pupils[0] : null;
+    },
+    enabled: !!userId && !isInstructor
+  });
+  
+  const pupilStatus = pupilProfile?.status || 'Active';
+  
+  // For non-active pupils, only show booking
+  const navItems = isInstructor 
+    ? instructorNavItems 
+    : (pupilStatus !== 'Active' 
+        ? pupilNavItems.filter(item => item.id === 'book')
+        : pupilNavItems);
 
   const { data: unreadMessages = [] } = useQuery({
     queryKey: ['unreadMessages', userId],
