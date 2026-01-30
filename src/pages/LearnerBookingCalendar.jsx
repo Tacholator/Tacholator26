@@ -73,29 +73,35 @@ export default function LearnerBookingCalendar() {
   // Filter bookings and slots for pupil view
   const now = moment();
   
-  // Bookings: Future (pupil's own pending/confirmed) | Past (pupil's own completed)
+  // Bookings: Only show pupil's own bookings (future: pending/confirmed, past: completed)
   const bookings = allInstructorBookings.filter(b => {
     if (b.isDeleted) return false;
-    const isPupilsBooking = b.pupilId === pupil?.id;
-    const bookingStart = moment(b.startAtUtc);
+    // ONLY show bookings that belong to this pupil
+    if (b.pupilId !== pupil?.id) return false;
     
+    const bookingStart = moment(b.startAtUtc);
     if (bookingStart.isAfter(now)) {
-      return isPupilsBooking && ['reserved_pending_instructor', 'confirmed'].includes(b.status);
+      return ['reserved_pending_instructor', 'confirmed'].includes(b.status);
     } else {
-      return isPupilsBooking && b.status === 'completed';
+      return b.status === 'completed';
     }
   });
 
-  // Slots: Future (available + pupil's own pending/confirmed) | Past (pupil's own completed)
+  // Slots: Future (available + pupil's own reserved) | Past (pupil's own completed)
   const slotInstances = allSlotInstances.filter(slot => {
     const slotStart = moment(slot.startAtUtc);
-    const isPupilsSlot = slot.reservedByPupilId === pupil?.id;
+    const belongsToPupil = slot.reservedByPupilId === pupil?.id;
+    const belongsToOtherPupil = slot.reservedByPupilId && slot.reservedByPupilId !== pupil?.id;
     
     if (slotStart.isAfter(now)) {
+      // Future: show available slots (not reserved by anyone) OR slots reserved by this pupil
+      // Explicitly hide slots reserved by other pupils
+      if (belongsToOtherPupil) return false;
       return slot.status === 'available' || 
-             (isPupilsSlot && ['reserved_pending', 'confirmed'].includes(slot.status));
+             (belongsToPupil && ['reserved_pending', 'confirmed'].includes(slot.status));
     } else {
-      return isPupilsSlot && slot.status === 'completed';
+      // Past: only show slots completed by this pupil
+      return belongsToPupil && slot.status === 'completed';
     }
   });
 
