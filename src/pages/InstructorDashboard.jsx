@@ -33,28 +33,25 @@ export default function InstructorDashboard() {
     queryKey: ['instructor', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      const instructors = await base44.entities.Instructor.filter({ created_by: user.id });
+      const instructors = await base44.entities.Instructor.filter({ created_by: user.email });
       return instructors[0] || null;
     },
     enabled: !!user?.id
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['pupils', user?.id],
-    queryFn: () => base44.entities.Pupil.filter({ instructorId: user?.id }),
-    enabled: !!user?.id
-  });
-
-  const { data: lessons = [] } = useQuery({
-    queryKey: ['lessons', user?.id],
-    queryFn: () => base44.entities.Lesson.filter({ instructorId: user?.id }, '-date'),
-    enabled: !!user?.id
+    queryKey: ['pupils', instructor?.id],
+    queryFn: () => base44.entities.Pupil.filter({ instructorId: instructor.id }),
+    enabled: !!instructor?.id
   });
 
   const { data: bookings = [] } = useQuery({
-    queryKey: ['bookings', user?.id],
-    queryFn: () => base44.entities.LessonBooking.filter({ instructorId: user?.id }, '-startAtUtc'),
-    enabled: !!user?.id
+    queryKey: ['bookings', instructor?.id],
+    queryFn: async () => {
+      const allBookings = await base44.entities.LessonBooking.filter({ instructorId: instructor.id }, '-startAtUtc');
+      return allBookings.filter(b => !b.isDeleted);
+    },
+    enabled: !!instructor?.id
   });
 
   const { data: dailyQuiz } = useQuery({
@@ -77,21 +74,6 @@ export default function InstructorDashboard() {
 
   const today = moment().format('YYYY-MM-DD');
   const now = moment();
-
-  const todayLessons = lessons
-    .filter(l => l.date === today)
-    .sort((a, b) => a.startTime.localeCompare(b.startTime));
-
-  const nextLesson = todayLessons.find(l => {
-    const lessonTime = moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm');
-    return lessonTime.isAfter(now) && l.status === 'Scheduled';
-  });
-
-  // Lessons needing outcome (past lessons not marked as completed/cancelled/no_show)
-  const lessonsNeedingOutcome = bookings.filter(b => {
-    const endTime = moment(b.endAtUtc);
-    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
-  }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
 
   // Today's bookings that are upcoming or need outcome
   const todayBookings = bookings.filter(b => {
@@ -131,32 +113,18 @@ export default function InstructorDashboard() {
   const getStatusColor = (status) => {
     const colors = {
       pending: 'bg-slate-100 text-slate-700',
+      reserved_pending_instructor: 'bg-amber-100 text-amber-700',
       confirmed: 'bg-blue-100 text-blue-700',
-      in_progress: 'bg-amber-100 text-amber-700',
+      in_progress: 'bg-emerald-100 text-emerald-700',
       completed: 'bg-slate-300 text-slate-700',
       cancelled: 'bg-rose-100 text-rose-700',
+      cancelled_by_pupil: 'bg-rose-100 text-rose-700',
+      cancelled_late_by_pupil: 'bg-red-100 text-red-700',
+      declined_by_instructor: 'bg-slate-200 text-slate-700',
       no_show: 'bg-red-100 text-red-700'
     };
     return colors[status] || 'bg-slate-100 text-slate-700';
   };
-
-  // Context lesson for quick action (ongoing or just finished within 3 hours)
-  const contextLesson = todayLessons.find(l => {
-    const startTime = moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm');
-    const endTime = moment(`${l.date} ${l.endTime}`, 'YYYY-MM-DD HH:mm');
-    
-    // Ongoing lesson
-    if (startTime.isSameOrBefore(now) && endTime.isAfter(now) && l.status === 'Scheduled') {
-      return true;
-    }
-    
-    // Just finished within 3 hours
-    if (endTime.isSameOrBefore(now) && now.diff(endTime, 'minutes') <= 180 && l.status === 'Scheduled') {
-      return true;
-    }
-    
-    return false;
-  });
 
   const upcomingTests = pupils.filter(p =>
     p.practicalTestDate &&
@@ -191,18 +159,7 @@ export default function InstructorDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
-        {/* Quick Action - Mark Lesson (contextual) */}
-        {contextLesson && (
-          <div className="mb-4">
-            <Button 
-              onClick={() => handleMarkLesson(contextLesson.id)}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
-            >
-              <CheckCircle className="w-4 h-4" />
-              Mark Lesson as Complete
-            </Button>
-          </div>
-        )}
+
 
         {/* Fixed card order - cards show/hide in place */}
         <div className="space-y-4">
