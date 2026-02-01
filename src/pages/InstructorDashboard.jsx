@@ -49,7 +49,20 @@ export default function InstructorDashboard() {
     queryKey: ['bookings', instructor?.id],
     queryFn: async () => {
       const allBookings = await base44.entities.LessonBooking.filter({ instructorId: instructor.id }, '-startAtUtc');
-      return allBookings.filter(b => !b.isDeleted);
+      // Filter out deleted bookings and deduplicate by checking for same pupil + time
+      const activeBookings = allBookings.filter(b => !b.isDeleted);
+      const uniqueBookings = [];
+      const seen = new Set();
+      
+      for (const booking of activeBookings) {
+        const key = `${booking.pupilId}_${booking.startAtUtc}_${booking.endAtUtc}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueBookings.push(booking);
+        }
+      }
+      
+      return uniqueBookings;
     },
     enabled: !!instructor?.id
   });

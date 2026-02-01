@@ -56,10 +56,13 @@ export default function PupilReserveLessonModal({
     enabled: !!pupil?.instructorId
   });
 
-  // Check if this is first booking
+  // Check if this is first booking (exclude deleted bookings)
   const { data: existingBookings = [] } = useQuery({
     queryKey: ['myBookings', pupil?.id],
-    queryFn: () => base44.entities.LessonBooking.filter({ pupilId: pupil.id }),
+    queryFn: async () => {
+      const allBookings = await base44.entities.LessonBooking.filter({ pupilId: pupil.id });
+      return allBookings.filter(b => !b.isDeleted);
+    },
     enabled: !!pupil?.id
   });
 
