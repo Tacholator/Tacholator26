@@ -281,41 +281,60 @@ export default function InstructorPayments() {
                     No pupils found
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filteredPupils.map((pupil) => {
                       const balance = pupil.bulkPaymentBalance || 0;
                       const hourlyRate = pupil.hourlyRate || 50;
                       const availableHours = balance / hourlyRate;
 
                       return (
-                        <div
+                        <Card 
                           key={pupil.id}
-                          className="flex items-center justify-between p-4 rounded-lg border hover:bg-slate-50 transition-colors"
+                          className="hover:shadow-lg transition-shadow"
                         >
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#F7B602] to-[#d99f02] flex items-center justify-center text-[#071739] font-bold text-lg">
-                              {pupil.firstName[0]}{pupil.lastName[0]}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-slate-900">
-                                {pupil.firstName} {pupil.lastName}
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#F7B602] to-[#d99f02] flex items-center justify-center text-[#071739] font-bold text-lg">
+                                  {pupil.firstName[0]}{pupil.lastName[0]}
+                                </div>
+                                <div>
+                                  <div className="font-semibold text-slate-900">
+                                    {pupil.firstName} {pupil.lastName}
+                                  </div>
+                                  <Badge variant="outline" className="text-xs mt-1">
+                                    {pupil.status}
+                                  </Badge>
+                                </div>
                               </div>
-                              <div className="text-sm text-slate-500">
-                                £{hourlyRate}/hr • {pupil.status}
+                            </div>
+                            
+                            <div className="space-y-3">
+                              <div className="flex items-baseline justify-between border-t pt-3">
+                                <span className="text-sm text-slate-600">Balance</span>
+                                <span className={`text-3xl font-bold ${
+                                  balance > 0 ? 'text-emerald-600' : balance < 0 ? 'text-rose-600' : 'text-slate-400'
+                                }`}>
+                                  £{balance.toFixed(2)}
+                                </span>
+                              </div>
+                              
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-600">Available Hours</span>
+                                <span className={`font-medium ${
+                                  balance > 0 ? 'text-emerald-600' : balance < 0 ? 'text-rose-600' : 'text-slate-400'
+                                }`}>
+                                  {balance > 0 ? `≈ ${availableHours.toFixed(1)}h` : balance < 0 ? `${availableHours.toFixed(1)}h debt` : '0h'}
+                                </span>
+                              </div>
+                              
+                              <div className="flex items-center justify-between text-sm pt-2 border-t">
+                                <span className="text-slate-600">Hourly Rate</span>
+                                <span className="font-medium text-slate-900">£{hourlyRate}/hr</span>
                               </div>
                             </div>
-                          </div>
-                          <div className="text-right">
-                            <div className={`text-2xl font-bold ${
-                              balance < hourlyRate ? 'text-amber-600' : 'text-[#071739]'
-                            }`}>
-                              £{balance.toFixed(2)}
-                            </div>
-                            <div className="text-sm text-slate-500">
-                              ≈ {availableHours.toFixed(1)} hours
-                            </div>
-                          </div>
-                        </div>
+                          </CardContent>
+                        </Card>
                       );
                     })}
                   </div>
