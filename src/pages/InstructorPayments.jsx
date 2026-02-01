@@ -264,7 +264,9 @@ export default function InstructorPayments() {
             <Card>
               <CardHeader>
                 <CardTitle>Pupil Balances</CardTitle>
-                <CardDescription>View and track individual pupil payment balances</CardDescription>
+                <CardDescription>
+                  Showing {filteredPupils.length} of {pupils.length} pupils
+                </CardDescription>
                 <div className="mt-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -278,9 +280,13 @@ export default function InstructorPayments() {
                 </div>
               </CardHeader>
               <CardContent>
-                {filteredPupils.length === 0 ? (
+                {pupils.length === 0 ? (
                   <div className="text-center py-8 text-slate-500">
-                    No pupils found
+                    No pupils found for this instructor
+                  </div>
+                ) : filteredPupils.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    No pupils match your search
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
