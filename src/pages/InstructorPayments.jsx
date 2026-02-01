@@ -106,12 +106,11 @@ export default function InstructorPayments() {
   const activePupils = pupils.filter(p => p.status === 'Active');
   const totalBalances = activePupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
 
-  // Filter pupils by search and active status
+  // Filter pupils by search
   const filteredPupils = pupils.filter(p => {
     const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
     const matchesSearch = fullName.includes(searchQuery.toLowerCase());
-    const isActive = p.status === 'Active';
-    return matchesSearch && isActive;
+    return matchesSearch;
   });
 
   // Get recent activity
