@@ -288,11 +288,12 @@ export default function InstructorPayments() {
                       const availableHours = balance / hourlyRate;
 
                       return (
-                        <Card 
+                        <Link 
                           key={pupil.id}
-                          className="hover:shadow-lg transition-shadow"
+                          to={createPageUrl('PupilProfile') + `?id=${pupil.id}`}
                         >
-                          <CardContent className="p-6">
+                          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                            <CardContent className="p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center gap-3">
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#F7B602] to-[#d99f02] flex items-center justify-center text-[#071739] font-bold text-lg">
@@ -335,6 +336,7 @@ export default function InstructorPayments() {
                             </div>
                           </CardContent>
                         </Card>
+                        </Link>
                       );
                     })}
                   </div>
