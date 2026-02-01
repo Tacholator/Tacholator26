@@ -103,7 +103,8 @@ export default function InstructorPayments() {
     .filter(e => e.type === 'charge' && moment(e.created_date).isSame(moment(), 'month'))
     .reduce((sum, e) => sum + (e.amountGbp || 0), 0);
 
-  const totalBalances = pupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
+  const activePupils = pupils.filter(p => p.status === 'Active');
+  const totalBalances = activePupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
 
   // Filter pupils by search and active status
   const filteredPupils = pupils.filter(p => {
@@ -246,8 +247,8 @@ export default function InstructorPayments() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[#071739]">{pupils.length}</div>
-              <div className="text-sm text-slate-500 mt-1">Total pupils</div>
+              <div className="text-3xl font-bold text-[#071739]">{activePupils.length}</div>
+              <div className="text-sm text-slate-500 mt-1">Active pupils</div>
             </CardContent>
           </Card>
         </div>
