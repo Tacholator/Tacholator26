@@ -38,6 +38,11 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
     }
   }, [route]);
 
+  // Track if changes have been made
+  const hasVideoChanges = youtubeUrl !== (route?.youtubeUrl || '');
+  const hasGpsChanges = gpsRouteType !== (route?.gpsRouteType || 'gpx_url') || 
+                        gpsRouteUrl !== (route?.gpsRouteUrl || '');
+
   if (!route) return null;
 
   const videoId = extractYouTubeId(youtubeUrl);
@@ -101,14 +106,16 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               </Alert>
             )}
 
-            <Button
-              onClick={handleSaveVideo}
-              disabled={isUpdating}
-              className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save Video
-            </Button>
+            {hasVideoChanges && (
+              <Button
+                onClick={handleSaveVideo}
+                disabled={isUpdating}
+                className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {isUpdating ? 'Saving...' : 'Save Video'}
+              </Button>
+            )}
           </div>
 
           {/* GPS Section */}
@@ -158,14 +165,16 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               </div>
             )}
 
-            <Button
-              onClick={handleSaveGps}
-              disabled={isUpdating}
-              className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save GPS Route
-            </Button>
+            {hasGpsChanges && (
+              <Button
+                onClick={handleSaveGps}
+                disabled={isUpdating}
+                className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {isUpdating ? 'Saving...' : 'Save GPS Route'}
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>
