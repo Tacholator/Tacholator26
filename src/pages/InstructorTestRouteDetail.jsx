@@ -14,6 +14,19 @@ import { useToast } from '@/components/ui/use-toast';
 import RouteCard from '@/components/testroutes/RouteCard';
 import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
 
+function extractYouTubeId(url) {
+  if (!url) return '';
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\?\/]+)/,
+    /youtube\.com\/embed\/([^&\?\/]+)/
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) return match[1];
+  }
+  return '';
+}
+
 export default function InstructorTestRouteDetail() {
   const { toast } = useToast();
   const navigate = useNavigate();
