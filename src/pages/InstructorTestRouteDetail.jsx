@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, ArrowLeft, Info } from 'lucide-react';
+import { MapPin, ArrowLeft, Info, Navigation } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import RouteCard from '@/components/testroutes/RouteCard';
 import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
@@ -156,6 +156,28 @@ export default function InstructorTestRouteDetail() {
             </AlertDescription>
           </Alert>
         )}
+
+        {/* GPS Follow-Along Setup */}
+        <Card className="mb-6 border-[#F7B602] border-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Navigation className="w-5 h-5 text-[#F7B602]" />
+              GPS Follow-Along Setup
+            </CardTitle>
+            <CardDescription>
+              Set up a recorded GPS route for learners to follow during practice
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              onClick={() => navigate(createPageUrl('InstructorGpsRouteSetup') + `?centreid=${centreId}`)}
+              className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+            >
+              <Navigation className="w-4 h-4 mr-2" />
+              Configure GPS Route
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Route Cards Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, ArrowLeft, Info } from 'lucide-react';
+import { MapPin, ArrowLeft, Info, Navigation } from 'lucide-react';
 import RouteCard from '@/components/testroutes/RouteCard';
 import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
 
@@ -83,6 +83,28 @@ export default function LearnerTestRouteDetail() {
             Test routes are read-only. Only administrators can edit route information.
           </AlertDescription>
         </Alert>
+
+        {/* GPS Follow-Along */}
+        <Card className="mb-6 border-[#F7B602] border-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Navigation className="w-5 h-5 text-[#F7B602]" />
+              GPS Follow-Along
+            </CardTitle>
+            <CardDescription>
+              Practice following the exact test route with live GPS tracking
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              onClick={() => navigate(createPageUrl('LearnerGpsFollowAlong') + `?centreid=${centreId}`)}
+              className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+            >
+              <Navigation className="w-4 h-4 mr-2" />
+              Start GPS Follow-Along
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Route Cards Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
