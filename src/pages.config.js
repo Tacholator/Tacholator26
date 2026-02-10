@@ -101,6 +101,7 @@ import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
 import InstructorGpsRouteSetup from './pages/InstructorGpsRouteSetup';
 import LearnerGpsFollowAlong from './pages/LearnerGpsFollowAlong';
+import LiveRouteViewer from './pages/LiveRouteViewer';
 import __Layout from './Layout.jsx';
 
 
@@ -159,6 +160,7 @@ export const PAGES = {
     "TermsAndConditions": TermsAndConditions,
     "InstructorGpsRouteSetup": InstructorGpsRouteSetup,
     "LearnerGpsFollowAlong": LearnerGpsFollowAlong,
+    "LiveRouteViewer": LiveRouteViewer,
 }
 
 export const pagesConfig = {

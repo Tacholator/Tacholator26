@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +28,7 @@ function extractYouTubeId(url) {
 }
 
 export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeChange, onGpsChange, isUpdating, isAdmin = true }) {
+  const navigate = useNavigate();
   const [youtubeUrl, setYoutubeUrl] = useState(route?.youtubeUrl || '');
   const [gpsRouteType, setGpsRouteType] = useState(route?.gpsRouteType || 'gpx_url');
   const [gpsRouteUrl, setGpsRouteUrl] = useState(route?.gpsRouteUrl || '');
@@ -190,17 +193,19 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               </>
             ) : (
               <>
-                {gpsRouteUrl ? (
-                  <Button
-                    onClick={() => window.open(gpsRouteUrl, '_blank')}
-                    className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-                  >
-                    <Navigation className="w-4 h-4 mr-2" />
-                    Start Test Route
-                  </Button>
-                ) : (
-                  <p className="text-slate-500 text-center py-8">
-                    No GPS route available for this route yet.
+                <Button
+                  onClick={() => {
+                    onOpenChange(false);
+                    navigate(createPageUrl('LiveRouteViewer') + `?routeId=${route.id}`);
+                  }}
+                  className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                >
+                  <Navigation className="w-4 h-4 mr-2" />
+                  Start Test Route
+                </Button>
+                {!gpsRouteUrl && (
+                  <p className="text-slate-500 text-center py-4 text-sm">
+                    Note: Using simulated route data for demonstration
                   </p>
                 )}
               </>
