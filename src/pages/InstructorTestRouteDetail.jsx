@@ -9,21 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, Youtube, Navigation, Save, Info, ArrowLeft } from 'lucide-react';
+import { MapPin, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-
-function extractYouTubeId(url) {
-  if (!url) return '';
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\?\/]+)/,
-    /youtube\.com\/embed\/([^&\?\/]+)/
-  ];
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match && match[1]) return match[1];
-  }
-  return '';
-}
+import RouteCard from '@/components/testroutes/RouteCard';
 
 export default function InstructorTestRouteDetail() {
   const { toast } = useToast();
@@ -46,71 +34,63 @@ export default function InstructorTestRouteDetail() {
     enabled: !!centreId
   });
 
-  const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [youtubeVideoId, setYoutubeVideoId] = useState('');
-  const [gpsRouteType, setGpsRouteType] = useState('gpx_url');
-  const [gpsRouteUrl, setGpsRouteUrl] = useState('');
+  const { data: routes = [], isLoading: routesLoading } = useQuery({
+    queryKey: ['testRoutes', centreId],
+    queryFn: async () => {
+      const existingRoutes = await base44.entities.TestRoute.filter({ centreId });
+      // If no routes exist, create 10 default routes
+      if (existingRoutes.length === 0) {
+        const newRoutes = [];
+        for (let i = 1; i <= 10; i++) {
+          const route = await base44.entities.TestRoute.create({
+            centreId,
+            routeNumber: i,
+            routeName: `Route ${i}`,
+            youtubeUrl: '',
+            youtubeVideoId: '',
+            gpsRouteType: 'gpx_url',
+            gpsRouteUrl: ''
+          });
+          newRoutes.push(route);
+        }
+        return newRoutes;
+      }
+      return existingRoutes.sort((a, b) => a.routeNumber - b.routeNumber);
+    },
+    enabled: !!centreId
+  });
 
-  useEffect(() => {
-    if (centre) {
-      setYoutubeUrl(centre.youtubeUrl || '');
-      setYoutubeVideoId(centre.youtubeVideoId || '');
-      setGpsRouteType(centre.gpsRouteType || 'gpx_url');
-      setGpsRouteUrl(centre.gpsRouteUrl || '');
-    }
-  }, [centre]);
+  const [editingRoute, setEditingRoute] = useState(null);
 
-  const updateVideoMutation = useMutation({
-    mutationFn: async (data) => {
-      return await base44.entities.TestRouteCentre.update(centreId, data);
+  const updateRouteMutation = useMutation({
+    mutationFn: async ({ routeId, data }) => {
+      return await base44.entities.TestRoute.update(routeId, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['testRouteCentre', centreId]);
-      queryClient.invalidateQueries(['testRouteCentres']);
-      toast({ title: 'Video saved successfully' });
+      queryClient.invalidateQueries(['testRoutes', centreId]);
+      toast({ title: 'Route saved successfully' });
     },
     onError: () => {
-      toast({ title: 'Failed to save video', variant: 'destructive' });
+      toast({ title: 'Failed to save route', variant: 'destructive' });
     }
   });
 
-  const updateGpsMutation = useMutation({
-    mutationFn: async (data) => {
-      return await base44.entities.TestRouteCentre.update(centreId, data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['testRouteCentre', centreId]);
-      queryClient.invalidateQueries(['testRouteCentres']);
-      toast({ title: 'GPS route saved successfully' });
-    },
-    onError: () => {
-      toast({ title: 'Failed to save GPS route', variant: 'destructive' });
-    }
-  });
-
-  const handleYouTubeUrlChange = (url) => {
-    setYoutubeUrl(url);
+  const handleYouTubeUrlChange = (routeId, url) => {
     const videoId = extractYouTubeId(url);
-    setYoutubeVideoId(videoId);
-  };
-
-  const handleSaveVideo = () => {
-    updateVideoMutation.mutate({
-      youtubeUrl,
-      youtubeVideoId,
-      createdByInstructorId: centre?.createdByInstructorId || user?.id
+    updateRouteMutation.mutate({
+      routeId,
+      data: { youtubeUrl: url, youtubeVideoId: videoId }
     });
   };
 
-  const handleSaveGps = () => {
-    updateGpsMutation.mutate({
-      gpsRouteType,
-      gpsRouteUrl,
-      createdByInstructorId: centre?.createdByInstructorId || user?.id
+  const handleGpsChange = (routeId, gpsRouteType, gpsRouteUrl) => {
+    updateRouteMutation.mutate({
+      routeId,
+      data: { gpsRouteType, gpsRouteUrl }
     });
   };
 
-  if (isLoading) {
+  if (isLoading || routesLoading) {
     return (
       <div className="p-6">
         <div className="text-center py-12">Loading...</div>
@@ -138,7 +118,7 @@ export default function InstructorTestRouteDetail() {
           Back to Test Routes
         </Button>
 
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 mb-8">
           <MapPin className="w-8 h-8 text-[#F7B602] mt-1" />
           <div>
             <h1 className="text-3xl font-bold text-[#071739]">{centre.centreName}</h1>
@@ -146,127 +126,18 @@ export default function InstructorTestRouteDetail() {
           </div>
         </div>
 
-        {/* Video Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Youtube className="w-5 h-5" />
-              Route Video (YouTube)
-            </CardTitle>
-            <CardDescription>
-              Add a 30–40 minute route video. Learners can view/play (read-only).
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="youtubeUrl">YouTube URL</Label>
-              <Input
-                id="youtubeUrl"
-                type="url"
-                placeholder="https://www.youtube.com/watch?v=xxxxxxxxxxx"
-                value={youtubeUrl}
-                onChange={(e) => handleYouTubeUrlChange(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-
-            {youtubeVideoId && (
-              <div className="aspect-video bg-slate-900 rounded-lg overflow-hidden">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={`https://www.youtube.com/embed/${youtubeVideoId}`}
-                  title="Test Route Video"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            )}
-
-            {!youtubeVideoId && youtubeUrl && (
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertDescription>
-                  Invalid YouTube URL. Please check the format.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <Button
-              onClick={handleSaveVideo}
-              disabled={updateVideoMutation.isPending}
-              className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {updateVideoMutation.isPending ? 'Saving...' : 'Save Video'}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* GPS Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Navigation className="w-5 h-5" />
-              Recorded GPS Route
-            </CardTitle>
-            <CardDescription>
-              Add a GPS route that starts at the test centre (min 100 yards from centre at the start) and returns to the test centre.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="gpsRouteType">GPS Route Type</Label>
-              <Select value={gpsRouteType} onValueChange={setGpsRouteType}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="gpx_url">GPX URL</SelectItem>
-                  <SelectItem value="geojson_url">GeoJSON URL</SelectItem>
-                  <SelectItem value="external_map_url">External Map Link</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="gpsRouteUrl">GPS Route URL</Label>
-              <Input
-                id="gpsRouteUrl"
-                type="url"
-                placeholder="Paste GPX/GeoJSON URL or map link"
-                value={gpsRouteUrl}
-                onChange={(e) => setGpsRouteUrl(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Route Requirements:</strong> Must start from the test centre (at least 100 yards from centre at the start) and return back to the test centre to finish.
-              </AlertDescription>
-            </Alert>
-
-            {gpsRouteUrl && (
-              <div className="p-4 bg-slate-100 rounded-lg text-sm text-slate-600">
-                <p className="font-medium mb-2">GPS Route Preview:</p>
-                <p className="break-all">{gpsRouteUrl}</p>
-                <p className="mt-2 text-xs">Type: {gpsRouteType.replace('_', ' ').toUpperCase()}</p>
-              </div>
-            )}
-
-            <Button
-              onClick={handleSaveGps}
-              disabled={updateGpsMutation.isPending}
-              className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {updateGpsMutation.isPending ? 'Saving...' : 'Save GPS Route'}
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Route Cards Grid */}
+        <div className="grid gap-4 md:grid-cols-2">
+          {routes.map((route) => (
+            <RouteCard
+              key={route.id}
+              route={route}
+              onYouTubeChange={handleYouTubeUrlChange}
+              onGpsChange={handleGpsChange}
+              isUpdating={updateRouteMutation.isPending}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
