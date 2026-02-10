@@ -2,13 +2,15 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Youtube, Navigation, CheckCircle2 } from 'lucide-react';
 
-export default function RouteCard({ route, onClick }) {
+export default function RouteCard({ route, onClick, isAdmin = true }) {
   const hasVideo = route.youtubeVideoId;
   const hasGps = route.gpsRouteUrl;
 
   return (
     <Card 
-      className="border-2 border-slate-200 hover:border-[#F7B602] hover:shadow-lg transition-all cursor-pointer"
+      className={`border-2 border-slate-200 transition-all ${
+        isAdmin ? 'hover:border-[#F7B602] hover:shadow-lg cursor-pointer' : 'cursor-default'
+      }`}
       onClick={() => onClick(route)}
     >
       <CardContent className="p-6">

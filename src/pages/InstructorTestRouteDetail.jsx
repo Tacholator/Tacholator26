@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, ArrowLeft } from 'lucide-react';
+import { MapPin, ArrowLeft, Info } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import RouteCard from '@/components/testroutes/RouteCard';
 import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
@@ -38,6 +38,8 @@ export default function InstructorTestRouteDetail() {
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
+
+  const isAdmin = user?.role === 'admin';
 
   const { data: centre, isLoading } = useQuery({
     queryKey: ['testRouteCentre', centreId],
@@ -106,6 +108,7 @@ export default function InstructorTestRouteDetail() {
   };
 
   const handleRouteClick = (route) => {
+    if (!isAdmin) return; // Only admin can edit
     setSelectedRoute(route);
     setModalOpen(true);
   };
@@ -146,6 +149,15 @@ export default function InstructorTestRouteDetail() {
           </div>
         </div>
 
+        {!isAdmin && (
+          <Alert className="mb-6">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Test routes are read-only. Only administrators can edit route information.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Route Cards Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {routes.map((route) => (
@@ -153,19 +165,22 @@ export default function InstructorTestRouteDetail() {
               key={route.id}
               route={route}
               onClick={handleRouteClick}
+              isAdmin={isAdmin}
             />
           ))}
         </div>
 
-        {/* Route Detail Modal */}
-        <RouteDetailModal
-          route={selectedRoute}
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          onYouTubeChange={handleYouTubeUrlChange}
-          onGpsChange={handleGpsChange}
-          isUpdating={updateRouteMutation.isPending}
-        />
+        {/* Route Detail Modal - Only for Admin */}
+        {isAdmin && (
+          <RouteDetailModal
+            route={selectedRoute}
+            open={modalOpen}
+            onOpenChange={setModalOpen}
+            onYouTubeChange={handleYouTubeUrlChange}
+            onGpsChange={handleGpsChange}
+            isUpdating={updateRouteMutation.isPending}
+          />
+        )}
       </div>
     </div>
   );

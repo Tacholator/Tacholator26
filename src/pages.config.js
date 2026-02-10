@@ -71,6 +71,8 @@ import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
 import InstructorQuizPreview from './pages/InstructorQuizPreview';
 import InstructorResources from './pages/InstructorResources';
 import InstructorStripeConnect from './pages/InstructorStripeConnect';
+import InstructorTestRouteDetail from './pages/InstructorTestRouteDetail';
+import InstructorTestRoutes from './pages/InstructorTestRoutes';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
 import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
 import LearnerCalendar from './pages/LearnerCalendar';
@@ -86,6 +88,8 @@ import LearnerResources from './pages/LearnerResources';
 import LearnerScheduledLessons from './pages/LearnerScheduledLessons';
 import LearnerSkillStudy from './pages/LearnerSkillStudy';
 import LearnerSkills from './pages/LearnerSkills';
+import LearnerTestRouteDetail from './pages/LearnerTestRouteDetail';
+import LearnerTestRoutes from './pages/LearnerTestRoutes';
 import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProfileSettings from './pages/ProfileSettings';
@@ -95,10 +99,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import InstructorTestRoutes from './pages/InstructorTestRoutes';
-import LearnerTestRoutes from './pages/LearnerTestRoutes';
-import InstructorTestRouteDetail from './pages/InstructorTestRouteDetail';
-import LearnerTestRouteDetail from './pages/LearnerTestRouteDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -127,6 +127,8 @@ export const PAGES = {
     "InstructorQuizPreview": InstructorQuizPreview,
     "InstructorResources": InstructorResources,
     "InstructorStripeConnect": InstructorStripeConnect,
+    "InstructorTestRouteDetail": InstructorTestRouteDetail,
+    "InstructorTestRoutes": InstructorTestRoutes,
     "InstructorTopicAssignment": InstructorTopicAssignment,
     "LearnerBookingCalendar": LearnerBookingCalendar,
     "LearnerCalendar": LearnerCalendar,
@@ -142,6 +144,8 @@ export const PAGES = {
     "LearnerScheduledLessons": LearnerScheduledLessons,
     "LearnerSkillStudy": LearnerSkillStudy,
     "LearnerSkills": LearnerSkills,
+    "LearnerTestRouteDetail": LearnerTestRouteDetail,
+    "LearnerTestRoutes": LearnerTestRoutes,
     "LessonTermsAndConditions": LessonTermsAndConditions,
     "PrivacyPolicy": PrivacyPolicy,
     "ProfileSettings": ProfileSettings,
@@ -151,10 +155,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "InstructorTestRoutes": InstructorTestRoutes,
-    "LearnerTestRoutes": LearnerTestRoutes,
-    "InstructorTestRouteDetail": InstructorTestRouteDetail,
-    "LearnerTestRouteDetail": LearnerTestRouteDetail,
 }
 
 export const pagesConfig = {
