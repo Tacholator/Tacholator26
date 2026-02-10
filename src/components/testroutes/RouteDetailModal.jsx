@@ -71,20 +71,33 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               <Youtube className="w-5 h-5" />
               Route Video
             </div>
-            <div>
-              <Label htmlFor="youtubeUrl">YouTube URL</Label>
-              <Input
-                id="youtubeUrl"
-                type="url"
-                placeholder="https://www.youtube.com/watch?v=xxxxxxxxxxx"
-                value={youtubeUrl}
-                onChange={(e) => setYoutubeUrl(e.target.value)}
-                className="mt-1"
-                disabled={!isAdmin}
-              />
-            </div>
+            
+            {isAdmin && (
+              <>
+                <div>
+                  <Label htmlFor="youtubeUrl">YouTube URL</Label>
+                  <Input
+                    id="youtubeUrl"
+                    type="url"
+                    placeholder="https://www.youtube.com/watch?v=xxxxxxxxxxx"
+                    value={youtubeUrl}
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
 
-            {videoId && (
+                {!videoId && youtubeUrl && (
+                  <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>
+                      Invalid YouTube URL. Please check the format.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </>
+            )}
+
+            {videoId ? (
               <div className="aspect-video bg-slate-900 rounded-lg overflow-hidden">
                 <iframe
                   width="100%"
@@ -96,15 +109,10 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                   allowFullScreen
                 />
               </div>
-            )}
-
-            {!videoId && youtubeUrl && (
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertDescription>
-                  Invalid YouTube URL. Please check the format.
-                </AlertDescription>
-              </Alert>
+            ) : (
+              <p className="text-slate-500 text-center py-8">
+                No video available for this route yet.
+              </p>
             )}
 
             {isAdmin && hasVideoChanges && (
@@ -125,57 +133,77 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               <Navigation className="w-5 h-5" />
               GPS Route
             </div>
-            <div>
-              <Label htmlFor="gpsRouteType">GPS Route Type</Label>
-              <Select value={gpsRouteType} onValueChange={setGpsRouteType} disabled={!isAdmin}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="gpx_url">GPX URL</SelectItem>
-                  <SelectItem value="geojson_url">GeoJSON URL</SelectItem>
-                  <SelectItem value="external_map_url">External Map Link</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
-            <div>
-              <Label htmlFor="gpsRouteUrl">GPS Route URL</Label>
-              <Input
-                id="gpsRouteUrl"
-                type="url"
-                placeholder="Paste GPX/GeoJSON URL or map link"
-                value={gpsRouteUrl}
-                onChange={(e) => setGpsRouteUrl(e.target.value)}
-                className="mt-1"
-                disabled={!isAdmin}
-              />
-            </div>
+            {isAdmin ? (
+              <>
+                <div>
+                  <Label htmlFor="gpsRouteType">GPS Route Type</Label>
+                  <Select value={gpsRouteType} onValueChange={setGpsRouteType}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gpx_url">GPX URL</SelectItem>
+                      <SelectItem value="geojson_url">GeoJSON URL</SelectItem>
+                      <SelectItem value="external_map_url">External Map Link</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Route Requirements:</strong> Must start from the test centre (at least 100 yards from centre at the start) and return back to the test centre to finish.
-              </AlertDescription>
-            </Alert>
+                <div>
+                  <Label htmlFor="gpsRouteUrl">GPS Route URL</Label>
+                  <Input
+                    id="gpsRouteUrl"
+                    type="url"
+                    placeholder="Paste GPX/GeoJSON URL or map link"
+                    value={gpsRouteUrl}
+                    onChange={(e) => setGpsRouteUrl(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
 
-            {gpsRouteUrl && (
-              <div className="p-4 bg-slate-100 rounded-lg text-sm text-slate-600">
-                <p className="font-medium mb-2">GPS Route Preview:</p>
-                <p className="break-all">{gpsRouteUrl}</p>
-                <p className="mt-2 text-xs">Type: {gpsRouteType.replace('_', ' ').toUpperCase()}</p>
-              </div>
-            )}
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>Route Requirements:</strong> Must start from the test centre (at least 100 yards from centre at the start) and return back to the test centre to finish.
+                  </AlertDescription>
+                </Alert>
 
-            {isAdmin && hasGpsChanges && (
-              <Button
-                onClick={handleSaveGps}
-                disabled={isUpdating}
-                className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {isUpdating ? 'Saving...' : 'Save GPS Route'}
-              </Button>
+                {gpsRouteUrl && (
+                  <div className="p-4 bg-slate-100 rounded-lg text-sm text-slate-600">
+                    <p className="font-medium mb-2">GPS Route Preview:</p>
+                    <p className="break-all">{gpsRouteUrl}</p>
+                    <p className="mt-2 text-xs">Type: {gpsRouteType.replace('_', ' ').toUpperCase()}</p>
+                  </div>
+                )}
+
+                {hasGpsChanges && (
+                  <Button
+                    onClick={handleSaveGps}
+                    disabled={isUpdating}
+                    className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {isUpdating ? 'Saving...' : 'Save GPS Route'}
+                  </Button>
+                )}
+              </>
+            ) : (
+              <>
+                {gpsRouteUrl ? (
+                  <Button
+                    onClick={() => window.open(gpsRouteUrl, '_blank')}
+                    className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                  >
+                    <Navigation className="w-4 h-4 mr-2" />
+                    Start Test Route
+                  </Button>
+                ) : (
+                  <p className="text-slate-500 text-center py-8">
+                    No GPS route available for this route yet.
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>
