@@ -30,7 +30,7 @@ export default function InstructorTestRouteDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const params = new URLSearchParams(window.location.search);
-  const centreId = params.get('centreId');
+  const centreId = params.get('centreid') || params.get('centreId');
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],

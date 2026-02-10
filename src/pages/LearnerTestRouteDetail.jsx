@@ -11,7 +11,7 @@ import { MapPin, Youtube, Navigation, Info, ArrowLeft } from 'lucide-react';
 export default function LearnerTestRouteDetail() {
   const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
-  const centreId = params.get('centreId');
+  const centreId = params.get('centreid') || params.get('centreId');
 
   const { data: centre, isLoading } = useQuery({
     queryKey: ['testRouteCentre', centreId],
