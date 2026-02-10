@@ -99,6 +99,8 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
+import InstructorGpsRouteSetup from './pages/InstructorGpsRouteSetup';
+import LearnerGpsFollowAlong from './pages/LearnerGpsFollowAlong';
 import __Layout from './Layout.jsx';
 
 
@@ -155,6 +157,8 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
+    "InstructorGpsRouteSetup": InstructorGpsRouteSetup,
+    "LearnerGpsFollowAlong": LearnerGpsFollowAlong,
 }
 
 export const pagesConfig = {
