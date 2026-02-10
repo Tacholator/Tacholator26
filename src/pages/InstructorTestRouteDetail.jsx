@@ -39,7 +39,7 @@ export default function InstructorTestRouteDetail() {
     queryFn: () => base44.auth.me()
   });
 
-  const isAdmin = user?.role === 'admin';
+  const isMainAdmin = user?.email === 'fasobah@gmail.com';
 
   const { data: centre, isLoading } = useQuery({
     queryKey: ['testRouteCentre', centreId],
@@ -148,7 +148,7 @@ export default function InstructorTestRouteDetail() {
           </div>
         </div>
 
-        {!isAdmin && (
+        {!isMainAdmin && (
           <Alert className="mb-6">
             <Info className="h-4 w-4" />
             <AlertDescription>
@@ -176,7 +176,7 @@ export default function InstructorTestRouteDetail() {
           onYouTubeChange={handleYouTubeUrlChange}
           onGpsChange={handleGpsChange}
           isUpdating={updateRouteMutation.isPending}
-          isAdmin={isAdmin}
+          isAdmin={isMainAdmin}
         />
       </div>
     </div>
