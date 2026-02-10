@@ -60,17 +60,31 @@ export default function InstructorTestRouteDetail() {
     }
   }, [centre]);
 
-  const updateMutation = useMutation({
+  const updateVideoMutation = useMutation({
     mutationFn: async (data) => {
       return await base44.entities.TestRouteCentre.update(centreId, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['testRouteCentre', centreId]);
       queryClient.invalidateQueries(['testRouteCentres']);
-      toast({ title: 'Test route saved successfully' });
+      toast({ title: 'Video saved successfully' });
     },
     onError: () => {
-      toast({ title: 'Failed to save', variant: 'destructive' });
+      toast({ title: 'Failed to save video', variant: 'destructive' });
+    }
+  });
+
+  const updateGpsMutation = useMutation({
+    mutationFn: async (data) => {
+      return await base44.entities.TestRouteCentre.update(centreId, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['testRouteCentre', centreId]);
+      queryClient.invalidateQueries(['testRouteCentres']);
+      toast({ title: 'GPS route saved successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Failed to save GPS route', variant: 'destructive' });
     }
   });
 
@@ -80,10 +94,16 @@ export default function InstructorTestRouteDetail() {
     setYoutubeVideoId(videoId);
   };
 
-  const handleSave = () => {
-    updateMutation.mutate({
+  const handleSaveVideo = () => {
+    updateVideoMutation.mutate({
       youtubeUrl,
       youtubeVideoId,
+      createdByInstructorId: centre?.createdByInstructorId || user?.id
+    });
+  };
+
+  const handleSaveGps = () => {
+    updateGpsMutation.mutate({
       gpsRouteType,
       gpsRouteUrl,
       createdByInstructorId: centre?.createdByInstructorId || user?.id
@@ -172,6 +192,15 @@ export default function InstructorTestRouteDetail() {
                 </AlertDescription>
               </Alert>
             )}
+
+            <Button
+              onClick={handleSaveVideo}
+              disabled={updateVideoMutation.isPending}
+              className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {updateVideoMutation.isPending ? 'Saving...' : 'Save Video'}
+            </Button>
           </CardContent>
         </Card>
 
@@ -227,17 +256,17 @@ export default function InstructorTestRouteDetail() {
                 <p className="mt-2 text-xs">Type: {gpsRouteType.replace('_', ' ').toUpperCase()}</p>
               </div>
             )}
+
+            <Button
+              onClick={handleSaveGps}
+              disabled={updateGpsMutation.isPending}
+              className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {updateGpsMutation.isPending ? 'Saving...' : 'Save GPS Route'}
+            </Button>
           </CardContent>
         </Card>
-
-        <Button
-          onClick={handleSave}
-          disabled={updateMutation.isPending}
-          className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-        >
-          <Save className="w-4 h-4 mr-2" />
-          {updateMutation.isPending ? 'Saving...' : 'Save Test Route'}
-        </Button>
       </div>
     </div>
   );
