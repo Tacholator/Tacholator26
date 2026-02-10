@@ -17,6 +17,14 @@ export default function InstructorGpsRouteSetup() {
   const [geoJsonText, setGeoJsonText] = useState('');
   const [validationError, setValidationError] = useState('');
 
+  // Check if user is admin
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const isMainAdmin = user?.email === 'fasobah@gmail.com';
+
   // Fetch centre data
   const { data: centre, isLoading } = useQuery({
     queryKey: ['testRouteCentre', centreId],
@@ -88,6 +96,23 @@ export default function InstructorGpsRouteSetup() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F7B602] mx-auto mb-4"></div>
           <p className="text-slate-600">Loading route...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isMainAdmin) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Alert variant="destructive" className="max-w-md">
+            <AlertDescription>
+              Only administrators can configure GPS routes.
+            </AlertDescription>
+          </Alert>
+          <Button onClick={() => navigate(-1)} className="mt-4">
+            Go Back
+          </Button>
         </div>
       </div>
     );
