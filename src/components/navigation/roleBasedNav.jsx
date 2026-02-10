@@ -13,7 +13,8 @@ import {
   StickyNote,
   Notebook,
   CreditCard,
-  Wallet
+  Wallet,
+  MapPin
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -64,6 +65,7 @@ export const instructorOnlyLinks = [
   { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
   { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
+  { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' },
   { name: 'Payment Setup', icon: Wallet, page: 'InstructorStripeConnect' }
 ];
 
@@ -73,7 +75,8 @@ export const learnerOnlyLinks = [
   { name: 'My Notes', icon: StickyNote, page: 'LearnerNotes' },
   { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress' },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
-  { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' }
+  { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
+  { name: 'Test Routes', icon: MapPin, page: 'LearnerTestRoutes' }
 ];
 
 // Get the correct page for a shared link based on user role
