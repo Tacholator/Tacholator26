@@ -1,11 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, Youtube, Navigation, Info } from 'lucide-react';
+import { MapPin, Youtube, Navigation, Info, ArrowLeft } from 'lucide-react';
 
 export default function LearnerTestRouteDetail() {
+  const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
   const centreId = params.get('centreId');
 
@@ -37,6 +41,15 @@ export default function LearnerTestRouteDetail() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-4xl mx-auto space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(createPageUrl('LearnerTestRoutes'))}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Test Routes
+        </Button>
+
         <div className="flex items-start gap-3">
           <MapPin className="w-8 h-8 text-[#F7B602] mt-1" />
           <div>

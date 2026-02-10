@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, Youtube, Navigation, Save, Info } from 'lucide-react';
+import { MapPin, Youtube, Navigation, Save, Info, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 function extractYouTubeId(url) {
@@ -25,6 +27,7 @@ function extractYouTubeId(url) {
 
 export default function InstructorTestRouteDetail() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const params = new URLSearchParams(window.location.search);
   const centreId = params.get('centreId');
@@ -106,6 +109,15 @@ export default function InstructorTestRouteDetail() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-4xl mx-auto space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(createPageUrl('InstructorTestRoutes'))}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Test Routes
+        </Button>
+
         <div className="flex items-start gap-3">
           <MapPin className="w-8 h-8 text-[#F7B602] mt-1" />
           <div>
