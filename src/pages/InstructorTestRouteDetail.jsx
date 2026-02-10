@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { MapPin, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import RouteCard from '@/components/testroutes/RouteCard';
+import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
 
 export default function InstructorTestRouteDetail() {
   const { toast } = useToast();
@@ -60,7 +61,8 @@ export default function InstructorTestRouteDetail() {
     enabled: !!centreId
   });
 
-  const [editingRoute, setEditingRoute] = useState(null);
+  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const updateRouteMutation = useMutation({
     mutationFn: async ({ routeId, data }) => {
@@ -88,6 +90,11 @@ export default function InstructorTestRouteDetail() {
       routeId,
       data: { gpsRouteType, gpsRouteUrl }
     });
+  };
+
+  const handleRouteClick = (route) => {
+    setSelectedRoute(route);
+    setModalOpen(true);
   };
 
   if (isLoading || routesLoading) {
@@ -127,17 +134,25 @@ export default function InstructorTestRouteDetail() {
         </div>
 
         {/* Route Cards Grid */}
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {routes.map((route) => (
             <RouteCard
               key={route.id}
               route={route}
-              onYouTubeChange={handleYouTubeUrlChange}
-              onGpsChange={handleGpsChange}
-              isUpdating={updateRouteMutation.isPending}
+              onClick={handleRouteClick}
             />
           ))}
         </div>
+
+        {/* Route Detail Modal */}
+        <RouteDetailModal
+          route={selectedRoute}
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          onYouTubeChange={handleYouTubeUrlChange}
+          onGpsChange={handleGpsChange}
+          isUpdating={updateRouteMutation.isPending}
+        />
       </div>
     </div>
   );
