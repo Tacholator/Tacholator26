@@ -190,19 +190,17 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               </>
             ) : (
               <>
-                <Button
-                  onClick={() => {
-                    const url = `/test-route-viewer?routeid=${route.id}`;
-                    window.open(url, '_blank');
-                  }}
-                  className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-                >
-                  <Navigation className="w-4 h-4 mr-2" />
-                  Start Test Route
-                </Button>
-                {!gpsRouteUrl && (
-                  <p className="text-xs text-slate-500 text-center mt-2">
-                    Using simulated route data for preview
+                {gpsRouteUrl ? (
+                  <Button
+                    onClick={() => window.open(gpsRouteUrl, '_blank')}
+                    className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                  >
+                    <Navigation className="w-4 h-4 mr-2" />
+                    Start Test Route
+                  </Button>
+                ) : (
+                  <p className="text-slate-500 text-center py-8">
+                    No GPS route available for this route yet.
                   </p>
                 )}
               </>
