@@ -108,7 +108,6 @@ export default function InstructorTestRouteDetail() {
   };
 
   const handleRouteClick = (route) => {
-    if (!isAdmin) return; // Only admin can edit
     setSelectedRoute(route);
     setModalOpen(true);
   };
@@ -165,22 +164,20 @@ export default function InstructorTestRouteDetail() {
               key={route.id}
               route={route}
               onClick={handleRouteClick}
-              isAdmin={isAdmin}
             />
           ))}
         </div>
 
-        {/* Route Detail Modal - Only for Admin */}
-        {isAdmin && (
-          <RouteDetailModal
-            route={selectedRoute}
-            open={modalOpen}
-            onOpenChange={setModalOpen}
-            onYouTubeChange={handleYouTubeUrlChange}
-            onGpsChange={handleGpsChange}
-            isUpdating={updateRouteMutation.isPending}
-          />
-        )}
+        {/* Route Detail Modal */}
+        <RouteDetailModal
+          route={selectedRoute}
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          onYouTubeChange={handleYouTubeUrlChange}
+          onGpsChange={handleGpsChange}
+          isUpdating={updateRouteMutation.isPending}
+          isAdmin={isAdmin}
+        />
       </div>
     </div>
   );

@@ -25,7 +25,7 @@ function extractYouTubeId(url) {
   return '';
 }
 
-export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeChange, onGpsChange, isUpdating }) {
+export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeChange, onGpsChange, isUpdating, isAdmin = true }) {
   const [youtubeUrl, setYoutubeUrl] = useState(route?.youtubeUrl || '');
   const [gpsRouteType, setGpsRouteType] = useState(route?.gpsRouteType || 'gpx_url');
   const [gpsRouteUrl, setGpsRouteUrl] = useState(route?.gpsRouteUrl || '');
@@ -80,6 +80,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                 value={youtubeUrl}
                 onChange={(e) => setYoutubeUrl(e.target.value)}
                 className="mt-1"
+                disabled={!isAdmin}
               />
             </div>
 
@@ -106,7 +107,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               </Alert>
             )}
 
-            {hasVideoChanges && (
+            {isAdmin && hasVideoChanges && (
               <Button
                 onClick={handleSaveVideo}
                 disabled={isUpdating}
@@ -126,7 +127,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
             </div>
             <div>
               <Label htmlFor="gpsRouteType">GPS Route Type</Label>
-              <Select value={gpsRouteType} onValueChange={setGpsRouteType}>
+              <Select value={gpsRouteType} onValueChange={setGpsRouteType} disabled={!isAdmin}>
                 <SelectTrigger className="mt-1">
                   <SelectValue />
                 </SelectTrigger>
@@ -147,6 +148,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                 value={gpsRouteUrl}
                 onChange={(e) => setGpsRouteUrl(e.target.value)}
                 className="mt-1"
+                disabled={!isAdmin}
               />
             </div>
 
@@ -165,7 +167,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               </div>
             )}
 
-            {hasGpsChanges && (
+            {isAdmin && hasGpsChanges && (
               <Button
                 onClick={handleSaveGps}
                 disabled={isUpdating}
