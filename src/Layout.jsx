@@ -116,7 +116,7 @@ export default function Layout({ children, currentPageName }) {
                           alt="Mobrage" 
                             className="w-10 h-10 rounded-xl object-cover"
                           />
-                          <span className="font-bold text-xl text-white">Mobrage Tacholator</span>
+                          <span className="font-bold text-xl text-white">Tacholator</span>
                       </div>
 
           {/* Navigation */}
@@ -231,7 +231,7 @@ export default function Layout({ children, currentPageName }) {
                         alt="Mobrage" 
                         className="w-8 h-8 rounded-lg object-cover"
                         />
-                        <span className="font-bold text-lg text-white">Mobrage Tacholator</span>
+                        <span className="font-bold text-lg text-white">Tacholator</span>
                                 </div>
                       <div className="flex items-center gap-2">
                       <DropdownMenu modal={false}>
@@ -320,7 +320,7 @@ export default function Layout({ children, currentPageName }) {
                                         alt="Mobrage" 
                                         className="w-8 h-8 rounded-lg object-cover"
                                         />
-                                        <span className="font-bold text-lg text-white">Mobrage Tacholator</span>
+                                        <span className="font-bold text-lg text-white">Tacholator</span>
                                     </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}

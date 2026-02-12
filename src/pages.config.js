@@ -63,6 +63,7 @@ import HomeworkLibrary from './pages/HomeworkLibrary';
 import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
 import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
+import InstructorGpsRouteSetup from './pages/InstructorGpsRouteSetup';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
 import InstructorNotifications from './pages/InstructorNotifications';
 import InstructorPayments from './pages/InstructorPayments';
@@ -78,6 +79,7 @@ import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
 import LearnerCalendar from './pages/LearnerCalendar';
 import LearnerChats from './pages/LearnerChats';
 import LearnerDashboard from './pages/LearnerDashboard';
+import LearnerGpsFollowAlong from './pages/LearnerGpsFollowAlong';
 import LearnerHomework from './pages/LearnerHomework';
 import LearnerLessons from './pages/LearnerLessons';
 import LearnerNotes from './pages/LearnerNotes';
@@ -91,6 +93,7 @@ import LearnerSkills from './pages/LearnerSkills';
 import LearnerTestRouteDetail from './pages/LearnerTestRouteDetail';
 import LearnerTestRoutes from './pages/LearnerTestRoutes';
 import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
+import LiveRouteViewer from './pages/LiveRouteViewer';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
@@ -99,9 +102,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import InstructorGpsRouteSetup from './pages/InstructorGpsRouteSetup';
-import LearnerGpsFollowAlong from './pages/LearnerGpsFollowAlong';
-import LiveRouteViewer from './pages/LiveRouteViewer';
 import __Layout from './Layout.jsx';
 
 
@@ -122,6 +122,7 @@ export const PAGES = {
     "InstructorBookingCalendar": InstructorBookingCalendar,
     "InstructorChats": InstructorChats,
     "InstructorDashboard": InstructorDashboard,
+    "InstructorGpsRouteSetup": InstructorGpsRouteSetup,
     "InstructorMcqReporting": InstructorMcqReporting,
     "InstructorNotifications": InstructorNotifications,
     "InstructorPayments": InstructorPayments,
@@ -137,6 +138,7 @@ export const PAGES = {
     "LearnerCalendar": LearnerCalendar,
     "LearnerChats": LearnerChats,
     "LearnerDashboard": LearnerDashboard,
+    "LearnerGpsFollowAlong": LearnerGpsFollowAlong,
     "LearnerHomework": LearnerHomework,
     "LearnerLessons": LearnerLessons,
     "LearnerNotes": LearnerNotes,
@@ -150,6 +152,7 @@ export const PAGES = {
     "LearnerTestRouteDetail": LearnerTestRouteDetail,
     "LearnerTestRoutes": LearnerTestRoutes,
     "LessonTermsAndConditions": LessonTermsAndConditions,
+    "LiveRouteViewer": LiveRouteViewer,
     "PrivacyPolicy": PrivacyPolicy,
     "ProfileSettings": ProfileSettings,
     "PupilList": PupilList,
@@ -158,9 +161,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "InstructorGpsRouteSetup": InstructorGpsRouteSetup,
-    "LearnerGpsFollowAlong": LearnerGpsFollowAlong,
-    "LiveRouteViewer": LiveRouteViewer,
 }
 
 export const pagesConfig = {
