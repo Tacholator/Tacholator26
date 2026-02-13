@@ -86,17 +86,28 @@ export default function PaymentMethods() {
   });
 
   useEffect(() => {
-    if (!stripe || !isAddDialogOpen) return;
+    if (!stripe || !isAddDialogOpen) {
+      if (cardElement) {
+        setCardElement(null);
+      }
+      return;
+    }
 
     let mounted = true;
     let cardInstance = null;
 
-    // Wait for DOM to be ready
+    // Wait for DOM and dialog animation
     const timer = setTimeout(() => {
       if (!mounted) return;
       
       const element = document.getElementById('card-element');
-      if (!element || element.children.length > 0) return; // Already mounted
+      if (!element) {
+        console.warn('Card element not found in DOM');
+        return;
+      }
+
+      // Clear any existing content
+      element.innerHTML = '';
 
       try {
         const elements = stripe.elements();
@@ -124,7 +135,7 @@ export default function PaymentMethods() {
       } catch (error) {
         console.error('Error mounting Stripe card element:', error);
       }
-    }, 100);
+    }, 300);
 
     return () => {
       mounted = false;
