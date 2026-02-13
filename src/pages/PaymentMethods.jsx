@@ -40,7 +40,9 @@ import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
 import { useToast } from '@/components/ui/use-toast';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY 
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 export default function PaymentMethods() {
   const [cardElement, setCardElement] = useState(null);
@@ -49,16 +51,24 @@ export default function PaymentMethods() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [deleteCardId, setDeleteCardId] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [stripeError, setStripeError] = useState(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (!stripePromise) {
+      setStripeError('Stripe is not configured. Please check your environment variables.');
+      return;
+    }
+    
     const initStripe = async () => {
       const stripeInstance = await stripePromise;
       setStripe(stripeInstance);
     };
-    initStripe();
+    initStripe().catch((error) => {
+      setStripeError('Failed to initialize Stripe: ' + error.message);
+    });
   }, []);
 
   const { data: user } = useQuery({
@@ -255,7 +265,8 @@ export default function PaymentMethods() {
               </div>
               <Button 
                 onClick={() => setIsAddDialogOpen(true)}
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                disabled={!stripe || !!stripeError}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] disabled:opacity-50"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Card
@@ -263,6 +274,14 @@ export default function PaymentMethods() {
             </div>
           </CardHeader>
           <CardContent>
+            {stripeError && (
+              <Alert className="border-rose-200 bg-rose-50 mb-4">
+                <AlertCircle className="w-4 h-4 text-rose-600" />
+                <AlertDescription className="text-rose-800">
+                  {stripeError}
+                </AlertDescription>
+              </Alert>
+            )}
             {cards.length === 0 ? (
               <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-lg">
                 <CreditCard className="w-8 h-8 mx-auto mb-2 text-slate-300" />
