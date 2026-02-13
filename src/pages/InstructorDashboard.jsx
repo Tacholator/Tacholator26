@@ -178,12 +178,12 @@ export default function InstructorDashboard() {
         <div className="space-y-4">
 
           {/* 1. Greeting Card */}
-          <Card className={`${warmPalette.card_greeting} border-0 shadow-sm`}>
+          <Card className={`${warmPalette.card_greeting} border-0 shadow-sm overflow-hidden`}>
             <CardContent className="p-6">
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">
+              <h2 className="text-2xl font-bold text-slate-800 mb-2 truncate">
                 Good {getTimeOfDay()}, {firstName}
               </h2>
-              <p className="text-slate-600">
+              <p className="text-slate-600 break-words">
                 You have {nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length} upcoming lesson{(nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length) !== 1 ? 's' : ''} today
                 {nextRelevantBooking && ` • Next at ${moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')}`}
               </p>
@@ -194,10 +194,10 @@ export default function InstructorDashboard() {
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (
-            <Card className={`${warmPalette.card_quiz_of_day} border-0 shadow-sm`}>
+            <Card className={`${warmPalette.card_quiz_of_day} border-0 shadow-sm overflow-hidden`}>
               <CardContent className="p-6">
                 <Badge className="mb-3 bg-purple-600 text-white">Quiz of the Day</Badge>
-                <h3 className="text-xl font-semibold text-slate-800 mb-2">{dailyQuiz.title}</h3>
+                <h3 className="text-xl font-semibold text-slate-800 mb-2 line-clamp-2">{dailyQuiz.title}</h3>
                 <p className="text-sm text-slate-600 mb-4">
                   {dailyQuiz.questionIds?.length || 0} questions
                 </p>
@@ -211,7 +211,7 @@ export default function InstructorDashboard() {
           )}
 
           {/* 3. Today's Schedule Card */}
-          <Card className={`${warmPalette.card_todays_schedule} border-0 shadow-sm`}>
+          <Card className={`${warmPalette.card_todays_schedule} border-0 shadow-sm overflow-hidden`}>
             <CardContent className="p-6">
               <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-amber-600" />
@@ -226,7 +226,7 @@ export default function InstructorDashboard() {
                     <p className="text-lg font-semibold text-slate-800">
                       {moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')} – {moment(nextRelevantBooking.endAtUtc).local().format('HH:mm')}
                     </p>
-                    <p className="text-slate-700 mt-1">
+                    <p className="text-slate-700 mt-1 truncate">
                       {pupils.find(p => p.id === nextRelevantBooking.pupilId)?.firstName} {pupils.find(p => p.id === nextRelevantBooking.pupilId)?.lastName}
                     </p>
                     <div className="flex items-center gap-2 mt-2">
@@ -238,7 +238,7 @@ export default function InstructorDashboard() {
                       </span>
                     </div>
                     {nextRelevantBooking.pickupLocation && (
-                      <p className="text-sm text-slate-500 mt-1">{nextRelevantBooking.pickupLocation}</p>
+                      <p className="text-sm text-slate-500 mt-1 truncate">{nextRelevantBooking.pickupLocation}</p>
                     )}
                     <div className="flex gap-2 mt-3 flex-wrap">
                       <Link to={createPageUrl('Calendar')}>
@@ -275,9 +275,9 @@ export default function InstructorDashboard() {
                       const pupil = pupils.find(p => p.id === booking.pupilId);
                       return (
                         <div key={booking.id} className="bg-white/70 rounded-lg p-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <p className="text-sm font-medium text-slate-800">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-slate-800 truncate">
                                 {moment(booking.startAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
                               </p>
                               <Badge className={`${getStatusColor(booking.status)} text-xs mt-1`}>
@@ -305,9 +305,9 @@ export default function InstructorDashboard() {
                         const pupil = pupils.find(p => p.id === booking.pupilId);
                         return (
                           <div key={booking.id} className="bg-rose-50/70 rounded-lg p-3 border border-rose-200">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <p className="text-sm font-medium text-slate-800">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-slate-800 truncate">
                                   {moment(booking.startAtUtc).local().format('HH:mm')}–{moment(booking.endAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
                                 </p>
                                 <p className="text-xs text-rose-600 mt-1">Needs outcome</p>
@@ -332,7 +332,7 @@ export default function InstructorDashboard() {
 
           {/* 4. Upcoming Tests Card */}
           {upcomingTests.length > 0 && (
-            <Card className={`${warmPalette.card_upcoming_tests} border-0 shadow-sm`}>
+            <Card className={`${warmPalette.card_upcoming_tests} border-0 shadow-sm overflow-hidden`}>
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
                   <Flag className="w-5 h-5 text-rose-600" />
@@ -348,17 +348,17 @@ export default function InstructorDashboard() {
                         className="block"
                       >
                         <div className="bg-white/70 rounded-lg p-3 hover:bg-white transition-colors">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <p className="font-medium text-slate-800">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-slate-800 truncate">
                                 {pupil.firstName} {pupil.lastName}
                               </p>
-                              <p className="text-sm text-slate-600 mt-1">
+                              <p className="text-sm text-slate-600 mt-1 break-words">
                                 {moment(pupil.practicalTestDate).format('DD MMM YYYY')}
                                 {pupil.practicalTestTime && ` at ${pupil.practicalTestTime}`}
                               </p>
                               {pupil.practicalTestCentre && (
-                                <p className="text-xs text-slate-500">{pupil.practicalTestCentre}</p>
+                                <p className="text-xs text-slate-500 truncate">{pupil.practicalTestCentre}</p>
                               )}
                             </div>
                             <Badge className="bg-rose-100 text-rose-700">
@@ -376,7 +376,7 @@ export default function InstructorDashboard() {
 
           {/* 5. Notifications Card */}
           {(unreadNotifications.length > 0 || notifications.length > 0) && (
-            <Card className={`${warmPalette.card_notifications} border-0 shadow-sm`}>
+            <Card className={`${warmPalette.card_notifications} border-0 shadow-sm overflow-hidden`}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
@@ -395,11 +395,11 @@ export default function InstructorDashboard() {
                       key={notif.id}
                       className={`bg-white/70 rounded-lg p-3 ${!notif.readAt ? 'border-l-2 border-l-amber-500' : ''}`}
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-slate-800">{notif.title}</p>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-800 truncate">{notif.title}</p>
                           {notif.message && (
-                            <p className="text-xs text-slate-600 mt-1 line-clamp-2">{notif.message}</p>
+                            <p className="text-xs text-slate-600 mt-1 line-clamp-2 break-words">{notif.message}</p>
                           )}
                           <p className="text-xs text-slate-400 mt-1">
                             {moment(notif.created_date).fromNow()}
