@@ -265,13 +265,16 @@ export default function InstructorPayments() {
               <CardHeader>
                 <CardTitle>Pupil Balances</CardTitle>
                 <CardDescription>
-                  Showing {filteredPupils.length} of {pupils.length} pupils
+                  Showing {activePupils.filter(p => {
+                    const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
+                    return fullName.includes(searchQuery.toLowerCase());
+                  }).length} of {activePupils.length} active pupils
                 </CardDescription>
                 <div className="mt-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <Input
-                      placeholder="Search pupils..."
+                      placeholder="Search active pupils..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10"
@@ -280,18 +283,24 @@ export default function InstructorPayments() {
                 </div>
               </CardHeader>
               <CardContent>
-                {pupils.length === 0 ? (
+                {activePupils.length === 0 ? (
                   <div className="text-center py-8 text-slate-500">
-                    No pupils found for this instructor
+                    No active pupils found
                   </div>
-                ) : filteredPupils.length === 0 ? (
+                ) : activePupils.filter(p => {
+                  const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
+                  return fullName.includes(searchQuery.toLowerCase());
+                }).length === 0 ? (
                   <div className="text-center py-8 text-slate-500">
-                    No pupils match your search
+                    No active pupils match your search
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {filteredPupils
-                      .filter(p => p.status === 'Active')
+                    {activePupils
+                      .filter(p => {
+                        const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
+                        return fullName.includes(searchQuery.toLowerCase());
+                      })
                       .map((pupil) => {
                         const balance = pupil.bulkPaymentBalance || 0;
                         const hourlyRate = pupil.hourlyRate || 50;
