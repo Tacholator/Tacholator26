@@ -40,21 +40,7 @@ import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
 import { useToast } from '@/components/ui/use-toast';
 
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-
-// Debug logging
-console.log('🔍 Stripe Key Check:', {
-  hasKey: !!STRIPE_PUBLISHABLE_KEY,
-  keyPrefix: STRIPE_PUBLISHABLE_KEY?.substring(0, 7),
-  allEnvVars: Object.keys(import.meta.env).filter(k => k.includes('STRIPE'))
-});
-
-if (!STRIPE_PUBLISHABLE_KEY) {
-  console.error('❌ VITE_STRIPE_PUBLISHABLE_KEY is not set');
-  console.error('Available env vars:', Object.keys(import.meta.env));
-}
-
-const stripePromise = STRIPE_PUBLISHABLE_KEY ? loadStripe(STRIPE_PUBLISHABLE_KEY) : Promise.resolve(null);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export default function PaymentMethods() {
   const [cardElement, setCardElement] = useState(null);
@@ -70,14 +56,6 @@ export default function PaymentMethods() {
   useEffect(() => {
     const initStripe = async () => {
       const stripeInstance = await stripePromise;
-      if (!stripeInstance) {
-        console.error('❌ Stripe failed to initialize. Check VITE_STRIPE_PUBLISHABLE_KEY environment variable.');
-        toast({
-          title: 'Payment System Error',
-          description: 'Stripe is not configured. Please contact support.',
-          variant: 'destructive'
-        });
-      }
       setStripe(stripeInstance);
     };
     initStripe();
@@ -108,66 +86,39 @@ export default function PaymentMethods() {
   });
 
   useEffect(() => {
-    if (!stripe || !isAddDialogOpen) {
-      if (cardElement) {
-        setCardElement(null);
-      }
-      return;
-    }
+    if (!stripe || !isAddDialogOpen) return;
 
-    let mounted = true;
-    let cardInstance = null;
-
-    // Wait for DOM and dialog animation
+    // Wait for DOM to be ready
     const timer = setTimeout(() => {
-      if (!mounted) return;
-      
       const element = document.getElementById('card-element');
-      if (!element) {
-        console.warn('Card element not found in DOM');
-        return;
-      }
+      if (!element) return;
 
-      // Clear any existing content
-      element.innerHTML = '';
-
-      try {
-        const elements = stripe.elements();
-        cardInstance = elements.create('card', {
-          style: {
-            base: {
-              fontSize: '16px',
-              color: '#32325d',
-              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-              '::placeholder': {
-                color: '#aab7c4',
-              },
-            },
-            invalid: {
-              color: '#fa755a',
-              iconColor: '#fa755a',
+      const elements = stripe.elements();
+      const card = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '16px',
+            color: '#32325d',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            '::placeholder': {
+              color: '#aab7c4',
             },
           },
-        });
+          invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a',
+          },
+        },
+      });
 
-        cardInstance.mount('#card-element');
-        if (mounted) {
-          setCardElement(cardInstance);
-        }
-      } catch (error) {
-        console.error('Error mounting Stripe card element:', error);
-      }
-    }, 300);
+      card.mount('#card-element');
+      setCardElement(card);
+    }, 100);
 
     return () => {
-      mounted = false;
       clearTimeout(timer);
-      if (cardInstance) {
-        try {
-          cardInstance.unmount();
-        } catch (error) {
-          console.error('Error unmounting card element:', error);
-        }
+      if (cardElement) {
+        cardElement.unmount();
       }
     };
   }, [stripe, isAddDialogOpen]);
@@ -292,34 +243,27 @@ export default function PaymentMethods() {
         {/* Add Payment Card */}
         <Card>
           <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex-1">
-                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-[#F7B602]" />
                   Your Payment Cards
                 </CardTitle>
-                <CardDescription className="mt-1.5">
+                <CardDescription>
                   Add cards to make payments for goods and services
                 </CardDescription>
               </div>
               <Button 
                 onClick={() => setIsAddDialogOpen(true)}
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] w-full sm:w-auto"
-                disabled={!stripe}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                {stripe ? 'Add Card' : 'Loading...'}
+                Add Card
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            {!stripe ? (
-              <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-lg">
-                <AlertCircle className="w-8 h-8 mx-auto mb-2 text-amber-500" />
-                <p className="text-sm text-slate-600 font-medium">Payment system is loading...</p>
-                <p className="text-xs text-slate-500 mt-1">If this persists, Stripe may not be configured</p>
-              </div>
-            ) : cards.length === 0 ? (
+            {cards.length === 0 ? (
               <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-lg">
                 <CreditCard className="w-8 h-8 mx-auto mb-2 text-slate-300" />
                 <p className="text-sm text-slate-500">No cards added yet</p>
@@ -329,15 +273,15 @@ export default function PaymentMethods() {
                 {cards.map((card) => (
                   <div 
                     key={card.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow gap-3"
+                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow"
                   >
-                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                      <div className="w-10 h-7 sm:w-12 sm:h-8 bg-slate-100 rounded flex items-center justify-center shrink-0">
-                        <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400" />
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-8 bg-slate-100 rounded flex items-center justify-center">
+                        <CreditCard className="w-6 h-6 text-slate-400" />
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-medium text-slate-900 text-sm sm:text-base">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-slate-900">
                             •••• {card.lastFourDigits}
                           </p>
                           <Badge variant="outline" className="text-xs">
@@ -350,23 +294,20 @@ export default function PaymentMethods() {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs sm:text-sm text-slate-500 mt-1 truncate">
+                        <p className="text-sm text-slate-500">
                           {card.cardholderName} • Expires {card.expiryMonth}/{card.expiryYear}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 sm:gap-1 justify-end sm:justify-start shrink-0">
+                    <div className="flex items-center gap-2">
                       {!card.isDefault && (
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => setDefaultCardMutation.mutate(card.id)}
                           disabled={setDefaultCardMutation.isPending}
-                          title="Set as default"
-                          className="h-9"
                         >
                           <Star className="w-4 h-4" />
-                          <span className="ml-1 sm:hidden">Set Default</span>
                         </Button>
                       )}
 
@@ -374,11 +315,9 @@ export default function PaymentMethods() {
                         size="sm"
                         variant="ghost"
                         onClick={() => setDeleteCardId(card.id)}
-                        className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-9"
-                        title="Delete card"
+                        className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
                       >
                         <Trash2 className="w-4 h-4" />
-                        <span className="ml-1 sm:hidden">Delete</span>
                       </Button>
                     </div>
                   </div>
@@ -411,20 +350,8 @@ export default function PaymentMethods() {
 
               <div>
                 <Label>Card Details</Label>
-                <div 
-                  id="card-element" 
-                  className="border rounded-md p-3 bg-white min-h-[44px] transition-opacity"
-                  style={{ opacity: cardElement ? 1 : 0.5 }}
-                ></div>
-                {!stripe && (
-                  <p className="text-xs text-amber-600 mt-2">⏳ Loading payment form...</p>
-                )}
-                {stripe && !cardElement && (
-                  <p className="text-xs text-blue-600 mt-2">⏳ Initializing card input...</p>
-                )}
-                {stripe && cardElement && (
-                  <p className="text-xs text-slate-500 mt-2">🔒 Secure payment powered by Stripe</p>
-                )}
+                <div id="card-element" className="border rounded-md p-3 bg-white"></div>
+                <p className="text-xs text-slate-500 mt-2">Secure payment powered by Stripe</p>
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
@@ -442,9 +369,9 @@ export default function PaymentMethods() {
                 <Button 
                   type="submit" 
                   className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-                  disabled={isProcessing || !stripe || !cardElement}
+                  disabled={isProcessing || !stripe}
                 >
-                  {isProcessing ? 'Adding...' : !stripe ? 'Loading...' : !cardElement ? 'Initializing...' : 'Add Card'}
+                  {isProcessing ? 'Adding...' : 'Add Card'}
                 </Button>
               </div>
             </form>
