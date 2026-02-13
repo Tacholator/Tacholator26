@@ -40,7 +40,7 @@ import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
 import { useToast } from '@/components/ui/use-toast';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51Qh3tP01uP0SB4qyGAL83nKY2Kxw2rVOgpJTU3RhsSoJJnkBIJ5QOQIX6GaEdHmDqRvJiEpMXsGl7lMEoLKLOdXW00yHD8EE4s');
 
 export default function PaymentMethods() {
   const [cardElement, setCardElement] = useState(null);
