@@ -76,6 +76,7 @@ import InstructorStripeConnect from './pages/InstructorStripeConnect';
 import InstructorTestRouteDetail from './pages/InstructorTestRouteDetail';
 import InstructorTestRoutes from './pages/InstructorTestRoutes';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
+import Invoices from './pages/Invoices';
 import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
 import LearnerCalendar from './pages/LearnerCalendar';
 import LearnerChats from './pages/LearnerChats';
@@ -96,6 +97,7 @@ import LearnerTestRouteDetail from './pages/LearnerTestRouteDetail';
 import LearnerTestRoutes from './pages/LearnerTestRoutes';
 import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
 import LiveRouteViewer from './pages/LiveRouteViewer';
+import PaymentMethods from './pages/PaymentMethods';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
@@ -104,8 +106,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import PaymentMethods from './pages/PaymentMethods';
-import Invoices from './pages/Invoices';
 import __Layout from './Layout.jsx';
 
 
@@ -139,6 +139,7 @@ export const PAGES = {
     "InstructorTestRouteDetail": InstructorTestRouteDetail,
     "InstructorTestRoutes": InstructorTestRoutes,
     "InstructorTopicAssignment": InstructorTopicAssignment,
+    "Invoices": Invoices,
     "LearnerBookingCalendar": LearnerBookingCalendar,
     "LearnerCalendar": LearnerCalendar,
     "LearnerChats": LearnerChats,
@@ -159,6 +160,7 @@ export const PAGES = {
     "LearnerTestRoutes": LearnerTestRoutes,
     "LessonTermsAndConditions": LessonTermsAndConditions,
     "LiveRouteViewer": LiveRouteViewer,
+    "PaymentMethods": PaymentMethods,
     "PrivacyPolicy": PrivacyPolicy,
     "ProfileSettings": ProfileSettings,
     "PupilList": PupilList,
@@ -167,8 +169,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "PaymentMethods": PaymentMethods,
-    "Invoices": Invoices,
 }
 
 export const pagesConfig = {
