@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X, ClipboardCheck, Mic, GraduationCap, BookOpen } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X, ClipboardCheck, Mic } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -304,7 +304,7 @@ export default function ProfileSettings() {
           </Card>
         </motion.div>
 
-        {/* Instructor: My Teaching */}
+        {/* Admin: Daily Quizzes */}
         {isInstructor && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -312,56 +312,24 @@ export default function ProfileSettings() {
             transition={{ delay: 0.2 }}
             className="mt-6"
           >
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5" />
-                  My Teaching
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link to={createPageUrl('AdminDailyQuizzes')}>
-                  <div className="p-4 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer border border-slate-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                          <ClipboardCheck className="w-5 h-5 text-purple-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-slate-800">Daily Quizzes</h3>
-                          <p className="text-sm text-slate-500">Manage quiz questions and schedule</p>
-                        </div>
+            <Link to={createPageUrl('AdminDailyQuizzes')}>
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                        <ClipboardCheck className="w-5 h-5 text-purple-600" />
                       </div>
-                      <ArrowLeft className="w-5 h-5 text-slate-400 rotate-180" />
+                      <div>
+                        <h3 className="font-semibold text-slate-800">Daily Quizzes</h3>
+                        <p className="text-sm text-slate-500">Manage quiz questions and schedule</p>
+                      </div>
                     </div>
+                    <ArrowLeft className="w-5 h-5 text-slate-400 rotate-180" />
                   </div>
-                </Link>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Learner: My Learning */}
-        {!isInstructor && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-6"
-          >
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  My Learning
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-slate-500">
-                  Track your learning progress and achievements here
-                </p>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           </motion.div>
         )}
 
