@@ -128,6 +128,41 @@ export default function InstructorPayments() {
           <p className="text-slate-600 mt-2">Track pupil balances and payment activity</p>
         </div>
 
+        {/* Payment Methods & Invoices */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="overflow-hidden">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-[#F7B602]" />
+                Payment Methods
+              </CardTitle>
+              <CardDescription>Manage your payment methods and preferences</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-slate-500">
+                <p className="text-sm">No payment methods configured yet</p>
+                <p className="text-xs mt-2">Payment methods will appear here once set up</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="overflow-hidden">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-[#F7B602]" />
+                Invoices
+              </CardTitle>
+              <CardDescription>View and manage invoices</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-slate-500">
+                <p className="text-sm">No invoices available</p>
+                <p className="text-xs mt-2">Invoices will appear here once generated</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Stripe Connect Status Banner */}
         {instructor.stripeAccountStatus === 'not_connected' && (
           <Alert className="border-amber-200 bg-amber-50">
