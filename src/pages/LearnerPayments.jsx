@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { CreditCard, TrendingUp, TrendingDown, Wallet, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { CreditCard, TrendingUp, TrendingDown, Wallet, Calendar, Clock, AlertCircle, DollarSign, FileText } from 'lucide-react';
 import moment from 'moment';
 
 export default function LearnerPayments() {
@@ -118,6 +120,31 @@ export default function LearnerPayments() {
         <div>
           <h1 className="text-3xl font-bold text-[#071739]">Payments</h1>
           <p className="text-slate-600 mt-2">Manage your lesson credits and payment history</p>
+        </div>
+
+        {/* Payment Methods & Invoices */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link to={createPageUrl('PaymentMethods')}>
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3">
+                  <Wallet className="w-6 h-6 text-[#F7B602]" />
+                  <h3 className="text-lg font-semibold text-[#071739]">Payment Methods</h3>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to={createPageUrl('Invoices')}>
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-6 h-6 text-[#F7B602]" />
+                  <h3 className="text-lg font-semibold text-[#071739]">Invoices</h3>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Balance Cards */}
