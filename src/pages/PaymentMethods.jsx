@@ -40,7 +40,13 @@ import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
 import { useToast } from '@/components/ui/use-toast';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+
+if (!STRIPE_PUBLISHABLE_KEY) {
+  console.error('❌ VITE_STRIPE_PUBLISHABLE_KEY is not set. Current env:', import.meta.env);
+}
+
+const stripePromise = STRIPE_PUBLISHABLE_KEY ? loadStripe(STRIPE_PUBLISHABLE_KEY) : Promise.resolve(null);
 
 export default function PaymentMethods() {
   const [cardElement, setCardElement] = useState(null);
@@ -56,6 +62,14 @@ export default function PaymentMethods() {
   useEffect(() => {
     const initStripe = async () => {
       const stripeInstance = await stripePromise;
+      if (!stripeInstance) {
+        console.error('❌ Stripe failed to initialize. Check VITE_STRIPE_PUBLISHABLE_KEY environment variable.');
+        toast({
+          title: 'Payment System Error',
+          description: 'Stripe is not configured. Please contact support.',
+          variant: 'destructive'
+        });
+      }
       setStripe(stripeInstance);
     };
     initStripe();
@@ -281,11 +295,12 @@ export default function PaymentMethods() {
                 </CardDescription>
               </div>
               <Button 
-                onClick={() => setIsAddDialogOpen(true)}
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+               onClick={() => setIsAddDialogOpen(true)}
+               className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+               disabled={!stripe}
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Card
+               <Plus className="w-4 h-4 mr-2" />
+               {stripe ? 'Add Card' : 'Loading...'}
               </Button>
             </div>
           </CardHeader>
