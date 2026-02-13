@@ -88,37 +88,53 @@ export default function PaymentMethods() {
   useEffect(() => {
     if (!stripe || !isAddDialogOpen) return;
 
+    let mounted = true;
+    let cardInstance = null;
+
     // Wait for DOM to be ready
     const timer = setTimeout(() => {
+      if (!mounted) return;
+      
       const element = document.getElementById('card-element');
-      if (!element) return;
+      if (!element || element.children.length > 0) return; // Already mounted
 
-      const elements = stripe.elements();
-      const card = elements.create('card', {
-        style: {
-          base: {
-            fontSize: '16px',
-            color: '#32325d',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            '::placeholder': {
-              color: '#aab7c4',
+      try {
+        const elements = stripe.elements();
+        cardInstance = elements.create('card', {
+          style: {
+            base: {
+              fontSize: '16px',
+              color: '#32325d',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              '::placeholder': {
+                color: '#aab7c4',
+              },
+            },
+            invalid: {
+              color: '#fa755a',
+              iconColor: '#fa755a',
             },
           },
-          invalid: {
-            color: '#fa755a',
-            iconColor: '#fa755a',
-          },
-        },
-      });
+        });
 
-      card.mount('#card-element');
-      setCardElement(card);
+        cardInstance.mount('#card-element');
+        if (mounted) {
+          setCardElement(cardInstance);
+        }
+      } catch (error) {
+        console.error('Error mounting Stripe card element:', error);
+      }
     }, 100);
 
     return () => {
+      mounted = false;
       clearTimeout(timer);
-      if (cardElement) {
-        cardElement.unmount();
+      if (cardInstance) {
+        try {
+          cardInstance.unmount();
+        } catch (error) {
+          console.error('Error unmounting card element:', error);
+        }
       }
     };
   }, [stripe, isAddDialogOpen]);
@@ -350,8 +366,13 @@ export default function PaymentMethods() {
 
               <div>
                 <Label>Card Details</Label>
-                <div id="card-element" className="border rounded-md p-3 bg-white"></div>
-                <p className="text-xs text-slate-500 mt-2">Secure payment powered by Stripe</p>
+                <div id="card-element" className="border rounded-md p-3 bg-white min-h-[44px]"></div>
+                {!stripe && (
+                  <p className="text-xs text-amber-600 mt-2">Loading payment form...</p>
+                )}
+                {stripe && (
+                  <p className="text-xs text-slate-500 mt-2">Secure payment powered by Stripe</p>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
