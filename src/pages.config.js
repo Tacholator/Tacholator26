@@ -76,7 +76,6 @@ import InstructorStripeConnect from './pages/InstructorStripeConnect';
 import InstructorTestRouteDetail from './pages/InstructorTestRouteDetail';
 import InstructorTestRoutes from './pages/InstructorTestRoutes';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
-import Invoices from './pages/Invoices';
 import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
 import LearnerCalendar from './pages/LearnerCalendar';
 import LearnerChats from './pages/LearnerChats';
@@ -106,6 +105,7 @@ import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PaymentMethods from './pages/PaymentMethods';
+import Invoices from './pages/Invoices';
 import __Layout from './Layout.jsx';
 
 
@@ -139,7 +139,6 @@ export const PAGES = {
     "InstructorTestRouteDetail": InstructorTestRouteDetail,
     "InstructorTestRoutes": InstructorTestRoutes,
     "InstructorTopicAssignment": InstructorTopicAssignment,
-    "Invoices": Invoices,
     "LearnerBookingCalendar": LearnerBookingCalendar,
     "LearnerCalendar": LearnerCalendar,
     "LearnerChats": LearnerChats,
@@ -169,6 +168,7 @@ export const PAGES = {
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
     "PaymentMethods": PaymentMethods,
+    "Invoices": Invoices,
 }
 
 export const pagesConfig = {
