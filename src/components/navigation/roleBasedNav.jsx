@@ -60,12 +60,20 @@ export const sharedNavLinks = [
 export const instructorOnlyLinks = [
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
-  { name: 'My Teaching', icon: GraduationCap, page: 'InstructorMyTeaching' },
-  { name: 'Course Work', icon: FileText, page: 'CourseWork' },
+  { 
+    name: 'My Teaching', 
+    icon: GraduationCap, 
+    page: 'InstructorMyTeaching',
+    isCollapsible: true,
+    children: [
+      { name: 'Course Work', icon: FileText, page: 'CourseWork' },
+      { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
+      { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
+      { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
+      { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
+    ]
+  },
   { name: 'Pupil Notes', icon: Notebook, page: 'InstructorPupilNotes' },
-  { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
-  { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
-  { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
   { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' },
   { name: 'Payment Setup', icon: Wallet, page: 'InstructorStripeConnect' }
 ];

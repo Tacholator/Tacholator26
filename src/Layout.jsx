@@ -33,7 +33,9 @@ import {
   FileText,
   Shield,
   Receipt,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
@@ -43,6 +45,7 @@ export default function Layout({ children, currentPageName }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState({});
   const navigate = useNavigate();
 
   const { data: user } = useQuery({
@@ -332,20 +335,67 @@ export default function Layout({ children, currentPageName }) {
               <nav className="px-4 py-2">
                 {navItems.map((item) => {
                   const isActive = currentPageName === item.page;
+                  const isExpanded = expandedMenus[item.name];
+                  const hasActiveChild = item.children?.some(child => currentPageName === child.page);
+
                   return (
-                    <Link
-                      key={item.name}
-                      to={createPageUrl(item.page)}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 rounded-xl p-3 mb-1 text-sm font-medium transition-all ${
-                        isActive
-                          ? 'bg-[#F7B602] text-[#071739]'
-                          : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
-                      }`}
-                    >
-                      <item.icon className={`w-5 h-5 ${isActive ? 'text-[#071739]' : 'text-slate-300'}`} />
-                      {item.name}
-                    </Link>
+                    <div key={item.name} className="mb-1">
+                      {item.isCollapsible ? (
+                        <>
+                          <button
+                            onClick={() => setExpandedMenus(prev => ({ ...prev, [item.name]: !prev[item.name] }))}
+                            className={`flex items-center gap-3 rounded-xl p-3 text-sm font-medium transition-all w-full ${
+                              isActive || hasActiveChild
+                                ? 'bg-[#F7B602] text-[#071739]'
+                                : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
+                            }`}
+                          >
+                            <item.icon className={`w-5 h-5 ${isActive || hasActiveChild ? 'text-[#071739]' : 'text-slate-300'}`} />
+                            <span className="flex-1 text-left">{item.name}</span>
+                            {isExpanded ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                          </button>
+                          {isExpanded && item.children && (
+                            <div className="ml-4 mt-1 space-y-1">
+                              {item.children.map((child) => {
+                                const isChildActive = currentPageName === child.page;
+                                return (
+                                  <Link
+                                    key={child.name}
+                                    to={createPageUrl(child.page)}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={`flex items-center gap-3 rounded-xl p-2 text-sm transition-all ${
+                                      isChildActive
+                                        ? 'bg-[#F7B602] text-[#071739]'
+                                        : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
+                                    }`}
+                                  >
+                                    <child.icon className={`w-4 h-4 ${isChildActive ? 'text-[#071739]' : 'text-slate-300'}`} />
+                                    {child.name}
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <Link
+                          to={createPageUrl(item.page)}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`flex items-center gap-3 rounded-xl p-3 text-sm font-medium transition-all ${
+                            isActive
+                              ? 'bg-[#F7B602] text-[#071739]'
+                              : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
+                          }`}
+                        >
+                          <item.icon className={`w-5 h-5 ${isActive ? 'text-[#071739]' : 'text-slate-300'}`} />
+                          {item.name}
+                        </Link>
+                      )}
+                    </div>
                   );
                 })}
               </nav>
