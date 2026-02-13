@@ -284,23 +284,23 @@ export default function PaymentMethods() {
         {/* Add Payment Card */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex-1">
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                   <CreditCard className="w-5 h-5 text-[#F7B602]" />
                   Your Payment Cards
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="mt-1.5">
                   Add cards to make payments for goods and services
                 </CardDescription>
               </div>
               <Button 
-               onClick={() => setIsAddDialogOpen(true)}
-               className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-               disabled={!stripe}
+                onClick={() => setIsAddDialogOpen(true)}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] w-full sm:w-auto"
+                disabled={!stripe}
               >
-               <Plus className="w-4 h-4 mr-2" />
-               {stripe ? 'Add Card' : 'Loading...'}
+                <Plus className="w-4 h-4 mr-2" />
+                {stripe ? 'Add Card' : 'Loading...'}
               </Button>
             </div>
           </CardHeader>
@@ -321,15 +321,15 @@ export default function PaymentMethods() {
                 {cards.map((card) => (
                   <div 
                     key={card.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow gap-3"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-8 bg-slate-100 rounded flex items-center justify-center">
-                        <CreditCard className="w-6 h-6 text-slate-400" />
+                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                      <div className="w-10 h-7 sm:w-12 sm:h-8 bg-slate-100 rounded flex items-center justify-center shrink-0">
+                        <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-slate-900">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-medium text-slate-900 text-sm sm:text-base">
                             •••• {card.lastFourDigits}
                           </p>
                           <Badge variant="outline" className="text-xs">
@@ -342,20 +342,23 @@ export default function PaymentMethods() {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-xs sm:text-sm text-slate-500 mt-1 truncate">
                           {card.cardholderName} • Expires {card.expiryMonth}/{card.expiryYear}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 sm:gap-1 justify-end sm:justify-start shrink-0">
                       {!card.isDefault && (
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => setDefaultCardMutation.mutate(card.id)}
                           disabled={setDefaultCardMutation.isPending}
+                          title="Set as default"
+                          className="h-9"
                         >
                           <Star className="w-4 h-4" />
+                          <span className="ml-1 sm:hidden">Set Default</span>
                         </Button>
                       )}
 
@@ -363,9 +366,11 @@ export default function PaymentMethods() {
                         size="sm"
                         variant="ghost"
                         onClick={() => setDeleteCardId(card.id)}
-                        className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                        className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-9"
+                        title="Delete card"
                       >
                         <Trash2 className="w-4 h-4" />
+                        <span className="ml-1 sm:hidden">Delete</span>
                       </Button>
                     </div>
                   </div>
