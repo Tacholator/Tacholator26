@@ -289,64 +289,68 @@ export default function InstructorPayments() {
                     No pupils match your search
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredPupils.map((pupil) => {
-                      const balance = pupil.bulkPaymentBalance || 0;
-                      const hourlyRate = pupil.hourlyRate || 50;
-                      const availableHours = balance / hourlyRate;
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {filteredPupils
+                      .filter(p => p.status === 'Active')
+                      .map((pupil) => {
+                        const balance = pupil.bulkPaymentBalance || 0;
+                        const hourlyRate = pupil.hourlyRate || 50;
+                        const availableHours = balance / hourlyRate;
 
-                      return (
-                        <Link 
-                          key={pupil.id}
-                          to={createPageUrl('PupilProfile') + `?id=${pupil.id}`}
-                        >
-                          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                            <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#F7B602] to-[#d99f02] flex items-center justify-center text-[#071739] font-bold text-lg">
-                                  {pupil.firstName[0]}{pupil.lastName[0]}
-                                </div>
-                                <div>
-                                  <div className="font-semibold text-slate-900">
-                                    {pupil.firstName} {pupil.lastName}
+                        return (
+                          <Link 
+                            key={pupil.id}
+                            to={createPageUrl('PupilProfile') + `?id=${pupil.id}`}
+                          >
+                            <Card className={`hover:shadow-lg transition-all cursor-pointer h-full aspect-square flex flex-col ${
+                              balance > 0 
+                                ? 'bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-300 hover:shadow-emerald-200' 
+                                : balance < 0 
+                                ? 'bg-gradient-to-br from-rose-50 to-rose-100 border-rose-300 hover:shadow-rose-200' 
+                                : 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-300'
+                            }`}>
+                              <CardContent className="p-6 flex flex-col justify-between h-full">
+                                <div className="space-y-4">
+                                  <div className="flex flex-col items-center text-center">
+                                    <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl shadow-md ${
+                                      balance > 0 
+                                        ? 'bg-emerald-600 text-white' 
+                                        : balance < 0 
+                                        ? 'bg-rose-600 text-white' 
+                                        : 'bg-slate-400 text-white'
+                                    }`}>
+                                      {pupil.firstName[0]}{pupil.lastName[0]}
+                                    </div>
+                                    <div className="font-bold text-slate-900 mt-3 text-lg">
+                                      {pupil.firstName} {pupil.lastName}
+                                    </div>
                                   </div>
-                                  <Badge variant="outline" className="text-xs mt-1">
-                                    {pupil.status}
-                                  </Badge>
                                 </div>
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-3">
-                              <div className="flex items-baseline justify-between border-t pt-3">
-                                <span className="text-sm text-slate-600">Balance</span>
-                                <span className={`text-3xl font-bold ${
-                                  balance > 0 ? 'text-emerald-600' : balance < 0 ? 'text-rose-600' : 'text-slate-400'
-                                }`}>
-                                  £{balance.toFixed(2)}
-                                </span>
-                              </div>
-                              
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-600">Available Hours</span>
-                                <span className={`font-medium ${
-                                  balance > 0 ? 'text-emerald-600' : balance < 0 ? 'text-rose-600' : 'text-slate-400'
-                                }`}>
-                                  {balance > 0 ? `≈ ${availableHours.toFixed(1)}h` : balance < 0 ? `${availableHours.toFixed(1)}h debt` : '0h'}
-                                </span>
-                              </div>
-                              
-                              <div className="flex items-center justify-between text-sm pt-2 border-t">
-                                <span className="text-slate-600">Hourly Rate</span>
-                                <span className="font-medium text-slate-900">£{hourlyRate}/hr</span>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                        </Link>
-                      );
-                    })}
+                                
+                                <div className="space-y-3">
+                                  <div className="text-center py-3 border-t border-b">
+                                    <div className="text-xs text-slate-600 mb-1">Balance</div>
+                                    <div className={`text-4xl font-bold ${
+                                      balance > 0 ? 'text-emerald-700' : balance < 0 ? 'text-rose-700' : 'text-slate-500'
+                                    }`}>
+                                      £{balance.toFixed(2)}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="text-center">
+                                    <div className="text-xs text-slate-600">Available Hours</div>
+                                    <div className={`text-sm font-semibold ${
+                                      balance > 0 ? 'text-emerald-700' : balance < 0 ? 'text-rose-700' : 'text-slate-500'
+                                    }`}>
+                                      {balance > 0 ? `≈ ${availableHours.toFixed(1)}h` : balance < 0 ? `${Math.abs(availableHours).toFixed(1)}h debt` : '0h'}
+                                    </div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </Link>
+                        );
+                      })}
                   </div>
                 )}
               </CardContent>
