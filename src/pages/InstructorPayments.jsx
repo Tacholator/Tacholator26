@@ -59,9 +59,9 @@ export default function InstructorPayments() {
   });
 
   const { data: pupils = [], isLoading: pupilsLoading } = useQuery({
-    queryKey: ['myPupils', instructor?.id],
-    queryFn: () => base44.entities.Pupil.filter({ instructorId: instructor.id }),
-    enabled: !!instructor?.id
+    queryKey: ['myPupils', user?.id],
+    queryFn: () => base44.entities.Pupil.filter({ instructorId: user.id }),
+    enabled: !!user?.id
   });
 
   const { data: allLedgerEntries = [], isLoading: ledgerLoading } = useQuery({
