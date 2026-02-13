@@ -130,37 +130,27 @@ export default function InstructorPayments() {
 
         {/* Payment Methods & Invoices */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Wallet className="w-5 h-5 text-[#F7B602]" />
-                Payment Methods
-              </CardTitle>
-              <CardDescription>Manage your payment methods and preferences</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-slate-500">
-                <p className="text-sm">No payment methods configured yet</p>
-                <p className="text-xs mt-2">Payment methods will appear here once set up</p>
-              </div>
-            </CardContent>
-          </Card>
+          <Link to={createPageUrl('PaymentMethods')}>
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3">
+                  <Wallet className="w-6 h-6 text-[#F7B602]" />
+                  <h3 className="text-lg font-semibold text-[#071739]">Payment Methods</h3>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
-          <Card className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-[#F7B602]" />
-                Invoices
-              </CardTitle>
-              <CardDescription>View and manage invoices</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-slate-500">
-                <p className="text-sm">No invoices available</p>
-                <p className="text-xs mt-2">Invoices will appear here once generated</p>
-              </div>
-            </CardContent>
-          </Card>
+          <Link to={createPageUrl('Invoices')}>
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3">
+                  <DollarSign className="w-6 h-6 text-[#F7B602]" />
+                  <h3 className="text-lg font-semibold text-[#071739]">Invoices</h3>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Stripe Connect Status Banner */}
