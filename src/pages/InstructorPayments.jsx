@@ -37,11 +37,10 @@ export default function InstructorPayments() {
     queryKey: ['myInstructorProfile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      const instructors = await base44.entities.Instructor.list();
-      const myInstructor = instructors.find(i => i.created_by === user.email);
+      const instructors = await base44.entities.Instructor.filter({ created_by: user.email });
       
-      if (myInstructor) {
-        return myInstructor;
+      if (instructors.length > 0) {
+        return instructors[0];
       }
       
       // Auto-create instructor profile for admin users
@@ -61,11 +60,7 @@ export default function InstructorPayments() {
 
   const { data: pupils = [], isLoading: pupilsLoading } = useQuery({
     queryKey: ['myPupils', instructor?.id],
-    queryFn: async () => {
-      if (!instructor?.id) return [];
-      const allPupils = await base44.entities.Pupil.list();
-      return allPupils.filter(p => p.instructorId === instructor.id);
-    },
+    queryFn: () => base44.entities.Pupil.filter({ instructorId: instructor.id }),
     enabled: !!instructor?.id
   });
 
