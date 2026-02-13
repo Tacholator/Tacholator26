@@ -88,29 +88,38 @@ export default function PaymentMethods() {
   useEffect(() => {
     if (!stripe || !isAddDialogOpen) return;
 
-    const elements = stripe.elements();
-    const card = elements.create('card', {
-      style: {
-        base: {
-          fontSize: '16px',
-          color: '#32325d',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          '::placeholder': {
-            color: '#aab7c4',
+    // Wait for DOM to be ready
+    const timer = setTimeout(() => {
+      const element = document.getElementById('card-element');
+      if (!element) return;
+
+      const elements = stripe.elements();
+      const card = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '16px',
+            color: '#32325d',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            '::placeholder': {
+              color: '#aab7c4',
+            },
+          },
+          invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a',
           },
         },
-        invalid: {
-          color: '#fa755a',
-          iconColor: '#fa755a',
-        },
-      },
-    });
+      });
 
-    card.mount('#card-element');
-    setCardElement(card);
+      card.mount('#card-element');
+      setCardElement(card);
+    }, 100);
 
     return () => {
-      card.unmount();
+      clearTimeout(timer);
+      if (cardElement) {
+        cardElement.unmount();
+      }
     };
   }, [stripe, isAddDialogOpen]);
 
