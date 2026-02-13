@@ -399,6 +399,18 @@ export default function PaymentMethods() {
             </DialogHeader>
             <form onSubmit={handleEditCard} className="space-y-4">
               <div>
+                <Label>Card Number</Label>
+                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-md border">
+                  <CreditCard className="w-4 h-4 text-slate-400" />
+                  <span className="text-slate-600">•••• •••• •••• {editingCard?.lastFourDigits}</span>
+                  <Badge variant="outline" className="ml-auto text-xs">
+                    {editingCard?.cardBrand.toUpperCase()}
+                  </Badge>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">Card number cannot be changed</p>
+              </div>
+
+              <div>
                 <Label htmlFor="edit-cardholderName">Cardholder Name</Label>
                 <Input
                   id="edit-cardholderName"
