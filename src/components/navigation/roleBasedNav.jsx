@@ -30,7 +30,7 @@ export const sharedNavLinks = [
     id: 'homework',
     name: 'Homework',
     icon: ClipboardList,
-    instructorPage: 'HomeworkLibrary',
+    instructorPage: null, // Homework for instructors is now in My Teaching submenu
     learnerPage: 'LearnerHomework'
   },
   {
@@ -98,12 +98,14 @@ export const getPageForRole = (linkId, isInstructor) => {
 
 // Build complete navigation array for a role
 export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active') => {
-  const shared = sharedNavLinks.map(link => ({
-    name: link.name,
-    icon: link.icon,
-    page: isInstructor ? link.instructorPage : link.learnerPage,
-    isShared: true
-  }));
+  const shared = sharedNavLinks
+    .map(link => ({
+      name: link.name,
+      icon: link.icon,
+      page: isInstructor ? link.instructorPage : link.learnerPage,
+      isShared: true
+    }))
+    .filter(link => link.page !== null); // Filter out items with null pages
 
   const roleSpecific = isInstructor ? instructorOnlyLinks : learnerOnlyLinks;
 
@@ -128,6 +130,6 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
   return [
     shared[0], // Home
     ...roleSpecific,
-    ...shared.slice(1) // Homework, Notifications, Chats
+    ...shared.slice(1) // Payments, Notifications, Chats (Homework excluded for instructors)
   ];
 };
