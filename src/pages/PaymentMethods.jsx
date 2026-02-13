@@ -40,13 +40,7 @@ import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
 import { useToast } from '@/components/ui/use-toast';
 
-const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-
-if (!STRIPE_KEY) {
-  console.error('VITE_STRIPE_PUBLISHABLE_KEY is not set in environment variables');
-}
-
-const stripePromise = STRIPE_KEY ? loadStripe(STRIPE_KEY) : null;
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export default function PaymentMethods() {
   const [cardElement, setCardElement] = useState(null);
@@ -229,21 +223,6 @@ export default function PaymentMethods() {
       });
     }
   });
-
-  if (!stripePromise) {
-    return (
-      <div className="min-h-screen bg-slate-50 p-6">
-        <div className="max-w-5xl mx-auto space-y-6">
-          <Alert variant="destructive">
-            <AlertCircle className="w-4 h-4" />
-            <AlertDescription>
-              Stripe payment system is not configured. Please ensure VITE_STRIPE_PUBLISHABLE_KEY is set in environment variables.
-            </AlertDescription>
-          </Alert>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
