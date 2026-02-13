@@ -60,6 +60,7 @@ export const sharedNavLinks = [
 export const instructorOnlyLinks = [
   { name: 'Calendar', icon: Calendar, page: 'Calendar' },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
+  { name: 'My Teaching', icon: GraduationCap, page: 'InstructorMyTeaching' },
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
   { name: 'Pupil Notes', icon: Notebook, page: 'InstructorPupilNotes' },
   { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
@@ -71,6 +72,7 @@ export const instructorOnlyLinks = [
 
 // Learner-only navigation items
 export const learnerOnlyLinks = [
+  { name: 'My Learning', icon: BookOpen, page: 'LearnerMyLearning' },
   { name: 'Course Work', icon: FileText, page: 'CourseWork' },
   { name: 'My Notes', icon: StickyNote, page: 'LearnerNotes' },
   { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress' },

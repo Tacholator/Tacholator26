@@ -102,6 +102,8 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
+import InstructorMyTeaching from './pages/InstructorMyTeaching';
+import LearnerMyLearning from './pages/LearnerMyLearning';
 import __Layout from './Layout.jsx';
 
 
@@ -161,6 +163,8 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
+    "InstructorMyTeaching": InstructorMyTeaching,
+    "LearnerMyLearning": LearnerMyLearning,
 }
 
 export const pagesConfig = {
