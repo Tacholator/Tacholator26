@@ -31,7 +31,7 @@ export const sharedNavLinks = [
     name: 'Homework',
     icon: ClipboardList,
     instructorPage: null, // Homework for instructors is now in My Teaching submenu
-    learnerPage: 'LearnerHomework'
+    learnerPage: null // Homework for learners is now in My Learning submenu
   },
   {
     id: 'payments',
@@ -80,12 +80,20 @@ export const instructorOnlyLinks = [
 
 // Learner-only navigation items
 export const learnerOnlyLinks = [
-  { name: 'My Learning', icon: BookOpen, page: 'LearnerMyLearning' },
-  { name: 'Course Work', icon: FileText, page: 'CourseWork' },
-  { name: 'My Notes', icon: StickyNote, page: 'LearnerNotes' },
-  { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress' },
+  { 
+    name: 'My Learning', 
+    icon: BookOpen, 
+    page: 'LearnerMyLearning',
+    isCollapsible: true,
+    children: [
+      { name: 'Course Work', icon: FileText, page: 'CourseWork' },
+      { name: 'My Notes', icon: StickyNote, page: 'LearnerNotes' },
+      { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress' },
+      { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
+      { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework' }
+    ]
+  },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
-  { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
   { name: 'Test Routes', icon: MapPin, page: 'LearnerTestRoutes' }
 ];
 
