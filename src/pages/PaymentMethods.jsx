@@ -305,7 +305,13 @@ export default function PaymentMethods() {
             </div>
           </CardHeader>
           <CardContent>
-            {cards.length === 0 ? (
+            {!stripe ? (
+              <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-lg">
+                <AlertCircle className="w-8 h-8 mx-auto mb-2 text-amber-500" />
+                <p className="text-sm text-slate-600 font-medium">Payment system is loading...</p>
+                <p className="text-xs text-slate-500 mt-1">If this persists, Stripe may not be configured</p>
+              </div>
+            ) : cards.length === 0 ? (
               <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-lg">
                 <CreditCard className="w-8 h-8 mx-auto mb-2 text-slate-300" />
                 <p className="text-sm text-slate-500">No cards added yet</p>
@@ -392,12 +398,19 @@ export default function PaymentMethods() {
 
               <div>
                 <Label>Card Details</Label>
-                <div id="card-element" className="border rounded-md p-3 bg-white min-h-[44px]"></div>
+                <div 
+                  id="card-element" 
+                  className="border rounded-md p-3 bg-white min-h-[44px] transition-opacity"
+                  style={{ opacity: cardElement ? 1 : 0.5 }}
+                ></div>
                 {!stripe && (
-                  <p className="text-xs text-amber-600 mt-2">Loading payment form...</p>
+                  <p className="text-xs text-amber-600 mt-2">⏳ Loading payment form...</p>
                 )}
-                {stripe && (
-                  <p className="text-xs text-slate-500 mt-2">Secure payment powered by Stripe</p>
+                {stripe && !cardElement && (
+                  <p className="text-xs text-blue-600 mt-2">⏳ Initializing card input...</p>
+                )}
+                {stripe && cardElement && (
+                  <p className="text-xs text-slate-500 mt-2">🔒 Secure payment powered by Stripe</p>
                 )}
               </div>
 
@@ -416,9 +429,9 @@ export default function PaymentMethods() {
                 <Button 
                   type="submit" 
                   className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-                  disabled={isProcessing || !stripe}
+                  disabled={isProcessing || !stripe || !cardElement}
                 >
-                  {isProcessing ? 'Adding...' : 'Add Card'}
+                  {isProcessing ? 'Adding...' : !stripe ? 'Loading...' : !cardElement ? 'Initializing...' : 'Add Card'}
                 </Button>
               </div>
             </form>
