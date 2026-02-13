@@ -127,21 +127,71 @@ export default function Layout({ children, currentPageName }) {
             <ul role="list" className="flex flex-1 flex-col gap-y-1">
               {navItems.map((item) => {
                 const isActive = currentPageName === item.page;
+                const isExpanded = expandedMenus[item.name];
+                const hasActiveChild = item.children?.some(child => currentPageName === child.page);
+                
                 return (
                   <li key={item.name}>
-                    <Link
-                      to={createPageUrl(item.page)}
-                      className={`group flex gap-x-3 rounded-xl p-3 text-sm font-medium transition-all duration-200 ${
-                        isActive
-                          ? 'bg-[#F7B602] text-[#071739]'
-                          : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
-                      }`}
-                    >
-                      <item.icon className={`w-5 h-5 shrink-0 ${
-                        isActive ? 'text-[#071739]' : 'text-slate-300 group-hover:text-white'
-                      }`} />
-                      {item.name}
-                    </Link>
+                    {item.isCollapsible ? (
+                      <>
+                        <button
+                          onClick={() => setExpandedMenus(prev => ({ ...prev, [item.name]: !prev[item.name] }))}
+                          className={`group flex gap-x-3 rounded-xl p-3 text-sm font-medium transition-all duration-200 w-full ${
+                            isActive || hasActiveChild
+                              ? 'bg-[#F7B602] text-[#071739]'
+                              : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
+                          }`}
+                        >
+                          <item.icon className={`w-5 h-5 shrink-0 ${
+                            isActive || hasActiveChild ? 'text-[#071739]' : 'text-slate-300 group-hover:text-white'
+                          }`} />
+                          <span className="flex-1 text-left">{item.name}</span>
+                          {isExpanded ? (
+                            <ChevronDown className="w-4 h-4" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4" />
+                          )}
+                        </button>
+                        {isExpanded && item.children && (
+                          <ul className="ml-4 mt-1 space-y-1">
+                            {item.children.map((child) => {
+                              const isChildActive = currentPageName === child.page;
+                              return (
+                                <li key={child.name}>
+                                  <Link
+                                    to={createPageUrl(child.page)}
+                                    className={`group flex gap-x-3 rounded-xl p-2 text-sm transition-all duration-200 ${
+                                      isChildActive
+                                        ? 'bg-[#F7B602] text-[#071739]'
+                                        : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
+                                    }`}
+                                  >
+                                    <child.icon className={`w-4 h-4 shrink-0 ${
+                                      isChildActive ? 'text-[#071739]' : 'text-slate-300 group-hover:text-white'
+                                    }`} />
+                                    {child.name}
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </>
+                    ) : (
+                      <Link
+                        to={createPageUrl(item.page)}
+                        className={`group flex gap-x-3 rounded-xl p-3 text-sm font-medium transition-all duration-200 ${
+                          isActive
+                            ? 'bg-[#F7B602] text-[#071739]'
+                            : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
+                        }`}
+                      >
+                        <item.icon className={`w-5 h-5 shrink-0 ${
+                          isActive ? 'text-[#071739]' : 'text-slate-300 group-hover:text-white'
+                        }`} />
+                        {item.name}
+                      </Link>
+                    )}
                   </li>
                 );
               })}
