@@ -42,8 +42,16 @@ import { useToast } from '@/components/ui/use-toast';
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
+// Debug logging
+console.log('🔍 Stripe Key Check:', {
+  hasKey: !!STRIPE_PUBLISHABLE_KEY,
+  keyPrefix: STRIPE_PUBLISHABLE_KEY?.substring(0, 7),
+  allEnvVars: Object.keys(import.meta.env).filter(k => k.includes('STRIPE'))
+});
+
 if (!STRIPE_PUBLISHABLE_KEY) {
-  console.error('❌ VITE_STRIPE_PUBLISHABLE_KEY is not set. Current env:', import.meta.env);
+  console.error('❌ VITE_STRIPE_PUBLISHABLE_KEY is not set');
+  console.error('Available env vars:', Object.keys(import.meta.env));
 }
 
 const stripePromise = STRIPE_PUBLISHABLE_KEY ? loadStripe(STRIPE_PUBLISHABLE_KEY) : Promise.resolve(null);
