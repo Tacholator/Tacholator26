@@ -479,18 +479,19 @@ export default function PaymentMethods() {
           </AlertDialogContent>
         </AlertDialog>
 
-        {/* Accept Payments */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-[#F7B602]" />
-              Accept Payments from Customers
-            </CardTitle>
-            <CardDescription>
-              Set up your account to receive payments from pupils
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        {/* Accept Payments - Only for Instructors */}
+        {user?.role === 'admin' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-[#F7B602]" />
+                Accept Payments from Customers
+              </CardTitle>
+              <CardDescription>
+                Set up your account to receive payments from pupils
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
             {instructor?.stripeAccountStatus === 'not_connected' && (
               <Alert className="border-amber-200 bg-amber-50">
                 <AlertCircle className="w-4 h-4 text-amber-600" />
@@ -574,6 +575,7 @@ export default function PaymentMethods() {
             </div>
           </CardContent>
         </Card>
+        )}
       </div>
     </div>
   );
