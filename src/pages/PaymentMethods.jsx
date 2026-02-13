@@ -230,6 +230,21 @@ export default function PaymentMethods() {
     }
   });
 
+  if (!stripePromise) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-6">
+        <div className="max-w-5xl mx-auto space-y-6">
+          <Alert variant="destructive">
+            <AlertCircle className="w-4 h-4" />
+            <AlertDescription>
+              Stripe payment system is not configured. Please ensure VITE_STRIPE_PUBLISHABLE_KEY is set in environment variables.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-5xl mx-auto space-y-6">
