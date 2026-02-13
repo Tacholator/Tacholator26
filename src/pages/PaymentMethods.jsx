@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -37,18 +37,29 @@ import {
   Star
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { loadStripe } from '@stripe/stripe-js';
+import { useToast } from '@/components/ui/use-toast';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51Qh3tP01uP0SB4qyGAL83nKY2Kxw2rVOgpJTU3RhsSoJJnkBIJ5QOQIX6GaEdHmDqRvJiEpMXsGl7lMEoLKLOdXW00yHD8EE4s');
 
 export default function PaymentMethods() {
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
+  const [cardElement, setCardElement] = useState(null);
+  const [stripe, setStripe] = useState(null);
   const [cardholderName, setCardholderName] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingCard, setEditingCard] = useState(null);
   const [deleteCardId, setDeleteCardId] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
+  const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const initStripe = async () => {
+      const stripeInstance = await stripePromise;
+      setStripe(stripeInstance);
+    };
+    initStripe();
+  }, []);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -74,129 +85,135 @@ export default function PaymentMethods() {
     enabled: !!user?.id
   });
 
-  const addCardMutation = useMutation({
-    mutationFn: async (cardData) => {
-      return await base44.entities.PaymentCard.create(cardData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['paymentCards'] });
-      resetForm();
-      setIsAddDialogOpen(false);
-    }
-  });
+  useEffect(() => {
+    if (!stripe || !isAddDialogOpen) return;
 
-  const updateCardMutation = useMutation({
-    mutationFn: async ({ id, data }) => {
-      return await base44.entities.PaymentCard.update(id, data);
+    const elements = stripe.elements();
+    const card = elements.create('card', {
+      style: {
+        base: {
+          fontSize: '16px',
+          color: '#32325d',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          '::placeholder': {
+            color: '#aab7c4',
+          },
+        },
+        invalid: {
+          color: '#fa755a',
+          iconColor: '#fa755a',
+        },
+      },
+    });
+
+    card.mount('#card-element');
+    setCardElement(card);
+
+    return () => {
+      card.unmount();
+    };
+  }, [stripe, isAddDialogOpen]);
+
+  const handleAddCard = async (e) => {
+    e.preventDefault();
+    
+    if (!stripe || !cardElement) return;
+
+    setIsProcessing(true);
+
+    try {
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+        billing_details: {
+          name: cardholderName,
+        },
+      });
+
+      if (error) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive'
+        });
+        setIsProcessing(false);
+        return;
+      }
+
+      // Call backend to attach payment method
+      const response = await base44.functions.invoke('managePaymentMethod', {
+        action: 'attach',
+        paymentMethodId: paymentMethod.id
+      });
+
+      if (response.data.success) {
+        toast({
+          title: 'Success',
+          description: 'Payment card added successfully'
+        });
+        queryClient.invalidateQueries({ queryKey: ['paymentCards'] });
+        setCardholderName('');
+        setIsAddDialogOpen(false);
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to add card',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const setDefaultCardMutation = useMutation({
+    mutationFn: async (cardId) => {
+      const response = await base44.functions.invoke('managePaymentMethod', {
+        action: 'setDefault',
+        cardId
+      });
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paymentCards'] });
-      setIsEditDialogOpen(false);
-      setEditingCard(null);
+      toast({
+        title: 'Success',
+        description: 'Default payment method updated'
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to set default card',
+        variant: 'destructive'
+      });
     }
   });
 
   const deleteCardMutation = useMutation({
     mutationFn: async (cardId) => {
-      return await base44.entities.PaymentCard.delete(cardId);
+      const response = await base44.functions.invoke('managePaymentMethod', {
+        action: 'delete',
+        cardId
+      });
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paymentCards'] });
       setDeleteCardId(null);
-    }
-  });
-
-  const setDefaultCardMutation = useMutation({
-    mutationFn: async (cardId) => {
-      // First, unset all default cards
-      const updatePromises = cards.map(card => 
-        base44.entities.PaymentCard.update(card.id, { isDefault: card.id === cardId })
-      );
-      await Promise.all(updatePromises);
+      toast({
+        title: 'Success',
+        description: 'Payment card deleted successfully'
+      });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['paymentCards'] });
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to delete card',
+        variant: 'destructive'
+      });
     }
   });
-
-  const getCardBrand = (number) => {
-    const cleaned = number.replace(/\s/g, '');
-    if (cleaned.startsWith('4')) return 'visa';
-    if (cleaned.startsWith('5')) return 'mastercard';
-    if (cleaned.startsWith('3')) return 'amex';
-    if (cleaned.startsWith('6')) return 'discover';
-    return 'other';
-  };
-
-  const resetForm = () => {
-    setCardNumber('');
-    setExpiryDate('');
-    setCvv('');
-    setCardholderName('');
-  };
-
-  const handleAddCard = (e) => {
-    e.preventDefault();
-    
-    const [month, year] = expiryDate.split('/');
-    const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
-    const brand = getCardBrand(cardNumber);
-
-    addCardMutation.mutate({
-      userId: user.id,
-      cardholderName,
-      lastFourDigits: lastFour,
-      cardBrand: brand,
-      expiryMonth: month,
-      expiryYear: year,
-      isDefault: cards.length === 0
-    });
-  };
-
-  const handleEditCard = (e) => {
-    e.preventDefault();
-    
-    if (!editingCard) return;
-
-    const [month, year] = expiryDate.split('/');
-
-    updateCardMutation.mutate({
-      id: editingCard.id,
-      data: {
-        cardholderName,
-        expiryMonth: month,
-        expiryYear: year
-      }
-    });
-  };
-
-  const openEditDialog = (card) => {
-    setEditingCard(card);
-    setCardholderName(card.cardholderName);
-    setExpiryDate(`${card.expiryMonth}/${card.expiryYear}`);
-    setIsEditDialogOpen(true);
-  };
-
-  const formatCardNumber = (value) => {
-    const cleaned = value.replace(/\s/g, '');
-    const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
-    return formatted;
-  };
-
-  const handleCardNumberChange = (e) => {
-    const value = e.target.value.replace(/\s/g, '');
-    if (value.length <= 16 && /^\d*$/.test(value)) {
-      setCardNumber(formatCardNumber(value));
-    }
-  };
-
-  const handleExpiryChange = (e) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length >= 2) {
-      value = value.slice(0, 2) + '/' + value.slice(2, 4);
-    }
-    setExpiryDate(value);
-  };
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
@@ -284,13 +301,7 @@ export default function PaymentMethods() {
                           <Star className="w-4 h-4" />
                         </Button>
                       )}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => openEditDialog(card)}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
+
                       <Button
                         size="sm"
                         variant="ghost"
@@ -329,40 +340,9 @@ export default function PaymentMethods() {
               </div>
 
               <div>
-                <Label htmlFor="add-cardNumber">Card Number</Label>
-                <Input
-                  id="add-cardNumber"
-                  placeholder="1234 5678 9012 3456"
-                  value={cardNumber}
-                  onChange={handleCardNumberChange}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="add-expiryDate">Expiry Date</Label>
-                  <Input
-                    id="add-expiryDate"
-                    placeholder="MM/YY"
-                    value={expiryDate}
-                    onChange={handleExpiryChange}
-                    maxLength={5}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="add-cvv">CVV</Label>
-                  <Input
-                    id="add-cvv"
-                    placeholder="123"
-                    type="password"
-                    value={cvv}
-                    onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                    required
-                  />
-                </div>
+                <Label>Card Details</Label>
+                <div id="card-element" className="border rounded-md p-3 bg-white"></div>
+                <p className="text-xs text-slate-500 mt-2">Secure payment powered by Stripe</p>
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
@@ -371,91 +351,25 @@ export default function PaymentMethods() {
                   variant="outline" 
                   onClick={() => {
                     setIsAddDialogOpen(false);
-                    resetForm();
+                    setCardholderName('');
                   }}
+                  disabled={isProcessing}
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
                   className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-                  disabled={addCardMutation.isPending}
+                  disabled={isProcessing || !stripe}
                 >
-                  {addCardMutation.isPending ? 'Adding...' : 'Add Card'}
+                  {isProcessing ? 'Adding...' : 'Add Card'}
                 </Button>
               </div>
             </form>
           </DialogContent>
         </Dialog>
 
-        {/* Edit Card Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Card Details</DialogTitle>
-              <DialogDescription>
-                Update your card information
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleEditCard} className="space-y-4">
-              <div>
-                <Label>Card Number</Label>
-                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-md border">
-                  <CreditCard className="w-4 h-4 text-slate-400" />
-                  <span className="text-slate-600">•••• •••• •••• {editingCard?.lastFourDigits}</span>
-                  <Badge variant="outline" className="ml-auto text-xs">
-                    {editingCard?.cardBrand.toUpperCase()}
-                  </Badge>
-                </div>
-                <p className="text-xs text-slate-500 mt-1">Card number cannot be changed</p>
-              </div>
 
-              <div>
-                <Label htmlFor="edit-cardholderName">Cardholder Name</Label>
-                <Input
-                  id="edit-cardholderName"
-                  placeholder="John Doe"
-                  value={cardholderName}
-                  onChange={(e) => setCardholderName(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="edit-expiryDate">Expiry Date</Label>
-                <Input
-                  id="edit-expiryDate"
-                  placeholder="MM/YY"
-                  value={expiryDate}
-                  onChange={handleExpiryChange}
-                  maxLength={5}
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => {
-                    setIsEditDialogOpen(false);
-                    setEditingCard(null);
-                    resetForm();
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-                  disabled={updateCardMutation.isPending}
-                >
-                  {updateCardMutation.isPending ? 'Updating...' : 'Update Card'}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={!!deleteCardId} onOpenChange={() => setDeleteCardId(null)}>
