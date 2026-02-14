@@ -40,9 +40,7 @@ import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
 import { useToast } from '@/components/ui/use-toast';
 
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY 
-  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
-  : null;
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
 export default function PaymentMethods() {
   const [cardElement, setCardElement] = useState(null);
@@ -57,16 +55,25 @@ export default function PaymentMethods() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!stripePromise) {
-      setStripeError('Stripe is not configured. Please check your environment variables.');
+    console.log('Stripe Key:', stripeKey ? 'Present (pk_...' + stripeKey.slice(-4) + ')' : 'Missing');
+    
+    if (!stripeKey || stripeKey.trim() === '') {
+      setStripeError('Stripe publishable key is not configured. Please contact support.');
       return;
     }
     
     const initStripe = async () => {
-      const stripeInstance = await stripePromise;
+      const stripeInstance = await loadStripe(stripeKey);
+      if (!stripeInstance) {
+        setStripeError('Failed to initialize Stripe. Please refresh the page.');
+        return;
+      }
       setStripe(stripeInstance);
+      setStripeError(null);
     };
+    
     initStripe().catch((error) => {
+      console.error('Stripe init error:', error);
       setStripeError('Failed to initialize Stripe: ' + error.message);
     });
   }, []);
