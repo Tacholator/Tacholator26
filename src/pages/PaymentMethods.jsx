@@ -57,14 +57,21 @@ export default function PaymentMethods() {
   useEffect(() => {
     const fetchKey = async () => {
       try {
+        console.log('Fetching Stripe key from backend...');
         const response = await base44.functions.invoke('getStripePublishableKey');
-        if (response.data.publishableKey) {
+        console.log('Backend response:', response);
+        console.log('Response data:', response.data);
+        
+        if (response.data?.publishableKey) {
+          console.log('✓ Got publishable key:', response.data.publishableKey.substring(0, 20) + '...');
           setStripeKey(response.data.publishableKey);
         } else {
+          console.error('No publishable key in response');
           setStripeError('Stripe key not available');
         }
       } catch (error) {
         console.error('Failed to fetch Stripe key:', error);
+        console.error('Error details:', error.message);
         setStripeError('Unable to load payment system');
       }
     };
