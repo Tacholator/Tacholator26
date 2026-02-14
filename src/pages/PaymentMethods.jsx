@@ -65,20 +65,30 @@ export default function PaymentMethods() {
       return;
     }
     
+    // Validate the key format
+    if (!stripeKey.startsWith('pk_')) {
+      setStripeError('Invalid Stripe publishable key format. Please check your configuration.');
+      console.error('Invalid Stripe key - must start with pk_');
+      return;
+    }
+    
     const initStripe = async () => {
-      const stripeInstance = await loadStripe(stripeKey);
-      if (!stripeInstance) {
-        setStripeError('Failed to initialize Stripe. Please refresh the page.');
-        return;
+      try {
+        const stripeInstance = await loadStripe(stripeKey);
+        if (!stripeInstance) {
+          setStripeError('Failed to initialize Stripe. Please check your Stripe configuration.');
+          return;
+        }
+        setStripe(stripeInstance);
+        setStripeError(null);
+      } catch (error) {
+        console.error('Stripe init error:', error);
+        // Don't expose raw error messages to users
+        setStripeError('Unable to connect to Stripe. Please check your Stripe configuration or contact support.');
       }
-      setStripe(stripeInstance);
-      setStripeError(null);
     };
     
-    initStripe().catch((error) => {
-      console.error('Stripe init error:', error);
-      setStripeError('Failed to initialize Stripe: ' + error.message);
-    });
+    initStripe();
   }, []);
 
   const { data: user } = useQuery({
@@ -185,9 +195,12 @@ export default function PaymentMethods() {
         setIsAddDialogOpen(false);
       }
     } catch (error) {
+      console.error('Add card error:', error);
+      // Extract meaningful error from response if available
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to add card';
       toast({
         title: 'Error',
-        description: error.message || 'Failed to add card',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
