@@ -56,11 +56,14 @@ export default function PaymentMethods() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log('Stripe Key:', stripeKey ? 'Present (pk_...' + stripeKey.slice(-4) + ')' : 'Missing');
-    console.log('Raw key value:', stripeKey);
+    console.log('=== Stripe Key Debug ===');
+    console.log('Key exists:', !!stripeKey);
+    console.log('Key length:', stripeKey?.length);
+    console.log('Key preview:', stripeKey ? stripeKey.substring(0, 15) + '...' : 'MISSING');
+    console.log('All env vars:', import.meta.env);
     
     if (!stripeKey || stripeKey.trim() === '') {
-      setStripeError('Environment variable VITE_STRIPE_PUBLISHABLE_KEY is not set. Please add it in your dashboard settings and hard refresh (Ctrl+Shift+R).');
+      setStripeError('Stripe key not loaded. Try refreshing the page or check Dashboard → Settings → Environment Variables.');
       return;
     }
     
