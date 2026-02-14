@@ -40,9 +40,6 @@ import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
 import { useToast } from '@/components/ui/use-toast';
 
-// Get Stripe publishable key from environment variable
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-
 export default function PaymentMethods() {
   const [cardElement, setCardElement] = useState(null);
   const [stripe, setStripe] = useState(null);
@@ -51,45 +48,57 @@ export default function PaymentMethods() {
   const [deleteCardId, setDeleteCardId] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [stripeError, setStripeError] = useState(null);
+  const [stripeKey, setStripeKey] = useState(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Fetch Stripe publishable key from backend
+  useEffect(() => {
+    const fetchKey = async () => {
+      try {
+        const response = await base44.functions.invoke('getStripePublishableKey');
+        if (response.data.publishableKey) {
+          setStripeKey(response.data.publishableKey);
+        } else {
+          setStripeError('Stripe key not available');
+        }
+      } catch (error) {
+        console.error('Failed to fetch Stripe key:', error);
+        setStripeError('Unable to load payment system');
+      }
+    };
+    
+    fetchKey();
+  }, []);
+
   useEffect(() => {
     const initStripe = async () => {
-      console.log('=== Stripe Initialization ===');
-      console.log('Key exists:', !!stripeKey);
-      console.log('Key type:', typeof stripeKey);
-      console.log('Key value:', stripeKey || 'UNDEFINED');
-      
       if (!stripeKey || stripeKey.trim() === '') {
-        console.error('VITE_STRIPE_PUBLISHABLE_KEY not found');
-        setStripeError('Payment system not configured. Please contact support.');
         return;
       }
       
       if (!stripeKey.startsWith('pk_')) {
-        console.error('Invalid Stripe key format:', stripeKey.substring(0, 10));
+        console.error('Invalid Stripe key format');
         setStripeError('Invalid payment configuration. Please contact support.');
         return;
       }
       
       try {
-        console.log('Loading Stripe with key:', stripeKey.substring(0, 20) + '...');
+        console.log('Initializing Stripe...');
         const stripeInstance = await loadStripe(stripeKey);
         
         if (!stripeInstance) {
-          console.error('Stripe instance is null');
-          setStripeError('Failed to initialize payment system. Please try again or contact support.');
+          setStripeError('Failed to initialize payment system.');
           return;
         }
         
-        console.log('✓ Stripe initialized successfully');
+        console.log('✓ Stripe ready');
         setStripe(stripeInstance);
         setStripeError(null);
       } catch (error) {
-        console.error('Stripe initialization error:', error);
-        setStripeError('Payment system error. Please refresh the page or contact support.');
+        console.error('Stripe init error:', error);
+        setStripeError('Payment system error. Please refresh the page.');
       }
     };
     
