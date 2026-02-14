@@ -57,15 +57,16 @@ export default function PaymentMethods() {
 
   useEffect(() => {
     console.log('Stripe Key:', stripeKey ? 'Present (pk_...' + stripeKey.slice(-4) + ')' : 'Missing');
+    console.log('Raw key value:', stripeKey);
     
     if (!stripeKey || stripeKey.trim() === '') {
-      setStripeError('Stripe publishable key is not configured. Please contact support.');
+      setStripeError('Environment variable VITE_STRIPE_PUBLISHABLE_KEY is not set. Please add it in your dashboard settings and hard refresh (Ctrl+Shift+R).');
       return;
     }
     
     // Validate the key format
     if (!stripeKey.startsWith('pk_')) {
-      setStripeError('Invalid Stripe publishable key format. Please check your configuration.');
+      setStripeError(`Invalid Stripe key format. Key should start with "pk_live_" or "pk_test_", but starts with "${stripeKey.substring(0, 3)}..."`);
       console.error('Invalid Stripe key - must start with pk_');
       return;
     }
@@ -74,15 +75,14 @@ export default function PaymentMethods() {
       try {
         const stripeInstance = await loadStripe(stripeKey);
         if (!stripeInstance) {
-          setStripeError('Failed to initialize Stripe. Please check your Stripe configuration.');
+          setStripeError('Failed to initialize Stripe. The publishable key may be invalid or revoked. Check your Stripe Dashboard → Developers → API keys.');
           return;
         }
         setStripe(stripeInstance);
         setStripeError(null);
       } catch (error) {
         console.error('Stripe init error:', error);
-        // Don't expose raw error messages to users
-        setStripeError('Unable to connect to Stripe. Please check your Stripe configuration or contact support.');
+        setStripeError(`Stripe initialization failed: ${error.message}. Please verify your publishable key in the Stripe Dashboard.`);
       }
     };
     
