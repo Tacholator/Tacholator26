@@ -56,41 +56,45 @@ export default function PaymentMethods() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log('=== Stripe Key Debug ===');
-    console.log('Key exists:', !!stripeKey);
-    console.log('Key length:', stripeKey?.length);
-    console.log('Key preview:', stripeKey ? stripeKey.substring(0, 15) + '...' : 'MISSING');
-    console.log('All env vars:', import.meta.env);
-    
-    if (!stripeKey || stripeKey.trim() === '') {
-      setStripeError('Stripe key not loaded. Try refreshing the page or check Dashboard → Settings → Environment Variables.');
-      return;
-    }
-    
-    // Validate the key format
-    if (!stripeKey.startsWith('pk_')) {
-      setStripeError(`Invalid Stripe key format. Key should start with "pk_live_" or "pk_test_", but starts with "${stripeKey.substring(0, 3)}..."`);
-      console.error('Invalid Stripe key - must start with pk_');
-      return;
-    }
-    
     const initStripe = async () => {
+      console.log('=== Stripe Initialization ===');
+      console.log('Key exists:', !!stripeKey);
+      console.log('Key type:', typeof stripeKey);
+      console.log('Key value:', stripeKey || 'UNDEFINED');
+      
+      if (!stripeKey || stripeKey.trim() === '') {
+        console.error('VITE_STRIPE_PUBLISHABLE_KEY not found');
+        setStripeError('Payment system not configured. Please contact support.');
+        return;
+      }
+      
+      if (!stripeKey.startsWith('pk_')) {
+        console.error('Invalid Stripe key format:', stripeKey.substring(0, 10));
+        setStripeError('Invalid payment configuration. Please contact support.');
+        return;
+      }
+      
       try {
+        console.log('Loading Stripe with key:', stripeKey.substring(0, 20) + '...');
         const stripeInstance = await loadStripe(stripeKey);
+        
         if (!stripeInstance) {
-          setStripeError('Failed to initialize Stripe. The publishable key may be invalid or revoked. Check your Stripe Dashboard → Developers → API keys.');
+          console.error('Stripe instance is null');
+          setStripeError('Failed to initialize payment system. Please try again or contact support.');
           return;
         }
+        
+        console.log('✓ Stripe initialized successfully');
         setStripe(stripeInstance);
         setStripeError(null);
       } catch (error) {
-        console.error('Stripe init error:', error);
-        setStripeError(`Stripe initialization failed: ${error.message}. Please verify your publishable key in the Stripe Dashboard.`);
+        console.error('Stripe initialization error:', error);
+        setStripeError('Payment system error. Please refresh the page or contact support.');
       }
     };
     
     initStripe();
-  }, []);
+  }, [stripeKey]);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -302,7 +306,12 @@ export default function PaymentMethods() {
               <Alert className="border-rose-200 bg-rose-50 mb-4">
                 <AlertCircle className="w-4 h-4 text-rose-600" />
                 <AlertDescription className="text-rose-800">
-                  {stripeError}
+                  <div className="space-y-2">
+                    <p>{stripeError}</p>
+                    <p className="text-xs text-rose-600">
+                      Debug: Key loaded = {stripeKey ? 'Yes' : 'No'} | Format = {stripeKey?.startsWith('pk_') ? 'Valid' : 'Invalid'}
+                    </p>
+                  </div>
                 </AlertDescription>
               </Alert>
             )}
