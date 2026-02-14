@@ -40,10 +40,8 @@ import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
 import { useToast } from '@/components/ui/use-toast';
 
-// Try multiple possible environment variable names
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
-                  import.meta.env.PUBLISHABLE_KEY ||
-                  'pk_live_51Qh3tP01uP0SB4qyFXUoUQqpZq2jBLn3wqN2cGdAq5x4kKv0bN4Z9bBTxjmVCW9lH9DhSvPDDlvLGGmWE9p7T4M100aRr2XZPA';
+// Get Stripe publishable key from environment variable
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
 export default function PaymentMethods() {
   const [cardElement, setCardElement] = useState(null);
