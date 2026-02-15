@@ -50,25 +50,44 @@ export default function InstructorStripeConnect() {
 
   const connectMutation = useMutation({
     mutationFn: async () => {
-      const baseUrl = window.location.origin.replace('http://', 'https://');
+      // Ensure we use HTTPS for production (Stripe requires it for live mode)
+      let baseUrl = window.location.origin;
+      
+      // For production domains, force HTTPS
+      if (!baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')) {
+        baseUrl = baseUrl.replace('http://', 'https://');
+      }
+      
       const path = window.location.pathname || '/InstructorStripeConnect';
+      
+      console.log('Calling createStripeConnectLink with:', {
+        refreshUrl: `${baseUrl}${path}?refresh=true`,
+        returnUrl: `${baseUrl}${path}?success=true`
+      });
+      
       const response = await base44.functions.invoke('createStripeConnectLink', {
         refreshUrl: `${baseUrl}${path}?refresh=true`,
         returnUrl: `${baseUrl}${path}?success=true`
       });
+      
+      console.log('Response from createStripeConnectLink:', response.data);
       return response.data;
     },
     onSuccess: (data) => {
-      if (data.url) {
+      console.log('Success data:', data);
+      if (data?.url) {
         setErrorMessage(null);
+        console.log('Redirecting to:', data.url);
         window.location.href = data.url;
       } else {
+        console.error('No URL in response:', data);
         setErrorMessage('Failed to get Stripe connection URL. Please try again.');
         setIsConnecting(false);
       }
     },
     onError: (error) => {
       console.error('Connection error:', error);
+      console.error('Error response:', error.response);
       const errorMsg = error.response?.data?.error || error.message || 'Failed to connect to Stripe';
       setErrorMessage(errorMsg);
       setIsConnecting(false);
