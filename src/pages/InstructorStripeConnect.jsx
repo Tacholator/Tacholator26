@@ -27,7 +27,7 @@ export default function InstructorStripeConnect() {
   });
 
   const { data: instructor, isLoading } = useQuery({
-    queryKey: ['instructor', user?.id],
+    queryKey: ['myInstructorProfile', user?.id],
     queryFn: async () => {
       const instructors = await base44.entities.Instructor.filter({ created_by: user.email });
       
@@ -106,7 +106,7 @@ export default function InstructorStripeConnect() {
   React.useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
-      queryClient.invalidateQueries(['instructor']);
+      queryClient.invalidateQueries(['myInstructorProfile']);
       toast({
         title: '✓ Account Connected Successfully',
         description: 'Your Stripe account has been connected. You can now receive payouts from pupil lesson payments.',
