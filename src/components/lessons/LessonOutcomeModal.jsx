@@ -68,6 +68,8 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
     }
   }, [open]);
 
+  const [insufficientBalanceData, setInsufficientBalanceData] = React.useState(null);
+
   const updateOutcomeMutation = useMutation({
     mutationFn: async (data) => {
       const statusMap = {
@@ -231,6 +233,34 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         variant: 'destructive' 
       });
       return;
+    }
+
+    // Check for insufficient balance before confirming
+    if (formData.chargesApplied && pupil) {
+      let durationHours = 0;
+      if (lesson) {
+        const startMoment = moment(lesson.startTime, 'HH:mm');
+        const endMoment = moment(lesson.endTime, 'HH:mm');
+        durationHours = endMoment.diff(startMoment, 'minutes') / 60;
+      } else if (booking) {
+        durationHours = booking.durationHours || 0;
+      }
+      
+      const hourlyRate = pupil.hourlyRate || 0;
+      const lessonCost = durationHours * hourlyRate;
+      const currentBalance = pupil.bulkPaymentBalance || 0;
+      const newBalance = currentBalance - lessonCost;
+      
+      if (newBalance < 0) {
+        setInsufficientBalanceData({
+          currentBalance,
+          lessonCost,
+          newBalance,
+          durationHours,
+          hourlyRate
+        });
+        return;
+      }
     }
 
     setConfirmDialogOpen(true);
@@ -423,6 +453,52 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirm} className="bg-emerald-600 hover:bg-emerald-700">
               Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Insufficient Balance Warning */}
+      <AlertDialog open={!!insufficientBalanceData} onOpenChange={() => setInsufficientBalanceData(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Insufficient Balance</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p>The pupil's balance is insufficient to cover this lesson. Continuing will result in a negative balance.</p>
+              
+              <div className="bg-slate-50 rounded-lg p-3 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Current Balance:</span>
+                  <span className="font-medium">£{insufficientBalanceData?.currentBalance.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Lesson Cost:</span>
+                  <span className="font-medium text-rose-600">
+                    -£{insufficientBalanceData?.lessonCost.toFixed(2)}
+                    <span className="text-xs text-slate-500 ml-1">
+                      ({insufficientBalanceData?.durationHours.toFixed(2)}h @ £{insufficientBalanceData?.hourlyRate}/h)
+                    </span>
+                  </span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-slate-200">
+                  <span className="text-slate-700 font-medium">New Balance:</span>
+                  <span className="font-bold text-rose-600">£{insufficientBalanceData?.newBalance.toFixed(2)}</span>
+                </div>
+              </div>
+              
+              <p className="text-sm text-slate-600">Do you want to proceed with a negative balance?</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                setInsufficientBalanceData(null);
+                setConfirmDialogOpen(true);
+              }}
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              Confirm & Continue
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
