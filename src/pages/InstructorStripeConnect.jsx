@@ -106,13 +106,16 @@ export default function InstructorStripeConnect() {
   React.useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
-      queryClient.invalidateQueries(['myInstructorProfile']);
+      queryClient.invalidateQueries({ queryKey: ['myInstructorProfile'] });
       toast({
         title: '✓ Account Connected Successfully',
         description: 'Your Stripe account has been connected. You can now receive payouts from pupil lesson payments.',
         duration: 6000,
       });
-      window.history.replaceState({}, '', window.location.pathname);
+      // Wait a moment for the query to refetch before clearing URL
+      setTimeout(() => {
+        window.history.replaceState({}, '', window.location.pathname);
+      }, 500);
     }
     if (urlParams.get('refresh') === 'true') {
       setIsConnecting(false);
