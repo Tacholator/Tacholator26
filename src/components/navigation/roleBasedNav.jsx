@@ -14,7 +14,8 @@ import {
   Notebook,
   CreditCard,
   Wallet,
-  MapPin
+  MapPin,
+  UserCircle
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -93,6 +94,7 @@ export const learnerOnlyLinks = [
     ]
   },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
+  { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' },
   { name: 'Test Routes', icon: MapPin, page: 'LearnerTestRoutes' }
 ];
 
