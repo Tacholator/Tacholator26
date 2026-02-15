@@ -55,7 +55,7 @@ export default function LearnerPayments() {
       const response = await base44.functions.invoke('createStripeCheckout', {
         pupilId: pupil.id,
         amount: parseFloat(amount),
-        successUrl: window.location.href,
+        successUrl: `${window.location.href}?payment=success`,
         cancelUrl: window.location.href
       });
       return response.data;
@@ -73,6 +73,23 @@ export default function LearnerPayments() {
       });
     }
   });
+
+  // Handle payment success redirect
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('payment') === 'success') {
+      toast({
+        title: '✓ Payment Successful',
+        description: 'Your balance has been updated.',
+        duration: 5000,
+      });
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['myPupilProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['myPaymentLedger'] });
+      // Clear URL parameter
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [toast, queryClient]);
 
   const handleTopUp = () => {
     const amount = parseFloat(topUpAmount);
