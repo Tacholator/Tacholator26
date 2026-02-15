@@ -472,7 +472,7 @@ export default function PaymentMethods() {
         </AlertDialog>
 
         {/* Accept Payments - Only for Instructors */}
-        {user?.role === 'admin' && (
+        {user?.role === 'admin' && instructor && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
