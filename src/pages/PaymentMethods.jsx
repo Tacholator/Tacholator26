@@ -34,7 +34,8 @@ import {
   AlertCircle,
   Edit2,
   Trash2,
-  Star
+  Star,
+  RefreshCw
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
