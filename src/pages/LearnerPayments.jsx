@@ -55,20 +55,26 @@ export default function LearnerPayments() {
       const response = await base44.functions.invoke('createStripeCheckout', {
         pupilId: pupil.id,
         amount: parseFloat(amount),
-        successUrl: `${window.location.href}?payment=success`,
-        cancelUrl: window.location.href
+        successUrl: `${window.location.origin}${window.location.pathname}?payment=success`,
+        cancelUrl: `${window.location.origin}${window.location.pathname}`
       });
       return response.data;
     },
     onSuccess: (data) => {
-      if (data.url) {
+      if (data?.url) {
         window.location.href = data.url;
+      } else {
+        toast({
+          title: 'Payment Error',
+          description: 'Unable to create checkout session',
+          variant: 'destructive'
+        });
       }
     },
     onError: (error) => {
       toast({
-        title: 'Payment failed',
-        description: error.message,
+        title: 'Payment Failed',
+        description: error?.response?.data?.error || error.message || 'Something went wrong',
         variant: 'destructive'
       });
     }
