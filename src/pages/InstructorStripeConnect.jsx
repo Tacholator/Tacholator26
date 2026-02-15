@@ -168,17 +168,7 @@ export default function InstructorStripeConnect() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {!instructor?.stripeAccountId && (
-              <Alert>
-                <AlertCircle className="w-4 h-4" />
-                <AlertDescription>
-                  You need to connect your Stripe account to receive payments from pupils. 
-                  This is a secure process managed by Stripe.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {isConnected && (
+            {isConnected ? (
               <div className="space-y-4">
                 <Alert className="border-emerald-200 bg-emerald-50/50">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -239,28 +229,36 @@ export default function InstructorStripeConnect() {
                   )}
                 </Button>
               </div>
-            )}
+            ) : (
+              <div className="space-y-6">
+                {!instructor?.stripeAccountId && (
+                  <Alert>
+                    <AlertCircle className="w-4 h-4" />
+                    <AlertDescription>
+                      You need to connect your Stripe account to receive payments from pupils. 
+                      This is a secure process managed by Stripe.
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-            {isPending && (
-              <Alert className="border-amber-200 bg-amber-50/50">
-                <AlertCircle className="w-4 h-4 text-amber-600" />
-                <AlertDescription className="text-amber-800">
-                  Your Stripe account setup is incomplete. Click below to continue the onboarding process.
-                </AlertDescription>
-              </Alert>
-            )}
+                {isPending && (
+                  <Alert className="border-amber-200 bg-amber-50/50">
+                    <AlertCircle className="w-4 h-4 text-amber-600" />
+                    <AlertDescription className="text-amber-800">
+                      Your Stripe account setup is incomplete. Click below to continue the onboarding process.
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-            {isRestricted && (
-              <Alert className="border-rose-200 bg-rose-50/50">
-                <AlertCircle className="w-4 h-4 text-rose-600" />
-                <AlertDescription className="text-rose-800">
-                  Your Stripe account has been restricted. Please complete the required actions in your Stripe dashboard.
-                </AlertDescription>
-              </Alert>
-            )}
+                {isRestricted && (
+                  <Alert className="border-rose-200 bg-rose-50/50">
+                    <AlertCircle className="w-4 h-4 text-rose-600" />
+                    <AlertDescription className="text-rose-800">
+                      Your Stripe account has been restricted. Please complete the required actions in your Stripe dashboard.
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-            {!isConnected && (
-              <div className="space-y-4">
                 {errorMessage && (
                   <Alert className="border-rose-200 bg-rose-50">
                     <AlertCircle className="w-4 h-4 text-rose-600" />
@@ -318,7 +316,7 @@ export default function InstructorStripeConnect() {
                   )}
                 </Button>
 
-                {instructor?.stripeAccountId && !isConnected && (
+                {instructor?.stripeAccountId && (
                   <p className="text-xs text-center text-slate-500">
                     Stripe Account ID: {instructor.stripeAccountId}
                   </p>
