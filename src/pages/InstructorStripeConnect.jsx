@@ -50,10 +50,11 @@ export default function InstructorStripeConnect() {
 
   const connectMutation = useMutation({
     mutationFn: async () => {
-      const baseUrl = window.location.origin;
+      const baseUrl = window.location.origin.replace('http://', 'https://');
+      const path = window.location.pathname || '/InstructorStripeConnect';
       const response = await base44.functions.invoke('createStripeConnectLink', {
-        refreshUrl: `${baseUrl}${window.location.pathname}?refresh=true`,
-        returnUrl: `${baseUrl}${window.location.pathname}?success=true`
+        refreshUrl: `${baseUrl}${path}?refresh=true`,
+        returnUrl: `${baseUrl}${path}?success=true`
       });
       return response.data;
     },
