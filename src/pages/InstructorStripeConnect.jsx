@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/components/ui/use-toast';
 import { 
   CreditCard, 
   CheckCircle2, 
@@ -18,6 +19,7 @@ export default function InstructorStripeConnect() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -105,12 +107,17 @@ export default function InstructorStripeConnect() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
       queryClient.invalidateQueries(['instructor']);
+      toast({
+        title: '✓ Account Connected Successfully',
+        description: 'Your Stripe account has been connected. You can now receive payouts from pupil lesson payments.',
+        duration: 6000,
+      });
       window.history.replaceState({}, '', window.location.pathname);
     }
     if (urlParams.get('refresh') === 'true') {
       setIsConnecting(false);
     }
-  }, [queryClient]);
+  }, [queryClient, toast]);
 
   if (isLoading) {
     return (
