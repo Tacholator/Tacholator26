@@ -516,19 +516,53 @@ export default function PaymentMethods() {
             )}
 
             {instructor?.stripeAccountStatus === 'active' && (
-              <Alert className="border-emerald-200 bg-emerald-50">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <AlertDescription className="flex items-center justify-between">
-                  <span className="text-emerald-800">
-                    Your payment account is active and ready to receive payouts
-                  </span>
-                  <Link to={createPageUrl('InstructorStripeConnect')}>
-                    <Button size="sm" variant="ghost" className="text-emerald-700 hover:text-emerald-800">
-                      Manage Account
-                    </Button>
-                  </Link>
-                </AlertDescription>
-              </Alert>
+              <div className="space-y-4">
+                <Alert className="border-emerald-200 bg-emerald-50">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <AlertDescription className="text-emerald-800">
+                    <div className="font-medium mb-2">✓ Account Connected Successfully</div>
+                    <p className="text-sm">Your Stripe account is active and ready to receive payouts from pupil lesson payments.</p>
+                    {instructor.stripeOnboardingCompletedAt && (
+                      <span className="block text-xs mt-2 text-emerald-600">
+                        Connected on {new Date(instructor.stripeOnboardingCompletedAt).toLocaleDateString('en-GB', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </span>
+                    )}
+                  </AlertDescription>
+                </Alert>
+
+                <div className="bg-slate-50 rounded-lg p-4 space-y-3">
+                  <h4 className="font-medium text-slate-900">Connected Account Details</h4>
+                  <div className="space-y-2 text-sm text-slate-600">
+                    <div className="flex justify-between">
+                      <span>Account Status:</span>
+                      <span className="font-medium text-emerald-600">Active</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Account ID:</span>
+                      <span className="font-mono text-xs">{instructor.stripeAccountId}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Platform Fee:</span>
+                      <span className="font-medium">5%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Instructor Receives:</span>
+                      <span className="font-medium">95%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Link to={createPageUrl('InstructorStripeConnect')} className="block">
+                  <Button size="sm" variant="outline" className="w-full">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Update Account Information
+                  </Button>
+                </Link>
+              </div>
             )}
 
             {instructor?.stripeAccountStatus === 'restricted' && (
