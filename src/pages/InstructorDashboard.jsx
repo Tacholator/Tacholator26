@@ -110,6 +110,21 @@ export default function InstructorDashboard() {
     enabled: !!user?.email
   });
 
+  const { data: lessons = [] } = useQuery({
+    queryKey: ['lessons', instructor?.id, user?.id],
+    queryFn: async () => {
+      if (!instructor?.id && !user?.id) return [];
+      
+      // Fetch lessons by instructor ID
+      if (instructor?.id) {
+        return await base44.entities.Lesson.filter({ instructorId: instructor.id }, '-date');
+      }
+      
+      return [];
+    },
+    enabled: !!instructor?.id || !!user?.id
+  });
+
   const { data: dailyQuiz } = useQuery({
     queryKey: ['todayDailyQuiz'],
     queryFn: async () => {
@@ -134,22 +149,37 @@ export default function InstructorDashboard() {
   const today = moment().format('YYYY-MM-DD');
   const now = moment();
 
+  // Today's lessons from Lesson entity
+  const todayLessons = lessons.filter(l => {
+    return l.date === today;
+  }).map(l => ({
+    ...l,
+    type: 'lesson',
+    startAtUtc: moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm').toISOString(),
+    endAtUtc: moment(`${l.date} ${l.endTime}`, 'YYYY-MM-DD HH:mm').toISOString(),
+    durationHours: moment(l.endTime, 'HH:mm').diff(moment(l.startTime, 'HH:mm'), 'minutes') / 60
+  }));
+
   // Today's bookings that are upcoming or need outcome
   const todayBookings = bookings.filter(b => {
     if (!b.startAtUtc) return false;
     const startTime = moment(b.startAtUtc).local();
     return startTime.isSame(today, 'day');
-  });
+  }).map(b => ({ ...b, type: 'booking' }));
+
+  // Combine lessons and bookings for today's schedule
+  const todaySchedule = [...todayLessons, ...todayBookings];
 
   // Find closest lesson to current time (upcoming or ongoing)
-  const nextRelevantBooking = todayBookings
-    .filter(b => {
-      if (!b.startAtUtc || !b.endAtUtc) return false;
-      const startTime = moment(b.startAtUtc).local();
-      const endTime = moment(b.endAtUtc).local();
+  const nextRelevantBooking = todaySchedule
+    .filter(item => {
+      if (!item.startAtUtc || !item.endAtUtc) return false;
+      const startTime = moment(item.startAtUtc).local();
+      const endTime = moment(item.endAtUtc).local();
       const isUpcoming = startTime.isAfter(now);
       const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
-      return (isUpcoming || isOngoing) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+      const validStatus = item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
+      return (isUpcoming || isOngoing) && validStatus;
     })
     .sort((a, b) => {
       // Sort by how close they are to current time
@@ -158,19 +188,21 @@ export default function InstructorDashboard() {
       return Math.abs(aStart.diff(now)) - Math.abs(bStart.diff(now));
     })[0];
 
-  const upcomingTodayBookings = todayBookings.filter(b => {
-    if (!b.startAtUtc) return false;
-    const startTime = moment(b.startAtUtc).local();
+  const upcomingTodayBookings = todaySchedule.filter(item => {
+    if (!item.startAtUtc) return false;
+    const startTime = moment(item.startAtUtc).local();
+    const validStatus = item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
     // Exclude the next relevant booking from this list
     return startTime.isAfter(now) && 
-           ['pending', 'confirmed', 'in_progress'].includes(b.status) &&
-           b.id !== nextRelevantBooking?.id;
+           validStatus &&
+           item.id !== nextRelevantBooking?.id;
   }).sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()));
 
-  const todayNeedingOutcome = todayBookings.filter(b => {
-    if (!b.endAtUtc) return false;
-    const endTime = moment(b.endAtUtc).local();
-    return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
+  const todayNeedingOutcome = todaySchedule.filter(item => {
+    if (!item.endAtUtc) return false;
+    const endTime = moment(item.endAtUtc).local();
+    const validStatus = item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
+    return endTime.isBefore(now) && validStatus;
   }).sort((a, b) => moment(b.endAtUtc).local().diff(moment(a.endAtUtc).local()));
 
   const getStatusColor = (status) => {
@@ -295,8 +327,8 @@ export default function InstructorDashboard() {
                         <Button size="sm" variant="outline">View Lesson</Button>
                       </Link>
                       <NotifyArrivalButton 
-                        lessonId={null}
-                        bookingId={nextRelevantBooking.id}
+                        lessonId={nextRelevantBooking.type === 'lesson' ? nextRelevantBooking.id : null}
+                        bookingId={nextRelevantBooking.type === 'booking' ? nextRelevantBooking.id : null}
                         pupilId={nextRelevantBooking.pupilId}
                       />
                       <Button 
@@ -321,20 +353,20 @@ export default function InstructorDashboard() {
                 <div className="mb-4">
                   <p className="text-sm font-medium text-slate-700 mb-2">Upcoming Today</p>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {upcomingTodayBookings.map(booking => {
-                      const pupil = pupils.find(p => p.id === booking.pupilId);
+                    {upcomingTodayBookings.map(item => {
+                      const pupil = pupils.find(p => p.id === item.pupilId);
                       return (
-                        <div key={booking.id} className="bg-white/70 rounded-lg p-3">
+                        <div key={`${item.type}-${item.id}`} className="bg-white/70 rounded-lg p-3">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-slate-800 truncate">
-                                {moment(booking.startAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
+                                {moment(item.startAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
                               </p>
-                              <Badge className={`${getStatusColor(booking.status)} text-xs mt-1`}>
-                                {booking.status}
+                              <Badge className={`${getStatusColor(item.status)} text-xs mt-1`}>
+                                {item.status}
                               </Badge>
                             </div>
-                            <span className="text-xs text-slate-500">{booking.durationHours}h</span>
+                            <span className="text-xs text-slate-500">{item.durationHours?.toFixed(1)}h</span>
                           </div>
                         </div>
                       );
@@ -351,20 +383,20 @@ export default function InstructorDashboard() {
                     <p className="text-sm font-medium text-slate-700 mb-1">Needs Outcome (Today)</p>
                     <p className="text-xs text-slate-500 mb-3">Past lessons shown only if they need an outcome.</p>
                     <div className="space-y-2">
-                      {todayNeedingOutcome.map(booking => {
-                        const pupil = pupils.find(p => p.id === booking.pupilId);
+                      {todayNeedingOutcome.map(item => {
+                        const pupil = pupils.find(p => p.id === item.pupilId);
                         return (
-                          <div key={booking.id} className="bg-rose-50/70 rounded-lg p-3 border border-rose-200">
+                          <div key={`${item.type}-${item.id}`} className="bg-rose-50/70 rounded-lg p-3 border border-rose-200">
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-slate-800 truncate">
-                                  {moment(booking.startAtUtc).local().format('HH:mm')}–{moment(booking.endAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
+                                  {moment(item.startAtUtc).local().format('HH:mm')}–{moment(item.endAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
                                 </p>
                                 <p className="text-xs text-rose-600 mt-1">Needs outcome</p>
                               </div>
                               <Button
                                 size="sm"
-                                onClick={() => handleMarkLesson(booking.id)}
+                                onClick={() => handleMarkLesson(item.id)}
                                 className="bg-rose-600 hover:bg-rose-700 text-white"
                               >
                                 Set Outcome
@@ -480,7 +512,8 @@ export default function InstructorDashboard() {
           setOutcomeModalOpen(false);
           setSelectedLessonId(null);
         }}
-        bookingId={selectedLessonId}
+        lessonId={nextRelevantBooking?.type === 'lesson' && selectedLessonId === nextRelevantBooking.id ? selectedLessonId : null}
+        bookingId={nextRelevantBooking?.type === 'booking' && selectedLessonId === nextRelevantBooking.id ? selectedLessonId : (todayNeedingOutcome.find(item => item.id === selectedLessonId)?.type === 'booking' ? selectedLessonId : null)}
       />
     </div>
   );
