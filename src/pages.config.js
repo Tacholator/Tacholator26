@@ -77,7 +77,6 @@ import InstructorTeachingHub from './pages/InstructorTeachingHub';
 import InstructorTestRouteDetail from './pages/InstructorTestRouteDetail';
 import InstructorTestRoutes from './pages/InstructorTestRoutes';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
-import InstructorWhiteboardEditor from './pages/InstructorWhiteboardEditor';
 import InstructorWhiteboardLibrary from './pages/InstructorWhiteboardLibrary';
 import Invoices from './pages/Invoices';
 import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
@@ -111,6 +110,7 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
+import InstructorWhiteboardEditor from './pages/InstructorWhiteboardEditor';
 import __Layout from './Layout.jsx';
 
 
@@ -145,7 +145,6 @@ export const PAGES = {
     "InstructorTestRouteDetail": InstructorTestRouteDetail,
     "InstructorTestRoutes": InstructorTestRoutes,
     "InstructorTopicAssignment": InstructorTopicAssignment,
-    "InstructorWhiteboardEditor": InstructorWhiteboardEditor,
     "InstructorWhiteboardLibrary": InstructorWhiteboardLibrary,
     "Invoices": Invoices,
     "LearnerBookingCalendar": LearnerBookingCalendar,
@@ -179,6 +178,7 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
+    "InstructorWhiteboardEditor": InstructorWhiteboardEditor,
 }
 
 export const pagesConfig = {
