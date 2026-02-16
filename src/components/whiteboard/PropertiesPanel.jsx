@@ -24,7 +24,7 @@ export default function PropertiesPanel({
   const showStrokeProps = activeTool === 'pen' || activeTool === 'highlighter' || activeTool === 'eraser';
 
   return (
-    <div className="w-80 bg-white border-l border-gray-200 p-4 space-y-6 overflow-y-auto">
+    <div className={`transition-all duration-300 bg-white border-l border-gray-200 p-4 space-y-6 overflow-y-auto ${quickExpanded ? 'w-80' : 'w-0 hidden'}`}>
       {/* Quick Actions */}
       <div>
         <button
