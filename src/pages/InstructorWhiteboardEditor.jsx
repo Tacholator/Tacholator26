@@ -5,10 +5,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Library } from 'lucide-react';
 import ToolBar from '@/components/whiteboard/ToolBar';
 import Canvas from '@/components/whiteboard/Canvas';
 import PropertiesPanel from '@/components/whiteboard/PropertiesPanel';
+import LibraryDrawer from '@/components/whiteboard/LibraryDrawer';
 
 export default function InstructorWhiteboardEditor() {
   const [searchParams] = useSearchParams();
