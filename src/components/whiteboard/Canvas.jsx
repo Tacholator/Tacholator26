@@ -236,8 +236,10 @@ export default function Canvas({
                 o.id === obj.id ? { ...o, text: e.target.value } : o
               ));
             }}
-            className="w-full bg-transparent text-sm focus:outline-none"
+            placeholder="Type here"
+            className="w-full bg-transparent text-sm focus:outline-none placeholder-gray-400"
             onClick={(e) => e.stopPropagation()}
+            autoFocus={selectedObject === obj.id}
           />
         </div>
       ))}
