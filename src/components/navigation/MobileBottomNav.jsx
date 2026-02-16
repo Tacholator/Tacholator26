@@ -13,6 +13,8 @@ import {
   MessageCircle
 } from 'lucide-react';
 
+import { GraduationCap, BookOpen } from 'lucide-react';
+
 const instructorNavItems = [
   {
     id: 'home',
@@ -31,6 +33,12 @@ const instructorNavItems = [
     label: 'Pupils',
     icon: Users,
     page: 'PupilList'
+  },
+  {
+    id: 'teaching',
+    label: 'My Teaching',
+    icon: GraduationCap,
+    page: 'InstructorTeachingHub'
   },
   {
     id: 'chats',
@@ -54,10 +62,10 @@ const pupilNavItems = [
     page: 'LearnerBookingCalendar'
   },
   {
-    id: 'coursework',
-    label: 'Course Work',
-    icon: FileText,
-    page: 'CourseWork'
+    id: 'learning',
+    label: 'My Learning',
+    icon: BookOpen,
+    page: 'LearnerLearningHub'
   },
   {
     id: 'chats',
