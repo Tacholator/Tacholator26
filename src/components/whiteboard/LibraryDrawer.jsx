@@ -86,8 +86,8 @@ export default function LibraryDrawer({ isOpen, onClose, onItemDragStart }) {
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-40 transition-transform duration-300 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-xl z-40 transition-transform duration-300 ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
