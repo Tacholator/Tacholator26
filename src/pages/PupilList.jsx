@@ -220,10 +220,15 @@ export default function PupilList() {
     const pupilLessons = lessons
       .filter(l => {
         if (!l.pupilId || !l.date) return false;
-        return l.pupilId === pupilId && moment(l.date).isSameOrAfter(today) && l.status === 'Scheduled';
+        // Check: pupilId matches, date is today or later, status is Scheduled
+        const matchesPupil = l.pupilId === pupilId;
+        const isNotPast = moment(l.date).isSameOrAfter(today);
+        const isScheduled = l.status === 'Scheduled';
+        return matchesPupil && isNotPast && isScheduled;
       })
       .sort((a, b) => moment(a.date).diff(moment(b.date)));
-    return pupilLessons[0];
+    
+    return pupilLessons.length > 0 ? pupilLessons[0] : null;
   };
 
   useEffect(() => {
