@@ -303,7 +303,7 @@ export default function Canvas({
               left: `${obj.x}px`,
               top: `${obj.y}px`,
               minWidth: '100px',
-              cursor: 'move'
+              cursor: activeTool === 'select' ? 'move' : 'crosshair'
             }}
             onMouseDown={(e) => {
               e.stopPropagation();
@@ -326,7 +326,7 @@ export default function Canvas({
               autoFocus={selectedObject === obj.id}
             />
           </div>
-          {selectedObject === obj.id && (
+          {activeTool === 'select' && selectedObject === obj.id && (
             <button
               onClick={handleDeleteSelected}
               className="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
