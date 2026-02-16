@@ -490,6 +490,76 @@ export default function PupilList() {
         existingPupil={editingPupil}
         onSave={handleSavePupil}
       />
+
+      {/* Test Outcome Dialog */}
+      <AlertDialog open={showTestDialog} onOpenChange={setShowTestDialog}>
+        <AlertDialogContent>
+          {pastTestPupils.length > 0 && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Practical Test Date Passed</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {pastTestPupils[currentTestPupilIndex]?.firstName} {pastTestPupils[currentTestPupilIndex]?.lastName}'s practical test date ({moment(pastTestPupils[currentTestPupilIndex]?.practicalTestDate).format('D MMM YYYY')}) has passed. What was the outcome?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="flex flex-col gap-3 py-4">
+                <Button
+                  onClick={() => {
+                    updatePupilMutation.mutate({
+                      id: pastTestPupils[currentTestPupilIndex].id,
+                      data: { status: 'Passed' }
+                    });
+                    if (currentTestPupilIndex < pastTestPupils.length - 1) {
+                      setCurrentTestPupilIndex(currentTestPupilIndex + 1);
+                    } else {
+                      setShowTestDialog(false);
+                    }
+                  }}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  Passed
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (currentTestPupilIndex < pastTestPupils.length - 1) {
+                      setCurrentTestPupilIndex(currentTestPupilIndex + 1);
+                    } else {
+                      setShowTestDialog(false);
+                    }
+                  }}
+                  variant="outline"
+                >
+                  Failed
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (currentTestPupilIndex < pastTestPupils.length - 1) {
+                      setCurrentTestPupilIndex(currentTestPupilIndex + 1);
+                    } else {
+                      setShowTestDialog(false);
+                    }
+                  }}
+                  variant="outline"
+                >
+                  Not Taken
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (currentTestPupilIndex < pastTestPupils.length - 1) {
+                      setCurrentTestPupilIndex(currentTestPupilIndex + 1);
+                    } else {
+                      setShowTestDialog(false);
+                    }
+                  }}
+                  variant="outline"
+                >
+                  Rescheduled
+                </Button>
+              </div>
+            </>
+          )}
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
