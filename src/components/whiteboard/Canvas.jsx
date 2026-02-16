@@ -42,16 +42,26 @@ export default function Canvas({
   useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
-    
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    
-    const ctx = canvas.getContext('2d');
-    setContext(ctx);
 
-    if (showGrid) {
-      drawGrid(ctx, canvas);
-    }
+    // Set canvas size
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      const ctx = canvas.getContext('2d');
+      setContext(ctx);
+
+      if (showGrid) {
+        drawGrid(ctx, canvas);
+      }
+    };
+
+    resizeCanvas();
+
+    // Watch for resize
+    const resizeObserver = new ResizeObserver(resizeCanvas);
+    resizeObserver.observe(canvas.parentElement);
+
+    return () => resizeObserver.disconnect();
   }, [showGrid]);
 
   const redrawCanvas = (canvasObjects, canvasStrokes) => {
