@@ -18,7 +18,8 @@ export default function PropertiesPanel({
   onStrokeOpacityChange,
   onSnapToGridChange,
   onShowGridChange,
-  onResetView
+  onResetView,
+  onClose
 }) {
   const [quickExpanded, setQuickExpanded] = useState(true);
   const showStrokeProps = activeTool === 'pen' || activeTool === 'highlighter' || activeTool === 'eraser';
