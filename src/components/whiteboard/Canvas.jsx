@@ -75,6 +75,23 @@ export default function Canvas({
     const pos = getMousePos(e);
     if (!pos) return;
 
+    if (activeTool === 'text') {
+      setIsAddingText(true);
+      const textBox = {
+        id: Date.now(),
+        type: 'text',
+        x: pos.x,
+        y: pos.y,
+        text: 'Type here',
+        fontSize: 16,
+        color: strokeColor
+      };
+      setObjects(prev => [...prev, textBox]);
+      setSelectedObject(textBox.id);
+      onHistoryChange?.([...objects, textBox], strokes);
+      return;
+    }
+
     setIsDrawing(true);
     setLastPoint(pos);
     onStrokeStart?.();
@@ -89,6 +106,8 @@ export default function Canvas({
         points: [pos]
       };
       setStrokes(prev => [...prev, newStroke]);
+    } else if (activeTool === 'eraser') {
+      context.clearRect(pos.x - strokeWidth / 2, pos.y - strokeWidth / 2, strokeWidth, strokeWidth);
     }
   };
 
