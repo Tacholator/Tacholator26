@@ -136,38 +136,42 @@ export default function InstructorDashboard() {
 
   // Today's bookings that are upcoming or need outcome
   const todayBookings = bookings.filter(b => {
-    const startTime = moment(b.startAtUtc);
+    if (!b.startAtUtc) return false;
+    const startTime = moment(b.startAtUtc).local();
     return startTime.isSame(today, 'day');
   });
 
   // Find closest lesson to current time (upcoming or ongoing)
   const nextRelevantBooking = todayBookings
     .filter(b => {
-      const startTime = moment(b.startAtUtc);
-      const endTime = moment(b.endAtUtc);
+      if (!b.startAtUtc || !b.endAtUtc) return false;
+      const startTime = moment(b.startAtUtc).local();
+      const endTime = moment(b.endAtUtc).local();
       const isUpcoming = startTime.isAfter(now);
       const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
       return (isUpcoming || isOngoing) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
     })
     .sort((a, b) => {
       // Sort by how close they are to current time
-      const aStart = moment(a.startAtUtc);
-      const bStart = moment(b.startAtUtc);
+      const aStart = moment(a.startAtUtc).local();
+      const bStart = moment(b.startAtUtc).local();
       return Math.abs(aStart.diff(now)) - Math.abs(bStart.diff(now));
     })[0];
 
   const upcomingTodayBookings = todayBookings.filter(b => {
-    const startTime = moment(b.startAtUtc);
+    if (!b.startAtUtc) return false;
+    const startTime = moment(b.startAtUtc).local();
     // Exclude the next relevant booking from this list
     return startTime.isAfter(now) && 
            ['pending', 'confirmed', 'in_progress'].includes(b.status) &&
            b.id !== nextRelevantBooking?.id;
-  }).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
+  }).sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()));
 
   const todayNeedingOutcome = todayBookings.filter(b => {
-    const endTime = moment(b.endAtUtc);
+    if (!b.endAtUtc) return false;
+    const endTime = moment(b.endAtUtc).local();
     return endTime.isBefore(now) && ['pending', 'confirmed', 'in_progress'].includes(b.status);
-  }).sort((a, b) => moment(b.endAtUtc).diff(moment(a.endAtUtc)));
+  }).sort((a, b) => moment(b.endAtUtc).local().diff(moment(a.endAtUtc).local()));
 
   const getStatusColor = (status) => {
     const colors = {
