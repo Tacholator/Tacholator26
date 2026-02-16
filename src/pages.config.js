@@ -110,6 +110,7 @@ import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
 import InstructorWhiteboardEditor from './pages/InstructorWhiteboardEditor';
+import InstructorWhiteboardLibrary from './pages/InstructorWhiteboardLibrary';
 import __Layout from './Layout.jsx';
 
 
@@ -177,6 +178,7 @@ export const PAGES = {
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
     "InstructorWhiteboardEditor": InstructorWhiteboardEditor,
+    "InstructorWhiteboardLibrary": InstructorWhiteboardLibrary,
 }
 
 export const pagesConfig = {
