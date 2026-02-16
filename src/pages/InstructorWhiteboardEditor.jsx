@@ -130,14 +130,24 @@ export default function InstructorWhiteboardEditor() {
               />
             </div>
           </div>
-          <Button
-            onClick={handleSave}
-            disabled={saveMutation.isPending}
-            className="gap-2"
-          >
-            <Save className="w-4 h-4" />
-            {saveMutation.isPending ? 'Saving...' : 'Save'}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setLibraryDrawerOpen(true)}
+              className="gap-2"
+            >
+              <Library className="w-4 h-4" />
+              Library
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={saveMutation.isPending}
+              className="gap-2"
+            >
+              <Save className="w-4 h-4" />
+              {saveMutation.isPending ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
         </div>
       </div>
 
