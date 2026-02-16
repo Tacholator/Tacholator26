@@ -127,9 +127,11 @@ export default function PupilList() {
     queryKey: ['lessons', currentUser?.id],
     queryFn: async () => {
       if (!currentUser?.id) return [];
-      return await base44.entities.Lesson.filter({ instructorId: currentUser.id });
+      const allLessons = await base44.entities.Lesson.filter({ instructorId: currentUser.id });
+      return allLessons || [];
     },
-    enabled: !!currentUser?.id
+    enabled: !!currentUser?.id,
+    staleTime: 1000 * 60 * 5 // 5 minutes
   });
 
   const createPupilMutation = useMutation({
