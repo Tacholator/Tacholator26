@@ -26,6 +26,41 @@ export default function Canvas({
   const [selectedObject, setSelectedObject] = useState(null);
 
   useEffect(() => {
+    if (!canvasRef.current || !context) return;
+    
+    const canvas = canvasRef.current;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw grid if enabled
+    if (showGrid) {
+      drawGrid(context, canvas);
+    }
+    
+    // Redraw from history
+    if (history.length > 0 && historyIndex >= 0 && historyIndex < history.length) {
+      const state = history[historyIndex];
+      if (state.strokes) {
+        state.strokes.forEach(stroke => {
+          context.strokeStyle = stroke.color;
+          context.globalAlpha = stroke.opacity;
+          context.lineWidth = stroke.width;
+          context.lineCap = 'round';
+          context.lineJoin = 'round';
+          
+          if (stroke.points.length > 0) {
+            context.beginPath();
+            context.moveTo(stroke.points[0].x, stroke.points[0].y);
+            stroke.points.forEach(point => {
+              context.lineTo(point.x, point.y);
+            });
+            context.stroke();
+          }
+        });
+      }
+    }
+  }, [historyIndex, history, showGrid, context]);
+
+  useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     
