@@ -220,13 +220,15 @@ export default function PupilList() {
 
   useEffect(() => {
     // Check for pupils with past test dates when component mounts or pupils change
-    const pupilsWithPastTests = pupils.filter(p => 
-      p.practicalTestDate && moment(p.practicalTestDate).isBefore(moment()) && p.status === 'Active'
-    );
-    if (pupilsWithPastTests.length > 0) {
-      setPastTestPupils(pupilsWithPastTests);
-      setCurrentTestPupilIndex(0);
-      setShowTestDialog(true);
+    if (pupils.length > 0) {
+      const pupilsWithPastTests = pupils.filter(p => 
+        p.practicalTestDate && moment(p.practicalTestDate).isBefore(moment().endOf('day')) && p.status === 'Active'
+      );
+      if (pupilsWithPastTests.length > 0) {
+        setPastTestPupils(pupilsWithPastTests);
+        setCurrentTestPupilIndex(0);
+        setShowTestDialog(true);
+      }
     }
   }, [pupils]);
 
