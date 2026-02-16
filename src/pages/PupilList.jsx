@@ -211,10 +211,13 @@ export default function PupilList() {
   };
 
   const getNextLesson = (pupilId) => {
-    const today = moment().format('YYYY-MM-DD');
+    const today = moment().startOf('day');
     const pupilLessons = lessons
-      .filter(l => l.pupilId === pupilId && l.date >= today && l.status === 'Scheduled')
-      .sort((a, b) => a.date.localeCompare(b.date));
+      .filter(l => {
+        if (!l.pupilId || !l.date) return false;
+        return l.pupilId === pupilId && moment(l.date).isSameOrAfter(today) && l.status === 'Scheduled';
+      })
+      .sort((a, b) => moment(a.date).diff(moment(b.date)));
     return pupilLessons[0];
   };
 
