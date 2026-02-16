@@ -121,8 +121,12 @@ export default function PupilList() {
   });
 
   const { data: lessons = [] } = useQuery({
-    queryKey: ['lessons'],
-    queryFn: () => base44.entities.Lesson.list()
+    queryKey: ['lessons', currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      return await base44.entities.Lesson.filter({ instructorId: currentUser.id });
+    },
+    enabled: !!currentUser?.id
   });
 
   const createPupilMutation = useMutation({
