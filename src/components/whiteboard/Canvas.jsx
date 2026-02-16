@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { Trash2 } from 'lucide-react';
 
 export default function Canvas({ 
   activeTool, 
@@ -24,6 +25,8 @@ export default function Canvas({
   const [lastPoint, setLastPoint] = useState(null);
   const [isAddingText, setIsAddingText] = useState(false);
   const [selectedObject, setSelectedObject] = useState(null);
+  const [isDraggingObject, setIsDraggingObject] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   // Update canvas when history changes (undo/redo)
   useEffect(() => {
@@ -39,14 +42,12 @@ export default function Canvas({
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     
-    // Set canvas size to window
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
     
     const ctx = canvas.getContext('2d');
     setContext(ctx);
 
-    // Draw grid if enabled
     if (showGrid) {
       drawGrid(ctx, canvas);
     }
@@ -110,11 +111,59 @@ export default function Canvas({
     };
   };
 
+  const isPointNearStroke = (point, stroke, threshold = 10) => {
+    for (let i = 0; i < stroke.points.length - 1; i++) {
+      const p1 = stroke.points[i];
+      const p2 = stroke.points[i + 1];
+      const dist = pointToLineDistance(point, p1, p2);
+      if (dist < threshold) return true;
+    }
+    return false;
+  };
+
+  const pointToLineDistance = (point, lineStart, lineEnd) => {
+    const A = point.x - lineStart.x;
+    const B = point.y - lineStart.y;
+    const C = lineEnd.x - lineStart.x;
+    const D = lineEnd.y - lineStart.y;
+
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    let param = -1;
+    if (lenSq !== 0) param = dot / lenSq;
+
+    let xx, yy;
+    if (param < 0) {
+      xx = lineStart.x;
+      yy = lineStart.y;
+    } else if (param > 1) {
+      xx = lineEnd.x;
+      yy = lineEnd.y;
+    } else {
+      xx = lineStart.x + param * C;
+      yy = lineStart.y + param * D;
+    }
+
+    const dx = point.x - xx;
+    const dy = point.y - yy;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
   const handleMouseDown = (e) => {
     if (readOnly) return;
     
     const pos = getMousePos(e);
     if (!pos) return;
+
+    if (activeTool === 'select') {
+      const clickedStroke = strokes.find(s => isPointNearStroke(pos, s));
+      if (clickedStroke) {
+        setSelectedObject(clickedStroke.id);
+      } else {
+        setSelectedObject(null);
+      }
+      return;
+    }
 
     if (activeTool === 'text') {
       setIsAddingText(true);
@@ -148,15 +197,20 @@ export default function Canvas({
       };
       setStrokes(prev => [...prev, newStroke]);
     } else if (activeTool === 'eraser') {
-      context.clearRect(pos.x - strokeWidth / 2, pos.y - strokeWidth / 2, strokeWidth, strokeWidth);
+      const toRemove = strokes.filter(s => isPointNearStroke(pos, s));
+      const remaining = strokes.filter(s => !toRemove.includes(s));
+      setStrokes(remaining);
+      redrawCanvas(objects, remaining);
     }
   };
 
   const handleMouseMove = (e) => {
-    if (!isDrawing || !context) return;
+    if (!context) return;
 
     const pos = getMousePos(e);
-    if (!pos || !lastPoint) return;
+    if (!pos) return;
+
+    if (!isDrawing) return;
 
     if (activeTool === 'pen' || activeTool === 'highlighter') {
       context.strokeStyle = strokeColor;
@@ -180,7 +234,10 @@ export default function Canvas({
         return updated;
       });
     } else if (activeTool === 'eraser') {
-      context.clearRect(pos.x - strokeWidth / 2, pos.y - strokeWidth / 2, strokeWidth, strokeWidth);
+      const toRemove = strokes.filter(s => isPointNearStroke(pos, s));
+      const remaining = strokes.filter(s => !toRemove.includes(s));
+      setStrokes(remaining);
+      redrawCanvas(objects, remaining);
       setLastPoint(pos);
     }
 
@@ -198,7 +255,28 @@ export default function Canvas({
     }
     setIsDrawing(false);
     setLastPoint(null);
+    setIsDraggingObject(false);
     onStrokeEnd?.();
+  };
+
+  const handleDeleteSelected = () => {
+    if (!selectedObject) return;
+
+    const isText = objects.some(o => o.id === selectedObject);
+    const isStroke = strokes.some(s => s.id === selectedObject);
+
+    if (isText) {
+      const updated = objects.filter(o => o.id !== selectedObject);
+      setObjects(updated);
+      onHistoryChange?.(updated, strokes);
+    } else if (isStroke) {
+      const updated = strokes.filter(s => s.id !== selectedObject);
+      setStrokes(updated);
+      redrawCanvas(objects, updated);
+      onHistoryChange?.(objects, updated);
+    }
+
+    setSelectedObject(null);
   };
 
   return (
@@ -209,40 +287,68 @@ export default function Canvas({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="w-full h-full cursor-crosshair"
+        className={`w-full h-full ${activeTool === 'select' ? 'cursor-pointer' : 'cursor-crosshair'}`}
         style={{ touchAction: 'none' }}
       />
       {/* Text Boxes Layer */}
       {objects.map(obj => obj.type === 'text' && (
-        <div
-          key={obj.id}
-          className="absolute p-1 border border-dashed border-gray-400 bg-yellow-50"
-          style={{
-            left: `${obj.x}px`,
-            top: `${obj.y}px`,
-            minWidth: '100px',
-            cursor: 'move'
-          }}
-          onMouseDown={(e) => {
-            e.stopPropagation();
-            setSelectedObject(obj.id);
-          }}
-        >
-          <input
-            type="text"
-            value={obj.text}
-            onChange={(e) => {
-              setObjects(prev => prev.map(o => 
-                o.id === obj.id ? { ...o, text: e.target.value } : o
-              ));
+        <div key={obj.id}>
+          <div
+            className={`absolute p-1 border-2 bg-yellow-50 transition-colors ${
+              selectedObject === obj.id 
+                ? 'border-blue-500 shadow-lg' 
+                : 'border-dashed border-gray-400'
+            }`}
+            style={{
+              left: `${obj.x}px`,
+              top: `${obj.y}px`,
+              minWidth: '100px',
+              cursor: 'move'
             }}
-            placeholder="Type here"
-            className="w-full bg-transparent text-sm focus:outline-none placeholder-gray-400"
-            onClick={(e) => e.stopPropagation()}
-            autoFocus={selectedObject === obj.id}
-          />
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              if (activeTool === 'select') {
+                setSelectedObject(obj.id);
+              }
+            }}
+          >
+            <input
+              type="text"
+              value={obj.text}
+              onChange={(e) => {
+                setObjects(prev => prev.map(o => 
+                  o.id === obj.id ? { ...o, text: e.target.value } : o
+                ));
+              }}
+              placeholder="Type here"
+              className="w-full bg-transparent text-sm focus:outline-none placeholder-gray-400"
+              onClick={(e) => e.stopPropagation()}
+              autoFocus={selectedObject === obj.id}
+            />
+          </div>
+          {selectedObject === obj.id && (
+            <button
+              onClick={handleDeleteSelected}
+              className="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+              title="Delete"
+            >
+              <Trash2 className="w-3 h-3" />
+            </button>
+          )}
         </div>
       ))}
+
+      {/* Delete button for selected strokes */}
+      {selectedObject && strokes.some(s => s.id === selectedObject) && (
+        <button
+          onClick={handleDeleteSelected}
+          className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm transition-colors flex items-center gap-2"
+          title="Delete selected drawing"
+        >
+          <Trash2 className="w-4 h-4" />
+          Delete
+        </button>
+      )}
     </div>
   );
 }
