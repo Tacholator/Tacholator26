@@ -27,31 +27,39 @@ export default function PropertiesPanel({
     <div className="w-80 bg-white border-l border-gray-200 p-4 space-y-6 overflow-y-auto">
       {/* Quick Actions */}
       <div>
-        <h3 className="font-semibold text-sm mb-3">Quick</h3>
-        <div className="space-y-3">
-          <label className="flex items-center gap-2">
-            <Checkbox 
-              checked={snapToGrid}
-              onCheckedChange={onSnapToGridChange}
-            />
-            <span className="text-sm">Snap to grid</span>
-          </label>
-          <label className="flex items-center gap-2">
-            <Checkbox 
-              checked={showGrid}
-              onCheckedChange={onShowGridChange}
-            />
-            <span className="text-sm">Show grid</span>
-          </label>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full"
-            onClick={onResetView}
-          >
-            Reset view
-          </Button>
-        </div>
+        <button
+          onClick={() => setQuickExpanded(!quickExpanded)}
+          className="flex items-center justify-between w-full font-semibold text-sm mb-3 hover:opacity-70"
+        >
+          <span>Quick</span>
+          {quickExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+        {quickExpanded && (
+          <div className="space-y-3">
+            <label className="flex items-center gap-2">
+              <Checkbox 
+                checked={snapToGrid}
+                onCheckedChange={onSnapToGridChange}
+              />
+              <span className="text-sm">Snap to grid</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <Checkbox 
+                checked={showGrid}
+                onCheckedChange={onShowGridChange}
+              />
+              <span className="text-sm">Show grid</span>
+            </label>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full"
+              onClick={onResetView}
+            >
+              Reset view
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Stroke Properties */}
