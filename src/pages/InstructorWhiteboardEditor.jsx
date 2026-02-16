@@ -32,6 +32,7 @@ export default function InstructorWhiteboardEditor() {
   const [showGrid, setShowGrid] = useState(true);
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [propertiesPanelOpen, setPropertiesPanelOpen] = useState(true);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
