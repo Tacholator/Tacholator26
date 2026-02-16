@@ -444,6 +444,28 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
               />
             </div>
 
+            {/* Main Topic (required for completed lessons) */}
+            {formData.completionOutcome === 'completed' && (
+              <div className="space-y-2">
+                <Label htmlFor="mainTopic">Main Topic *</Label>
+                <Select 
+                  value={formData.mainTopic} 
+                  onValueChange={(value) => setFormData({ ...formData, mainTopic: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select main topic covered..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {courseWorkTopics.map((topic) => (
+                      <SelectItem key={topic.topicId} value={topic.topicId}>
+                        {topic.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             {/* Reason (for cancelled/no show) */}
             {showChargesOptions && (
               <div className="space-y-2">
