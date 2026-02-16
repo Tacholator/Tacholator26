@@ -24,6 +24,24 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
     aiSummary: ''
   });
 
+  // Update formData when existingEntry changes
+  React.useEffect(() => {
+    if (existingEntry) {
+      setFormData(existingEntry);
+    } else {
+      setFormData({
+        date: lesson?.date || moment().format('YYYY-MM-DD'),
+        objective: '',
+        mainTopic: '',
+        whatWentWell: '',
+        areasToImprove: '',
+        instructorComments: '',
+        homeworkSuggestions: '',
+        aiSummary: ''
+      });
+    }
+  }, [existingEntry, open]);
+
   // Calculate lesson duration for display
   const lessonDuration = lesson ? (() => {
     const startMoment = moment(lesson.startTime, 'HH:mm');
