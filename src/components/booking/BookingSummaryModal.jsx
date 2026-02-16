@@ -27,7 +27,6 @@ export default function BookingSummaryModal({
     whatWasCovered: '',
     progressNotes: '',
     nextSteps: '',
-    homeworkAssigned: '',
     instructorComments: '',
     aiSummary: ''
   });
@@ -51,7 +50,6 @@ export default function BookingSummaryModal({
         whatWasCovered: existingDiaryEntry.objective || '',
         progressNotes: existingDiaryEntry.whatWentWell || '',
         nextSteps: existingDiaryEntry.areasToImprove || '',
-        homeworkAssigned: existingDiaryEntry.homeworkSuggestions || '',
         instructorComments: existingDiaryEntry.instructorComments || '',
         aiSummary: existingDiaryEntry.aiSummary || ''
       });
@@ -61,7 +59,6 @@ export default function BookingSummaryModal({
         whatWasCovered: '',
         progressNotes: '',
         nextSteps: '',
-        homeworkAssigned: '',
         instructorComments: '',
         aiSummary: ''
       });
@@ -76,7 +73,6 @@ export default function BookingSummaryModal({
 What was covered: ${summaryData.whatWasCovered || 'Not provided'}
 What went well: ${summaryData.progressNotes || 'Not provided'}
 Next steps: ${summaryData.nextSteps || 'Not provided'}
-Homework: ${summaryData.homeworkAssigned || 'Not provided'}
 Instructor notes: ${summaryData.instructorComments || 'Not provided'}
 
 Requirements:
@@ -129,7 +125,6 @@ Requirements:
         objective: summaryData.whatWasCovered,
         whatWentWell: summaryData.progressNotes,
         areasToImprove: summaryData.nextSteps,
-        homeworkSuggestions: summaryData.homeworkAssigned,
         instructorComments: summaryData.instructorComments,
         aiSummary: summaryData.aiSummary,
         aiSummaryGeneratedAt: summaryData.aiSummary ? new Date().toISOString() : null
@@ -310,18 +305,6 @@ Requirements:
             </div>
 
             <div>
-              <Label htmlFor="homeworkAssigned">Homework Assigned</Label>
-              <Textarea
-                id="homeworkAssigned"
-                value={summaryData.homeworkAssigned}
-                onChange={(e) => setSummaryData({ ...summaryData, homeworkAssigned: e.target.value })}
-                placeholder="Practice tasks, theory review, or preparation for next lesson..."
-                rows={2}
-                className="mt-2"
-              />
-            </div>
-
-            <div>
               <Label htmlFor="instructorComments">Instructor Comments</Label>
               <Textarea
                 id="instructorComments"
@@ -362,16 +345,18 @@ Requirements:
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
-              <p className="text-xs text-purple-600 mb-2">This summary is written directly to the pupil and kept brief.</p>
-              <Textarea
-                value={summaryData.aiSummary}
-                onChange={(e) => setSummaryData({ ...summaryData, aiSummary: e.target.value })}
-                placeholder="Click 'Generate Summary' to create an AI-powered lesson summary based on your notes..."
-                rows={4}
-                className="bg-white"
-              />
-            </CardContent>
+            {summaryData.aiSummary && (
+              <CardContent>
+                <p className="text-xs text-purple-600 mb-2">This summary is written directly to the pupil and kept brief.</p>
+                <Textarea
+                  value={summaryData.aiSummary}
+                  onChange={(e) => setSummaryData({ ...summaryData, aiSummary: e.target.value })}
+                  placeholder="Click 'Generate Summary' to create an AI-powered lesson summary based on your notes..."
+                  rows={4}
+                  className="bg-white"
+                />
+              </CardContent>
+            )}
           </Card>
         </div>
 
