@@ -15,7 +15,8 @@ export default function Canvas({
   onHistoryChange,
   historyIndex,
   history,
-  readOnly = false 
+  readOnly = false,
+  draggedLibraryItem
 }) {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
