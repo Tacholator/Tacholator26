@@ -440,6 +440,8 @@ export default function Canvas({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
         className={`w-full h-full ${activeTool === 'select' ? 'cursor-pointer' : 'cursor-crosshair'}`}
         style={{ touchAction: 'none' }}
       />
