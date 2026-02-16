@@ -330,11 +330,10 @@ export default function PupilList() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.05 }}
-                      className="hover:bg-slate-50 cursor-pointer"
-                      onClick={() => window.location.href = createPageUrl('PupilProfile') + `?id=${pupil.id}`}
+                      className="hover:bg-slate-50"
                     >
                       <TableCell>
-                        <div className="flex items-center gap-3">
+                        <Link to={createPageUrl('PupilProfile') + `?id=${pupil.id}`} className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-semibold">
                             {pupil.firstName?.[0]}{pupil.lastName?.[0]}
                           </div>
@@ -344,7 +343,7 @@ export default function PupilList() {
                             </p>
                             <p className="text-sm text-slate-500">{pupil.phone}</p>
                           </div>
-                        </div>
+                        </Link>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col gap-1">
