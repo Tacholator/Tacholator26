@@ -48,6 +48,16 @@ export default function InstructorWhiteboardEditor() {
     enabled: !!boardId
   });
 
+  const { data: layerData } = useQuery({
+    queryKey: ['whiteboardLayer', boardId],
+    queryFn: async () => {
+      if (!boardId) return null;
+      const layers = await base44.entities.WhiteboardLayerData.filter({ boardId });
+      return layers.length > 0 ? layers[0] : null;
+    },
+    enabled: !!boardId
+  });
+
   useEffect(() => {
     if (board) {
       setBoardTitle(board.title);
@@ -56,6 +66,14 @@ export default function InstructorWhiteboardEditor() {
       setAllowPupilNotes(board.allowPupilNotes);
     }
   }, [board]);
+
+  useEffect(() => {
+    if (layerData && layerData.objects && layerData.strokes) {
+      const state = { objects: layerData.objects, strokes: layerData.strokes };
+      setHistory([state]);
+      setHistoryIndex(0);
+    }
+  }, [layerData]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
