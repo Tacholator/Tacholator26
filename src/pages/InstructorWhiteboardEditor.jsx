@@ -209,7 +209,7 @@ export default function InstructorWhiteboardEditor() {
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 min-w-0">
           <ToolBar
             activeTool={activeTool}
             onToolChange={setActiveTool}
