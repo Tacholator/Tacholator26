@@ -48,21 +48,38 @@ export default function DiaryTimeline({ entries, onEntryClick }) {
                   )}
                 </div>
                 
+                {entry.mainTopic && (
+                   <div className="flex items-start gap-2 mb-2">
+                     <BookOpen className="w-4 h-4 text-blue-500 mt-0.5" />
+                     <div>
+                       <p className="text-xs text-slate-500 uppercase tracking-wide">Topic</p>
+                       <p className="text-slate-700">{entry.mainTopic}</p>
+                     </div>
+                   </div>
+                 )}
+
                 {entry.objective && (
-                  <div className="flex items-start gap-2 mb-3">
-                    <Target className="w-4 h-4 text-teal-500 mt-0.5" />
-                    <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wide">Objective</p>
-                      <p className="text-slate-700">{entry.objective}</p>
-                    </div>
-                  </div>
-                )}
-                
-                {entry.aiSummary && (
-                  <div className="bg-purple-50 rounded-lg p-3 mt-3 border border-purple-100">
-                    <p className="text-sm text-purple-800">{entry.aiSummary}</p>
-                  </div>
-                )}
+                   <div className="flex items-start gap-2 mb-3">
+                     <Target className="w-4 h-4 text-teal-500 mt-0.5" />
+                     <div>
+                       <p className="text-xs text-slate-500 uppercase tracking-wide">Objective</p>
+                       <p className="text-slate-700">{entry.objective}</p>
+                     </div>
+                   </div>
+                 )}
+
+                 {entry.aiSummary && (
+                   <div className="bg-purple-50 rounded-lg p-3 mt-3 border border-purple-100">
+                     <p className="text-sm text-purple-800">{entry.aiSummary}</p>
+                   </div>
+                 )}
+
+                {entry.instructorComments && (
+                   <div className="mt-4 pt-3 border-t border-slate-100">
+                     <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Instructor Comments</p>
+                     <p className="text-sm text-slate-600">{entry.instructorComments}</p>
+                   </div>
+                 )}
                 
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   {entry.whatWentWell && (
