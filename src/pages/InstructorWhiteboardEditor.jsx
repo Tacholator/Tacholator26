@@ -108,8 +108,9 @@ export default function InstructorWhiteboardEditor() {
   };
 
   const handleClearAll = () => {
-    setHistory([]);
-    setHistoryIndex(-1);
+    const emptyState = { objects: [], strokes: [] };
+    setHistory([emptyState]);
+    setHistoryIndex(0);
     setShowClearDialog(false);
   };
 
