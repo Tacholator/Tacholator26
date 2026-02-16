@@ -329,7 +329,11 @@ export default function Canvas({
           {activeTool === 'select' && selectedObject === obj.id && (
             <button
               onClick={handleDeleteSelected}
-              className="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+              className="absolute bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-colors shadow-md"
+              style={{
+                top: `${obj.y - 16}px`,
+                left: `${obj.x + 110}px`
+              }}
               title="Delete"
             >
               <Trash2 className="w-3 h-3" />
