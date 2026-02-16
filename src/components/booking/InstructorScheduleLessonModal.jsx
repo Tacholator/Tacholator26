@@ -81,6 +81,13 @@ export default function InstructorScheduleLessonModal({
       const hourlyRate = pupil?.hourlyRate || 0;
       const totalPriceGbp = hourlyRate * durationHours;
 
+      // Build notes with pickup/dropoff
+      const finalDropoff = dropoffSameAsPickup ? pickupLocation : dropoffLocation;
+      let notesFromPupil = `Pickup: ${pickupLocation} | Dropoff: ${finalDropoff}`;
+      if (notes) {
+        notesFromPupil += ` | ${notes}`;
+      }
+
       // Create booking
       const booking = await base44.entities.LessonBooking.create({
         instructorId: user.id,
@@ -89,8 +96,7 @@ export default function InstructorScheduleLessonModal({
         startAtUtc: slotInstance.startAtUtc,
         endAtUtc: slotInstance.endAtUtc,
         pickupLocation,
-        dropoffLocation: dropoffSameAsPickup ? pickupLocation : dropoffLocation,
-        notesForInstructor: notes,
+        notesFromPupil,
         status: 'confirmed',
         confirmedAt: new Date().toISOString(),
         durationHours,
