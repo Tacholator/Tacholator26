@@ -107,6 +107,12 @@ export default function InstructorWhiteboardEditor() {
     }
   };
 
+  const handleClearAll = () => {
+    setHistory([]);
+    setHistoryIndex(-1);
+    setShowClearDialog(false);
+  };
+
   if (isLoading) return <div className="p-8">Loading...</div>;
 
   return (
