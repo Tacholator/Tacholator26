@@ -408,6 +408,9 @@ export default function Canvas({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         className={`w-full h-full ${activeTool === 'select' ? 'cursor-pointer' : 'cursor-crosshair'}`}
         style={{ touchAction: 'none' }}
       />
