@@ -174,7 +174,7 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "InstructorDashboard",
+    mainPage: "LearnerDashboard",
     Pages: PAGES,
     Layout: __Layout,
 };
