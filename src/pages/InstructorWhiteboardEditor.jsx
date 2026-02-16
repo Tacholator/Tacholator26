@@ -174,6 +174,7 @@ export default function InstructorWhiteboardEditor() {
             onHistoryChange={handleHistoryChange}
             historyIndex={historyIndex}
             history={history}
+            draggedLibraryItem={draggedLibraryItem}
           />
         </div>
 
