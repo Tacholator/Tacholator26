@@ -508,18 +508,26 @@ export default function PupilList() {
         <AlertDialogContent>
           {pastTestPupils.length > 0 && (
             <>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Practical Test Date Passed</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {pastTestPupils[currentTestPupilIndex]?.firstName} {pastTestPupils[currentTestPupilIndex]?.lastName}'s practical test date ({moment(pastTestPupils[currentTestPupilIndex]?.practicalTestDate).format('D MMM YYYY')}) has passed. What was the outcome?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
+              <div className="flex items-center justify-between">
+                <AlertDialogHeader className="flex-1">
+                  <AlertDialogTitle>Practical Test Date Passed</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {pastTestPupils[currentTestPupilIndex]?.firstName} {pastTestPupils[currentTestPupilIndex]?.lastName}'s practical test date ({moment(pastTestPupils[currentTestPupilIndex]?.practicalTestDate).format('D MMM YYYY')}) has passed. What was the outcome?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <button
+                  onClick={() => setShowTestDialog(false)}
+                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
               <div className="flex flex-col gap-3 py-4">
                 <Button
                   onClick={() => {
                     updatePupilMutation.mutate({
                       id: pastTestPupils[currentTestPupilIndex].id,
-                      data: { status: 'Passed' }
+                      data: { status: 'Passed', practicalTestDate: null }
                     });
                     if (currentTestPupilIndex < pastTestPupils.length - 1) {
                       setCurrentTestPupilIndex(currentTestPupilIndex + 1);
@@ -533,6 +541,10 @@ export default function PupilList() {
                 </Button>
                 <Button
                   onClick={() => {
+                    updatePupilMutation.mutate({
+                      id: pastTestPupils[currentTestPupilIndex].id,
+                      data: { practicalTestDate: null }
+                    });
                     if (currentTestPupilIndex < pastTestPupils.length - 1) {
                       setCurrentTestPupilIndex(currentTestPupilIndex + 1);
                     } else {
@@ -545,6 +557,10 @@ export default function PupilList() {
                 </Button>
                 <Button
                   onClick={() => {
+                    updatePupilMutation.mutate({
+                      id: pastTestPupils[currentTestPupilIndex].id,
+                      data: { practicalTestDate: null }
+                    });
                     if (currentTestPupilIndex < pastTestPupils.length - 1) {
                       setCurrentTestPupilIndex(currentTestPupilIndex + 1);
                     } else {
@@ -557,11 +573,7 @@ export default function PupilList() {
                 </Button>
                 <Button
                   onClick={() => {
-                    if (currentTestPupilIndex < pastTestPupils.length - 1) {
-                      setCurrentTestPupilIndex(currentTestPupilIndex + 1);
-                    } else {
-                      setShowTestDialog(false);
-                    }
+                    setShowRescheduleDialog(true);
                   }}
                   variant="outline"
                 >
@@ -570,6 +582,49 @@ export default function PupilList() {
               </div>
             </>
           )}
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reschedule Test Date Dialog */}
+      <AlertDialog open={showRescheduleDialog} onOpenChange={setShowRescheduleDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reschedule Practical Test</AlertDialogTitle>
+            <AlertDialogDescription>
+              Set the new test date for {pastTestPupils[currentTestPupilIndex]?.firstName} {pastTestPupils[currentTestPupilIndex]?.lastName}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <input
+              type="date"
+              value={rescheduleDate}
+              onChange={(e) => setRescheduleDate(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (rescheduleDate) {
+                  updatePupilMutation.mutate({
+                    id: pastTestPupils[currentTestPupilIndex].id,
+                    data: { practicalTestDate: rescheduleDate }
+                  });
+                  setRescheduleDate(null);
+                  setShowRescheduleDialog(false);
+                  if (currentTestPupilIndex < pastTestPupils.length - 1) {
+                    setCurrentTestPupilIndex(currentTestPupilIndex + 1);
+                  } else {
+                    setShowTestDialog(false);
+                  }
+                }
+              }}
+              disabled={!rescheduleDate}
+            >
+              Save New Date
+            </AlertDialogAction>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
