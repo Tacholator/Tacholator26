@@ -176,7 +176,7 @@ export default function Canvas({
         return updated;
       });
     } else if (activeTool === 'eraser') {
-      context.clearRect(pos.x - strokeWidth / 2, pos.y - strokeWidth / 2, strokeWidth, strokeWidth);
+      context.clearRect(pos.x - 8, pos.y - 8, 16, 16);
       setLastPoint(pos);
     }
 
