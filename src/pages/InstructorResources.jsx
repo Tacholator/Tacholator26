@@ -48,6 +48,7 @@ const typeConfig = {
 };
 
 export default function InstructorResources() {
+  const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
