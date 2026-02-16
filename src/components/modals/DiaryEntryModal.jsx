@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
-export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, existingEntry, onSave, lesson, pupil }) {
+export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, existingEntry, onSave, lesson, pupil, readOnly = false }) {
   const [formData, setFormData] = useState(existingEntry || {
     date: lesson?.date || moment().format('YYYY-MM-DD'),
     objective: '',
@@ -93,7 +93,7 @@ Write a warm, supportive summary that highlights progress and next steps.`;
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-slate-800">
-            {existingEntry ? 'Edit Lesson Feedback' : 'Lesson Feedback'}
+            {readOnly ? 'Lesson Feedback Details' : existingEntry ? 'Edit Lesson Feedback' : 'Lesson Feedback'}
           </DialogTitle>
         </DialogHeader>
 
@@ -130,6 +130,7 @@ Write a warm, supportive summary that highlights progress and next steps.`;
                 type="date"
                 value={formData.date}
                 onChange={(e) => handleChange('date', e.target.value)}
+                disabled={readOnly}
               />
             </div>
             <div className="space-y-2">
@@ -139,27 +140,35 @@ Write a warm, supportive summary that highlights progress and next steps.`;
                 value={formData.objective}
                 onChange={(e) => handleChange('objective', e.target.value)}
                 placeholder="e.g., Roundabouts practice"
+                disabled={readOnly}
               />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="mainTopic">Main Topic *</Label>
-            <Select 
-              value={formData.mainTopic} 
-              onValueChange={(value) => handleChange('mainTopic', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select main topic covered..." />
-              </SelectTrigger>
-              <SelectContent>
-                {courseWorkTopics.map((topic) => (
-                  <SelectItem key={topic.topicId} value={topic.topicId}>
-                    {topic.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {readOnly ? (
+              <Input
+                value={courseWorkTopics.find(t => t.topicId === formData.mainTopic)?.title || formData.mainTopic || 'Not specified'}
+                disabled
+              />
+            ) : (
+              <Select 
+                value={formData.mainTopic} 
+                onValueChange={(value) => handleChange('mainTopic', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select main topic covered..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {courseWorkTopics.map((topic) => (
+                    <SelectItem key={topic.topicId} value={topic.topicId}>
+                      {topic.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -170,6 +179,7 @@ Write a warm, supportive summary that highlights progress and next steps.`;
               onChange={(e) => handleChange('whatWentWell', e.target.value)}
               placeholder="Positive observations from the lesson..."
               rows={3}
+              disabled={readOnly}
             />
           </div>
 
@@ -181,6 +191,7 @@ Write a warm, supportive summary that highlights progress and next steps.`;
               onChange={(e) => handleChange('areasToImprove', e.target.value)}
               placeholder="Things to work on..."
               rows={3}
+              disabled={readOnly}
             />
           </div>
 
@@ -192,6 +203,7 @@ Write a warm, supportive summary that highlights progress and next steps.`;
               onChange={(e) => handleChange('instructorComments', e.target.value)}
               placeholder="Additional notes..."
               rows={2}
+              disabled={readOnly}
             />
           </div>
 
@@ -203,44 +215,64 @@ Write a warm, supportive summary that highlights progress and next steps.`;
               onChange={(e) => handleChange('homeworkSuggestions', e.target.value)}
               placeholder="Practice exercises or study topics..."
               rows={2}
+              disabled={readOnly}
             />
           </div>
 
-          <div className="border-t pt-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>AI Summary</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={generateAiSummary}
-                disabled={isGenerating}
-                className="gap-2"
-              >
-                {isGenerating ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Sparkles className="w-4 h-4" />
-                )}
-                Generate Summary
-              </Button>
+          {!readOnly && (
+            <div className="border-t pt-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>AI Summary</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={generateAiSummary}
+                  disabled={isGenerating}
+                  className="gap-2"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-4 h-4" />
+                  )}
+                  Generate Summary
+                </Button>
+              </div>
+              {formData.aiSummary && (
+                <div className="bg-purple-50 border border-purple-100 rounded-lg p-4">
+                  <p className="text-sm text-purple-800">{formData.aiSummary}</p>
+                </div>
+              )}
             </div>
-            {formData.aiSummary && (
+          )}
+
+          {readOnly && formData.aiSummary && (
+            <div className="border-t pt-5 space-y-3">
+              <Label>AI Summary</Label>
               <div className="bg-purple-50 border border-purple-100 rounded-lg p-4">
                 <p className="text-sm text-purple-800">{formData.aiSummary}</p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 gap-2">
-            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-            {lesson?.status === 'Scheduled' ? 'Save & Mark Completed' : 'Save Entry'}
-          </Button>
+          {readOnly ? (
+            <Button onClick={onClose}>
+              Close
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button onClick={handleSubmit} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 gap-2">
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                {lesson?.status === 'Scheduled' ? 'Save & Mark Completed' : 'Save Entry'}
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

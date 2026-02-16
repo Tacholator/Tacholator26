@@ -663,6 +663,7 @@ export default function PupilProfile() {
               entries={diaryEntries}
               onEntryClick={(entry) => {
                 setSelectedDiaryEntry(entry);
+                setSelectedLesson(null);
                 setShowDiaryModal(true);
               }}
             />
@@ -765,6 +766,7 @@ export default function PupilProfile() {
         pupil={pupil}
         existingEntry={selectedDiaryEntry}
         onSave={selectedLesson ? handleSaveDiaryAndComplete : handleSaveDiary}
+        readOnly={!!selectedDiaryEntry && !selectedLesson}
       />
 
       <PupilFormModal
