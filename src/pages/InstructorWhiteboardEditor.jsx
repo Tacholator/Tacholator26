@@ -165,20 +165,23 @@ export default function InstructorWhiteboardEditor() {
           />
         </div>
 
-        <PropertiesPanel
-          activeTool={activeTool}
-          strokeWidth={strokeWidth}
-          strokeColor={strokeColor}
-          strokeOpacity={strokeOpacity}
-          snapToGrid={snapToGrid}
-          showGrid={showGrid}
-          onStrokeWidthChange={setStrokeWidth}
-          onStrokeColorChange={setStrokeColor}
-          onStrokeOpacityChange={setStrokeOpacity}
-          onSnapToGridChange={setSnapToGrid}
-          onShowGridChange={setShowGrid}
-          onResetView={() => {}}
-        />
+        {propertiesPanelOpen && (
+          <PropertiesPanel
+            activeTool={activeTool}
+            strokeWidth={strokeWidth}
+            strokeColor={strokeColor}
+            strokeOpacity={strokeOpacity}
+            snapToGrid={snapToGrid}
+            showGrid={showGrid}
+            onStrokeWidthChange={setStrokeWidth}
+            onStrokeColorChange={setStrokeColor}
+            onStrokeOpacityChange={setStrokeOpacity}
+            onSnapToGridChange={setSnapToGrid}
+            onShowGridChange={setShowGrid}
+            onResetView={() => {}}
+            onClose={() => setPropertiesPanelOpen(false)}
+          />
+        )}
       </div>
     </div>
   );
