@@ -34,7 +34,7 @@ export default function PropertiesPanel({
         <ChevronDown className="w-4 h-4 rotate-90" />
       </button>
       {/* Quick Actions */}
-      <div>
+      <div className="pt-2">
         <button
           onClick={() => setQuickExpanded(!quickExpanded)}
           className="flex items-center justify-between w-full font-semibold text-sm mb-3 hover:opacity-70"
