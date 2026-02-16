@@ -40,7 +40,8 @@ import {
   Calendar,
   ChevronRight,
   Loader2,
-  Trash2
+  Trash2,
+  X
 } from 'lucide-react';
 import PupilFormModal, { DVSA_SKILLS } from '@/components/modals/PupilFormModal';
 import moment from 'moment';
