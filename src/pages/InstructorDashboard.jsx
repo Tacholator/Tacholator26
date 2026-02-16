@@ -55,7 +55,10 @@ export default function InstructorDashboard() {
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['pupils', instructor?.id],
-    queryFn: () => base44.entities.Pupil.filter({ instructorId: instructor.id }),
+    queryFn: async () => {
+      if (!instructor?.id) return [];
+      return await base44.entities.Pupil.filter({ instructorId: instructor.id });
+    },
     enabled: !!instructor?.id
   });
 
@@ -96,7 +99,10 @@ export default function InstructorDashboard() {
 
   const { data: notifications = [] } = useQuery({
     queryKey: ['notifications', user?.id],
-    queryFn: () => base44.entities.Notification.filter({ userId: user.id }, '-created_date', 20),
+    queryFn: async () => {
+      if (!user?.id) return [];
+      return await base44.entities.Notification.filter({ userId: user.id }, '-created_date', 20);
+    },
     enabled: !!user?.id
   });
 
