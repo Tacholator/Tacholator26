@@ -25,7 +25,14 @@ export default function PropertiesPanel({
   const showStrokeProps = activeTool === 'pen' || activeTool === 'highlighter' || activeTool === 'eraser';
 
   return (
-    <div className="w-80 bg-white border-l border-gray-200 p-4 space-y-6 overflow-y-auto">
+    <div className="w-80 bg-white border-l border-gray-200 p-4 space-y-6 overflow-y-auto relative">
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 p-1 hover:opacity-60 z-10"
+        title="Close panel"
+      >
+        <ChevronDown className="w-4 h-4 rotate-90" />
+      </button>
       {/* Quick Actions */}
       <div>
         <button
