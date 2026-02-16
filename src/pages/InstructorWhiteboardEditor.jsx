@@ -147,6 +147,14 @@ export default function InstructorWhiteboardEditor() {
               Library
             </Button>
             <Button
+              variant="outline"
+              onClick={() => setShowClearDialog(true)}
+              className="gap-2 text-red-600 hover:text-red-700"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear All
+            </Button>
+            <Button
               onClick={handleSave}
               disabled={saveMutation.isPending}
               className="gap-2"
