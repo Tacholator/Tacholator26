@@ -144,8 +144,8 @@ export default function InstructorWhiteboardEditor() {
           <ToolBar
             activeTool={activeTool}
             onToolChange={setActiveTool}
-            onUndo={() => {}}
-            onRedo={() => {}}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
           />
           <Canvas
             activeTool={activeTool}
