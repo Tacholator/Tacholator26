@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle } from 'lucide-react';
+import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
@@ -17,7 +17,8 @@ const warmPalette = {
   card_quiz_of_day: 'bg-gradient-to-br from-rose-100 to-pink-100',
   card_todays_schedule: 'bg-gradient-to-br from-green-100 to-emerald-100',
   card_upcoming_tests: 'bg-gradient-to-br from-orange-100 to-amber-100',
-  card_notifications: 'bg-gradient-to-br from-amber-100 to-yellow-100'
+  card_notifications: 'bg-gradient-to-br from-amber-100 to-yellow-100',
+  card_pupil_activities: 'bg-gradient-to-br from-indigo-100 to-purple-100'
 };
 
 export default function InstructorDashboard() {
@@ -135,6 +136,65 @@ export default function InstructorDashboard() {
       return await base44.entities.Notification.filter({ userId: user.id }, '-created_date', 20);
     },
     enabled: !!user?.id
+  });
+
+  const { data: pupilActivities = [] } = useQuery({
+    queryKey: ['pupilActivities', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const activities = [];
+      const pupilIds = pupils.map(p => p.id);
+      
+      // Recent homework completions
+      const recentHomework = await base44.entities.HomeworkItem.filter({ instructorId: user.id }, '-updated_date', 10);
+      recentHomework.filter(hw => hw.status === 'Completed').forEach(hw => {
+        const pupil = pupils.find(p => p.id === hw.pupilId);
+        if (pupil) {
+          activities.push({
+            type: 'homework',
+            pupilName: `${pupil.firstName} ${pupil.lastName}`,
+            message: `Completed homework: ${hw.title}`,
+            timestamp: hw.updated_date,
+            icon: CheckCircle
+          });
+        }
+      });
+      
+      // Recent MCQ attempts
+      const recentMcqAttempts = await base44.entities.McqAttempt.filter({ instructorId: user.id }, '-submittedAt', 10);
+      recentMcqAttempts.forEach(attempt => {
+        const pupil = pupils.find(p => p.id === attempt.pupilId);
+        if (pupil) {
+          activities.push({
+            type: 'mcq',
+            pupilName: `${pupil.firstName} ${pupil.lastName}`,
+            message: `${attempt.passed ? 'Passed' : 'Attempted'} MCQ: ${attempt.topicId.replace(/_/g, ' ')} (${attempt.score}/${attempt.totalQuestions})`,
+            timestamp: attempt.submittedAt,
+            icon: MessageCircle
+          });
+        }
+      });
+      
+      // Recent diary entries
+      const recentDiaries = await base44.entities.DiaryEntry.filter({ instructorId: user.id }, '-created_date', 10);
+      recentDiaries.forEach(diary => {
+        const pupil = pupils.find(p => p.id === diary.pupilId);
+        if (pupil) {
+          activities.push({
+            type: 'diary',
+            pupilName: `${pupil.firstName} ${pupil.lastName}`,
+            message: `New lesson diary entry`,
+            timestamp: diary.created_date,
+            icon: Calendar
+          });
+        }
+      });
+      
+      // Sort by timestamp descending
+      return activities.sort((a, b) => moment(b.timestamp).diff(moment(a.timestamp))).slice(0, 10);
+    },
+    enabled: !!user?.id && pupils.length > 0
   });
 
   const today = moment().format('YYYY-MM-DD');
@@ -447,52 +507,93 @@ export default function InstructorDashboard() {
             </Card>
           )}
 
-          {/* 5. Notifications Card */}
-          {(unreadNotifications.length > 0 || notifications.length > 0) && (
-            <Card className={`${warmPalette.card_notifications} border-0 shadow-sm overflow-hidden`}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-                    <Bell className="w-5 h-5 text-amber-600" />
-                    Notifications
-                  </h3>
-                  {unreadNotifications.length > 0 && (
-                    <Badge className="bg-amber-600 text-white">
-                      {unreadNotifications.length} unread
-                    </Badge>
-                  )}
-                </div>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {notifications.slice(0, 5).map(notif => (
-                    <div
-                      key={notif.id}
-                      className={`bg-white/70 rounded-lg p-3 ${!notif.readAt ? 'border-l-2 border-l-amber-500' : ''}`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-800 truncate">{notif.title}</p>
-                          {notif.message && (
-                            <p className="text-xs text-slate-600 mt-1 line-clamp-2 break-words">{notif.message}</p>
+          {/* 5. Notifications Card and Pupil Activities - Side by Side on Desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Notifications Card */}
+            {(unreadNotifications.length > 0 || notifications.length > 0) && (
+              <Card className={`${warmPalette.card_notifications} border-0 shadow-sm overflow-hidden`}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
+                      <Bell className="w-5 h-5 text-amber-600" />
+                      Notifications
+                    </h3>
+                    {unreadNotifications.length > 0 && (
+                      <Badge className="bg-amber-600 text-white">
+                        {unreadNotifications.length} unread
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {notifications.slice(0, 5).map(notif => (
+                      <div
+                        key={notif.id}
+                        className={`bg-white/70 rounded-lg p-3 ${!notif.readAt ? 'border-l-2 border-l-amber-500' : ''}`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-slate-800 truncate">{notif.title}</p>
+                            {notif.message && (
+                              <p className="text-xs text-slate-600 mt-1 line-clamp-2 break-words">{notif.message}</p>
+                            )}
+                            <p className="text-xs text-slate-400 mt-1">
+                              {moment(notif.created_date).fromNow()}
+                            </p>
+                          </div>
+                          {!notif.readAt && (
+                            <Badge variant="secondary" className="text-xs">New</Badge>
                           )}
-                          <p className="text-xs text-slate-400 mt-1">
-                            {moment(notif.created_date).fromNow()}
-                          </p>
                         </div>
-                        {!notif.readAt && (
-                          <Badge variant="secondary" className="text-xs">New</Badge>
-                        )}
                       </div>
-                    </div>
-                  ))}
-                </div>
-                <Link to={createPageUrl('InstructorNotifications')}>
-                  <Button variant="outline" className="w-full mt-4">
-                    View All Notifications
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          )}
+                    ))}
+                  </div>
+                  <Link to={createPageUrl('InstructorNotifications')}>
+                    <Button variant="outline" className="w-full mt-4">
+                      View All Notifications
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Pupil Activities Card */}
+            {pupilActivities.length > 0 && (
+              <Card className={`${warmPalette.card_pupil_activities} border-0 shadow-sm overflow-hidden`}>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-indigo-600" />
+                    Pupil Activities
+                  </h3>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {pupilActivities.map((activity, index) => {
+                      const Icon = activity.icon;
+                      return (
+                        <div
+                          key={`${activity.type}-${index}`}
+                          className="bg-white/70 rounded-lg p-3"
+                        >
+                          <div className="flex items-start gap-2">
+                            <Icon className="w-4 h-4 text-indigo-600 mt-0.5 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-slate-800 truncate">
+                                {activity.pupilName}
+                              </p>
+                              <p className="text-xs text-slate-600 mt-1 line-clamp-2 break-words">
+                                {activity.message}
+                              </p>
+                              <p className="text-xs text-slate-400 mt-1">
+                                {moment(activity.timestamp).fromNow()}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
 
         </div>
       </div>
