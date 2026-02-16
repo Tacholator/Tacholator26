@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Calendar, Clock, MapPin, FileText, Save, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 export default function BookingSummaryModal({ 
   open, 
@@ -21,6 +23,7 @@ export default function BookingSummaryModal({
   const [isSaving, setIsSaving] = useState(false);
 
   const [summaryData, setSummaryData] = useState({
+    mainTopic: '',
     whatWasCovered: '',
     progressNotes: '',
     nextSteps: '',
@@ -44,6 +47,7 @@ export default function BookingSummaryModal({
   React.useEffect(() => {
     if (existingDiaryEntry) {
       setSummaryData({
+        mainTopic: existingDiaryEntry.mainTopic || '',
         whatWasCovered: existingDiaryEntry.objective || '',
         progressNotes: existingDiaryEntry.whatWentWell || '',
         nextSteps: existingDiaryEntry.areasToImprove || '',
@@ -53,6 +57,7 @@ export default function BookingSummaryModal({
       });
     } else {
       setSummaryData({
+        mainTopic: '',
         whatWasCovered: '',
         progressNotes: '',
         nextSteps: '',
@@ -104,6 +109,15 @@ Requirements:
   const handleSave = async () => {
     if (!booking || !pupil) return;
     
+    if (!summaryData.mainTopic) {
+      toast({ 
+        title: 'Main topic required', 
+        description: 'Please select the main topic covered in this lesson', 
+        variant: 'destructive' 
+      });
+      return;
+    }
+    
     setIsSaving(true);
     try {
       const diaryData = {
@@ -111,6 +125,7 @@ Requirements:
         instructorId: booking.instructorId,
         lessonId: booking.id,
         date: moment(booking.startAtUtc).format('YYYY-MM-DD'),
+        mainTopic: summaryData.mainTopic,
         objective: summaryData.whatWasCovered,
         whatWentWell: summaryData.progressNotes,
         areasToImprove: summaryData.nextSteps,
@@ -239,6 +254,25 @@ Requirements:
 
           {/* Summary Form */}
           <div className="space-y-4">
+            <div>
+              <Label htmlFor="mainTopic">Main Topic *</Label>
+              <Select 
+                value={summaryData.mainTopic} 
+                onValueChange={(value) => setSummaryData({ ...summaryData, mainTopic: value })}
+              >
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Select main topic covered..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {courseWorkTopics.map((topic) => (
+                    <SelectItem key={topic.topicId} value={topic.topicId}>
+                      {topic.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div>
               <Label htmlFor="whatWasCovered">What Was Covered</Label>
               <Textarea
