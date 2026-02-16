@@ -10,10 +10,10 @@ import {
   Users,
   CalendarPlus,
   FileText,
-  MessageCircle
+  MessageCircle,
+  GraduationCap,
+  BookOpen
 } from 'lucide-react';
-
-import { GraduationCap, BookOpen } from 'lucide-react';
 
 const instructorNavItems = [
   {
@@ -130,7 +130,7 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
               }`}
             >
               <div className="relative">
-                <Icon className={`w-6 h-6 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
+                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
                 {item.id === 'chats' && unreadMessagesCount > 0 && (
                   <Badge 
                     className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-[#F7B602] text-[#071739] text-xs font-bold"
@@ -139,7 +139,7 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
                   </Badge>
                 )}
               </div>
-              <span className={`text-xs mt-1 ${isActive ? 'font-semibold' : 'font-medium'}`}>
+              <span className={`text-xs mt-1 leading-tight whitespace-nowrap ${isActive ? 'font-semibold' : 'font-medium'}`}>
                 {item.label}
               </span>
             </Link>
