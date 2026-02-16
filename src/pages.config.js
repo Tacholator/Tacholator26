@@ -65,7 +65,6 @@ import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorGpsRouteSetup from './pages/InstructorGpsRouteSetup';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
-import InstructorMyTeaching from './pages/InstructorMyTeaching';
 import InstructorNotifications from './pages/InstructorNotifications';
 import InstructorPayments from './pages/InstructorPayments';
 import InstructorPupilNotes from './pages/InstructorPupilNotes';
@@ -85,7 +84,6 @@ import LearnerGpsFollowAlong from './pages/LearnerGpsFollowAlong';
 import LearnerHomework from './pages/LearnerHomework';
 import LearnerLessons from './pages/LearnerLessons';
 import LearnerMyInstructor from './pages/LearnerMyInstructor';
-import LearnerMyLearning from './pages/LearnerMyLearning';
 import LearnerNotes from './pages/LearnerNotes';
 import LearnerNotifications from './pages/LearnerNotifications';
 import LearnerPayments from './pages/LearnerPayments';
@@ -107,6 +105,10 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
+import LearnerMyLearning from './pages/LearnerMyLearning';
+import InstructorMyTeaching from './pages/InstructorMyTeaching';
+import InstructorTeachingHub from './pages/InstructorTeachingHub';
+import LearnerLearningHub from './pages/LearnerLearningHub';
 import __Layout from './Layout.jsx';
 
 
@@ -129,7 +131,6 @@ export const PAGES = {
     "InstructorDashboard": InstructorDashboard,
     "InstructorGpsRouteSetup": InstructorGpsRouteSetup,
     "InstructorMcqReporting": InstructorMcqReporting,
-    "InstructorMyTeaching": InstructorMyTeaching,
     "InstructorNotifications": InstructorNotifications,
     "InstructorPayments": InstructorPayments,
     "InstructorPupilNotes": InstructorPupilNotes,
@@ -149,7 +150,6 @@ export const PAGES = {
     "LearnerHomework": LearnerHomework,
     "LearnerLessons": LearnerLessons,
     "LearnerMyInstructor": LearnerMyInstructor,
-    "LearnerMyLearning": LearnerMyLearning,
     "LearnerNotes": LearnerNotes,
     "LearnerNotifications": LearnerNotifications,
     "LearnerPayments": LearnerPayments,
@@ -171,6 +171,10 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
+    "LearnerMyLearning": LearnerMyLearning,
+    "InstructorMyTeaching": InstructorMyTeaching,
+    "InstructorTeachingHub": InstructorTeachingHub,
+    "LearnerLearningHub": LearnerLearningHub,
 }
 
 export const pagesConfig = {
