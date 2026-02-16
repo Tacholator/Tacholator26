@@ -24,16 +24,21 @@ export default function PropertiesPanel({
   const showStrokeProps = activeTool === 'pen' || activeTool === 'highlighter' || activeTool === 'eraser';
 
   return (
-    <div className={`transition-all duration-300 bg-white border-l border-gray-200 p-4 space-y-6 overflow-y-auto ${quickExpanded ? 'w-80' : 'w-0 hidden'}`}>
+    <div className={`transition-all duration-300 bg-white border-l border-gray-200 flex flex-col ${quickExpanded ? 'w-80' : 'w-16'}`}>
+      {/* Toggle Button - Always Visible */}
+      <button
+        onClick={() => setQuickExpanded(!quickExpanded)}
+        className="flex items-center justify-between p-4 font-semibold text-sm hover:bg-gray-50"
+      >
+        {quickExpanded && <span>Quick</span>}
+        {quickExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+
+      {/* Content - Collapses */}
+      {quickExpanded && (
+      <div className="p-4 space-y-6 overflow-y-auto flex-1">
       {/* Quick Actions */}
       <div>
-        <button
-          onClick={() => setQuickExpanded(!quickExpanded)}
-          className="flex items-center justify-between w-full font-semibold text-sm mb-3 hover:opacity-70"
-        >
-          <span>Quick</span>
-          {quickExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </button>
         {quickExpanded && (
           <div className="space-y-3">
             <label className="flex items-center gap-2">
