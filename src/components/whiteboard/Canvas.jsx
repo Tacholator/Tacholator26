@@ -156,14 +156,45 @@ export default function Canvas({
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      className="flex-1 bg-white border border-gray-200 rounded-lg cursor-crosshair"
-      style={{ touchAction: 'none' }}
-    />
+    <div className="flex-1 relative bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <canvas
+        ref={canvasRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        className="w-full h-full cursor-crosshair"
+        style={{ touchAction: 'none' }}
+      />
+      {/* Text Boxes Layer */}
+      {objects.map(obj => obj.type === 'text' && (
+        <div
+          key={obj.id}
+          className="absolute p-1 border border-dashed border-gray-400 bg-yellow-50"
+          style={{
+            left: `${obj.x}px`,
+            top: `${obj.y}px`,
+            minWidth: '100px',
+            cursor: 'move'
+          }}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            setSelectedObject(obj.id);
+          }}
+        >
+          <input
+            type="text"
+            value={obj.text}
+            onChange={(e) => {
+              setObjects(prev => prev.map(o => 
+                o.id === obj.id ? { ...o, text: e.target.value } : o
+              ));
+            }}
+            className="w-full bg-transparent text-sm focus:outline-none"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      ))}
+    </div>
   );
 }
