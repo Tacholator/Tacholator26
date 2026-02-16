@@ -334,18 +334,56 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
               <p className="font-medium text-slate-800">
                 {pupil?.firstName} {pupil?.lastName}
               </p>
-              {(booking?.pickupLocation || lesson?.location) && (
-                <div className="pt-2 border-t border-slate-200">
-                  <p className="text-xs text-slate-500 mb-1">Pickup Location:</p>
-                  <p className="text-slate-700">{booking?.pickupLocation || lesson?.location || 'Not specified'}</p>
-                </div>
-              )}
-              {booking?.notesFromPupil && (
-                <div className="pt-2 border-t border-slate-200">
-                  <p className="text-xs text-slate-500 mb-1">Notes from Pupil:</p>
-                  <p className="text-slate-700 whitespace-pre-wrap">{booking.notesFromPupil}</p>
-                </div>
-              )}
+              {(booking || lesson) && (() => {
+                // Extract pickup/dropoff from notesFromPupil if available
+                let pickup = booking?.pickupLocation || lesson?.location;
+                let dropoff = null;
+                let otherNotes = booking?.notesFromPupil;
+                
+                if (booking?.notesFromPupil) {
+                  const pickupMatch = booking.notesFromPupil.match(/Pickup:\s*([^|]+)/i);
+                  const dropoffMatch = booking.notesFromPupil.match(/Dropoff:\s*([^|]+)/i);
+                  
+                  if (pickupMatch) {
+                    pickup = pickupMatch[1].trim();
+                  }
+                  if (dropoffMatch) {
+                    dropoff = dropoffMatch[1].trim();
+                  }
+                  
+                  // Remove pickup/dropoff from other notes
+                  otherNotes = booking.notesFromPupil
+                    .replace(/Pickup:\s*[^|]+\s*\|?\s*/gi, '')
+                    .replace(/Dropoff:\s*[^|]+\s*\|?\s*/gi, '')
+                    .trim();
+                  
+                  if (otherNotes.startsWith('|')) otherNotes = otherNotes.substring(1).trim();
+                  if (otherNotes.endsWith('|')) otherNotes = otherNotes.substring(0, otherNotes.length - 1).trim();
+                }
+                
+                return (
+                  <>
+                    {pickup && (
+                      <div className="pt-2 border-t border-slate-200">
+                        <p className="text-xs text-slate-500 mb-1">Pickup:</p>
+                        <p className="text-slate-700">{pickup}</p>
+                      </div>
+                    )}
+                    {dropoff && (
+                      <div className="pt-2 border-t border-slate-200">
+                        <p className="text-xs text-slate-500 mb-1">Dropoff:</p>
+                        <p className="text-slate-700">{dropoff}</p>
+                      </div>
+                    )}
+                    {otherNotes && (
+                      <div className="pt-2 border-t border-slate-200">
+                        <p className="text-xs text-slate-500 mb-1">Notes:</p>
+                        <p className="text-slate-700 text-xs">{otherNotes}</p>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
 
             {/* Outcome Selection */}
