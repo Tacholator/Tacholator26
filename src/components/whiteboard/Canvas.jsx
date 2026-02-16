@@ -11,6 +11,7 @@ export default function Canvas({
   onStrokeEnd,
   onObjectSelect,
   onObjectChange,
+  onHistoryChange,
   readOnly = false 
 }) {
   const canvasRef = useRef(null);
@@ -19,6 +20,8 @@ export default function Canvas({
   const [objects, setObjects] = useState([]);
   const [strokes, setStrokes] = useState([]);
   const [lastPoint, setLastPoint] = useState(null);
+  const [isAddingText, setIsAddingText] = useState(false);
+  const [selectedObject, setSelectedObject] = useState(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
