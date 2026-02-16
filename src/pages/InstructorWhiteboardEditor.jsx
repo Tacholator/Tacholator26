@@ -86,16 +86,38 @@ export default function InstructorWhiteboardEditor() {
         stepsEnabled: false
       };
 
-      if (boardId) {
-        await base44.entities.WhiteboardBoard.update(boardId, boardData);
-      } else {
+      let boardIdToSave = boardId;
+      
+      // Create board if it doesn't exist
+      if (!boardIdToSave) {
         const result = await base44.entities.WhiteboardBoard.create(boardData);
-        return result.id;
+        boardIdToSave = result.id;
+      } else {
+        await base44.entities.WhiteboardBoard.update(boardIdToSave, boardData);
       }
+
+      // Save canvas layer data
+      const currentState = history[historyIndex] || { objects: [], strokes: [] };
+      const layerData = {
+        boardId: boardIdToSave,
+        objects: currentState.objects || [],
+        strokes: currentState.strokes || []
+      };
+
+      // Check if layer already exists
+      const existingLayers = await base44.entities.WhiteboardLayerData.filter({ boardId: boardIdToSave });
+      if (existingLayers.length > 0) {
+        await base44.entities.WhiteboardLayerData.update(existingLayers[0].id, layerData);
+      } else {
+        await base44.entities.WhiteboardLayerData.create(layerData);
+      }
+
+      return boardIdToSave;
     },
     onSuccess: (newBoardId) => {
       queryClient.invalidateQueries({ queryKey: ['whiteboard'] });
-      if (newBoardId) {
+      queryClient.invalidateQueries({ queryKey: ['whiteboardLayer'] });
+      if (!boardId && newBoardId) {
         navigate(`/InstructorWhiteboardEditor?boardId=${newBoardId}`);
       }
     }
