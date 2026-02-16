@@ -123,7 +123,7 @@ export default function Canvas({
         type: 'text',
         x: pos.x,
         y: pos.y,
-        text: 'Type here',
+        text: '',
         fontSize: 16,
         color: strokeColor
       };
