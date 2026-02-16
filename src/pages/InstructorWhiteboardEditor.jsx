@@ -193,6 +193,13 @@ export default function InstructorWhiteboardEditor() {
           onResetView={() => {}}
         />
       </div>
+
+      {/* Library Drawer */}
+      <LibraryDrawer
+        isOpen={libraryDrawerOpen}
+        onClose={() => setLibraryDrawerOpen(false)}
+        onItemDragStart={setDraggedLibraryItem}
+      />
     </div>
   );
 }
