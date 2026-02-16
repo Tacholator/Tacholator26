@@ -768,7 +768,7 @@ export default function PupilProfile() {
         pupil={pupil}
         existingEntry={selectedDiaryEntry}
         onSave={selectedLesson ? handleSaveDiaryAndComplete : handleSaveDiary}
-        readOnly={!!selectedDiaryEntry && !selectedLesson}
+        readOnly={!!selectedDiaryEntry}
       />
 
       <PupilFormModal
