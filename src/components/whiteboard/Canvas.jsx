@@ -12,6 +12,8 @@ export default function Canvas({
   onObjectSelect,
   onObjectChange,
   onHistoryChange,
+  historyIndex,
+  history,
   readOnly = false 
 }) {
   const canvasRef = useRef(null);
