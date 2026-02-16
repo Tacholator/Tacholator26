@@ -68,6 +68,7 @@ export const instructorOnlyLinks = [
     page: 'InstructorMyTeaching',
     isCollapsible: true,
     children: [
+      { name: 'Whiteboards', icon: Pen, page: 'InstructorWhiteboardLibrary' },
       { name: 'Course Work', icon: FileText, page: 'CourseWork' },
       { name: 'Pupil Notes', icon: Notebook, page: 'InstructorPupilNotes' },
       { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
