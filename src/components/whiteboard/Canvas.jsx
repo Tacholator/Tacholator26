@@ -12,6 +12,8 @@ export default function Canvas({
   onObjectSelect,
   onObjectChange,
   onHistoryChange,
+  historyIndex,
+  history,
   readOnly = false 
 }) {
   const canvasRef = useRef(null);
@@ -22,6 +24,16 @@ export default function Canvas({
   const [lastPoint, setLastPoint] = useState(null);
   const [isAddingText, setIsAddingText] = useState(false);
   const [selectedObject, setSelectedObject] = useState(null);
+
+  // Update canvas when history changes (undo/redo)
+  useEffect(() => {
+    if (historyIndex >= 0 && history && history[historyIndex]) {
+      const state = history[historyIndex];
+      setObjects(state.objects || []);
+      setStrokes(state.strokes || []);
+      redrawCanvas(state.objects || [], state.strokes || []);
+    }
+  }, [historyIndex]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
