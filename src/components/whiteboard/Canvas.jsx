@@ -268,6 +268,118 @@ export default function Canvas({
     onStrokeEnd?.();
   };
 
+  const handleTouchStart = (e) => {
+    e.preventDefault();
+    if (readOnly) return;
+    const touch = e.touches[0];
+    const pos = getTouchPos(touch);
+    if (!pos) return;
+
+    if (activeTool === 'select') {
+      const clickedStroke = strokes.find(s => isPointNearStroke(pos, s));
+      if (clickedStroke) {
+        setSelectedObject(clickedStroke.id);
+      } else {
+        setSelectedObject(null);
+      }
+      return;
+    }
+
+    if (activeTool === 'text') {
+      setIsAddingText(true);
+      const textBox = {
+        id: Date.now(),
+        type: 'text',
+        x: pos.x,
+        y: pos.y,
+        text: '',
+        fontSize: 16,
+        color: strokeColor
+      };
+      setObjects(prev => [...prev, textBox]);
+      setSelectedObject(textBox.id);
+      onHistoryChange?.([...objects, textBox], strokes);
+      return;
+    }
+
+    setIsDrawing(true);
+    setLastPoint(pos);
+    onStrokeStart?.();
+
+    if (activeTool === 'pen' || activeTool === 'highlighter') {
+      const newStroke = {
+        id: Date.now(),
+        tool: activeTool,
+        color: strokeColor,
+        width: strokeWidth,
+        opacity: strokeOpacity,
+        points: [pos]
+      };
+      setStrokes(prev => [...prev, newStroke]);
+    } else if (activeTool === 'eraser') {
+      const toRemove = strokes.filter(s => isPointNearStroke(pos, s));
+      const remaining = strokes.filter(s => !toRemove.includes(s));
+      setStrokes(remaining);
+      redrawCanvas(objects, remaining);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    if (!context || !isDrawing) return;
+
+    const touch = e.touches[0];
+    const pos = getTouchPos(touch);
+    if (!pos || !lastPoint) return;
+
+    if (activeTool === 'pen' || activeTool === 'highlighter') {
+      context.strokeStyle = strokeColor;
+      context.globalAlpha = strokeOpacity;
+      context.lineWidth = strokeWidth;
+      context.lineCap = 'round';
+      context.lineJoin = 'round';
+      
+      context.beginPath();
+      context.moveTo(lastPoint.x, lastPoint.y);
+      context.lineTo(pos.x, pos.y);
+      context.stroke();
+
+      setLastPoint(pos);
+      
+      setStrokes(prev => {
+        const updated = [...prev];
+        if (updated.length > 0) {
+          updated[updated.length - 1].points.push(pos);
+        }
+        return updated;
+      });
+    } else if (activeTool === 'eraser') {
+      const toRemove = strokes.filter(s => isPointNearStroke(pos, s));
+      const remaining = strokes.filter(s => !toRemove.includes(s));
+      setStrokes(remaining);
+      redrawCanvas(objects, remaining);
+      setLastPoint(pos);
+    }
+
+    onObjectChange?.();
+  };
+
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
+    if (isDrawing) {
+      setStrokes(prevStrokes => {
+        setTimeout(() => {
+          onHistoryChange?.(objects, prevStrokes);
+        }, 0);
+        return prevStrokes;
+      });
+    }
+    setIsDrawing(false);
+    setLastPoint(null);
+    setIsDraggingObject(false);
+    onStrokeEnd?.();
+  };
+
   const handleDeleteSelected = () => {
     if (!selectedObject) return;
 
