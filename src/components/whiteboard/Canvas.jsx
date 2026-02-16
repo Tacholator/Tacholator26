@@ -457,8 +457,9 @@ export default function Canvas({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`w-full h-full ${activeTool === 'select' ? 'cursor-pointer' : 'cursor-crosshair'}`}
+        className={`w-full h-full transition-colors ${activeTool === 'select' ? 'cursor-pointer' : 'cursor-crosshair'}`}
         style={{ touchAction: 'none' }}
       />
       {/* Text Boxes Layer */}
