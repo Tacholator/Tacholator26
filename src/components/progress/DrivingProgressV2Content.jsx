@@ -222,9 +222,11 @@ export default function DrivingProgressV2Content({ pupilId }) {
                     </Badge>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-bold text-slate-900 mb-2">
-                      {hoursSpent}h covered
-                    </p>
+                    {skill.status !== 'completed' && (
+                      <p className="text-sm font-bold text-slate-900 mb-2">
+                        {hoursSpent}h covered
+                      </p>
+                    )}
                     <p className="text-sm font-medium text-slate-700 mb-3">
                       {skill.subsectionsCompleted} / {skill.subsectionsTotal} sections
                     </p>

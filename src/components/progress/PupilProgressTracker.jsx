@@ -414,11 +414,13 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                   {statusConfig[sectionProgress.status].label}
                 </Badge>
 
-                <div className="mb-2">
-                  <p className="text-base font-bold text-white">
-                    {hoursSpent}h covered
-                  </p>
-                </div>
+                {sectionProgress.status !== 'completed' && (
+                  <div className="mb-2">
+                    <p className="text-base font-bold text-white">
+                      {hoursSpent}h covered
+                    </p>
+                  </div>
+                )}
 
                 <div className="mt-auto">
                   <div className="flex items-center justify-between mb-2">
