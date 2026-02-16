@@ -160,6 +160,8 @@ export default function InstructorWhiteboardEditor() {
             onObjectSelect={() => {}}
             onObjectChange={() => {}}
             onHistoryChange={handleHistoryChange}
+            historyIndex={historyIndex}
+            history={history}
           />
         </div>
 
