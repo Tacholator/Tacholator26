@@ -39,6 +39,14 @@ export default function Canvas({
     }
   }, [historyIndex]);
 
+  // Redraw when context updates (after canvas resize)
+  useEffect(() => {
+    if (context && historyIndex >= 0 && history && history[historyIndex]) {
+      const state = history[historyIndex];
+      redrawCanvas(state.objects || [], state.strokes || []);
+    }
+  }, [context]);
+
   useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
