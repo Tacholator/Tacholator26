@@ -83,6 +83,26 @@ export default function InstructorWhiteboardEditor() {
     saveMutation.mutate();
   };
 
+  const handleHistoryChange = (objects, strokes) => {
+    const newState = { objects, strokes, timestamp: Date.now() };
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(newState);
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  };
+
+  const handleUndo = () => {
+    if (historyIndex > 0) {
+      setHistoryIndex(historyIndex - 1);
+    }
+  };
+
+  const handleRedo = () => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(historyIndex + 1);
+    }
+  };
+
   if (isLoading) return <div className="p-8">Loading...</div>;
 
   return (
