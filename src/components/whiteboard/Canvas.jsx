@@ -131,7 +131,6 @@ export default function Canvas({
 
       setLastPoint(pos);
       
-      // Update last stroke with new point
       setStrokes(prev => {
         const updated = [...prev];
         if (updated.length > 0) {
@@ -139,6 +138,9 @@ export default function Canvas({
         }
         return updated;
       });
+    } else if (activeTool === 'eraser') {
+      context.clearRect(pos.x - strokeWidth / 2, pos.y - strokeWidth / 2, strokeWidth, strokeWidth);
+      setLastPoint(pos);
     }
 
     onObjectChange?.();
