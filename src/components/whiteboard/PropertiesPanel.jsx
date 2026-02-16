@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function PropertiesPanel({
   activeTool,
@@ -19,7 +20,8 @@ export default function PropertiesPanel({
   onShowGridChange,
   onResetView
 }) {
-  const showStrokeProps = activeTool === 'pen' || activeTool === 'highlighter';
+  const [quickExpanded, setQuickExpanded] = useState(true);
+  const showStrokeProps = activeTool === 'pen' || activeTool === 'highlighter' || activeTool === 'eraser';
 
   return (
     <div className="w-80 bg-white border-l border-gray-200 p-4 space-y-6 overflow-y-auto">
