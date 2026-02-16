@@ -188,11 +188,16 @@ export default function Canvas({
   };
 
   const handleMouseUp = () => {
+    if (isDrawing) {
+      setStrokes(prevStrokes => {
+        setTimeout(() => {
+          onHistoryChange?.(objects, prevStrokes);
+        }, 0);
+        return prevStrokes;
+      });
+    }
     setIsDrawing(false);
     setLastPoint(null);
-    if (!isAddingText) {
-      onHistoryChange?.(objects, strokes);
-    }
     onStrokeEnd?.();
   };
 
