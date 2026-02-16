@@ -58,6 +58,12 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     enabled: !!pupilId
   });
 
+  const { data: topicHours = [] } = useQuery({
+    queryKey: ['topicHoursLog', pupilId],
+    queryFn: () => base44.entities.TopicHoursLog.filter({ pupilId }),
+    enabled: !!pupilId
+  });
+
   const updateProgressMutation = useMutation({
     mutationFn: async ({ skillId, progressState }) => {
       const existing = progressData.find(p => p.skillId === skillId);
@@ -372,6 +378,8 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
           ];
           const gradient = gradients[index];
           const sectionProgress = getSectionProgress(section);
+          const topicLog = topicHours.find(log => log.topicId === section.id);
+          const hoursSpent = topicLog?.totalHours || 0;
 
           const statusConfig = {
             not_started: { label: 'Not Started', color: 'bg-slate-100 text-slate-600' },
@@ -405,6 +413,12 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                 <Badge className="bg-white/20 text-white backdrop-blur-sm mb-3 w-fit text-xs border-white/30">
                   {statusConfig[sectionProgress.status].label}
                 </Badge>
+
+                <div className="mb-2">
+                  <p className="text-base font-bold text-white">
+                    {hoursSpent}h covered
+                  </p>
+                </div>
 
                 <div className="mt-auto">
                   <div className="flex items-center justify-between mb-2">
