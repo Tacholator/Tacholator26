@@ -52,6 +52,9 @@ export default function PupilList() {
   const [statusFilter, setStatusFilter] = useState('Active');
   const [showPupilModal, setShowPupilModal] = useState(false);
   const [editingPupil, setEditingPupil] = useState(null);
+  const [pastTestPupils, setPastTestPupils] = useState([]);
+  const [currentTestPupilIndex, setCurrentTestPupilIndex] = useState(0);
+  const [showTestDialog, setShowTestDialog] = useState(false);
 
   const queryClient = useQueryClient();
 
