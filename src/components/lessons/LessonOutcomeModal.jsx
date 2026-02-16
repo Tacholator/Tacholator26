@@ -334,16 +334,16 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
               <p className="font-medium text-slate-800">
                 {pupil?.firstName} {pupil?.lastName}
               </p>
-              {booking?.pickupLocation && (
+              {(booking?.pickupLocation || lesson?.location) && (
                 <div className="pt-2 border-t border-slate-200">
                   <p className="text-xs text-slate-500 mb-1">Pickup Location:</p>
-                  <p className="text-slate-700">{booking.pickupLocation}</p>
+                  <p className="text-slate-700">{booking?.pickupLocation || lesson?.location || 'Not specified'}</p>
                 </div>
               )}
               {booking?.notesFromPupil && (
                 <div className="pt-2 border-t border-slate-200">
                   <p className="text-xs text-slate-500 mb-1">Notes from Pupil:</p>
-                  <p className="text-slate-700">{booking.notesFromPupil}</p>
+                  <p className="text-slate-700 whitespace-pre-wrap">{booking.notesFromPupil}</p>
                 </div>
               )}
             </div>
