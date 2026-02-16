@@ -80,18 +80,12 @@ export default function InstructorDashboard() {
   });
 
   const { data: bookings = [] } = useQuery({
-    queryKey: ['bookings', instructor?.id, user?.id],
+    queryKey: ['bookings', user?.id],
     queryFn: async () => {
-      if (!instructor?.id && !user?.id) return [];
+      if (!user?.id) return [];
       
-      // Fetch bookings by instructor ID
-      let allBookings = [];
-      if (instructor?.id) {
-        allBookings = await base44.entities.LessonBooking.filter({ instructorId: instructor.id }, '-startAtUtc');
-      } else if (user?.id) {
-        // Fallback: try user ID as instructor ID
-        allBookings = await base44.entities.LessonBooking.filter({ instructorId: user.id }, '-startAtUtc');
-      }
+      // Fetch bookings by user ID (instructorId in bookings is the user ID)
+      const allBookings = await base44.entities.LessonBooking.filter({ instructorId: user.id }, '-startAtUtc');
       
       // Filter out deleted bookings and deduplicate
       const activeBookings = allBookings.filter(b => !b.isDeleted);
@@ -108,22 +102,18 @@ export default function InstructorDashboard() {
       
       return uniqueBookings;
     },
-    enabled: !!instructor?.id || !!user?.id
+    enabled: !!user?.id
   });
 
   const { data: lessons = [] } = useQuery({
-    queryKey: ['lessons', instructor?.id, user?.id],
+    queryKey: ['lessons', user?.id],
     queryFn: async () => {
-      if (!instructor?.id && !user?.id) return [];
+      if (!user?.id) return [];
       
-      // Fetch lessons by instructor ID
-      if (instructor?.id) {
-        return await base44.entities.Lesson.filter({ instructorId: instructor.id }, '-date');
-      }
-      
-      return [];
+      // Fetch lessons by user ID (instructorId in lessons is the user ID)
+      return await base44.entities.Lesson.filter({ instructorId: user.id }, '-date');
     },
-    enabled: !!instructor?.id || !!user?.id
+    enabled: !!user?.id
   });
 
   const { data: dailyQuiz } = useQuery({
