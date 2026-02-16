@@ -21,6 +21,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 import moment from 'moment';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId }) {
   const { toast } = useToast();
@@ -29,6 +30,7 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
     completionOutcome: 'completed',
     chargesApplied: true,
     chargesDecisionReason: '',
+    mainTopic: '',
     completionNote: ''
   });
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -63,6 +65,7 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         completionOutcome: 'completed',
         chargesApplied: true,
         chargesDecisionReason: '',
+        mainTopic: '',
         completionNote: ''
       });
     }
@@ -85,6 +88,7 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
           completionOutcome: data.completionOutcome,
           chargesApplied: data.chargesApplied,
           chargesDecisionReason: data.chargesDecisionReason || null,
+          mainTopic: data.mainTopic || null,
           completionNote: data.completionNote || null,
           completedAt: new Date().toISOString()
         });
@@ -94,6 +98,7 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
           completionOutcome: data.completionOutcome,
           chargesApplied: data.chargesApplied,
           chargesDecisionReason: data.chargesDecisionReason || null,
+          mainTopic: data.mainTopic || null,
           completionNote: data.completionNote || null,
           completedAt: new Date().toISOString()
         });
@@ -223,6 +228,11 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
   const handleSubmit = () => {
     if (!formData.completionOutcome) {
       toast({ title: 'Please select an outcome', variant: 'destructive' });
+      return;
+    }
+
+    if (formData.completionOutcome === 'completed' && !formData.mainTopic) {
+      toast({ title: 'Please select a main topic for completed lessons', variant: 'destructive' });
       return;
     }
 
@@ -457,14 +467,14 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
               </div>
             )}
 
-            {/* Notes */}
+            {/* What Was Covered / Notes */}
             <div className="space-y-2">
-              <Label htmlFor="notes">Notes (optional)</Label>
+              <Label htmlFor="notes">What Was Covered (optional)</Label>
               <Textarea
                 id="notes"
                 value={formData.completionNote}
                 onChange={(e) => setFormData({ ...formData, completionNote: e.target.value })}
-                placeholder="Add any notes about the outcome..."
+                placeholder="Add any notes about what was covered in the lesson..."
                 rows={3}
                 maxLength={800}
               />
