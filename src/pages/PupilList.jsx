@@ -214,6 +214,18 @@ export default function PupilList() {
     return pupilLessons[0];
   };
 
+  useEffect(() => {
+    // Check for pupils with past test dates when component mounts or pupils change
+    const pupilsWithPastTests = pupils.filter(p => 
+      p.practicalTestDate && moment(p.practicalTestDate).isBefore(moment()) && p.status === 'Active'
+    );
+    if (pupilsWithPastTests.length > 0) {
+      setPastTestPupils(pupilsWithPastTests);
+      setCurrentTestPupilIndex(0);
+      setShowTestDialog(true);
+    }
+  }, [pupils]);
+
   const filteredPupils = pupils.filter(pupil => {
     const matchesSearch = `${pupil.firstName} ${pupil.lastName}`.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = pupil.status === statusFilter;
