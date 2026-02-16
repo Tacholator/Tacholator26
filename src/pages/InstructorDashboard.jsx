@@ -80,16 +80,17 @@ export default function InstructorDashboard() {
   });
 
   const { data: bookings = [] } = useQuery({
-    queryKey: ['bookings', instructor?.id, user?.email],
+    queryKey: ['bookings', instructor?.id, user?.id],
     queryFn: async () => {
-      if (!user?.email) return [];
+      if (!instructor?.id && !user?.id) return [];
       
-      // Fetch bookings by instructor email (most reliable)
-      let allBookings = await base44.entities.LessonBooking.filter({ instructorEmail: user.email }, '-startAtUtc');
-      
-      // Fallback to instructor ID if no bookings found by email
-      if (allBookings.length === 0 && instructor?.id) {
+      // Fetch bookings by instructor ID
+      let allBookings = [];
+      if (instructor?.id) {
         allBookings = await base44.entities.LessonBooking.filter({ instructorId: instructor.id }, '-startAtUtc');
+      } else if (user?.id) {
+        // Fallback: try user ID as instructor ID
+        allBookings = await base44.entities.LessonBooking.filter({ instructorId: user.id }, '-startAtUtc');
       }
       
       // Filter out deleted bookings and deduplicate
@@ -107,7 +108,7 @@ export default function InstructorDashboard() {
       
       return uniqueBookings;
     },
-    enabled: !!user?.email
+    enabled: !!instructor?.id || !!user?.id
   });
 
   const { data: lessons = [] } = useQuery({
