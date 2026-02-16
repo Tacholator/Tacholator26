@@ -35,6 +35,7 @@ export default function InstructorWhiteboardEditor() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [libraryDrawerOpen, setLibraryDrawerOpen] = useState(false);
   const [draggedLibraryItem, setDraggedLibraryItem] = useState(null);
+  const [showClearDialog, setShowClearDialog] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
