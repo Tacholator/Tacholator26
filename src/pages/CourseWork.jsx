@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Lock, UserPlus } from 'lucide-react';
+import { FileText, Lock, UserPlus, ArrowLeft } from 'lucide-react';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 import CourseWorkAssignmentModal from '@/components/homework/CourseWorkAssignmentModal';
 import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
@@ -74,6 +74,10 @@ export default function CourseWork() {
   });
 
   const isInstructor = user?.role === 'admin';
+
+  const getBackPage = () => {
+    return isInstructor ? 'InstructorTeachingHub' : 'LearnerLearningHub';
+  };
 
   const assignHomeworkMutation = useMutation({
     mutationFn: async ({ pupilIds, topicId, includeStudyMaterial, includePracticeQuestions, dueDate, instructions }) => {
@@ -180,6 +184,14 @@ export default function CourseWork() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(createPageUrl(getBackPage()))}
+            className="lg:hidden"
+          >
+            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          </Button>
           <FileText className="w-8 h-8 text-[#071739]" />
           <h1 className="text-3xl font-bold text-[#071739]">Course Work</h1>
         </div>
