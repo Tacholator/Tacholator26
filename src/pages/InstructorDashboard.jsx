@@ -33,10 +33,19 @@ export default function InstructorDashboard() {
     queryKey: ['instructor', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      const instructors = await base44.entities.Instructor.filter({ created_by: user.email });
+      // Try to find by user ID first (most reliable)
+      let instructors = await base44.entities.Instructor.filter({ created_by: user.email });
+      
+      // If not found by email, try to find any instructor created by this user
+      if (instructors.length === 0) {
+        const allInstructors = await base44.entities.Instructor.list();
+        instructors = allInstructors.filter(i => i.created_by === user.email);
+      }
+      
       if (instructors.length > 0) {
         return instructors[0];
       }
+      
       // Auto-create instructor profile for admin users
       if (user.role === 'admin') {
         const newInstructor = await base44.entities.Instructor.create({
@@ -54,20 +63,36 @@ export default function InstructorDashboard() {
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['pupils', instructor?.id],
+    queryKey: ['pupils', instructor?.id, user?.id],
     queryFn: async () => {
-      if (!instructor?.id) return [];
-      return await base44.entities.Pupil.filter({ instructorId: instructor.id });
+      if (!user?.id) return [];
+      // Fetch pupils by user ID directly (more reliable)
+      const allPupils = await base44.entities.Pupil.filter({ instructorEmail: user.email });
+      if (allPupils.length > 0) return allPupils;
+      
+      // Fallback to instructor ID if available
+      if (instructor?.id) {
+        return await base44.entities.Pupil.filter({ instructorId: instructor.id });
+      }
+      return [];
     },
-    enabled: !!instructor?.id
+    enabled: !!user?.id
   });
 
   const { data: bookings = [] } = useQuery({
-    queryKey: ['bookings', instructor?.id],
+    queryKey: ['bookings', instructor?.id, user?.email],
     queryFn: async () => {
-      if (!instructor?.id) return [];
-      const allBookings = await base44.entities.LessonBooking.filter({ instructorId: instructor.id }, '-startAtUtc');
-      // Filter out deleted bookings and deduplicate by checking for same pupil + time
+      if (!user?.email) return [];
+      
+      // Fetch bookings by instructor email (most reliable)
+      let allBookings = await base44.entities.LessonBooking.filter({ instructorEmail: user.email }, '-startAtUtc');
+      
+      // Fallback to instructor ID if no bookings found by email
+      if (allBookings.length === 0 && instructor?.id) {
+        allBookings = await base44.entities.LessonBooking.filter({ instructorId: instructor.id }, '-startAtUtc');
+      }
+      
+      // Filter out deleted bookings and deduplicate
       const activeBookings = allBookings.filter(b => !b.isDeleted);
       const uniqueBookings = [];
       const seen = new Set();
@@ -82,7 +107,7 @@ export default function InstructorDashboard() {
       
       return uniqueBookings;
     },
-    enabled: !!instructor?.id
+    enabled: !!user?.email
   });
 
   const { data: dailyQuiz } = useQuery({
