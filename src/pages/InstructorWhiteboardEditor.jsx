@@ -30,6 +30,8 @@ export default function InstructorWhiteboardEditor() {
   const [strokeOpacity, setStrokeOpacity] = useState(1);
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [showGrid, setShowGrid] = useState(true);
+  const [history, setHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
