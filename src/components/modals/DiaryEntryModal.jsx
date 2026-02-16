@@ -8,11 +8,14 @@ import { Sparkles, Loader2, Save, CheckCircle, Clock, User } from 'lucide-react'
 import { base44 } from '@/api/base44Client';
 import moment from 'moment';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, existingEntry, onSave, lesson, pupil }) {
   const [formData, setFormData] = useState(existingEntry || {
     date: lesson?.date || moment().format('YYYY-MM-DD'),
     objective: '',
+    mainTopic: '',
     whatWentWell: '',
     areasToImprove: '',
     instructorComments: '',
@@ -69,6 +72,9 @@ Write a warm, supportive summary that highlights progress and next steps.`;
   };
 
   const handleSubmit = async () => {
+    if (!formData.mainTopic) {
+      return;
+    }
     setIsSaving(true);
     try {
       await onSave({
@@ -135,6 +141,25 @@ Write a warm, supportive summary that highlights progress and next steps.`;
                 placeholder="e.g., Roundabouts practice"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="mainTopic">Main Topic *</Label>
+            <Select 
+              value={formData.mainTopic} 
+              onValueChange={(value) => handleChange('mainTopic', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select main topic covered..." />
+              </SelectTrigger>
+              <SelectContent>
+                {courseWorkTopics.map((topic) => (
+                  <SelectItem key={topic.topicId} value={topic.topicId}>
+                    {topic.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
