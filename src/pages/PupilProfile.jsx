@@ -700,13 +700,15 @@ export default function PupilProfile() {
                       
                       return (
                         <TableRow 
-                          key={booking.id}
-                          className="cursor-pointer hover:bg-slate-50"
-                          onClick={() => {
-                            setSelectedBooking(booking);
-                            setShowBookingSummaryModal(true);
-                          }}
-                        >
+                           key={booking.id}
+                           className="cursor-pointer hover:bg-slate-50"
+                           onClick={async () => {
+                             // Fetch the diary entry for this booking to determine if we should open in read-only mode
+                             const diaryEntries = await base44.entities.DiaryEntry.filter({ lessonId: booking.id });
+                             setSelectedBooking({ ...booking, hasDiaryEntry: diaryEntries.length > 0 });
+                             setShowBookingSummaryModal(true);
+                           }}
+                         >
                           <TableCell className="font-medium">
                             {startMoment.format('ddd, D MMM YYYY')}
                           </TableCell>
@@ -792,6 +794,7 @@ export default function PupilProfile() {
         onOpenChange={setShowBookingSummaryModal}
         booking={selectedBooking}
         pupil={pupil}
+        readOnly={selectedBooking?.hasDiaryEntry}
       />
     </div>
   );

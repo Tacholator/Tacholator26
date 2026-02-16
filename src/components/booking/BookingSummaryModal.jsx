@@ -16,7 +16,8 @@ export default function BookingSummaryModal({
   open, 
   onOpenChange, 
   booking,
-  pupil
+  pupil,
+  readOnly = false
 }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -215,7 +216,7 @@ Requirements:
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Lesson Summary</DialogTitle>
+          <DialogTitle>{readOnly ? 'Lesson Summary - View Only' : 'Lesson Summary'}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -271,21 +272,27 @@ Requirements:
           <div className="space-y-4">
             <div>
               <Label htmlFor="mainTopic">Main Topic *</Label>
-              <Select 
-                value={summaryData.mainTopic} 
-                onValueChange={(value) => setSummaryData({ ...summaryData, mainTopic: value })}
-              >
-                <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Select main topic covered..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {courseWorkTopics.map((topic) => (
-                    <SelectItem key={topic.topicId} value={topic.topicId}>
-                      {topic.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {readOnly ? (
+                <div className="mt-2 p-3 bg-slate-50 border rounded-md text-slate-700">
+                  {courseWorkTopics.find(t => t.topicId === summaryData.mainTopic)?.title || summaryData.mainTopic || 'Not specified'}
+                </div>
+              ) : (
+                <Select 
+                  value={summaryData.mainTopic} 
+                  onValueChange={(value) => setSummaryData({ ...summaryData, mainTopic: value })}
+                >
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Select main topic covered..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {courseWorkTopics.map((topic) => (
+                      <SelectItem key={topic.topicId} value={topic.topicId}>
+                        {topic.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div>
@@ -297,6 +304,7 @@ Requirements:
                 placeholder="Topics, maneuvers, or skills practiced during the lesson..."
                 rows={3}
                 className="mt-2"
+                disabled={readOnly}
               />
             </div>
 
@@ -309,6 +317,7 @@ Requirements:
                 placeholder="Strengths demonstrated, improvements made..."
                 rows={3}
                 className="mt-2"
+                disabled={readOnly}
               />
             </div>
 
@@ -321,6 +330,7 @@ Requirements:
                 placeholder="Skills to work on, areas that need more practice..."
                 rows={3}
                 className="mt-2"
+                disabled={readOnly}
               />
             </div>
 
@@ -333,6 +343,7 @@ Requirements:
                 placeholder="Additional notes or observations..."
                 rows={2}
                 className="mt-2"
+                disabled={readOnly}
               />
             </div>
           </div>
@@ -345,24 +356,26 @@ Requirements:
                   <Sparkles className="w-4 h-4 text-purple-600" />
                   AI-Generated Summary
                 </CardTitle>
-                <Button
-                  onClick={handleGenerateAISummary}
-                  disabled={isGeneratingSummary}
-                  size="sm"
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  {isGeneratingSummary ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Generate Summary
-                    </>
-                  )}
-                </Button>
+                {!readOnly && (
+                  <Button
+                    onClick={handleGenerateAISummary}
+                    disabled={isGeneratingSummary}
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    {isGeneratingSummary ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Generate Summary
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             </CardHeader>
             {summaryData.aiSummary && (
@@ -374,6 +387,7 @@ Requirements:
                   placeholder="Click 'Generate Summary' to create an AI-powered lesson summary based on your notes..."
                   rows={4}
                   className="bg-white"
+                  disabled={readOnly}
                 />
               </CardContent>
             )}
@@ -381,26 +395,34 @@ Requirements:
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSave}
-            disabled={isSaving}
-            className="bg-teal-600 hover:bg-teal-700"
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Save Summary
-              </>
-            )}
-          </Button>
+          {readOnly ? (
+            <Button onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSave}
+                disabled={isSaving}
+                className="bg-teal-600 hover:bg-teal-700"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Summary
+                  </>
+                )}
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
