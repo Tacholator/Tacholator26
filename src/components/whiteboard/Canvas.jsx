@@ -384,15 +384,30 @@ export default function Canvas({
   const handleDragOver = (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+    if (canvasRef.current) {
+      canvasRef.current.style.backgroundColor = '#f0f9ff';
+    }
+  };
+
+  const handleDragLeave = (e) => {
+    if (e.target === canvasRef.current) {
+      if (canvasRef.current) {
+        canvasRef.current.style.backgroundColor = 'white';
+      }
+    }
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
+    if (canvasRef.current) {
+      canvasRef.current.style.backgroundColor = 'white';
+    }
+
     if (!draggedLibraryItem || !canvasRef.current) return;
 
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - (draggedLibraryItem.defaultSize.w / 2);
-    const y = e.clientY - rect.top - (draggedLibraryItem.defaultSize.h / 2);
+    const x = Math.max(0, e.clientX - rect.left - (draggedLibraryItem.defaultSize.w / 2));
+    const y = Math.max(0, e.clientY - rect.top - (draggedLibraryItem.defaultSize.h / 2));
 
     const newObject = {
       id: Date.now(),
@@ -405,8 +420,9 @@ export default function Canvas({
       libraryItem: draggedLibraryItem
     };
 
-    setObjects(prev => [...prev, newObject]);
-    onHistoryChange?.([...objects, newObject], strokes);
+    const updatedObjects = [...objects, newObject];
+    setObjects(updatedObjects);
+    onHistoryChange?.(updatedObjects, strokes);
   };
 
   const handleDeleteSelected = () => {
