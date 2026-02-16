@@ -149,6 +149,9 @@ export default function Canvas({
   const handleMouseUp = () => {
     setIsDrawing(false);
     setLastPoint(null);
+    if (!isAddingText) {
+      onHistoryChange?.(objects, strokes);
+    }
     onStrokeEnd?.();
   };
 
