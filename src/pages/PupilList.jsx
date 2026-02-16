@@ -55,6 +55,8 @@ export default function PupilList() {
   const [pastTestPupils, setPastTestPupils] = useState([]);
   const [currentTestPupilIndex, setCurrentTestPupilIndex] = useState(0);
   const [showTestDialog, setShowTestDialog] = useState(false);
+  const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
+  const [rescheduleDate, setRescheduleDate] = useState(null);
 
   const queryClient = useQueryClient();
 
