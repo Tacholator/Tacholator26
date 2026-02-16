@@ -381,6 +381,34 @@ export default function Canvas({
     onStrokeEnd?.();
   };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (!draggedLibraryItem || !canvasRef.current) return;
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left - (draggedLibraryItem.defaultSize.w / 2);
+    const y = e.clientY - rect.top - (draggedLibraryItem.defaultSize.h / 2);
+
+    const newObject = {
+      id: Date.now(),
+      type: 'shape',
+      x,
+      y,
+      width: draggedLibraryItem.defaultSize.w,
+      height: draggedLibraryItem.defaultSize.h,
+      libraryItemId: draggedLibraryItem.id,
+      libraryItem: draggedLibraryItem
+    };
+
+    setObjects(prev => [...prev, newObject]);
+    onHistoryChange?.([...objects, newObject], strokes);
+  };
+
   const handleDeleteSelected = () => {
     if (!selectedObject) return;
 
