@@ -72,9 +72,11 @@ export default function Canvas({
     return () => resizeObserver.disconnect();
   }, [showGrid]);
 
-  const redrawCanvas = (canvasObjects, canvasStrokes) => {
-    if (!context || !canvasRef.current) return;
+  const redrawCanvas = React.useCallback((canvasObjects, canvasStrokes) => {
+    if (!canvasRef.current) return;
     const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
     // Ensure canvas is properly sized
     if (canvas.width === 0 || canvas.height === 0) {
@@ -82,30 +84,30 @@ export default function Canvas({
       canvas.height = canvas.offsetHeight;
     }
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (showGrid) {
-      drawGrid(context, canvas);
+      drawGrid(ctx, canvas);
     }
 
     canvasStrokes.forEach(stroke => {
       if (stroke.points.length < 2) return;
-      context.strokeStyle = stroke.color;
-      context.globalAlpha = stroke.opacity || 1;
-      context.lineWidth = stroke.width;
-      context.lineCap = 'round';
-      context.lineJoin = 'round';
+      ctx.strokeStyle = stroke.color;
+      ctx.globalAlpha = stroke.opacity || 1;
+      ctx.lineWidth = stroke.width;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
 
-      context.beginPath();
-      context.moveTo(stroke.points[0].x, stroke.points[0].y);
+      ctx.beginPath();
+      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
       for (let i = 1; i < stroke.points.length; i++) {
-        context.lineTo(stroke.points[i].x, stroke.points[i].y);
+        ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
       }
-      context.stroke();
+      ctx.stroke();
     });
 
-    context.globalAlpha = 1;
-  };
+    ctx.globalAlpha = 1;
+  }, [showGrid]);
 
   const drawGrid = (ctx, canvas) => {
     const gridSize = 20;
