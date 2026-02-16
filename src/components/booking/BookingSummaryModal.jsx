@@ -143,6 +143,26 @@ Requirements:
         hoursCompleted: updatedHours
       });
 
+      // Update topic hours log
+      const existingTopicLog = await base44.entities.TopicHoursLog.filter({
+        pupilId: booking.pupilId,
+        topicId: summaryData.mainTopic
+      });
+
+      if (existingTopicLog.length > 0) {
+        const log = existingTopicLog[0];
+        await base44.entities.TopicHoursLog.update(log.id, {
+          totalHours: (log.totalHours || 0) + (booking.durationHours || 0)
+        });
+      } else {
+        await base44.entities.TopicHoursLog.create({
+          pupilId: booking.pupilId,
+          instructorId: booking.instructorId,
+          topicId: summaryData.mainTopic,
+          totalHours: booking.durationHours || 0
+        });
+      }
+
       // Mark booking as completed
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'completed'

@@ -59,6 +59,12 @@ export default function DrivingProgressV2Content({ pupilId }) {
     enabled: !!pupilId
   });
 
+  const { data: topicHours = [] } = useQuery({
+    queryKey: ['topicHoursLog', pupilId],
+    queryFn: () => base44.entities.TopicHoursLog.filter({ pupilId }),
+    enabled: !!pupilId
+  });
+
   // Auto-initialize skills if not present and migrate existing
   React.useEffect(() => {
     const initializeIfNeeded = async () => {
@@ -181,6 +187,9 @@ export default function DrivingProgressV2Content({ pupilId }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {skills.map((skill, index) => {
             const theme = SKILL_COLORS[index % SKILL_COLORS.length];
+            const topicLog = topicHours.find(log => log.topicId === skill.skillId);
+            const hoursSpent = topicLog?.totalHours || 0;
+            
             return (
               <Card
                 key={skill.id}
@@ -213,6 +222,11 @@ export default function DrivingProgressV2Content({ pupilId }) {
                     </Badge>
                   </div>
                   <div className="flex-1">
+                    {hoursSpent > 0 && (
+                      <p className="text-sm font-bold text-slate-900 mb-2">
+                        {hoursSpent}h covered
+                      </p>
+                    )}
                     <p className="text-sm font-medium text-slate-700 mb-3">
                       {skill.subsectionsCompleted} / {skill.subsectionsTotal} sections
                     </p>
