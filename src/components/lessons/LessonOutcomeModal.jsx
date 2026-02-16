@@ -322,18 +322,30 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
 
           <div className="py-4 space-y-4">
             {/* Lesson Info */}
-            <div className="bg-slate-50 rounded-lg p-3 text-sm">
-              <div className="flex items-center gap-2 text-slate-600 mb-1">
+            <div className="bg-slate-50 rounded-lg p-3 text-sm space-y-2">
+              <div className="flex items-center gap-2 text-slate-600">
                 <Calendar className="w-4 h-4" />
                 {lesson ? moment(lesson.date).format('DD MMM YYYY') : moment(booking.startAtUtc).local().format('DD MMM YYYY')}
               </div>
-              <div className="flex items-center gap-2 text-slate-600 mb-1">
+              <div className="flex items-center gap-2 text-slate-600">
                 <Clock className="w-4 h-4" />
                 {lesson ? `${lesson.startTime} – ${lesson.endTime}` : `${moment(booking.startAtUtc).local().format('HH:mm')} – ${moment(booking.endAtUtc).local().format('HH:mm')}`}
               </div>
               <p className="font-medium text-slate-800">
                 {pupil?.firstName} {pupil?.lastName}
               </p>
+              {booking?.pickupLocation && (
+                <div className="pt-2 border-t border-slate-200">
+                  <p className="text-xs text-slate-500 mb-1">Pickup Location:</p>
+                  <p className="text-slate-700">{booking.pickupLocation}</p>
+                </div>
+              )}
+              {booking?.notesFromPupil && (
+                <div className="pt-2 border-t border-slate-200">
+                  <p className="text-xs text-slate-500 mb-1">Notes from Pupil:</p>
+                  <p className="text-slate-700">{booking.notesFromPupil}</p>
+                </div>
+              )}
             </div>
 
             {/* Outcome Selection */}
