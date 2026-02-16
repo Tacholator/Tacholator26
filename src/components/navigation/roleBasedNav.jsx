@@ -15,7 +15,8 @@ import {
   CreditCard,
   Wallet,
   MapPin,
-  UserCircle
+  UserCircle,
+  Pen
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
