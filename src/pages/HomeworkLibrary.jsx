@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Search, Trash2, Edit, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, Loader2, Library, Copy, ClipboardList } from 'lucide-react';
+import { Plus, Search, Trash2, Edit, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, Loader2, Library, Copy, ClipboardList, ArrowLeft } from 'lucide-react';
 import moment from 'moment';
 import HomeworkFormatForm from '@/components/homework/HomeworkFormatForm';
 
@@ -48,6 +48,7 @@ const FORMAT_OPTIONS = [
 ];
 
 export default function HomeworkLibrary() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [filterFormat, setFilterFormat] = useState('all');
   const [showModal, setShowModal] = useState(false);
@@ -181,6 +182,14 @@ export default function HomeworkLibrary() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => navigate(createPageUrl('InstructorTeachingHub'))}
+          className="lg:hidden mb-4"
+        >
+          <ArrowLeft className="w-5 h-5 text-slate-600" />
+        </Button>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
 
 export default function LearnerProgress() {
+  const navigate = useNavigate();
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
@@ -66,12 +67,14 @@ export default function LearnerProgress() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50/30 p-6 lg:p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <Link to={createPageUrl('LearnerDashboard')}>
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate(createPageUrl('LearnerLearningHub'))}
+            className="gap-2 lg:hidden"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
           <h1 className="text-3xl font-bold text-[#071739]">Driving Progress</h1>
           <div className="w-32"></div>
         </div>

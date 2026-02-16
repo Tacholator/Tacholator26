@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,7 +36,8 @@ import {
   Loader2,
   Upload,
   ExternalLink,
-  Users
+  Users,
+  ArrowLeft
 } from 'lucide-react';
 
 const typeConfig = {
@@ -129,6 +132,14 @@ export default function InstructorResources() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => navigate(createPageUrl('InstructorTeachingHub'))}
+          className="lg:hidden mb-4"
+        >
+          <ArrowLeft className="w-5 h-5 text-slate-600" />
+        </Button>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-800">Resources</h1>

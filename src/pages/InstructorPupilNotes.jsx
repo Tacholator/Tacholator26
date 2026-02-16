@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Notebook, Search, ChevronRight, Loader2, StickyNote } from 'lucide-react';
+import { Notebook, Search, ChevronRight, Loader2, StickyNote, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function InstructorPupilNotes() {
   const navigate = useNavigate();
@@ -55,6 +56,14 @@ export default function InstructorPupilNotes() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(createPageUrl('InstructorTeachingHub'))}
+            className="lg:hidden mb-4"
+          >
+            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          </Button>
           <h1 className="text-3xl font-bold text-[#071739] flex items-center gap-3">
             <Notebook className="w-8 h-8 text-[#F7B602]" />
             Pupil Notes

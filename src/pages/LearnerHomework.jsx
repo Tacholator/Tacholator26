@@ -33,6 +33,7 @@ export default function LearnerHomework() {
   const [selectedHomework, setSelectedHomework] = useState(null);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const isLargeScreen = typeof window !== 'undefined' && window.innerWidth >= 1024;
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -231,12 +232,14 @@ export default function LearnerHomework() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        <Link to={createPageUrl('LearnerDashboard')}>
-          <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </Button>
-        </Link>
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate(createPageUrl('LearnerLearningHub'))}
+          className="mb-6 gap-2 text-slate-600 hover:text-slate-800 lg:hidden"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </Button>
 
         <motion.div
           initial={{ opacity: 0, y: -20 }}

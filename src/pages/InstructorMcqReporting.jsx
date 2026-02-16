@@ -139,7 +139,7 @@ export default function InstructorMcqReporting() {
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"
-            onClick={() => navigate(createPageUrl('PupilList'))}
+            onClick={() => navigate(createPageUrl('InstructorTeachingHub'))}
             className="gap-2"
           >
             <ChevronLeft className="w-4 h-4" />

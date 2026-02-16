@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,7 @@ const typeConfig = {
 };
 
 export default function LearnerResources() {
+  const navigate = useNavigate();
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
@@ -89,12 +90,14 @@ export default function LearnerResources() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        <Link to={createPageUrl('LearnerDashboard')}>
-          <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </Button>
-        </Link>
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate(createPageUrl('LearnerLearningHub'))}
+          className="mb-6 gap-2 text-slate-600 hover:text-slate-800 lg:hidden"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </Button>
 
         <motion.div
           initial={{ opacity: 0, y: -20 }}

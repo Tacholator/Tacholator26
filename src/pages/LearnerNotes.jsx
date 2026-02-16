@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { StickyNote, Plus, Search, Lock, Unlock, Edit, Trash2, Loader2 } from 'lucide-react';
+import { StickyNote, Plus, Search, Lock, Unlock, Edit, Trash2, Loader2, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import NoteEditorModal from '@/components/notes/NoteEditorModal';
 import NoteDetailModal from '@/components/notes/NoteDetailModal';
 import { useToast } from '@/components/ui/use-toast';
@@ -24,6 +27,7 @@ const colorClasses = {
 };
 
 export default function LearnerNotes() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
@@ -133,6 +137,14 @@ export default function LearnerNotes() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => navigate(createPageUrl('LearnerLearningHub'))}
+          className="lg:hidden mb-4"
+        >
+          <ArrowLeft className="w-5 h-5 text-slate-600" />
+        </Button>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
