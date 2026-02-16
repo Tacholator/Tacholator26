@@ -111,6 +111,15 @@ export default function Canvas({
     };
   };
 
+  const getTouchPos = (touch) => {
+    if (!canvasRef.current) return null;
+    const rect = canvasRef.current.getBoundingClientRect();
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+  };
+
   const isPointNearStroke = (point, stroke, threshold = 10) => {
     for (let i = 0; i < stroke.points.length - 1; i++) {
       const p1 = stroke.points[i];
