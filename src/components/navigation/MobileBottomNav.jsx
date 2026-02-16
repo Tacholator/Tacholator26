@@ -10,7 +10,8 @@ import {
   Users,
   CalendarPlus,
   FileText,
-  MessageCircle
+  MessageCircle,
+  BookOpen
 } from 'lucide-react';
 
 const instructorNavItems = [
@@ -31,6 +32,12 @@ const instructorNavItems = [
     label: 'Pupils',
     icon: Users,
     page: 'PupilList'
+  },
+  {
+    id: 'teaching',
+    label: 'My Teaching',
+    icon: BookOpen,
+    page: 'InstructorMyTeaching'
   },
   {
     id: 'chats',
@@ -54,10 +61,10 @@ const pupilNavItems = [
     page: 'LearnerBookingCalendar'
   },
   {
-    id: 'coursework',
-    label: 'Course Work',
-    icon: FileText,
-    page: 'CourseWork'
+    id: 'learning',
+    label: 'My Learning',
+    icon: BookOpen,
+    page: 'LearnerMyLearning'
   },
   {
     id: 'chats',
