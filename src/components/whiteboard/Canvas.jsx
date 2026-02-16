@@ -67,13 +67,19 @@ export default function Canvas({
   const redrawCanvas = (canvasObjects, canvasStrokes) => {
     if (!context || !canvasRef.current) return;
     const canvas = canvasRef.current;
-    
+
+    // Ensure canvas is properly sized
+    if (canvas.width === 0 || canvas.height === 0) {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+
     context.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     if (showGrid) {
       drawGrid(context, canvas);
     }
-    
+
     canvasStrokes.forEach(stroke => {
       if (stroke.points.length < 2) return;
       context.strokeStyle = stroke.color;
@@ -81,7 +87,7 @@ export default function Canvas({
       context.lineWidth = stroke.width;
       context.lineCap = 'round';
       context.lineJoin = 'round';
-      
+
       context.beginPath();
       context.moveTo(stroke.points[0].x, stroke.points[0].y);
       for (let i = 1; i < stroke.points.length; i++) {
@@ -89,7 +95,7 @@ export default function Canvas({
       }
       context.stroke();
     });
-    
+
     context.globalAlpha = 1;
   };
 
