@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { FileText, Notebook, Lock, ClipboardList, BookOpen } from 'lucide-react';
+import { FileText, Notebook, Lock, ClipboardList, BookOpen, Pen } from 'lucide-react';
 
 const teachingCards = [
+  { name: 'Whiteboards', icon: Pen, page: 'InstructorWhiteboardLibrary', color: 'from-cyan-500 to-cyan-600' },
   { name: 'Course Work', icon: FileText, page: 'CourseWork', color: 'from-blue-500 to-blue-600' },
   { name: 'Pupil Notes', icon: Notebook, page: 'InstructorPupilNotes', color: 'from-purple-500 to-purple-600' },
   { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment', color: 'from-amber-500 to-amber-600' },
