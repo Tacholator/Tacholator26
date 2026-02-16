@@ -117,9 +117,7 @@ export default function InstructorWhiteboardEditor() {
     onSuccess: (newBoardId) => {
       queryClient.invalidateQueries({ queryKey: ['whiteboard'] });
       queryClient.invalidateQueries({ queryKey: ['whiteboardLayer'] });
-      if (!boardId && newBoardId) {
-        navigate(`/InstructorWhiteboardEditor?boardId=${newBoardId}`);
-      }
+      navigate('/InstructorWhiteboardLibrary');
     }
   });
 
