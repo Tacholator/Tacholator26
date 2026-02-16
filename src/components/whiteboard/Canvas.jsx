@@ -39,13 +39,19 @@ export default function Canvas({
     }
   }, [historyIndex]);
 
-  // Redraw when context updates (after canvas resize)
+  // Redraw whenever objects or strokes change to preserve on re-renders
   useEffect(() => {
-    if (context && historyIndex >= 0 && history && history[historyIndex]) {
+    if (historyIndex >= 0 && history && history[historyIndex]) {
       const state = history[historyIndex];
-      redrawCanvas(state.objects || [], state.strokes || []);
+      setObjects(state.objects || []);
+      setStrokes(state.strokes || []);
     }
-  }, [context]);
+  }, [historyIndex, history]);
+
+  // Redraw canvas whenever objects/strokes change
+  useEffect(() => {
+    redrawCanvas(objects, strokes);
+  }, [objects, strokes, redrawCanvas]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
