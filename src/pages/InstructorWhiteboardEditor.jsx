@@ -32,7 +32,6 @@ export default function InstructorWhiteboardEditor() {
   const [showGrid, setShowGrid] = useState(true);
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [propertiesPanelOpen, setPropertiesPanelOpen] = useState(true);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -160,28 +159,23 @@ export default function InstructorWhiteboardEditor() {
             onObjectSelect={() => {}}
             onObjectChange={() => {}}
             onHistoryChange={handleHistoryChange}
-            historyIndex={historyIndex}
-            history={history}
           />
         </div>
 
-        {propertiesPanelOpen && (
-          <PropertiesPanel
-            activeTool={activeTool}
-            strokeWidth={strokeWidth}
-            strokeColor={strokeColor}
-            strokeOpacity={strokeOpacity}
-            snapToGrid={snapToGrid}
-            showGrid={showGrid}
-            onStrokeWidthChange={setStrokeWidth}
-            onStrokeColorChange={setStrokeColor}
-            onStrokeOpacityChange={setStrokeOpacity}
-            onSnapToGridChange={setSnapToGrid}
-            onShowGridChange={setShowGrid}
-            onResetView={() => {}}
-            onClose={() => setPropertiesPanelOpen(false)}
-          />
-        )}
+        <PropertiesPanel
+          activeTool={activeTool}
+          strokeWidth={strokeWidth}
+          strokeColor={strokeColor}
+          strokeOpacity={strokeOpacity}
+          snapToGrid={snapToGrid}
+          showGrid={showGrid}
+          onStrokeWidthChange={setStrokeWidth}
+          onStrokeColorChange={setStrokeColor}
+          onStrokeOpacityChange={setStrokeOpacity}
+          onSnapToGridChange={setSnapToGrid}
+          onShowGridChange={setShowGrid}
+          onResetView={() => {}}
+        />
       </div>
     </div>
   );

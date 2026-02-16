@@ -12,8 +12,6 @@ export default function Canvas({
   onObjectSelect,
   onObjectChange,
   onHistoryChange,
-  historyIndex,
-  history,
   readOnly = false 
 }) {
   const canvasRef = useRef(null);
@@ -24,41 +22,6 @@ export default function Canvas({
   const [lastPoint, setLastPoint] = useState(null);
   const [isAddingText, setIsAddingText] = useState(false);
   const [selectedObject, setSelectedObject] = useState(null);
-
-  useEffect(() => {
-    if (!canvasRef.current || !context) return;
-    
-    const canvas = canvasRef.current;
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw grid if enabled
-    if (showGrid) {
-      drawGrid(context, canvas);
-    }
-    
-    // Redraw from history
-    if (history.length > 0 && historyIndex >= 0 && historyIndex < history.length) {
-      const state = history[historyIndex];
-      if (state.strokes) {
-        state.strokes.forEach(stroke => {
-          context.strokeStyle = stroke.color;
-          context.globalAlpha = stroke.opacity;
-          context.lineWidth = stroke.width;
-          context.lineCap = 'round';
-          context.lineJoin = 'round';
-          
-          if (stroke.points.length > 0) {
-            context.beginPath();
-            context.moveTo(stroke.points[0].x, stroke.points[0].y);
-            stroke.points.forEach(point => {
-              context.lineTo(point.x, point.y);
-            });
-            context.stroke();
-          }
-        });
-      }
-    }
-  }, [historyIndex, history, showGrid, context]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -144,7 +107,7 @@ export default function Canvas({
       };
       setStrokes(prev => [...prev, newStroke]);
     } else if (activeTool === 'eraser') {
-      context.clearRect(pos.x - 8, pos.y - 8, 16, 16);
+      context.clearRect(pos.x - strokeWidth / 2, pos.y - strokeWidth / 2, strokeWidth, strokeWidth);
     }
   };
 
@@ -176,7 +139,7 @@ export default function Canvas({
         return updated;
       });
     } else if (activeTool === 'eraser') {
-      context.clearRect(pos.x - 8, pos.y - 8, 16, 16);
+      context.clearRect(pos.x - strokeWidth / 2, pos.y - strokeWidth / 2, strokeWidth, strokeWidth);
       setLastPoint(pos);
     }
 
