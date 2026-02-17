@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
+import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, Search, UserX, Trash2, RefreshCw } from 'lucide-react';
+import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, Search, UserX, Trash2, RefreshCw, ClipboardList } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -42,6 +43,7 @@ export default function BookingDetailsModal({
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showOutcomeModal, setShowOutcomeModal] = useState(false);
+  const [showDiaryModal, setShowDiaryModal] = useState(false);
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -594,6 +596,14 @@ export default function BookingDetailsModal({
             <>
               <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
               <Button 
+                variant="outline"
+                onClick={() => setShowDiaryModal(true)}
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                <ClipboardList className="w-4 h-4 mr-2" />
+                Lesson Summary
+              </Button>
+              <Button 
                 onClick={() => setShowOutcomeModal(true)}
                 className="bg-emerald-600 hover:bg-emerald-700"
               >
@@ -772,6 +782,28 @@ export default function BookingDetailsModal({
         onOpenChange(false);
       }}
       bookingId={booking.id}
+      />
+
+      {/* Diary Entry Modal */}
+      <DiaryEntryModal
+        open={showDiaryModal}
+        onClose={() => {
+          setShowDiaryModal(false);
+        }}
+        pupilId={booking.pupilId}
+        bookingId={booking.id}
+        pupil={pupil}
+        onSave={async (diaryData) => {
+          await base44.entities.DiaryEntry.create({
+            ...diaryData,
+            pupilId: booking.pupilId,
+            instructorId: booking.instructorId,
+            date: startMoment.format('YYYY-MM-DD')
+          });
+          queryClient.invalidateQueries(['diaryEntries']);
+          toast({ title: 'Lesson summary saved successfully' });
+          setShowDiaryModal(false);
+        }}
       />
       </>
       );
