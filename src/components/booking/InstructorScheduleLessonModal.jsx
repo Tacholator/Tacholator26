@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -21,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { Calendar, Clock, Loader2, Search } from 'lucide-react';
+import { Calendar, Clock, Loader2, Search, GraduationCap } from 'lucide-react';
 import moment from 'moment';
 
 export default function InstructorScheduleLessonModal({ 
@@ -38,6 +39,7 @@ export default function InstructorScheduleLessonModal({
   const [dropoffLocation, setDropoffLocation] = useState('');
   const [notes, setNotes] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isPracticalTest, setIsPracticalTest] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -101,7 +103,8 @@ export default function InstructorScheduleLessonModal({
         confirmedAt: new Date().toISOString(),
         durationHours,
         hourlyRateAtBookingGbp: hourlyRate,
-        totalPriceGbp
+        totalPriceGbp,
+        isPracticalTest
       });
 
       // Update slot instance
@@ -157,6 +160,7 @@ export default function InstructorScheduleLessonModal({
     setDropoffLocation('');
     setNotes('');
     setSearchQuery('');
+    setIsPracticalTest(false);
     onOpenChange(false);
   };
 
@@ -304,6 +308,28 @@ export default function InstructorScheduleLessonModal({
               placeholder="Any additional notes for this lesson..."
               rows={3}
             />
+          </div>
+
+          {/* Practical Test Toggle */}
+          <div className={`rounded-lg border p-4 transition-colors ${isPracticalTest ? 'border-red-300 bg-red-50' : 'bg-slate-50'}`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 flex-1">
+                <GraduationCap className={`w-5 h-5 ${isPracticalTest ? 'text-red-600' : 'text-slate-500'}`} />
+                <div>
+                  <Label htmlFor="practical-test" className="text-sm font-medium cursor-pointer">
+                    This is a practical driving test
+                  </Label>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {isPracticalTest ? 'Will be highlighted in red on the calendar' : 'Enable to mark as test day'}
+                  </p>
+                </div>
+              </div>
+              <Switch
+                id="practical-test"
+                checked={isPracticalTest}
+                onCheckedChange={setIsPracticalTest}
+              />
+            </div>
           </div>
         </div>
 
