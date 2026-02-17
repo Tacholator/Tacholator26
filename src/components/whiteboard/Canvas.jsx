@@ -64,9 +64,8 @@ export default function Canvas({
       const ctx = canvas.getContext('2d');
       setContext(ctx);
 
-      if (showGrid) {
-        drawGrid(ctx, canvas);
-      }
+      // Redraw existing content after resize
+      redrawCanvas(objects, strokes);
     };
 
     resizeCanvas();
@@ -76,7 +75,7 @@ export default function Canvas({
     resizeObserver.observe(canvas.parentElement);
 
     return () => resizeObserver.disconnect();
-  }, [showGrid]);
+  }, [showGrid, objects, strokes, redrawCanvas]);
 
   const redrawCanvas = React.useCallback((canvasObjects, canvasStrokes) => {
     if (!canvasRef.current) return;
