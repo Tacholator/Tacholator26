@@ -40,6 +40,7 @@ export default function InstructorScheduleLessonModal({
   const [notes, setNotes] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isPracticalTest, setIsPracticalTest] = useState(false);
+  const [practicalTestTime, setPracticalTestTime] = useState('');
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -104,7 +105,8 @@ export default function InstructorScheduleLessonModal({
         durationHours,
         hourlyRateAtBookingGbp: hourlyRate,
         totalPriceGbp,
-        isPracticalTest
+        isPracticalTest,
+        practicalTestTime: isPracticalTest ? practicalTestTime : undefined
       });
 
       // Update slot instance
@@ -161,6 +163,7 @@ export default function InstructorScheduleLessonModal({
     setNotes('');
     setSearchQuery('');
     setIsPracticalTest(false);
+    setPracticalTestTime('');
     onOpenChange(false);
   };
 
@@ -178,6 +181,15 @@ export default function InstructorScheduleLessonModal({
       toast({ 
         title: 'Missing information', 
         description: 'Please enter a drop-off location',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (isPracticalTest && !practicalTestTime) {
+      toast({ 
+        title: 'Missing information', 
+        description: 'Please enter the practical test time',
         variant: 'destructive'
       });
       return;
@@ -311,25 +323,41 @@ export default function InstructorScheduleLessonModal({
           </div>
 
           {/* Practical Test Toggle */}
-          <div className={`rounded-lg border p-4 transition-colors ${isPracticalTest ? 'border-red-300 bg-red-50' : 'bg-slate-50'}`}>
-            <div className="flex items-center justify-between">
+          <div className={`rounded-lg border p-4 transition-colors ${isPracticalTest ? 'border-amber-700 bg-amber-50' : 'bg-slate-50'}`}>
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3 flex-1">
-                <GraduationCap className={`w-5 h-5 ${isPracticalTest ? 'text-red-600' : 'text-slate-500'}`} />
+                <GraduationCap className={`w-5 h-5 ${isPracticalTest ? 'text-amber-700' : 'text-slate-500'}`} />
                 <div>
                   <Label htmlFor="practical-test" className="text-sm font-medium cursor-pointer">
                     This is a practical driving test
                   </Label>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {isPracticalTest ? 'Will be highlighted in red on the calendar' : 'Enable to mark as test day'}
+                    {isPracticalTest ? 'Will be highlighted in brown on the calendar' : 'Enable to mark as test day'}
                   </p>
                 </div>
               </div>
               <Switch
                 id="practical-test"
                 checked={isPracticalTest}
-                onCheckedChange={setIsPracticalTest}
+                onCheckedChange={(checked) => {
+                  setIsPracticalTest(checked);
+                  if (!checked) setPracticalTestTime('');
+                }}
               />
             </div>
+            
+            {isPracticalTest && (
+              <div className="space-y-2 mt-3 pt-3 border-t border-amber-200">
+                <Label htmlFor="test-time">Test Time *</Label>
+                <Input
+                  id="test-time"
+                  type="time"
+                  value={practicalTestTime}
+                  onChange={(e) => setPracticalTestTime(e.target.value)}
+                  className="bg-white"
+                />
+              </div>
+            )}
           </div>
         </div>
 

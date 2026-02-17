@@ -47,6 +47,7 @@ export default function BookingDetailsModal({
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showRemovePupilDialog, setShowRemovePupilDialog] = useState(false);
 
   const { data: pupil } = useQuery({
     queryKey: ['pupil', booking?.pupilId],
