@@ -124,26 +124,6 @@ export default function Canvas({
     return () => resizeObserver.disconnect();
   }, [showGrid, objects, strokes, redrawCanvas]);
 
-  const drawGrid = (ctx, canvas) => {
-    const gridSize = 20;
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineWidth = 0.5;
-
-    for (let i = 0; i < canvas.width; i += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(i, 0);
-      ctx.lineTo(i, canvas.height);
-      ctx.stroke();
-    }
-
-    for (let i = 0; i < canvas.height; i += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, i);
-      ctx.lineTo(canvas.width, i);
-      ctx.stroke();
-    }
-  };
-
   const getMousePos = (e) => {
     if (!canvasRef.current) return null;
     const rect = canvasRef.current.getBoundingClientRect();
