@@ -8,6 +8,7 @@ import moment from 'moment';
 const SLOT_COLORS = {
   available: '#B7F7C9',
   confirmed: '#87CEFA',
+  confirmed_test: '#FF6347',
   completed: '#CFCFCF',
   cancelled: '#FFCC80',
   no_show: '#FF8A80',
@@ -105,6 +106,10 @@ export default function Calendar24Hour({
         return { state: 'no_show', booking: overlappingBooking, blockType: 'booking' };
       }
       if (overlappingBooking.status === 'confirmed') {
+        // Check if it's a practical test
+        if (overlappingBooking.isPracticalTest === true) {
+          return { state: 'confirmed_test', booking: overlappingBooking, blockType: 'booking' };
+        }
         return { state: 'confirmed', booking: overlappingBooking, blockType: 'booking' };
       }
       if (overlappingBooking.status === 'reserved_pending_instructor') {
@@ -266,6 +271,10 @@ export default function Calendar24Hour({
             <span>Confirmed</span>
           </div>
           <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.confirmed_test }} />
+            <span>Practical Test</span>
+          </div>
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.completed }} />
             <span>Completed</span>
           </div>
@@ -339,6 +348,7 @@ export default function Calendar24Hour({
                   available: 'Available',
                   reserved_pending: 'Pending',
                   confirmed: 'Confirmed',
+                  confirmed_test: 'Test Day',
                   completed: 'Completed',
                   cancelled: 'Cancelled',
                   no_show: 'No Show',
@@ -409,6 +419,7 @@ export default function Calendar24Hour({
                   available: '#2E7D32',
                   reserved_pending: '#5E35B1',
                   confirmed: '#1565C0',
+                  confirmed_test: '#C62828',
                   completed: '#757575',
                   cancelled: '#F57C00',
                   no_show: '#D32F2F',
@@ -420,6 +431,7 @@ export default function Calendar24Hour({
                   available: '#1B5E20',
                   reserved_pending: '#4527A0',
                   confirmed: '#0D47A1',
+                  confirmed_test: '#8B0000',
                   completed: '#616161',
                   cancelled: '#E65100',
                   no_show: '#C62828',
