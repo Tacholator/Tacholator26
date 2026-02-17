@@ -771,7 +771,37 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-4">
-            {expandedSection?.topics.map(topic => renderTopic(topic, 0))}
+            {expandedSection && (() => {
+              // Check if section has multiple direct skills (not in groups)
+              const directSkillsInSection = expandedSection.topics.filter(t => t.type === 'skill');
+              const hasMultipleDirectSkills = directSkillsInSection.length > 1;
+              const allSectionSkillsIndependent = directSkillsInSection.length > 0 && directSkillsInSection.every(skill => {
+                const progress = getProgressForSkill(skill.id);
+                return progress?.progressState === 'independent';
+              });
+
+              return (
+                <>
+                  {isInstructor && hasMultipleDirectSkills && (
+                    <div className="flex justify-end mb-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectAll(directSkillsInSection, allSectionSkillsIndependent);
+                        }}
+                        disabled={updateProgressMutation.isPending}
+                        className="text-xs h-7 px-3"
+                      >
+                        {allSectionSkillsIndependent ? 'Unselect All' : 'Select All'}
+                      </Button>
+                    </div>
+                  )}
+                  {expandedSection.topics.map(topic => renderTopic(topic, 0))}
+                </>
+              );
+            })()}
           </div>
         </DialogContent>
       </Dialog>
