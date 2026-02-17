@@ -254,45 +254,47 @@ export default function Calendar24Hour({
         </h3>
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap gap-3 text-xs">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.available }} />
-          <span>Available</span>
+      {/* Legend - Only show for instructors */}
+      {isInstructor && (
+        <div className="flex flex-wrap gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.available }} />
+            <span>Available</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.confirmed }} />
+            <span>Confirmed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.completed }} />
+            <span>Completed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.cancelled }} />
+            <span>Cancelled</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.no_show }} />
+            <span>No Show</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.reserved_pending }} />
+            <span>Pending</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.lunch }} />
+            <span>Lunch</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.unavailable }} />
+            <span>Unavailable</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.outside_working_hours }} />
+            <span>Outside Hours</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.confirmed }} />
-          <span>Confirmed</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.completed }} />
-          <span>Completed</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.cancelled }} />
-          <span>Cancelled</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.no_show }} />
-          <span>No Show</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.reserved_pending }} />
-          <span>Pending</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.lunch }} />
-          <span>Lunch</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.unavailable }} />
-          <span>Unavailable</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.outside_working_hours }} />
-          <span>Outside Hours</span>
-        </div>
-      </div>
+      )}
 
       {/* Calendar Grid */}
       <div className="border rounded-lg bg-white overflow-x-auto">
