@@ -273,10 +273,12 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status
+      // Mark booking as deleted
       await base44.entities.LessonBooking.update(booking.id, {
-        status: 'cancelled_by_instructor',
-        cancelledAt: new Date().toISOString()
+        isDeleted: true,
+        deletedAt: new Date().toISOString(),
+        deletedByRole: 'instructor',
+        status: 'deleted'
       });
 
       // Release slot instance
@@ -322,10 +324,12 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
       
-      // Update booking status
+      // Mark booking as deleted
       await base44.entities.LessonBooking.update(booking.id, {
-        status: 'cancelled_by_instructor',
-        cancelledAt: new Date().toISOString()
+        isDeleted: true,
+        deletedAt: new Date().toISOString(),
+        deletedByRole: 'instructor',
+        status: 'deleted'
       });
 
       // Release slot instance
