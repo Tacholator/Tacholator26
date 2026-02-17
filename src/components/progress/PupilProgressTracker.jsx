@@ -182,18 +182,9 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     });
   };
 
-  const handleSelectAll = async (subtopics, shouldUnselect = false) => {
-    const skillIds = [];
-    const extractSkillIds = (items) => {
-      items.forEach(item => {
-        if (item.type === 'skill') {
-          skillIds.push(item.id);
-        } else if (item.subtopics) {
-          extractSkillIds(item.subtopics);
-        }
-      });
-    };
-    extractSkillIds(subtopics);
+  const handleSelectAll = async (directSkills, shouldUnselect = false) => {
+    // Only process direct skills passed in, no recursive extraction
+    const skillIds = directSkills.filter(item => item.type === 'skill').map(item => item.id);
 
     for (const skillId of skillIds) {
       const existing = progressData.find(p => p.skillId === skillId);
