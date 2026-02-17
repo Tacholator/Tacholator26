@@ -44,6 +44,7 @@ export default function BookingDetailsModal({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showOutcomeModal, setShowOutcomeModal] = useState(false);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -784,34 +785,12 @@ export default function BookingDetailsModal({
       bookingId={booking.id}
       />
 
-      {/* Diary Entry Modal */}
-      <DiaryEntryModal
-        open={showDiaryModal}
-        onClose={() => {
-          setShowDiaryModal(false);
-        }}
-        pupilId={booking.pupilId}
-        bookingId={booking.id}
+      {/* Lesson Summary Modal */}
+      <BookingSummaryModal
+        open={showSummaryModal}
+        onOpenChange={setShowSummaryModal}
+        booking={booking}
         pupil={pupil}
-        lesson={{
-          date: startMoment.format('YYYY-MM-DD'),
-          startTime: startMoment.format('HH:mm'),
-          endTime: endMoment.format('HH:mm'),
-          pupilId: booking.pupilId,
-          location: `Pickup: ${locations.pickup} | Drop-off: ${locations.dropoff}`,
-          status: booking.status
-        }}
-        onSave={async (diaryData) => {
-          await base44.entities.DiaryEntry.create({
-            ...diaryData,
-            pupilId: booking.pupilId,
-            instructorId: booking.instructorId,
-            date: startMoment.format('YYYY-MM-DD')
-          });
-          queryClient.invalidateQueries(['diaryEntries']);
-          toast({ title: 'Lesson summary saved successfully' });
-          setShowDiaryModal(false);
-        }}
       />
       </>
       );
