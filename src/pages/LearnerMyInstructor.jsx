@@ -97,9 +97,9 @@ export default function LearnerMyInstructor() {
             <div className="flex flex-col md:flex-row gap-6 items-start">
               {/* Profile Photo */}
               <Avatar className="w-32 h-32 border-4 border-[#F7B602]">
-                <AvatarImage src={instructor.profilePhotoUrl} alt={instructor.name} />
+                <AvatarImage src={instructor.profilePhotoUrl} alt={instructor.full_name} />
                 <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-3xl">
-                  {instructor.name?.[0]?.toUpperCase() || 'I'}
+                  {instructor.full_name?.[0]?.toUpperCase() || 'I'}
                 </AvatarFallback>
               </Avatar>
 
