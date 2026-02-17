@@ -20,7 +20,7 @@ export default function PropertiesPanel({
   onShowGridChange,
   onResetView
 }) {
-  const [quickExpanded, setQuickExpanded] = useState(true);
+  const [quickExpanded, setQuickExpanded] = useState(false);
   const showStrokeProps = activeTool === 'pen' || activeTool === 'highlighter' || activeTool === 'eraser';
 
   return (
