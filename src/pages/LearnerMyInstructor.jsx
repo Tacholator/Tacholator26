@@ -23,19 +23,16 @@ export default function LearnerMyInstructor() {
   });
 
   const { data: instructor, isLoading: instructorLoading } = useQuery({
-    queryKey: ['myInstructor', pupil?.instructorEmail],
+    queryKey: ['myInstructor', pupil?.instructorId],
     queryFn: async () => {
-      if (!pupil?.instructorEmail) return null;
-      // Fetch instructor User by email to get full_name
-      const users = await base44.entities.User.filter({ email: pupil.instructorEmail });
-      if (users.length > 0) {
-        const instructorUser = users[0];
+      if (!pupil?.instructorId) return null;
+      // Fetch instructor User by ID to get full_name
+      const users = await base44.entities.User.list();
+      const instructorUser = users.find(u => u.id === pupil.instructorId);
+      if (instructorUser) {
         // Also fetch Instructor entity for additional details
-        let instructorDetails = null;
-        if (pupil?.instructorId) {
-          const instructors = await base44.entities.Instructor.filter({ id: pupil.instructorId });
-          if (instructors.length > 0) instructorDetails = instructors[0];
-        }
+        const instructors = await base44.entities.Instructor.filter({ id: pupil.instructorId });
+        const instructorDetails = instructors.length > 0 ? instructors[0] : null;
         return {
           id: instructorUser.id,
           full_name: instructorUser.full_name,
@@ -46,7 +43,7 @@ export default function LearnerMyInstructor() {
       }
       return null;
     },
-    enabled: !!pupil?.instructorEmail
+    enabled: !!pupil?.instructorId
   });
 
   if (pupilLoading || instructorLoading) {
