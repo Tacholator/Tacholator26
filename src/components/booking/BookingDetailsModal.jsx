@@ -381,18 +381,23 @@ export default function BookingDetailsModal({
   const canManage = isPending || isConfirmed;
   const canChangeStatus = isConfirmed;
 
-  // Parse locations from notes
-  const parseLocations = () => {
+  // Parse locations and actual notes from notesFromPupil
+  const parseNotesData = () => {
     const notes = booking.notesFromPupil || '';
     const pickupMatch = notes.match(/Pickup:\s*([^|]+)/);
     const dropoffMatch = notes.match(/Dropoff:\s*([^|]+)/);
+    
+    // Extract actual notes by removing pickup/dropoff info
+    const actualNotes = notes.replace(/Pickup:.*?\|.*?Dropoff:.*?\|/g, '').trim();
+    
     return {
       pickup: pickupMatch ? pickupMatch[1].trim() : 'Not specified',
-      dropoff: dropoffMatch ? dropoffMatch[1].trim() : 'Not specified'
+      dropoff: dropoffMatch ? dropoffMatch[1].trim() : 'Not specified',
+      actualNotes: actualNotes
     };
   };
 
-  const locations = parseLocations();
+  const { pickup, dropoff, actualNotes } = parseNotesData();
 
   return (
     <>
@@ -474,17 +479,17 @@ export default function BookingDetailsModal({
             <CardContent className="space-y-2 text-sm">
               <div>
                 <span className="text-slate-500">Pickup:</span>
-                <p className="font-medium text-slate-700">{locations.pickup}</p>
+                <p className="font-medium text-slate-700">{pickup}</p>
               </div>
               <div>
                 <span className="text-slate-500">Drop-off:</span>
-                <p className="font-medium text-slate-700">{locations.dropoff}</p>
+                <p className="font-medium text-slate-700">{dropoff}</p>
               </div>
             </CardContent>
           </Card>
 
           {/* Pupil Notes */}
-          {booking.notesFromPupil && (
+          {actualNotes && (
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -494,7 +499,7 @@ export default function BookingDetailsModal({
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-700 whitespace-pre-wrap">
-                  {booking.notesFromPupil.replace(/Pickup:.*?\|.*?Dropoff:.*?\|/, '').trim() || 'No additional notes provided'}
+                  {actualNotes}
                 </p>
               </CardContent>
             </Card>
