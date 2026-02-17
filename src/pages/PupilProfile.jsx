@@ -170,6 +170,44 @@ export default function PupilProfile() {
       await updateDiaryMutation.mutateAsync({ id: selectedDiaryEntry.id, data });
     } else {
       await createDiaryMutation.mutateAsync(data);
+      
+      // Deduct balance when creating a new diary entry
+      if (data.lessonId) {
+        const relatedLesson = lessons.find(l => l.id === data.lessonId);
+        if (relatedLesson && relatedLesson.status !== 'Completed') {
+          const startMoment = moment(relatedLesson.startTime, 'HH:mm');
+          const endMoment = moment(relatedLesson.endTime, 'HH:mm');
+          const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
+          
+          const lessonCost = (pupil.hourlyRate || 0) * durationHours;
+          const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
+          const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
+          
+          await base44.entities.Pupil.update(pupil.id, { 
+            hoursCompleted: newHoursCompleted,
+            bulkPaymentBalance: newBalance
+          });
+          
+          await base44.entities.Lesson.update(relatedLesson.id, { status: 'Completed' });
+          
+          // Create payment ledger entry
+          if (lessonCost > 0) {
+            await base44.entities.PaymentLedger.create({
+              userId: pupil.linkedUserId || pupil.id,
+              bookingId: null,
+              type: 'charge',
+              reason: 'lesson_confirmed_charge',
+              amountGbp: lessonCost,
+              hours: durationHours,
+              createdByRole: 'instructor',
+              note: `Lesson completed: ${durationHours.toFixed(2)}h @ £${pupil.hourlyRate}/h`
+            });
+          }
+          
+          queryClient.invalidateQueries(['pupil', pupilId]);
+          queryClient.invalidateQueries(['lessons', pupilId]);
+        }
+      }
     }
   };
 
@@ -200,6 +238,20 @@ export default function PupilProfile() {
       hoursCompleted: newHoursCompleted,
       bulkPaymentBalance: newBalance
     });
+    
+    // Create payment ledger entry
+    if (lessonCost > 0) {
+      await base44.entities.PaymentLedger.create({
+        userId: pupil.linkedUserId || pupil.id,
+        bookingId: null,
+        type: 'charge',
+        reason: 'lesson_confirmed_charge',
+        amountGbp: lessonCost,
+        hours: durationHours,
+        createdByRole: 'instructor',
+        note: `Lesson completed: ${durationHours.toFixed(2)}h @ £${pupil.hourlyRate}/h`
+      });
+    }
     
     queryClient.invalidateQueries(['lessons', pupilId]);
     queryClient.invalidateQueries(['diaryEntries', pupilId]);
