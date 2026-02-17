@@ -214,8 +214,8 @@ export default function Calendar24Hour({
       if (booking) {
         return true;
       }
-      // Instructors can click pending/confirmed slots to view booking details
-      if ((state === 'reserved_pending' || state === 'confirmed') && booking) {
+      // Instructors can click pending/confirmed/test slots to view booking details
+      if ((state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test') && booking) {
         return true;
       }
       // In published slots mode, instructors can click available slots or anywhere to create new slots
@@ -230,7 +230,7 @@ export default function Calendar24Hour({
     }
     // Check if booking belongs to current pupil
     const isOwnBooking = booking && booking.pupilId === currentPupilId;
-    if ((state === 'reserved_pending' || state === 'confirmed') && isOwnBooking) {
+    if ((state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test') && isOwnBooking) {
       return true;
     }
     return false;
@@ -360,15 +360,15 @@ export default function Calendar24Hour({
                 // If it's their own confirmed booking, show as normal confirmed
                 // If it's someone else's, show as unavailable with grey hatch
                 const isOwnBooking = !isInstructor && booking && booking.pupilId === currentPupilId;
-                const isOthersReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed') && !isOwnBooking;
+                const isOthersReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test') && !isOwnBooking;
                 const displayColor = isOthersReserved ? SLOT_COLORS.reserved_confirmed_other : SLOT_COLORS[state];
 
                 // Override status label for others' confirmed slots
-                const displayStatusLabel = isOthersReserved && state === 'confirmed' ? 'Unavailable' : (statusLabels[state] || state);
+                const displayStatusLabel = isOthersReserved && (state === 'confirmed' || state === 'confirmed_test') ? 'Unavailable' : (statusLabels[state] || state);
 
                 // Get pupil name for instructor view
                 let pupilName = null;
-                if (isInstructor && booking && (state === 'reserved_pending' || state === 'confirmed' || state === 'completed' || state === 'cancelled' || state === 'no_show')) {
+                if (isInstructor && booking && (state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test' || state === 'completed' || state === 'cancelled' || state === 'no_show')) {
                   const pupil = pupils.find(p => p.id === booking.pupilId);
                   if (pupil) {
                     pupilName = `${pupil.firstName} ${pupil.lastName}`;
@@ -467,10 +467,11 @@ export default function Calendar24Hour({
                     }
                   };
 
-                  // Show delete icon for instructors on available, confirmed, and completed slots
+                  // Show delete icon for instructors on available, confirmed, confirmed_test, and completed slots
                   const showDeleteIcon = isInstructor && (
                     state === 'available' || 
                     state === 'confirmed' || 
+                    state === 'confirmed_test' ||
                     state === 'completed'
                   );
 
@@ -533,6 +534,11 @@ export default function Calendar24Hour({
                           <div className={`text-[10px] sm:text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
+                          {state === 'confirmed_test' && booking?.practicalTestTime && (
+                            <div className={`text-[9px] sm:text-[10px] font-medium ${isOthersReserved ? 'text-slate-400' : 'text-slate-600'} mt-0.5`}>
+                              Test: {booking.practicalTestTime}
+                            </div>
+                          )}
                           <div className="mt-0.5 sm:mt-1">
                             <span 
                               className="inline-block px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase rounded"
