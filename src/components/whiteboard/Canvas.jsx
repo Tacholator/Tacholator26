@@ -29,53 +29,25 @@ export default function Canvas({
   const [isDraggingObject, setIsDraggingObject] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
-  // Update canvas when history changes (undo/redo)
-  useEffect(() => {
-    if (historyIndex >= 0 && history && history[historyIndex]) {
-      const state = history[historyIndex];
-      setObjects(state.objects || []);
-      setStrokes(state.strokes || []);
-      redrawCanvas(state.objects || [], state.strokes || []);
+  const drawGrid = (ctx, canvas) => {
+    const gridSize = 20;
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 0.5;
+
+    for (let i = 0; i < canvas.width; i += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, canvas.height);
+      ctx.stroke();
     }
-  }, [historyIndex]);
 
-  // Redraw whenever objects or strokes change to preserve on re-renders
-  useEffect(() => {
-    if (historyIndex >= 0 && history && history[historyIndex]) {
-      const state = history[historyIndex];
-      setObjects(state.objects || []);
-      setStrokes(state.strokes || []);
+    for (let i = 0; i < canvas.height; i += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, i);
+      ctx.lineTo(canvas.width, i);
+      ctx.stroke();
     }
-  }, [historyIndex, history]);
-
-  // Redraw canvas whenever objects/strokes change
-  useEffect(() => {
-    redrawCanvas(objects, strokes);
-  }, [objects, strokes, redrawCanvas]);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const canvas = canvasRef.current;
-
-    // Set canvas size
-    const resizeCanvas = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      const ctx = canvas.getContext('2d');
-      setContext(ctx);
-
-      // Redraw existing content after resize
-      redrawCanvas(objects, strokes);
-    };
-
-    resizeCanvas();
-
-    // Watch for resize
-    const resizeObserver = new ResizeObserver(resizeCanvas);
-    resizeObserver.observe(canvas.parentElement);
-
-    return () => resizeObserver.disconnect();
-  }, [showGrid, objects, strokes, redrawCanvas]);
+  };
 
   const redrawCanvas = React.useCallback((canvasObjects, canvasStrokes) => {
     if (!canvasRef.current) return;
@@ -113,6 +85,44 @@ export default function Canvas({
 
     ctx.globalAlpha = 1;
   }, [showGrid]);
+
+  // Update canvas when history changes (undo/redo)
+  useEffect(() => {
+    if (historyIndex >= 0 && history && history[historyIndex]) {
+      const state = history[historyIndex];
+      setObjects(state.objects || []);
+      setStrokes(state.strokes || []);
+    }
+  }, [historyIndex, history]);
+
+  // Redraw canvas whenever objects/strokes change
+  useEffect(() => {
+    redrawCanvas(objects, strokes);
+  }, [objects, strokes, redrawCanvas]);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+
+    // Set canvas size
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      const ctx = canvas.getContext('2d');
+      setContext(ctx);
+
+      // Redraw existing content after resize
+      redrawCanvas(objects, strokes);
+    };
+
+    resizeCanvas();
+
+    // Watch for resize
+    const resizeObserver = new ResizeObserver(resizeCanvas);
+    resizeObserver.observe(canvas.parentElement);
+
+    return () => resizeObserver.disconnect();
+  }, [showGrid, objects, strokes, redrawCanvas]);
 
   const drawGrid = (ctx, canvas) => {
     const gridSize = 20;
