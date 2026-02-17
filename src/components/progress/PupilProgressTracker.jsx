@@ -262,10 +262,25 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     }
 
     if (topic.type === 'group' && topic.subtopics) {
+      const hasMultipleSkills = topic.subtopics.length > 1;
+      
       return (
         <div key={topic.id} className="mb-2">
-          <div className="font-medium text-slate-600 text-sm mb-2" style={{ marginLeft: `${level * 16}px` }}>
-            {topic.label}
+          <div className="flex items-center justify-between mb-2" style={{ marginLeft: `${level * 16}px` }}>
+            <div className="font-medium text-slate-600 text-sm">
+              {topic.label}
+            </div>
+            {isInstructor && hasMultipleSkills && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleSelectAll(topic.subtopics)}
+                disabled={updateProgressMutation.isPending}
+                className="text-xs h-7 px-2"
+              >
+                Select All
+              </Button>
+            )}
           </div>
           {topic.subtopics.map(subtopic => renderTopic(subtopic, level + 1))}
         </div>
