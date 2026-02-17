@@ -483,7 +483,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                   <div className="flex-1 flex items-center justify-center my-2">
                     <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border-2 border-white/40 flex flex-col items-center justify-center">
                       <span className="text-3xl font-bold text-white leading-none">{hoursSpent}</span>
-                      <span className="text-xs text-white/90 mt-1">{hoursSpent === 1 ? 'hour' : 'hours'}</span>
+                      <span className="text-xs text-white/90 mt-1">hours covered</span>
                     </div>
                   </div>
                 )}
