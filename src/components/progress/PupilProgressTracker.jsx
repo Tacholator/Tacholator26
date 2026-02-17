@@ -163,6 +163,42 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     });
   };
 
+  const handleSelectAll = async (subtopics) => {
+    const skillIds = [];
+    const extractSkillIds = (items) => {
+      items.forEach(item => {
+        if (item.type === 'skill') {
+          skillIds.push(item.id);
+        } else if (item.subtopics) {
+          extractSkillIds(item.subtopics);
+        }
+      });
+    };
+    extractSkillIds(subtopics);
+
+    for (const skillId of skillIds) {
+      const existing = progressData.find(p => p.skillId === skillId);
+      if (existing) {
+        await base44.entities.DrivingSkillProgress.update(existing.id, {
+          progressState: 'independent',
+          notes: notes || existing.notes,
+          lastUpdated: new Date().toISOString()
+        });
+      } else {
+        await base44.entities.DrivingSkillProgress.create({
+          pupilId,
+          instructorId,
+          skillId,
+          progressState: 'independent',
+          notes,
+          lastUpdated: new Date().toISOString()
+        });
+      }
+    }
+
+    queryClient.invalidateQueries(['drivingProgress']);
+  };
+
   const renderSkillItem = (skill, level = 0) => {
     const progress = getProgressForSkill(skill.id);
     const levels = ['full_talk_through', 'prompted', 'independent'];
