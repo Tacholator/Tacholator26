@@ -138,11 +138,29 @@ Requirements:
         await base44.entities.DiaryEntry.create(diaryData);
       }
 
-      // Update pupil hours
+      // Update pupil hours and deduct from bulk payment
       const updatedHours = (pupil.hoursCompleted || 0) + (booking.durationHours || 0);
+      const lessonCost = (pupil.hourlyRate || 0) * (booking.durationHours || 0);
+      const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
+      
       await base44.entities.Pupil.update(pupil.id, {
-        hoursCompleted: updatedHours
+        hoursCompleted: updatedHours,
+        bulkPaymentBalance: newBalance
       });
+      
+      // Create payment ledger entry
+      if (lessonCost > 0) {
+        await base44.entities.PaymentLedger.create({
+          userId: pupil.linkedUserId || pupil.id,
+          bookingId: booking.id,
+          type: 'charge',
+          reason: 'lesson_confirmed_charge',
+          amountGbp: lessonCost,
+          hours: booking.durationHours || 0,
+          createdByRole: 'instructor',
+          note: `Lesson completed: ${(booking.durationHours || 0).toFixed(2)}h @ £${pupil.hourlyRate}/h`
+        });
+      }
 
       // Update topic hours log
       const existingTopicLog = await base44.entities.TopicHoursLog.filter({
