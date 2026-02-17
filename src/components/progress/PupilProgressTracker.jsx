@@ -285,7 +285,10 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleSelectAll(directSkills, allDirectSkillsIndependent)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSelectAll(directSkills, allDirectSkillsIndependent);
+                }}
                 disabled={updateProgressMutation.isPending}
                 className="text-xs h-7 px-2"
               >
