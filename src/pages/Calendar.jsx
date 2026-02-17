@@ -545,8 +545,13 @@ export default function Calendar() {
       if (booking) {
         const pupil = pupils.find(p => p.id === booking.pupilId);
         
-        // Hard delete the booking
-        await base44.entities.LessonBooking.delete(booking.id);
+        // Mark booking as deleted
+        await base44.entities.LessonBooking.update(booking.id, {
+          isDeleted: true,
+          deletedAt: new Date().toISOString(),
+          deletedByRole: 'instructor',
+          status: 'deleted'
+        });
 
         // Notify pupil
         if (pupil?.linkedUserId) {

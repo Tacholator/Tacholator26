@@ -58,6 +58,7 @@ import CourseWorkDetail from './pages/CourseWorkDetail';
 import DVSASkillDetail from './pages/DVSASkillDetail';
 import DVSASkills from './pages/DVSASkills';
 import DrivingProgressV2 from './pages/DrivingProgressV2';
+import FutureUpdates from './pages/FutureUpdates';
 import Home from './pages/Home';
 import HomeworkLibrary from './pages/HomeworkLibrary';
 import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
@@ -111,7 +112,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import FutureUpdates from './pages/FutureUpdates';
 import __Layout from './Layout.jsx';
 
 
@@ -127,6 +127,7 @@ export const PAGES = {
     "DVSASkillDetail": DVSASkillDetail,
     "DVSASkills": DVSASkills,
     "DrivingProgressV2": DrivingProgressV2,
+    "FutureUpdates": FutureUpdates,
     "Home": Home,
     "HomeworkLibrary": HomeworkLibrary,
     "InstructorBookingCalendar": InstructorBookingCalendar,
@@ -180,7 +181,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "FutureUpdates": FutureUpdates,
 }
 
 export const pagesConfig = {
