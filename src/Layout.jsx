@@ -35,7 +35,8 @@ import {
   Receipt,
   Calendar as CalendarIcon,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Sparkles
 } from 'lucide-react';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
@@ -83,7 +84,8 @@ export default function Layout({ children, currentPageName }) {
         ...baseNavItems, 
         { name: 'Role Management', icon: Settings, page: 'AdminRoleManagement' },
         { name: 'Instructor Calendars', icon: CalendarIcon, page: 'AdminInstructorCalendars' },
-        { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' }
+        { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' },
+        { name: 'Future Updates', icon: Sparkles, page: 'FutureUpdates' }
       ]
     : baseNavItems;
 
