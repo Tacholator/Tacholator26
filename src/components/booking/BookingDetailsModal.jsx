@@ -464,6 +464,12 @@ export default function BookingDetailsModal({
                   <span className="text-slate-500">Duration:</span>
                   <p className="font-medium text-slate-700">{booking.durationHours} hour{booking.durationHours !== 1 ? 's' : ''}</p>
                 </div>
+                {booking.isPracticalTest && booking.practicalTestTime && (
+                  <div className="col-span-2">
+                    <span className="text-slate-500">Test Time:</span>
+                    <p className="font-medium text-amber-700">{booking.practicalTestTime}</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
