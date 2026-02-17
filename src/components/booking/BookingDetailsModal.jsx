@@ -349,12 +349,8 @@ export default function BookingDetailsModal({
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['instructorBookings'] });
-      queryClient.invalidateQueries({ queryKey: ['instructorSlotInstances'] });
-      queryClient.invalidateQueries({ queryKey: ['myBookings'] });
       queryClient.invalidateQueries({ queryKey: ['lessonBookings'] });
       queryClient.invalidateQueries({ queryKey: ['slotInstances'] });
-      queryClient.invalidateQueries({ queryKey: ['pupilConfirmedBookings'] });
       toast({ title: 'Booking deleted and slot restored to available' });
       setIsProcessing(false);
       setShowDeleteDialog(false);
