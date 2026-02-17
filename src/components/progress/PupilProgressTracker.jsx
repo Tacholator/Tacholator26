@@ -291,8 +291,15 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     }
 
     if (topic.type === 'group' && topic.subtopics) {
-      const hasMultipleSkills = topic.subtopics.length > 1;
-      const allIndependent = areAllSkillsIndependent(topic.subtopics);
+      // Only count direct skill children (not nested groups)
+      const directSkills = topic.subtopics.filter(st => st.type === 'skill');
+      const hasMultipleSkills = directSkills.length > 1;
+      
+      // Only check direct skills for "all independent" status
+      const allDirectSkillsIndependent = directSkills.length > 0 && directSkills.every(skill => {
+        const progress = getProgressForSkill(skill.id);
+        return progress?.progressState === 'independent';
+      });
       
       return (
         <div key={topic.id} className="mb-2">
@@ -304,11 +311,11 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleSelectAll(topic.subtopics, allIndependent)}
+                onClick={() => handleSelectAll(directSkills, allDirectSkillsIndependent)}
                 disabled={updateProgressMutation.isPending}
                 className="text-xs h-7 px-2"
               >
-                {allIndependent ? 'Unselect All' : 'Select All'}
+                {allDirectSkillsIndependent ? 'Unselect All' : 'Select All'}
               </Button>
             )}
           </div>
