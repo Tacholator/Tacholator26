@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
-import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
+import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -598,7 +598,7 @@ export default function BookingDetailsModal({
               <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
               <Button 
                 variant="outline"
-                onClick={() => setShowDiaryModal(true)}
+                onClick={() => setShowSummaryModal(true)}
                 className="border-blue-600 text-blue-600 hover:bg-blue-50"
               >
                 <ClipboardList className="w-4 h-4 mr-2" />
