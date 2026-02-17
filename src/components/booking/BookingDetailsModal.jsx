@@ -16,11 +16,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, Search, UserX, Trash2, RefreshCw, ClipboardList, GraduationCap } from 'lucide-react';
+import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, Search, UserX, Trash2, RefreshCw, ClipboardList } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -48,7 +47,6 @@ export default function BookingDetailsModal({
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [isPracticalTest, setIsPracticalTest] = useState(false);
 
   const { data: pupil } = useQuery({
     queryKey: ['pupil', booking?.pupilId],
@@ -85,13 +83,6 @@ export default function BookingDetailsModal({
       return fullName.includes(query) || email.includes(query) || phone.includes(query);
     });
   }, [allPupils, searchQuery]);
-
-  // Initialize practical test toggle from booking
-  React.useEffect(() => {
-    if (booking?.isPracticalTest !== undefined) {
-      setIsPracticalTest(booking.isPracticalTest);
-    }
-  }, [booking]);
 
   const confirmMutation = useMutation({
     mutationFn: async () => {
@@ -504,56 +495,6 @@ export default function BookingDetailsModal({
                 <p className="text-sm text-slate-700 whitespace-pre-wrap">
                   {booking.notesFromPupil.replace(/Pickup:.*?\|.*?Dropoff:.*?\|/, '').trim() || 'No additional notes provided'}
                 </p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Practical Test Toggle */}
-          {(canManage || isConfirmed) && (
-            <Card className={isPracticalTest ? 'border-red-300 bg-red-50' : ''}>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4" />
-                  Practical Test
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label htmlFor="practical-test" className="text-sm font-medium cursor-pointer">
-                      This is a practical driving test
-                    </Label>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {isPracticalTest ? 'This booking will be highlighted in red on the calendar' : 'Enable this to mark as a test day'}
-                    </p>
-                  </div>
-                  <Switch
-                    id="practical-test"
-                    checked={isPracticalTest}
-                    onCheckedChange={async (checked) => {
-                      setIsPracticalTest(checked);
-                      try {
-                        await base44.entities.LessonBooking.update(booking.id, {
-                          isPracticalTest: checked
-                        });
-                        queryClient.invalidateQueries(['instructorBookings']);
-                        queryClient.invalidateQueries(['myBookings']);
-                        queryClient.invalidateQueries(['lessonBookings']);
-                        toast({ 
-                          title: checked ? 'Marked as practical test' : 'Unmarked as practical test',
-                          description: 'The calendar will update to reflect this change'
-                        });
-                      } catch (error) {
-                        toast({ 
-                          title: 'Failed to update', 
-                          description: error.message, 
-                          variant: 'destructive' 
-                        });
-                        setIsPracticalTest(!checked);
-                      }
-                    }}
-                  />
-                </div>
               </CardContent>
             </Card>
           )}
