@@ -106,7 +106,7 @@ export default function LearnerMyInstructor() {
               {/* Instructor Details */}
               <div className="flex-1 space-y-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-[#071739]">{instructor.name}</h2>
+                  <h2 className="text-2xl font-bold text-[#071739]">{instructor.full_name}</h2>
                   <Badge className="mt-2 bg-[#F7B602] text-[#071739]">
                     Driving Instructor
                   </Badge>
