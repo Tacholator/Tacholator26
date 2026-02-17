@@ -27,7 +27,14 @@ export default function LearnerMyInstructor() {
     queryFn: async () => {
       if (!pupil?.instructorId) return null;
       const instructors = await base44.entities.Instructor.filter({ id: pupil.instructorId });
-      return instructors[0] || null;
+      if (instructors.length > 0) return instructors[0];
+      // Fallback: construct from pupil data if Instructor entity not found
+      return {
+        id: pupil.instructorId,
+        name: pupil.instructorName || 'Instructor',
+        phone: null,
+        profilePhotoUrl: null
+      };
     },
     enabled: !!pupil?.instructorId
   });
