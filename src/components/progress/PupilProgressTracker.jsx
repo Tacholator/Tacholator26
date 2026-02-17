@@ -292,6 +292,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
 
     if (topic.type === 'group' && topic.subtopics) {
       const hasMultipleSkills = topic.subtopics.length > 1;
+      const allIndependent = areAllSkillsIndependent(topic.subtopics);
       
       return (
         <div key={topic.id} className="mb-2">
@@ -303,11 +304,11 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleSelectAll(topic.subtopics)}
+                onClick={() => handleSelectAll(topic.subtopics, allIndependent)}
                 disabled={updateProgressMutation.isPending}
                 className="text-xs h-7 px-2"
               >
-                Select All
+                {allIndependent ? 'Unselect All' : 'Select All'}
               </Button>
             )}
           </div>
