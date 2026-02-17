@@ -163,7 +163,26 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     });
   };
 
-  const handleSelectAll = async (subtopics) => {
+  const areAllSkillsIndependent = (subtopics) => {
+    const skillIds = [];
+    const extractSkillIds = (items) => {
+      items.forEach(item => {
+        if (item.type === 'skill') {
+          skillIds.push(item.id);
+        } else if (item.subtopics) {
+          extractSkillIds(item.subtopics);
+        }
+      });
+    };
+    extractSkillIds(subtopics);
+
+    return skillIds.every(skillId => {
+      const progress = getProgressForSkill(skillId);
+      return progress?.progressState === 'independent';
+    });
+  };
+
+  const handleSelectAll = async (subtopics, shouldUnselect = false) => {
     const skillIds = [];
     const extractSkillIds = (items) => {
       items.forEach(item => {
@@ -178,21 +197,31 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
 
     for (const skillId of skillIds) {
       const existing = progressData.find(p => p.skillId === skillId);
-      if (existing) {
-        await base44.entities.DrivingSkillProgress.update(existing.id, {
-          progressState: 'independent',
-          notes: notes || existing.notes,
-          lastUpdated: new Date().toISOString()
-        });
+      if (shouldUnselect) {
+        if (existing) {
+          await base44.entities.DrivingSkillProgress.update(existing.id, {
+            progressState: '',
+            notes: existing.notes,
+            lastUpdated: new Date().toISOString()
+          });
+        }
       } else {
-        await base44.entities.DrivingSkillProgress.create({
-          pupilId,
-          instructorId,
-          skillId,
-          progressState: 'independent',
-          notes,
-          lastUpdated: new Date().toISOString()
-        });
+        if (existing) {
+          await base44.entities.DrivingSkillProgress.update(existing.id, {
+            progressState: 'independent',
+            notes: notes || existing.notes,
+            lastUpdated: new Date().toISOString()
+          });
+        } else {
+          await base44.entities.DrivingSkillProgress.create({
+            pupilId,
+            instructorId,
+            skillId,
+            progressState: 'independent',
+            notes,
+            lastUpdated: new Date().toISOString()
+          });
+        }
       }
     }
 
