@@ -793,6 +793,14 @@ export default function BookingDetailsModal({
         pupilId={booking.pupilId}
         bookingId={booking.id}
         pupil={pupil}
+        lesson={{
+          date: startMoment.format('YYYY-MM-DD'),
+          startTime: startMoment.format('HH:mm'),
+          endTime: endMoment.format('HH:mm'),
+          pupilId: booking.pupilId,
+          location: `Pickup: ${locations.pickup} | Drop-off: ${locations.dropoff}`,
+          status: booking.status
+        }}
         onSave={async (diaryData) => {
           await base44.entities.DiaryEntry.create({
             ...diaryData,
