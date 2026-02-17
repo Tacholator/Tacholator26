@@ -481,9 +481,9 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
 
                 {sectionProgress.status !== 'completed' && (
                   <div className="flex-1 flex items-center justify-center my-2">
-                    <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border-2 border-white/40 flex flex-col items-center justify-center">
-                      <span className="text-3xl font-bold text-white leading-none">{hoursSpent}</span>
-                      <span className="text-xs text-white/90 mt-1">hours covered</span>
+                    <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border-2 border-white/40 flex flex-col items-center justify-center px-2">
+                      <span className="text-2xl font-bold text-white leading-none">{hoursSpent}</span>
+                      <span className="text-[10px] text-white/90 mt-0.5 text-center leading-tight">hours covered</span>
                     </div>
                   </div>
                 )}
