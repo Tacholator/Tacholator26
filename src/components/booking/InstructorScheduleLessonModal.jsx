@@ -349,25 +349,13 @@ export default function InstructorScheduleLessonModal({
             {isPracticalTest && (
               <div className="space-y-2 mt-3 pt-3 border-t border-amber-200">
                 <Label htmlFor="test-time">Test Time *</Label>
-                <Select value={practicalTestTime} onValueChange={setPracticalTestTime}>
-                  <SelectTrigger id="test-time" className="bg-white">
-                    <SelectValue placeholder="Select test time..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <div className="max-h-[200px] overflow-y-auto">
-                      {Array.from({ length: 48 }, (_, i) => {
-                        const hour = Math.floor(i / 2);
-                        const minute = i % 2 === 0 ? '00' : '30';
-                        const timeValue = `${hour.toString().padStart(2, '0')}:${minute}`;
-                        return (
-                          <SelectItem key={timeValue} value={timeValue}>
-                            {timeValue}
-                          </SelectItem>
-                        );
-                      })}
-                    </div>
-                  </SelectContent>
-                </Select>
+                <Input
+                  id="test-time"
+                  type="time"
+                  value={practicalTestTime}
+                  onChange={(e) => setPracticalTestTime(e.target.value)}
+                  className="bg-white"
+                />
               </div>
             )}
           </div>
