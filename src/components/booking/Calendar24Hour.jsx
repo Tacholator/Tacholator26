@@ -234,8 +234,8 @@ export default function Calendar24Hour({
   return (
     <div className="space-y-4">
       {/* Navigation */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 justify-center sm:justify-start">
           <Button onClick={handlePrevious} variant="outline" size="sm">
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -246,10 +246,10 @@ export default function Calendar24Hour({
             Today
           </Button>
         </div>
-        <h3 className="text-lg font-semibold text-slate-700">
+        <h3 className="text-sm sm:text-lg font-semibold text-slate-700 text-center sm:text-right">
           {viewMode === 'day' 
-            ? currentDate.format('dddd, D MMMM YYYY')
-            : `Week of ${days[0].format('D MMM')} - ${days[6].format('D MMM YYYY')}`
+            ? currentDate.format('ddd, D MMM YYYY')
+            : `${days[0].format('D MMM')} - ${days[6].format('D MMM')}`
           }
         </h3>
       </div>
@@ -298,14 +298,14 @@ export default function Calendar24Hour({
 
       {/* Calendar Grid */}
       <div className="border rounded-lg bg-white overflow-x-auto">
-        <div className="min-w-[800px]">
+        <div className="min-w-[600px] sm:min-w-[800px]">
           {/* Header Row */}
-          <div className="grid border-b bg-slate-50" style={{ gridTemplateColumns: `80px repeat(${days.length}, 1fr)` }}>
-            <div className="p-2 border-r font-semibold text-sm text-slate-600">Time</div>
+          <div className="grid border-b bg-slate-50" style={{ gridTemplateColumns: viewMode === 'day' ? '60px 1fr' : `60px repeat(${days.length}, 1fr)` }}>
+            <div className="p-1.5 sm:p-2 border-r font-semibold text-xs sm:text-sm text-slate-600">Time</div>
             {days.map((day, idx) => (
-              <div key={idx} className="p-2 text-center border-r last:border-r-0">
-                <div className="font-semibold text-slate-700">{day.format('ddd')}</div>
-                <div className="text-xs text-slate-500">{day.format('D MMM')}</div>
+              <div key={idx} className="p-1.5 sm:p-2 text-center border-r last:border-r-0">
+                <div className="font-semibold text-slate-700 text-xs sm:text-sm">{day.format('ddd')}</div>
+                <div className="text-[10px] sm:text-xs text-slate-500">{day.format('D MMM')}</div>
               </div>
             ))}
           </div>
@@ -319,9 +319,9 @@ export default function Calendar24Hour({
               <div 
                 key={timeIdx} 
                 className="grid border-b last:border-b-0" 
-                style={{ gridTemplateColumns: `80px repeat(${days.length}, 1fr)`, height: '40px' }}
+                style={{ gridTemplateColumns: viewMode === 'day' ? '60px 1fr' : `60px repeat(${days.length}, 1fr)`, height: '40px' }}
               >
-                <div className="p-2 border-r text-xs text-slate-600 font-medium bg-slate-50">
+                <div className="p-1 sm:p-2 border-r text-[10px] sm:text-xs text-slate-600 font-medium bg-slate-50">
                   {timeSlot}
                 </div>
                 {days.map((day, dayIdx) => {
@@ -512,18 +512,18 @@ export default function Calendar24Hour({
                         )}
 
                         {/* Content */}
-                        <div className={`${isOthersReserved ? 'pl-2' : 'pl-3'} pr-2 py-2 h-full flex flex-col justify-center relative z-10`}>
+                        <div className={`${isOthersReserved ? 'pl-1.5 sm:pl-2' : 'pl-2 sm:pl-3'} pr-1.5 sm:pr-2 py-1.5 sm:py-2 h-full flex flex-col justify-center relative z-10`}>
                           {pupilName && (
-                            <div className={`text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-1`}>
+                            <div className={`text-[10px] sm:text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-0.5 sm:mb-1 truncate`}>
                               {pupilName}
                             </div>
                           )}
-                          <div className={`text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
+                          <div className={`text-[10px] sm:text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
-                          <div className="mt-1">
+                          <div className="mt-0.5 sm:mt-1">
                             <span 
-                              className="inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase rounded"
+                              className="inline-block px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase rounded"
                               style={{ 
                                 backgroundColor: isOthersReserved ? '#E0E0E0' : `${accentColors[state]}20`,
                                 color: isOthersReserved ? '#999999' : accentColors[state]
@@ -538,10 +538,10 @@ export default function Calendar24Hour({
                         {showDeleteIcon && (
                           <button
                             onClick={handleDelete}
-                            className="absolute top-1 right-1 p-1 rounded bg-white/80 hover:bg-rose-100 transition-colors opacity-0 group-hover:opacity-100 z-20"
+                            className="absolute top-0.5 sm:top-1 right-0.5 sm:right-1 p-0.5 sm:p-1 rounded bg-white/80 hover:bg-rose-100 transition-colors opacity-0 group-hover:opacity-100 z-20"
                             title="Delete"
                           >
-                            <Trash2 className="w-3 h-3 text-rose-600" />
+                            <Trash2 className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-rose-600" />
                           </button>
                         )}
 
