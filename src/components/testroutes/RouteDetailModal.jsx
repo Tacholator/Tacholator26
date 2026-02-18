@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import Map, { Source, Layer } from 'react-map-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +16,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Youtube, Navigation, Save, Info, Upload } from 'lucide-react';
+import RouteNavigationOverlay from './RouteNavigationOverlay';
+
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 function extractYouTubeId(url) {
   if (!url) return '';
@@ -34,6 +39,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
   const [gpsRouteType, setGpsRouteType] = useState(route?.gpsRouteType || 'gpx_url');
   const [gpsRouteUrl, setGpsRouteUrl] = useState(route?.gpsRouteUrl || '');
   const [uploading, setUploading] = useState(false);
+  const [navigationOpen, setNavigationOpen] = useState(false);
 
   React.useEffect(() => {
     if (route) {
@@ -51,6 +57,30 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
   if (!route) return null;
 
   const videoId = extractYouTubeId(youtubeUrl);
+  const routeGeoJson = route?.gpsGeoJson || null;
+  const hasValidRoute = routeGeoJson?.geometry?.coordinates?.length > 0;
+
+  // Calculate route center
+  const getRouteCenter = () => {
+    if (!routeGeoJson?.geometry?.coordinates) return { longitude: -1.5, latitude: 53.8 };
+    const coords = routeGeoJson.geometry.coordinates;
+    const avgLon = coords.reduce((sum, [lon]) => sum + lon, 0) / coords.length;
+    const avgLat = coords.reduce((sum, [, lat]) => sum + lat, 0) / coords.length;
+    return { longitude: avgLon, latitude: avgLat };
+  };
+
+  const routeCenter = getRouteCenter();
+
+  // Route layer style
+  const routeLayerStyle = {
+    id: 'route-preview',
+    type: 'line',
+    paint: {
+      'line-color': '#F7B602',
+      'line-width': 4,
+      'line-opacity': 0.8
+    }
+  };
 
   const handleSaveVideo = () => {
     onYouTubeChange(route.id, youtubeUrl);
@@ -76,47 +106,83 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-[#071739]">
-            {route.routeName}
-          </DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#071739]">
+              {route.routeName}
+            </DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-6 mt-4">
-          {/* Route Layout Section */}
-          <div className="space-y-4 p-4 border rounded-lg bg-slate-50">
-            <div className="flex items-center gap-2 text-lg font-semibold text-slate-700">
-              <Navigation className="w-5 h-5" />
-              Route Layout
-            </div>
-            
-            {/* Route Map Visualization */}
-            <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden flex items-center justify-center">
-              <p className="text-slate-500">Route map visualization will appear here</p>
-            </div>
-
-            {/* Route Details & Start Button */}
-            <div className="space-y-4 p-4 bg-white rounded-lg border">
-              <div className="flex gap-6">
-                <div>
-                  <p className="text-xs text-slate-500">Duration</p>
-                  <p className="text-lg font-semibold text-[#071739]">-- min</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500">Distance</p>
-                  <p className="text-lg font-semibold text-[#071739]">-- miles</p>
-                </div>
+          <div className="space-y-6 mt-4">
+            {/* Route Layout Section */}
+            <div className="space-y-4 p-4 border rounded-lg bg-slate-50">
+              <div className="flex items-center gap-2 text-lg font-semibold text-slate-700">
+                <Navigation className="w-5 h-5" />
+                Route Layout
               </div>
-              <Button
-                className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-              >
-                <Navigation className="w-4 h-4 mr-2" />
-                Start Route
-              </Button>
+              
+              {/* Route Map Visualization */}
+              <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden">
+                {hasValidRoute && MAPBOX_TOKEN ? (
+                  <Map
+                    mapboxAccessToken={MAPBOX_TOKEN}
+                    initialViewState={{
+                      ...routeCenter,
+                      zoom: 13
+                    }}
+                    mapStyle="mapbox://styles/mapbox/streets-v12"
+                    style={{ width: '100%', height: '100%' }}
+                    interactive={false}
+                  >
+                    <Source id="route-preview-source" type="geojson" data={routeGeoJson}>
+                      <Layer {...routeLayerStyle} />
+                    </Source>
+                  </Map>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <p className="text-slate-500">
+                      {!MAPBOX_TOKEN ? 'Mapbox token not configured' : 'No route data available'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Route Details & Start Button */}
+              <div className="space-y-4 p-4 bg-white rounded-lg border">
+                <div className="flex gap-6">
+                  <div>
+                    <p className="text-xs text-slate-500">Route Type</p>
+                    <p className="text-lg font-semibold text-[#071739]">Test Route {route.routeNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Status</p>
+                    <p className="text-lg font-semibold text-[#071739]">
+                      {hasValidRoute ? 'Ready' : 'No GPS data'}
+                    </p>
+                  </div>
+                </div>
+                
+                {!hasValidRoute && (
+                  <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>
+                      GPS route data not available for this route. Navigation features are disabled.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <Button
+                  className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                  disabled={!hasValidRoute}
+                  onClick={() => setNavigationOpen(true)}
+                >
+                  <Navigation className="w-4 h-4 mr-2" />
+                  Start Navigation
+                </Button>
+              </div>
             </div>
-          </div>
 
           {/* Video Section */}
           <div className="space-y-4 p-4 border rounded-lg">
@@ -184,5 +250,14 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
         </div>
       </DialogContent>
     </Dialog>
+
+    {/* Navigation Overlay */}
+    {navigationOpen && (
+      <RouteNavigationOverlay
+        route={route}
+        onClose={() => setNavigationOpen(false)}
+      />
+    )}
+  </>
   );
 }
