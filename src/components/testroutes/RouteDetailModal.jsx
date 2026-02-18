@@ -98,7 +98,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
             </div>
 
             {/* Route Details & Start Button */}
-            <div className="flex items-center justify-between p-4 bg-white rounded-lg border">
+            <div className="space-y-4 p-4 bg-white rounded-lg border">
               <div className="flex gap-6">
                 <div>
                   <p className="text-xs text-slate-500">Duration</p>
@@ -110,7 +110,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                 </div>
               </div>
               <Button
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
               >
                 <Navigation className="w-4 h-4 mr-2" />
                 Start Route
