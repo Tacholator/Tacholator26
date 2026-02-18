@@ -197,7 +197,7 @@ export default function AdminTestRouteDetail() {
           Back to Configuration
         </Button>
 
-        <Card className="mb-8 relative">
+        <Card className="mb-8">
           <CardHeader>
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
@@ -216,24 +216,25 @@ export default function AdminTestRouteDetail() {
                 </div>
                 <CardDescription>{centre.subLocation}</CardDescription>
               </div>
-              <Button
-                onClick={() => togglePublishMutation.mutate({ published: !centre.published })}
-                variant={centre.published ? "outline" : "default"}
-                className={!centre.published ? "bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]" : ""}
-                disabled={togglePublishMutation.isPending}
-              >
-                {centre.published ? 'Unpublish' : 'Publish'}
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button
+                  onClick={() => togglePublishMutation.mutate({ published: !centre.published })}
+                  variant={centre.published ? "outline" : "default"}
+                  className={!centre.published ? "bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]" : ""}
+                  disabled={togglePublishMutation.isPending}
+                >
+                  {centre.published ? 'Unpublish' : 'Publish'}
+                </Button>
+                <Button
+                  onClick={() => setShowDeleteAreaDialog(true)}
+                  variant="destructive"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Area
+                </Button>
+              </div>
             </div>
           </CardHeader>
-          <Button
-            onClick={() => setShowDeleteAreaDialog(true)}
-            variant="destructive"
-            size="icon"
-            className="absolute top-4 right-4"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
         </Card>
 
         <div className="mb-6 flex items-center justify-between">

@@ -168,61 +168,51 @@ export default function AdminTestRouteConfiguration() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {centres.map(centre => (
-              <div key={centre.id} className="relative">
-                <Link to={createPageUrl(`AdminTestRouteDetail?centreId=${centre.id}`)}>
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                    <CardHeader>
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <CardTitle className="flex items-start gap-2 flex-1">
-                          <MapPin className="w-5 h-5 text-[#F7B602] mt-0.5 flex-shrink-0" />
-                          <span>{centre.centreName}</span>
-                        </CardTitle>
-                        <Badge 
-                          variant={centre.published ? "default" : "outline"}
-                          className={centre.published ? "bg-green-100 text-green-800" : ""}
-                        >
-                          {centre.published ? (
-                            <><Globe className="w-3 h-3 mr-1" /> Published</>
-                          ) : (
-                            'Draft'
-                          )}
-                        </Badge>
-                      </div>
-                      <CardDescription>{centre.subLocation}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex gap-4 text-sm text-slate-600">
-                          <div className="flex items-center gap-1">
-                            <Youtube className="w-4 h-4" />
-                            <span>{centre.youtubeVideoId ? 'Video added' : 'No video'}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Navigation className="w-4 h-4" />
-                            <span>{centre.gpsRouteUrl ? 'GPS added' : 'No GPS'}</span>
-                          </div>
+              <Link key={centre.id} to={createPageUrl(`AdminTestRouteDetail?centreId=${centre.id}`)}>
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <CardTitle className="flex items-start gap-2 flex-1">
+                        <MapPin className="w-5 h-5 text-[#F7B602] mt-0.5 flex-shrink-0" />
+                        <span>{centre.centreName}</span>
+                      </CardTitle>
+                      <Badge 
+                        variant={centre.published ? "default" : "outline"}
+                        className={centre.published ? "bg-green-100 text-green-800" : ""}
+                      >
+                        {centre.published ? (
+                          <><Globe className="w-3 h-3 mr-1" /> Published</>
+                        ) : (
+                          'Draft'
+                        )}
+                      </Badge>
+                    </div>
+                    <CardDescription>{centre.subLocation}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex gap-4 text-sm text-slate-600">
+                        <div className="flex items-center gap-1">
+                          <Youtube className="w-4 h-4" />
+                          <span>{centre.youtubeVideoId ? 'Video added' : 'No video'}</span>
                         </div>
-                        <Button
-                          onClick={(e) => handleTogglePublish(e, centre)}
-                          variant={centre.published ? "outline" : "default"}
-                          className={!centre.published ? "w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]" : "w-full"}
-                          disabled={togglePublishMutation.isPending}
-                        >
-                          {centre.published ? 'Unpublish' : 'Publish'}
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Navigation className="w-4 h-4" />
+                          <span>{centre.gpsRouteUrl ? 'GPS added' : 'No GPS'}</span>
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-                <Button
-                  onClick={(e) => handleDeleteClick(e, centre)}
-                  variant="ghost"
-                  size="icon"
-                  className="absolute bottom-2 right-2 h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
+                      <Button
+                        onClick={(e) => handleTogglePublish(e, centre)}
+                        variant={centre.published ? "outline" : "default"}
+                        className={!centre.published ? "w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]" : "w-full"}
+                        disabled={togglePublishMutation.isPending}
+                      >
+                        {centre.published ? 'Unpublish' : 'Publish'}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         )}
