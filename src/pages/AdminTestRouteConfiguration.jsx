@@ -120,7 +120,7 @@ export default function AdminTestRouteConfiguration() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {centres.map(centre => (
-              <Link key={centre.id} to={createPageUrl(`InstructorTestRouteDetail?centreId=${centre.id}`)}>
+              <Link key={centre.id} to={createPageUrl(`AdminTestRouteDetail?centreId=${centre.id}`)}>
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                   <CardHeader>
                     <div className="flex items-start justify-between gap-2 mb-2">

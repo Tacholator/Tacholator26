@@ -113,6 +113,7 @@ import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
 import AdminTestRouteConfiguration from './pages/AdminTestRouteConfiguration';
+import AdminTestRouteDetail from './pages/AdminTestRouteDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -183,6 +184,7 @@ export const PAGES = {
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
     "AdminTestRouteConfiguration": AdminTestRouteConfiguration,
+    "AdminTestRouteDetail": AdminTestRouteDetail,
 }
 
 export const pagesConfig = {
