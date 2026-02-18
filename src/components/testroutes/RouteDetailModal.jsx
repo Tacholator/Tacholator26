@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Youtube, Navigation, Save, Info } from 'lucide-react';
+import { Youtube, Navigation, Save, Info, Upload } from 'lucide-react';
 
 function extractYouTubeId(url) {
   if (!url) return '';
@@ -32,6 +33,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
   const [youtubeUrl, setYoutubeUrl] = useState(route?.youtubeUrl || '');
   const [gpsRouteType, setGpsRouteType] = useState(route?.gpsRouteType || 'gpx_url');
   const [gpsRouteUrl, setGpsRouteUrl] = useState(route?.gpsRouteUrl || '');
+  const [uploading, setUploading] = useState(false);
 
   React.useEffect(() => {
     if (route) {
@@ -56,6 +58,21 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
 
   const handleSaveGps = () => {
     onGpsChange(route.id, gpsRouteType, gpsRouteUrl);
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setGpsRouteUrl(file_url);
+    } catch (error) {
+      alert('Failed to upload file: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -163,6 +180,26 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                     onChange={(e) => setGpsRouteUrl(e.target.value)}
                     className="mt-1"
                   />
+                </div>
+
+                <div>
+                  <Label htmlFor="fileUpload">Or Upload File (GPX, GeoJSON, JSON)</Label>
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      id="fileUpload"
+                      type="file"
+                      accept=".gpx,.geojson,.json"
+                      onChange={handleFileUpload}
+                      disabled={uploading}
+                      className="flex-1"
+                    />
+                    {uploading && (
+                      <Button disabled className="gap-2">
+                        <Upload className="w-4 h-4 animate-pulse" />
+                        Uploading...
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 <Alert>
