@@ -78,7 +78,8 @@ export const instructorOnlyLinks = [
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
-  { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' }
+  { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' },
+  { name: 'Test Route Config', icon: MapPin, page: 'AdminTestRouteConfiguration', adminOnly: true }
 ];
 
 // Learner-only navigation items
@@ -119,7 +120,12 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
     }))
     .filter(link => link.page !== null); // Filter out items with null pages
 
-  const roleSpecific = isInstructor ? instructorOnlyLinks : learnerOnlyLinks;
+  let roleSpecific = isInstructor ? instructorOnlyLinks : learnerOnlyLinks;
+  
+  // Filter out admin-only links for non-admin instructors
+  if (isInstructor && !isMainAdmin) {
+    roleSpecific = roleSpecific.filter(link => !link.adminOnly);
+  }
 
   // For non-active pupils, only show: Home, Book a Lesson, Payments, Notifications, Chats
   if (!isInstructor && pupilStatus !== 'Active') {
