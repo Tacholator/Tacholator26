@@ -7,10 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { MapPin, Youtube, Navigation } from 'lucide-react';
 
 export default function LearnerTestRoutes() {
-  const { data: centres = [], isLoading } = useQuery({
+  const { data: allCentres = [], isLoading } = useQuery({
     queryKey: ['testRouteCentres'],
     queryFn: () => base44.entities.TestRouteCentre.list()
   });
+
+  // Only show published centres to learners
+  const centres = allCentres.filter(c => c.published);
 
   if (isLoading) {
     return (
