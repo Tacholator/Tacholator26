@@ -76,7 +76,9 @@
     "vaul": "^1.1.2",
     "zod": "^3.24.2",
     "@turf/turf": "^7.1.0",
-    "@stripe/stripe-js": "^4.9.0"
+    "@stripe/stripe-js": "^4.9.0",
+    "mapbox-gl": "^3.1.0",
+    "react-map-gl": "^7.1.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
