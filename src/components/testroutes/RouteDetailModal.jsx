@@ -85,6 +85,39 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
+          {/* Route Layout Section */}
+          <div className="space-y-4 p-4 border rounded-lg bg-slate-50">
+            <div className="flex items-center gap-2 text-lg font-semibold text-slate-700">
+              <Navigation className="w-5 h-5" />
+              Route Layout
+            </div>
+            
+            {/* Route Map Visualization */}
+            <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden flex items-center justify-center">
+              <p className="text-slate-500">Route map visualization will appear here</p>
+            </div>
+
+            {/* Route Details & Start Button */}
+            <div className="flex items-center justify-between p-4 bg-white rounded-lg border">
+              <div className="flex gap-6">
+                <div>
+                  <p className="text-xs text-slate-500">Duration</p>
+                  <p className="text-lg font-semibold text-[#071739]">-- min</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Distance</p>
+                  <p className="text-lg font-semibold text-[#071739]">-- miles</p>
+                </div>
+              </div>
+              <Button
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              >
+                <Navigation className="w-4 h-4 mr-2" />
+                Start Route
+              </Button>
+            </div>
+          </div>
+
           {/* Video Section */}
           <div className="space-y-4 p-4 border rounded-lg">
             <div className="flex items-center gap-2 text-lg font-semibold text-slate-700">
