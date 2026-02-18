@@ -216,9 +216,9 @@ export default function AdminTestRouteConfiguration() {
                 </Link>
                 <Button
                   onClick={(e) => handleDeleteClick(e, centre)}
-                  variant="destructive"
+                  variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2"
+                  className="absolute bottom-2 right-2 h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
