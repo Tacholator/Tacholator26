@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import RouteCard from '@/components/testroutes/RouteCard';
 import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
 import AddRouteModal from '@/components/testroutes/AddRouteModal';
+import ConfigureRouteButton from '@/components/testroutes/ConfigureRouteButton';
 
 export default function AdminTestRouteDetail() {
   const navigate = useNavigate();
@@ -380,17 +381,25 @@ export default function AdminTestRouteDetail() {
                     setShowRouteModal(true);
                   }}
                 />
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setRouteToDelete(route);
-                  }}
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <ConfigureRouteButton
+                    routeId={route.id}
+                    onSuccess={() => {
+                      queryClient.invalidateQueries({ queryKey: ['testRoutes', centreId] });
+                      setHasChanges(true);
+                    }}
+                  />
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setRouteToDelete(route);
+                    }}
+                    variant="destructive"
+                    size="icon"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
