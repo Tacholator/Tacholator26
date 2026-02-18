@@ -6,12 +6,23 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Plus, Youtube, Navigation, Globe } from 'lucide-react';
+import { MapPin, Plus, Youtube, Navigation, Globe, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import CreateTestRouteAreaModal from '@/components/testroutes/CreateTestRouteAreaModal';
 
 export default function AdminTestRouteConfiguration() {
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [areaToDelete, setAreaToDelete] = useState(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -63,6 +74,31 @@ export default function AdminTestRouteConfiguration() {
     }
   });
 
+  const deleteAreaMutation = useMutation({
+    mutationFn: async (centreId) => {
+      // Delete all routes first
+      const routes = await base44.entities.TestRoute.filter({ centreId });
+      await Promise.all(routes.map(route => base44.entities.TestRoute.delete(route.id)));
+      // Then delete the centre
+      await base44.entities.TestRouteCentre.delete(centreId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['testRouteCentres'] });
+      setAreaToDelete(null);
+      toast({
+        title: 'Success',
+        description: 'Test route area deleted successfully'
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete test route area',
+        variant: 'destructive'
+      });
+    }
+  });
+
   const handleCreateArea = (data) => {
     createCentreMutation.mutate(data);
   };
@@ -74,6 +110,18 @@ export default function AdminTestRouteConfiguration() {
       id: centre.id,
       published: !centre.published
     });
+  };
+
+  const handleDeleteClick = (e, centre) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setAreaToDelete(centre);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (areaToDelete) {
+      deleteAreaMutation.mutate(areaToDelete.id);
+    }
   };
 
   if (isLoading) {
@@ -120,51 +168,61 @@ export default function AdminTestRouteConfiguration() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {centres.map(centre => (
-              <Link key={centre.id} to={createPageUrl(`AdminTestRouteDetail?centreId=${centre.id}`)}>
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <CardTitle className="flex items-start gap-2 flex-1">
-                        <MapPin className="w-5 h-5 text-[#F7B602] mt-0.5 flex-shrink-0" />
-                        <span>{centre.centreName}</span>
-                      </CardTitle>
-                      <Badge 
-                        variant={centre.published ? "default" : "outline"}
-                        className={centre.published ? "bg-green-100 text-green-800" : ""}
-                      >
-                        {centre.published ? (
-                          <><Globe className="w-3 h-3 mr-1" /> Published</>
-                        ) : (
-                          'Draft'
-                        )}
-                      </Badge>
-                    </div>
-                    <CardDescription>{centre.subLocation}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex gap-4 text-sm text-slate-600">
-                        <div className="flex items-center gap-1">
-                          <Youtube className="w-4 h-4" />
-                          <span>{centre.youtubeVideoId ? 'Video added' : 'No video'}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Navigation className="w-4 h-4" />
-                          <span>{centre.gpsRouteUrl ? 'GPS added' : 'No GPS'}</span>
-                        </div>
+              <div key={centre.id} className="relative">
+                <Link to={createPageUrl(`AdminTestRouteDetail?centreId=${centre.id}`)}>
+                  <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                    <CardHeader>
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <CardTitle className="flex items-start gap-2 flex-1">
+                          <MapPin className="w-5 h-5 text-[#F7B602] mt-0.5 flex-shrink-0" />
+                          <span>{centre.centreName}</span>
+                        </CardTitle>
+                        <Badge 
+                          variant={centre.published ? "default" : "outline"}
+                          className={centre.published ? "bg-green-100 text-green-800" : ""}
+                        >
+                          {centre.published ? (
+                            <><Globe className="w-3 h-3 mr-1" /> Published</>
+                          ) : (
+                            'Draft'
+                          )}
+                        </Badge>
                       </div>
-                      <Button
-                        onClick={(e) => handleTogglePublish(e, centre)}
-                        variant={centre.published ? "outline" : "default"}
-                        className={!centre.published ? "w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]" : "w-full"}
-                        disabled={togglePublishMutation.isPending}
-                      >
-                        {centre.published ? 'Unpublish' : 'Publish'}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                      <CardDescription>{centre.subLocation}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex gap-4 text-sm text-slate-600">
+                          <div className="flex items-center gap-1">
+                            <Youtube className="w-4 h-4" />
+                            <span>{centre.youtubeVideoId ? 'Video added' : 'No video'}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Navigation className="w-4 h-4" />
+                            <span>{centre.gpsRouteUrl ? 'GPS added' : 'No GPS'}</span>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={(e) => handleTogglePublish(e, centre)}
+                          variant={centre.published ? "outline" : "default"}
+                          className={!centre.published ? "w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]" : "w-full"}
+                          disabled={togglePublishMutation.isPending}
+                        >
+                          {centre.published ? 'Unpublish' : 'Publish'}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+                <Button
+                  onClick={(e) => handleDeleteClick(e, centre)}
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-2 right-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
             ))}
           </div>
         )}
@@ -175,6 +233,26 @@ export default function AdminTestRouteConfiguration() {
           onSubmit={handleCreateArea}
           isLoading={createCentreMutation.isPending}
         />
+
+        <AlertDialog open={!!areaToDelete} onOpenChange={() => setAreaToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Test Route Area</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{areaToDelete?.centreName}"? This will also delete all routes within this area. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
