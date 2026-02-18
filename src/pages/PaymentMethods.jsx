@@ -50,6 +50,7 @@ export default function PaymentMethods() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [stripeError, setStripeError] = useState(null);
   const [stripeKey, setStripeKey] = useState(null);
+  const [showStripeInfoModal, setShowStripeInfoModal] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -477,10 +478,17 @@ export default function PaymentMethods() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-[#F7B602]" />
-                Accept Payments from Customers
+                Accept card payments
               </CardTitle>
               <CardDescription>
-                Set up your account to receive payments from pupils
+                Get your invoices paid quicker by accepting card payments. All you need to do is connect Stripe to your Tacholator account.
+                {' '}
+                <button 
+                  onClick={() => setShowStripeInfoModal(true)}
+                  className="text-[#F7B602] hover:text-[#d99f02] underline font-medium"
+                >
+                  Find out more
+                </button>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -493,7 +501,7 @@ export default function PaymentMethods() {
                   </span>
                   <Link to={createPageUrl('InstructorStripeConnect')}>
                     <Button size="sm" className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
-                      Set Up Now
+                      Get started
                     </Button>
                   </Link>
                 </AlertDescription>
@@ -602,7 +610,52 @@ export default function PaymentMethods() {
           </CardContent>
         </Card>
         )}
-      </div>
-    </div>
-  );
-}
+
+        {/* Stripe Info Modal */}
+        <Dialog open={showStripeInfoModal} onOpenChange={setShowStripeInfoModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#071739]">Find out more</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <h3 className="text-lg font-semibold text-[#071739] mb-2">Accept card payments with Stripe</h3>
+              <p className="text-slate-600">
+                Get your invoices paid quicker by connecting your Tacholator account to Stripe.
+              </p>
+            </div>
+
+            <p className="text-slate-600">
+              Put a QR code or payment link into your invoices so customers can pay you by card without having to enter your banking details.
+            </p>
+
+            <p className="text-slate-600">
+              Create your Stripe account, connect it to Tacholator and you'll have the option to accept card payments within minutes. Pricing is simple, clear and pay-as-you go:
+            </p>
+
+            <div className="bg-slate-50 rounded-lg p-4 space-y-2 text-sm">
+              <p className="text-slate-700">
+                <strong>1.4% + 20p</strong> per transaction for UK cards (+1.1% for European Economic Area)
+              </p>
+              <p className="text-slate-700">
+                <strong>2.9% + 20p</strong> for international cards
+              </p>
+            </div>
+
+            <div className="pt-4">
+              <Link to={createPageUrl('InstructorStripeConnect')}>
+                <Button 
+                  className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                  onClick={() => setShowStripeInfoModal(false)}
+                >
+                  Set Up Stripe
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </DialogContent>
+        </Dialog>
+        </div>
+        </div>
+        );
+        }
