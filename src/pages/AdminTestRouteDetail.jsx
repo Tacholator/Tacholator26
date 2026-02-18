@@ -197,25 +197,25 @@ export default function AdminTestRouteDetail() {
           Back to Configuration
         </Button>
 
-        <div className="mb-8">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-[#071739]">{centre.centreName}</h1>
-                <Badge 
-                  variant={centre.published ? "default" : "outline"}
-                  className={centre.published ? "bg-green-100 text-green-800" : ""}
-                >
-                  {centre.published ? (
-                    <><Globe className="w-3 h-3 mr-1" /> Published</>
-                  ) : (
-                    'Draft'
-                  )}
-                </Badge>
+        <Card className="mb-8 relative">
+          <CardHeader>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <CardTitle className="text-3xl">{centre.centreName}</CardTitle>
+                  <Badge 
+                    variant={centre.published ? "default" : "outline"}
+                    className={centre.published ? "bg-green-100 text-green-800" : ""}
+                  >
+                    {centre.published ? (
+                      <><Globe className="w-3 h-3 mr-1" /> Published</>
+                    ) : (
+                      'Draft'
+                    )}
+                  </Badge>
+                </div>
+                <CardDescription>{centre.subLocation}</CardDescription>
               </div>
-              <p className="text-slate-600">{centre.subLocation}</p>
-            </div>
-            <div className="flex gap-2">
               <Button
                 onClick={() => togglePublishMutation.mutate({ published: !centre.published })}
                 variant={centre.published ? "outline" : "default"}
@@ -224,16 +224,17 @@ export default function AdminTestRouteDetail() {
               >
                 {centre.published ? 'Unpublish' : 'Publish'}
               </Button>
-              <Button
-                onClick={() => setShowDeleteAreaDialog(true)}
-                variant="destructive"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete Area
-              </Button>
             </div>
-          </div>
-        </div>
+          </CardHeader>
+          <Button
+            onClick={() => setShowDeleteAreaDialog(true)}
+            variant="destructive"
+            size="icon"
+            className="absolute top-4 right-4"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </Card>
 
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#071739]">Routes</h2>
