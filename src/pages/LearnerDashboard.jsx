@@ -30,7 +30,8 @@ import {
   Lock,
   Mail,
   Phone,
-  Users
+  Users,
+  Wallet
 } from 'lucide-react';
 import moment from 'moment';
 import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
@@ -434,70 +435,139 @@ export default function LearnerDashboard() {
           </motion.div>
         )}
 
-        {/* 3. Next Lesson */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="border-0 shadow-sm bg-gradient-to-br from-[#071739] to-[#0a2142] text-white">
-            <CardHeader>
-              <CardTitle className="text-lg text-white/90">Next Lesson</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {nextLesson ? (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                      <Calendar className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="text-xl font-semibold">
-                        {moment(nextLesson.startAtUtc).local().format('dddd, D MMMM')}
-                      </p>
-                      <p className="text-white/80">{moment(nextLesson.startAtUtc).fromNow()}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 pt-2">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-5 h-5 text-white/70" />
-                      <span className="text-sm">{moment(nextLesson.startAtUtc).local().format('HH:mm')} - {moment(nextLesson.endAtUtc).local().format('HH:mm')}</span>
-                    </div>
-                    {nextLesson.pickupLocation && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-5 h-5 text-white/70" />
-                        <span className="truncate text-sm">{nextLesson.pickupLocation}</span>
+        {/* 3. Next Lesson & My Balance */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-[#071739] to-[#0a2142] text-white">
+              <CardHeader>
+                <CardTitle className="text-lg text-white/90">Next Lesson</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {nextLesson ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                        <Calendar className="w-6 h-6" />
                       </div>
-                    )}
+                      <div>
+                        <p className="text-xl font-semibold">
+                          {moment(nextLesson.startAtUtc).local().format('dddd, D MMMM')}
+                        </p>
+                        <p className="text-white/80">{moment(nextLesson.startAtUtc).fromNow()}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-white/70" />
+                        <span className="text-sm">{moment(nextLesson.startAtUtc).local().format('HH:mm')} - {moment(nextLesson.endAtUtc).local().format('HH:mm')}</span>
+                      </div>
+                      {nextLesson.pickupLocation && (
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-5 h-5 text-white/70" />
+                          <span className="truncate text-sm">{nextLesson.pickupLocation}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <Link to={createPageUrl('LearnerScheduledLessons')}>
+                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
+                          View Lesson
+                        </Button>
+                      </Link>
+                      <Link to={createPageUrl('LearnerChats')}>
+                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Message
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 pt-2">
-                    <Link to={createPageUrl('LearnerScheduledLessons')}>
-                      <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
-                        View Lesson
+                ) : (
+                  <div className="text-center py-6">
+                    <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-white/80 mb-4">You don't have a lesson booked</p>
+                    <Link to={createPageUrl('LearnerBookingCalendar')}>
+                      <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
+                        Book a Lesson
                       </Button>
                     </Link>
-                    <Link to={createPageUrl('LearnerChats')}>
-                      <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Message
-                      </Button>
-                    </Link>
                   </div>
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-white/80 mb-4">You don't have a lesson booked</p>
-                  <Link to={createPageUrl('LearnerBookingCalendar')}>
-                    <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
-                      Book a Lesson
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            {(() => {
+              const balance = pupil.bulkPaymentBalance || 0;
+              const hourlyRate = pupil.hourlyRate || 0;
+              const hoursAvailable = hourlyRate > 0 ? (balance / hourlyRate).toFixed(1) : 0;
+              
+              const isPositive = balance > 0;
+              const isZero = balance === 0;
+              const isNegative = balance < 0;
+              
+              let bgGradient = 'from-slate-400 to-slate-500';
+              let iconBg = 'bg-white/20';
+              if (isPositive) {
+                bgGradient = 'from-emerald-500 to-emerald-600';
+                iconBg = 'bg-white/20';
+              } else if (isNegative) {
+                bgGradient = 'from-rose-500 to-rose-600';
+                iconBg = 'bg-white/20';
+              }
+              
+              return (
+                <Card className={`border-0 shadow-sm bg-gradient-to-br ${bgGradient} text-white`}>
+                  <CardHeader>
+                    <CardTitle className="text-lg text-white/90">My Balance</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-12 h-12 rounded-xl ${iconBg} flex items-center justify-center`}>
+                          <Wallet className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <p className="text-3xl font-bold">
+                            £{Math.abs(balance).toFixed(2)}
+                          </p>
+                          <p className="text-white/80 text-sm">
+                            {isNegative ? 'Amount owed' : 'Credit balance'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm text-white/80">Hours available</span>
+                          <span className="text-lg font-semibold">{hoursAvailable}h</span>
+                        </div>
+                        {hourlyRate > 0 && (
+                          <p className="text-xs text-white/70">
+                            Based on £{hourlyRate.toFixed(2)}/hour
+                          </p>
+                        )}
+                      </div>
+                      <Link to={createPageUrl('LearnerPayments')}>
+                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
+                          {isNegative ? 'Make Payment' : 'View Payments'}
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+          </motion.div>
+        </div>
 
         {/* 4. Overall Progress */}
         <motion.div
