@@ -40,6 +40,7 @@ import {
 } from 'lucide-react';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
+import { Toaster } from '@/components/ui/toaster';
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -498,6 +499,7 @@ export default function Layout({ children, currentPageName }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
-  );
-}
+      <Toaster />
+      </div>
+      );
+      }
