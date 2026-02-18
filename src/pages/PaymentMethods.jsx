@@ -516,8 +516,8 @@ export default function PaymentMethods() {
                     Complete your payment setup to start receiving payouts
                   </span>
                   <Link to={createPageUrl('InstructorStripeConnect')}>
-                    <Button size="sm" variant="outline">
-                      Complete Setup
+                    <Button size="sm" className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
+                      Get started
                     </Button>
                   </Link>
                 </AlertDescription>
