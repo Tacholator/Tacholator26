@@ -16,8 +16,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Plus, Youtube, Navigation, Trash2, Globe } from 'lucide-react';
+import { ArrowLeft, Plus, Youtube, Navigation, Trash2, Globe, Pencil } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Input } from '@/components/ui/input';
 import RouteCard from '@/components/testroutes/RouteCard';
 import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
 import AddRouteModal from '@/components/testroutes/AddRouteModal';
@@ -31,6 +32,10 @@ export default function AdminTestRouteDetail() {
   const [showAddRouteModal, setShowAddRouteModal] = useState(false);
   const [routeToDelete, setRouteToDelete] = useState(null);
   const [showDeleteAreaDialog, setShowDeleteAreaDialog] = useState(false);
+  const [isEditingMainCard, setIsEditingMainCard] = useState(false);
+  const [editedCentreName, setEditedCentreName] = useState('');
+  const [editedSubLocation, setEditedSubLocation] = useState('');
+  const [hasChanges, setHasChanges] = useState(false);
 
   const urlParams = new URLSearchParams(window.location.search);
   const centreId = urlParams.get('centreId') || urlParams.get('centreid');
@@ -74,6 +79,7 @@ export default function AdminTestRouteDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['testRoutes', centreId] });
       setRouteToDelete(null);
+      setHasChanges(true);
       toast({
         title: 'Success',
         description: 'Route deleted successfully'
@@ -116,6 +122,7 @@ export default function AdminTestRouteDetail() {
       base44.entities.TestRouteCentre.update(centreId, { published }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['testRouteCentre', centreId] });
+      setHasChanges(false);
       toast({
         title: 'Success',
         description: 'Publication status updated'
@@ -125,6 +132,26 @@ export default function AdminTestRouteDetail() {
       toast({
         title: 'Error',
         description: 'Failed to update publication status',
+        variant: 'destructive'
+      });
+    }
+  });
+
+  const updateCentreMutation = useMutation({
+    mutationFn: (data) => base44.entities.TestRouteCentre.update(centreId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['testRouteCentre', centreId] });
+      setIsEditingMainCard(false);
+      setHasChanges(true);
+      toast({
+        title: 'Success',
+        description: 'Test route area updated successfully'
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to update test route area',
         variant: 'destructive'
       });
     }
@@ -146,6 +173,33 @@ export default function AdminTestRouteDetail() {
 
   const handleDeleteArea = () => {
     deleteAreaMutation.mutate();
+  };
+
+  const handleEditMainCard = () => {
+    setEditedCentreName(centre.centreName);
+    setEditedSubLocation(centre.subLocation);
+    setIsEditingMainCard(true);
+  };
+
+  const handleSaveMainCard = () => {
+    if (!editedCentreName.trim() || !editedSubLocation.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Please fill in all fields',
+        variant: 'destructive'
+      });
+      return;
+    }
+    updateCentreMutation.mutate({
+      centreName: editedCentreName,
+      subLocation: editedSubLocation
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingMainCard(false);
+    setEditedCentreName('');
+    setEditedSubLocation('');
   };
 
   if (centreLoading || routesLoading) {
@@ -201,37 +255,88 @@ export default function AdminTestRouteDetail() {
           <CardHeader>
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <CardTitle className="text-3xl">{centre.centreName}</CardTitle>
-                  <Badge 
-                    variant={centre.published ? "default" : "outline"}
-                    className={centre.published ? "bg-green-100 text-green-800" : ""}
-                  >
-                    {centre.published ? (
-                      <><Globe className="w-3 h-3 mr-1" /> Published</>
-                    ) : (
-                      'Draft'
-                    )}
-                  </Badge>
-                </div>
-                <CardDescription>{centre.subLocation}</CardDescription>
+                {isEditingMainCard ? (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm font-medium text-slate-700 mb-1 block">Test Centre Name</label>
+                      <Input
+                        value={editedCentreName}
+                        onChange={(e) => setEditedCentreName(e.target.value)}
+                        placeholder="Enter centre name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-700 mb-1 block">Sub-Location</label>
+                      <Input
+                        value={editedSubLocation}
+                        onChange={(e) => setEditedSubLocation(e.target.value)}
+                        placeholder="Enter sub-location"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3 mb-2">
+                      <CardTitle className="text-3xl">{centre.centreName}</CardTitle>
+                      <Badge 
+                        variant={centre.published ? "default" : "outline"}
+                        className={centre.published ? "bg-green-100 text-green-800" : ""}
+                      >
+                        {centre.published ? (
+                          <><Globe className="w-3 h-3 mr-1" /> Published</>
+                        ) : (
+                          'Draft'
+                        )}
+                      </Badge>
+                    </div>
+                    <CardDescription>{centre.subLocation}</CardDescription>
+                  </>
+                )}
               </div>
               <div className="flex flex-col gap-2">
-                <Button
-                  onClick={() => togglePublishMutation.mutate({ published: !centre.published })}
-                  variant={centre.published ? "outline" : "default"}
-                  className={!centre.published ? "bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]" : ""}
-                  disabled={togglePublishMutation.isPending}
-                >
-                  {centre.published ? 'Unpublish' : 'Publish'}
-                </Button>
-                <Button
-                  onClick={() => setShowDeleteAreaDialog(true)}
-                  variant="destructive"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete Area
-                </Button>
+                {isEditingMainCard ? (
+                  <>
+                    <Button
+                      onClick={handleSaveMainCard}
+                      className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                      disabled={updateCentreMutation.isPending}
+                    >
+                      Save Changes
+                    </Button>
+                    <Button
+                      onClick={handleCancelEdit}
+                      variant="outline"
+                      disabled={updateCentreMutation.isPending}
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={handleEditMainCard}
+                      variant="outline"
+                    >
+                      <Pencil className="w-4 h-4 mr-2" />
+                      Edit Info
+                    </Button>
+                    <Button
+                      onClick={() => togglePublishMutation.mutate({ published: !centre.published })}
+                      variant={centre.published ? "outline" : "default"}
+                      className={!centre.published || hasChanges ? "bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]" : ""}
+                      disabled={togglePublishMutation.isPending}
+                    >
+                      {centre.published && hasChanges ? 'Publish Changes' : centre.published ? 'Unpublish' : 'Publish'}
+                    </Button>
+                    <Button
+                      onClick={() => setShowDeleteAreaDialog(true)}
+                      variant="destructive"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Area
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </CardHeader>
