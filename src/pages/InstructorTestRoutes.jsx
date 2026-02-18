@@ -13,10 +13,13 @@ export default function InstructorTestRoutes() {
     queryFn: () => base44.auth.me()
   });
 
-  const { data: centres = [], isLoading } = useQuery({
+  const { data: allCentres = [], isLoading } = useQuery({
     queryKey: ['testRouteCentres'],
     queryFn: () => base44.entities.TestRouteCentre.list()
   });
+
+  // Only show published centres to instructors
+  const centres = allCentres.filter(c => c.published);
 
   if (isLoading) {
     return (
