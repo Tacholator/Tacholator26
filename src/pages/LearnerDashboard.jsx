@@ -666,100 +666,101 @@ export default function LearnerDashboard() {
           </motion.div>
         )}
 
-        {/* 6. Homework & Study Tasks */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-        >
-          <Card className="border-0 shadow-sm bg-gradient-to-br from-amber-100 to-yellow-100">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <ClipboardList className="w-5 h-5 text-amber-600" />
-                  Homework & Study Tasks
-                </CardTitle>
-              </div>
-              {regularHomework.length > 0 && (
-                <Badge className="bg-amber-600 text-white">{regularHomework.length} pending</Badge>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {regularHomework.length > 0 ? (
-                <>
-                  {regularHomework.slice(0, 3).map(item => (
-                    <Link key={item.id} to={createPageUrl('LearnerHomework')}>
-                      <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg hover:bg-white cursor-pointer transition-colors">
-                        <div className="p-2 rounded-lg bg-amber-200">
-                          <FileText className="w-4 h-4 text-amber-700" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-slate-800 truncate">{item.title}</p>
-                          {item.dueDate && (
-                            <p className="text-xs text-amber-700">Due {moment(item.dueDate).format('D MMM')}</p>
-                          )}
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-slate-400" />
-                      </div>
-                    </Link>
-                  ))}
-                  <Link to={createPageUrl('LearnerHomework')}>
-                    <Button variant="outline" className="w-full gap-2 mt-2 bg-white/50 hover:bg-white/80 border-amber-200">
-                      View All Homework <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <ClipboardList className="w-12 h-12 mx-auto mb-3 text-amber-300" />
-                  <p className="text-sm text-slate-600">No homework assigned yet</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* 7. Notifications */}
-        {notifications.length > 0 && (
+        {/* 6. Homework & Notifications */}
+        <div className="grid md:grid-cols-2 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.25 }}
           >
-            <Card className="border-0 shadow-sm bg-gradient-to-br from-indigo-100 to-purple-100">
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-amber-100 to-yellow-100">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-indigo-600" />
-                  Recent Notifications
-                </CardTitle>
-                {unreadNotifications > 0 && (
-                  <Badge className="bg-indigo-600 text-white">{unreadNotifications} unread</Badge>
+                <div>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <ClipboardList className="w-5 h-5 text-amber-600" />
+                    Homework & Study Tasks
+                  </CardTitle>
+                </div>
+                {regularHomework.length > 0 && (
+                  <Badge className="bg-amber-600 text-white">{regularHomework.length} pending</Badge>
                 )}
               </CardHeader>
               <CardContent className="space-y-3">
-                {notifications.slice(0, 3).map(notification => (
-                  <div 
-                    key={notification.id}
-                    className={`flex items-start gap-3 p-3 rounded-lg ${
-                      notification.readAt ? 'bg-white/70' : 'bg-white border border-indigo-200'
-                    }`}
-                  >
-                    <Bell className={`w-5 h-5 mt-0.5 ${notification.readAt ? 'text-slate-400' : 'text-indigo-600'}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-800">{notification.title}</p>
-                      <p className="text-xs text-slate-500 mt-1">{moment(notification.created_date).fromNow()}</p>
-                    </div>
+                {regularHomework.length > 0 ? (
+                  <>
+                    {regularHomework.slice(0, 3).map(item => (
+                      <Link key={item.id} to={createPageUrl('LearnerHomework')}>
+                        <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg hover:bg-white cursor-pointer transition-colors">
+                          <div className="p-2 rounded-lg bg-amber-200">
+                            <FileText className="w-4 h-4 text-amber-700" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-slate-800 truncate">{item.title}</p>
+                            {item.dueDate && (
+                              <p className="text-xs text-amber-700">Due {moment(item.dueDate).format('D MMM')}</p>
+                            )}
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </div>
+                      </Link>
+                    ))}
+                    <Link to={createPageUrl('LearnerHomework')}>
+                      <Button variant="outline" className="w-full gap-2 mt-2 bg-white/50 hover:bg-white/80 border-amber-200">
+                        View All Homework <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <ClipboardList className="w-12 h-12 mx-auto mb-3 text-amber-300" />
+                    <p className="text-sm text-slate-600">No homework assigned yet</p>
                   </div>
-                ))}
-                <Link to={createPageUrl('LearnerNotifications')}>
-                  <Button variant="outline" className="w-full gap-2 mt-2 bg-white/50 hover:bg-white/80 border-indigo-200">
-                    View All Notifications <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </Link>
+                )}
               </CardContent>
             </Card>
           </motion.div>
-        )}
+
+          {notifications.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+            >
+              <Card className="border-0 shadow-sm bg-gradient-to-br from-indigo-100 to-purple-100">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Bell className="w-5 h-5 text-indigo-600" />
+                    Recent Notifications
+                  </CardTitle>
+                  {unreadNotifications > 0 && (
+                    <Badge className="bg-indigo-600 text-white">{unreadNotifications} unread</Badge>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {notifications.slice(0, 3).map(notification => (
+                    <div 
+                      key={notification.id}
+                      className={`flex items-start gap-3 p-3 rounded-lg ${
+                        notification.readAt ? 'bg-white/70' : 'bg-white border border-indigo-200'
+                      }`}
+                    >
+                      <Bell className={`w-5 h-5 mt-0.5 ${notification.readAt ? 'text-slate-400' : 'text-indigo-600'}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-800">{notification.title}</p>
+                        <p className="text-xs text-slate-500 mt-1">{moment(notification.created_date).fromNow()}</p>
+                      </div>
+                    </div>
+                  ))}
+                  <Link to={createPageUrl('LearnerNotifications')}>
+                    <Button variant="outline" className="w-full gap-2 mt-2 bg-white/50 hover:bg-white/80 border-indigo-200">
+                      View All Notifications <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </div>
 
         {/* 8. Instructor Snapshot */}
         <motion.div
