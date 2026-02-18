@@ -33,7 +33,7 @@ export default function AdminTestRouteDetail() {
   const [showDeleteAreaDialog, setShowDeleteAreaDialog] = useState(false);
 
   const urlParams = new URLSearchParams(window.location.search);
-  const centreId = urlParams.get('centreId');
+  const centreId = urlParams.get('centreId') || urlParams.get('centreid');
 
   const { data: centre, isLoading: centreLoading } = useQuery({
     queryKey: ['testRouteCentre', centreId],
@@ -162,7 +162,22 @@ export default function AdminTestRouteDetail() {
     return (
       <div className="p-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center py-12">Test route area not found</div>
+          <Card className="max-w-2xl mx-auto mt-12">
+            <CardContent className="py-12 text-center">
+              <Navigation className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Test route area not found</h3>
+              <p className="text-slate-600 mb-6">
+                This test route area may have been deleted or doesn't exist
+              </p>
+              <Button
+                onClick={() => navigate(createPageUrl('AdminTestRouteConfiguration'))}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Configuration
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
