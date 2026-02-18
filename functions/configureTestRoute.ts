@@ -10,7 +10,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const { routeId, gpsDataUrl } = await req.json();
+    const body = await req.json();
+    const { routeId, gpsDataUrl } = body;
 
     if (!routeId || !gpsDataUrl) {
       return Response.json({ 
@@ -18,8 +19,11 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
+    // Clean up the URL - remove any extra characters
+    const cleanUrl = gpsDataUrl.trim().replace(/^\(+|\)+$/g, '');
+
     // Fetch the GPS data from URL
-    const gpsResponse = await fetch(gpsDataUrl);
+    const gpsResponse = await fetch(cleanUrl);
     if (!gpsResponse.ok) {
       return Response.json({ 
         error: 'Failed to fetch GPS data file' 
