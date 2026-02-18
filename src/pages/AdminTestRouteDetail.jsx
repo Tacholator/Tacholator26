@@ -321,8 +321,14 @@ export default function AdminTestRouteDetail() {
                       Edit Info
                     </Button>
                     <Button
-                      onClick={() => togglePublishMutation.mutate({ published: !centre.published })}
-                      variant={centre.published ? "outline" : "default"}
+                      onClick={() => {
+                        if (centre.published && hasChanges) {
+                          togglePublishMutation.mutate({ published: true });
+                        } else {
+                          togglePublishMutation.mutate({ published: !centre.published });
+                        }
+                      }}
+                      variant={centre.published && !hasChanges ? "outline" : "default"}
                       className={!centre.published || hasChanges ? "bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]" : ""}
                       disabled={togglePublishMutation.isPending}
                     >
