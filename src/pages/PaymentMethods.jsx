@@ -511,10 +511,7 @@ export default function PaymentMethods() {
             {instructor?.stripeAccountStatus === 'pending' && (
               <Alert className="border-amber-200 bg-amber-50">
                 <AlertCircle className="w-4 h-4 text-amber-600" />
-                <AlertDescription className="flex items-center justify-between">
-                  <span className="text-amber-800">
-                    Complete your payment setup to start receiving payouts
-                  </span>
+                <AlertDescription>
                   <Link to={createPageUrl('InstructorStripeConnect')}>
                     <Button size="sm" className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
                       Get started
