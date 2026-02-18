@@ -157,29 +157,7 @@ export default function InstructorTestRouteDetail() {
           </Alert>
         )}
 
-        {/* GPS Follow-Along Setup - Admin Only */}
-        {isMainAdmin && (
-          <Card className="mb-6 border-[#F7B602] border-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Navigation className="w-5 h-5 text-[#F7B602]" />
-                GPS Follow-Along Setup
-              </CardTitle>
-              <CardDescription>
-                Set up a recorded GPS route for learners to follow during practice
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                onClick={() => navigate(createPageUrl('InstructorGpsRouteSetup') + `?centreid=${centreId}`)}
-                className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-              >
-                <Navigation className="w-4 h-4 mr-2" />
-                Configure GPS Route
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+
 
         {/* Route Cards Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
