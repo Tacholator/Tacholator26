@@ -26,22 +26,24 @@ export default function LearnerMyInstructor() {
     queryKey: ['myInstructor', pupil?.instructorId],
     queryFn: async () => {
       if (!pupil?.instructorId) return null;
-      // Fetch instructor User by ID to get full_name
-      const users = await base44.entities.User.list();
-      const instructorUser = users.find(u => u.id === pupil.instructorId);
-      if (instructorUser) {
-        // Also fetch Instructor entity for additional details
-        const instructors = await base44.entities.Instructor.filter({ id: pupil.instructorId });
-        const instructorDetails = instructors.length > 0 ? instructors[0] : null;
-        return {
-          id: instructorUser.id,
-          full_name: instructorUser.full_name,
-          email: instructorUser.email,
-          phone: instructorDetails?.phone || null,
-          profilePhotoUrl: instructorDetails?.profilePhotoUrl || null
-        };
-      }
-      return null;
+      
+      // Fetch instructor User by ID
+      const users = await base44.entities.User.filter({ id: pupil.instructorId });
+      if (users.length === 0) return null;
+      
+      const instructorUser = users[0];
+      
+      // Fetch Instructor entity for additional details
+      const instructors = await base44.entities.Instructor.list();
+      const instructorDetails = instructors.find(i => i.id === pupil.instructorId) || null;
+      
+      return {
+        id: instructorUser.id,
+        full_name: instructorUser.full_name || `${instructorUser.data?.firstName || ''} ${instructorUser.data?.lastName || ''}`.trim() || instructorUser.email,
+        email: instructorUser.email,
+        phone: instructorUser.data?.phone || instructorDetails?.phone || null,
+        profilePhotoUrl: instructorUser.data?.profilePhotoUrl || instructorDetails?.profilePhotoUrl || null
+      };
     },
     enabled: !!pupil?.instructorId
   });
