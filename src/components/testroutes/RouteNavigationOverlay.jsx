@@ -204,9 +204,11 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         mapboxAccessToken={MAPBOX_TOKEN}
         mapStyle="mapbox://styles/mapbox/streets-v12"
         style={{ width: '100%', height: '100%' }}
+        attributionControl={false}
+        interactiveLayerIds={[]}
       >
         {/* Route Line */}
-        {routeGeoJson && (
+        {routeGeoJson && routeGeoJson.geometry && (
           <Source id="route" type="geojson" data={routeGeoJson}>
             <Layer {...routeLayerStyle} />
           </Source>

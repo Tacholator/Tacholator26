@@ -135,10 +135,13 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                     mapStyle="mapbox://styles/mapbox/streets-v12"
                     style={{ width: '100%', height: '100%' }}
                     interactive={false}
+                    attributionControl={false}
                   >
-                    <Source id="route-preview-source" type="geojson" data={routeGeoJson}>
-                      <Layer {...routeLayerStyle} />
-                    </Source>
+                    {routeGeoJson && (
+                      <Source id="route-preview-source" type="geojson" data={routeGeoJson}>
+                        <Layer {...routeLayerStyle} />
+                      </Source>
+                    )}
                   </Map>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
