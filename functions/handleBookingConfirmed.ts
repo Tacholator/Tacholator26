@@ -5,13 +5,12 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     
-    const { event, data } = await req.json();
+    const body = await req.json();
+    const booking = body.data || body;
 
-    if (!event?.type || !data) {
-      return Response.json({ error: 'Invalid event' }, { status: 400 });
+    if (!booking?.id || !booking?.status) {
+      return Response.json({ error: 'Invalid booking data' }, { status: 400 });
     }
-
-    const booking = data;
 
     // Only process confirmed bookings
     if (booking.status !== 'confirmed') {
