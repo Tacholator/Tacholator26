@@ -70,7 +70,35 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // Convert UK phone number to E.164 format
+  const normalizePhoneNumber = (phone) => {
+    if (!phone) return '';
+    // Remove all non-digit characters
+    const digits = phone.replace(/\D/g, '');
+    
+    // If starts with 07, convert to +447
+    if (digits.startsWith('07') && digits.length === 11) {
+      return `+44${digits.substring(1)}`;
+    }
+    // If starts with 447, add +
+    if (digits.startsWith('447') && digits.length === 12) {
+      return `+${digits}`;
+    }
+    // If already starts with +44, return as is
+    if (phone.startsWith('+44')) {
+      return phone;
+    }
+    // Return original if format not recognized
+    return phone;
+  };
+
   const handleSubmit = async () => {
+    // Validate required fields
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
+      alert('Please fill in all required fields: First Name, Last Name, Email, and Phone Number');
+      return;
+    }
+
     setIsSaving(true);
     try {
       // If marking as Passed, automatically set practicalTestPassed to true
@@ -78,6 +106,9 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
       if (dataToSave.status === 'Passed') {
         dataToSave.practicalTestPassed = true;
       }
+      // Normalize phone number to E.164 format
+      dataToSave.phone = normalizePhoneNumber(dataToSave.phone);
+      
       await onSave(dataToSave, !existingPupil);
       onClose();
     } finally {
