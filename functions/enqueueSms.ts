@@ -65,8 +65,8 @@ Deno.serve(async (req) => {
       supportLink: `${baseUrl}/support`
     };
 
-    // Enqueue SMS
-    const notification = await base44.entities.SmsNotification.create({
+    // Enqueue SMS using service role
+    const notification = await base44.asServiceRole.entities.SmsNotification.create({
       bookingId: bookingId,
       userId: bookingData.pupilId,
       toE164: phoneE164,
