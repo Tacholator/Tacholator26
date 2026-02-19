@@ -94,12 +94,27 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     }).catch(console.error);
   }, []);
 
-  // Center map on route when it loads
+  // Center map on route when it loads - fit bounds to show entire route
   useEffect(() => {
-    if (routeGeoJson && mapboxToken) {
+    if (routeGeoJson?.geometry?.coordinates?.length > 0 && mapboxToken) {
+      const coords = routeGeoJson.geometry.coordinates;
+      const lngs = coords.map(c => c[0]);
+      const lats = coords.map(c => c[1]);
+      
+      // Calculate appropriate zoom level to show entire route
+      const lngDiff = Math.max(...lngs) - Math.min(...lngs);
+      const latDiff = Math.max(...lats) - Math.min(...lats);
+      const maxDiff = Math.max(lngDiff, latDiff);
+      
+      let zoom = 14;
+      if (maxDiff > 0.1) zoom = 10;
+      else if (maxDiff > 0.05) zoom = 11;
+      else if (maxDiff > 0.02) zoom = 12;
+      else if (maxDiff > 0.01) zoom = 13;
+      
       setViewState({
         ...routeCenter,
-        zoom: 14
+        zoom: zoom
       });
     }
   }, [routeGeoJson, mapboxToken]);
