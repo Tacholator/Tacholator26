@@ -100,14 +100,13 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     }).catch(console.error);
   }, []);
 
-  // Center map on route when it loads - fit bounds to show entire route
+  // Initial map positioning - fit bounds to show entire route
   useEffect(() => {
-    if (routeGeoJson?.geometry?.coordinates?.length > 0 && mapboxToken) {
+    if (routeGeoJson?.geometry?.coordinates?.length > 0 && mapboxToken && !hasStarted) {
       const coords = routeGeoJson.geometry.coordinates;
       const lngs = coords.map(c => c[0]);
       const lats = coords.map(c => c[1]);
       
-      // Calculate appropriate zoom level to show entire route
       const lngDiff = Math.max(...lngs) - Math.min(...lngs);
       const latDiff = Math.max(...lats) - Math.min(...lats);
       const maxDiff = Math.max(lngDiff, latDiff);
@@ -123,36 +122,123 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         zoom: zoom
       });
     }
-  }, [routeGeoJson, mapboxToken]);
+  }, [routeGeoJson, mapboxToken, hasStarted]);
 
-  // Start geolocation tracking
+  // Smart step detection - snap user to route and find first step ahead
+  const findCurrentStep = (userLoc) => {
+    if (!routeGeoJson?.geometry?.coordinates || !steps.length) return 0;
+    
+    const coords = routeGeoJson.geometry.coordinates;
+    
+    // Find nearest point on route
+    let minDistance = Infinity;
+    let nearestIndex = 0;
+    
+    coords.forEach(([lon, lat], index) => {
+      const dist = getDistance(userLoc.latitude, userLoc.longitude, lat, lon);
+      if (dist < minDistance) {
+        minDistance = dist;
+        nearestIndex = index;
+      }
+    });
+    
+    // Find first step ahead of current position
+    for (let i = 0; i < steps.length; i++) {
+      if (!steps[i]?.location) continue;
+      
+      // Find this step's index on the route
+      const stepCoords = [steps[i].location.longitude, steps[i].location.latitude];
+      let stepRouteIndex = 0;
+      let minStepDist = Infinity;
+      
+      coords.forEach(([lon, lat], idx) => {
+        const dist = getDistance(stepCoords[1], stepCoords[0], lat, lon);
+        if (dist < minStepDist) {
+          minStepDist = dist;
+          stepRouteIndex = idx;
+        }
+      });
+      
+      // If this step is ahead of user's position on route
+      if (stepRouteIndex >= nearestIndex) {
+        return i;
+      }
+    }
+    
+    return 0;
+  };
+
+  // Geolocation tracking with proper initialization
   useEffect(() => {
-    if (!hasStarted) return;
+    if (!hasStarted || !mapLoaded) return;
 
     if ('geolocation' in navigator) {
       watchIdRef.current = navigator.geolocation.watchPosition(
         (position) => {
+          const accuracy = position.coords.accuracy;
+          const heading = position.coords.heading;
+          
+          // Wait for accurate fix (accuracy <= 50m)
+          if (!firstFixRef.current && accuracy > 50) {
+            console.log('Waiting for accurate GPS fix...', accuracy);
+            return;
+          }
+          
           const newLocation = {
             longitude: position.coords.longitude,
             latitude: position.coords.latitude,
-            accuracy: position.coords.accuracy
+            accuracy: accuracy
           };
+          
           setUserLocation(newLocation);
-
-          // Center map on user location
-          setViewState(prev => ({
-            ...prev,
-            longitude: newLocation.longitude,
-            latitude: newLocation.latitude
-          }));
+          if (heading !== null) setUserHeading(heading);
+          
+          // On first accurate fix
+          if (!firstFixRef.current) {
+            firstFixRef.current = true;
+            setIsLoading(false);
+            
+            // Set camera with pitch and bearing
+            setViewState({
+              longitude: newLocation.longitude,
+              latitude: newLocation.latitude,
+              zoom: 17,
+              pitch: 55,
+              bearing: heading || 0
+            });
+            
+            // Smart step detection
+            const detectedStep = findCurrentStep(newLocation);
+            setCurrentStepIndex(detectedStep);
+            
+            // Auto-start voice guidance
+            setTimeout(() => {
+              speak('Starting route guidance', false);
+              setTimeout(() => {
+                if (steps[detectedStep]?.instructionText) {
+                  speak(steps[detectedStep].instructionText, false);
+                  setLastSpokenAt(Date.now());
+                }
+              }, 1500);
+            }, 500);
+          } else if (followMode) {
+            // Update camera in follow mode
+            setViewState(prev => ({
+              ...prev,
+              longitude: newLocation.longitude,
+              latitude: newLocation.latitude,
+              bearing: heading !== null ? heading : prev.bearing
+            }));
+          }
         },
         (error) => {
           console.error('Geolocation error:', error);
+          setIsLoading(false);
         },
         {
           enableHighAccuracy: true,
           maximumAge: 1000,
-          timeout: 5000
+          timeout: 10000
         }
       );
     }
@@ -162,7 +248,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
     };
-  }, [hasStarted]);
+  }, [hasStarted, mapLoaded, followMode, steps, routeGeoJson]);
 
   // Check if user is off route
   useEffect(() => {
