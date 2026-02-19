@@ -19,8 +19,8 @@ Deno.serve(async (req) => {
 
     const bookingData = booking[0];
 
-    // Get pupil details
-    const pupils = await base44.entities.Pupil.filter({ id: bookingData.pupilId });
+    // Get pupil details using service role
+    const pupils = await base44.asServiceRole.entities.Pupil.filter({ id: bookingData.pupilId });
     if (pupils.length === 0 || !pupils[0].phone) {
       return Response.json({ error: 'Pupil phone not found' }, { status: 404 });
     }
