@@ -9,6 +9,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
+// Debug log
+console.log('Mapbox token exists:', !!MAPBOX_TOKEN);
+
 // Helper to calculate distance between two coordinates
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371e3; // Earth's radius in meters
