@@ -6,11 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Volume2, VolumeX, RotateCcw, X, Navigation2, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
-
-// Debug log
-console.log('Mapbox token exists:', !!MAPBOX_TOKEN);
+import { base44 } from '@/api/base44Client';
 
 // Helper to calculate distance between two coordinates
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -40,6 +36,7 @@ function speak(text, isMuted = false) {
 }
 
 export default function RouteNavigationOverlay({ route, onClose }) {
+  const [mapboxToken, setMapboxToken] = useState(null);
   const [viewState, setViewState] = useState({
     longitude: -1.5,
     latitude: 53.8,
@@ -54,6 +51,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   
   const watchIdRef = useRef(null);
   const mapRef = useRef(null);
+
+  // Fetch Mapbox token
+  useEffect(() => {
+    base44.functions.invoke('getMapboxToken').then(({ data }) => {
+      if (data?.token) {
+        setMapboxToken(data.token);
+      }
+    }).catch(console.error);
+  }, []);
 
   // Parse route GeoJSON
   const routeGeoJson = route?.gpsGeoJson || null;
@@ -200,12 +206,12 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900">
-      {MAPBOX_TOKEN ? (
+      {mapboxToken ? (
         <Map
           ref={mapRef}
           {...viewState}
           onMove={evt => setViewState(evt.viewState)}
-          mapboxAccessToken={MAPBOX_TOKEN}
+          mapboxAccessToken={mapboxToken}
           mapStyle="mapbox://styles/mapbox/streets-v12"
           style={{ width: '100%', height: '100%' }}
           attributionControl={false}

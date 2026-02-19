@@ -125,9 +125,9 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               
               {/* Route Map Visualization */}
               <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden pointer-events-none">
-                {hasValidRoute && MAPBOX_TOKEN ? (
+                {hasValidRoute && mapboxToken ? (
                   <Map
-                    mapboxAccessToken={MAPBOX_TOKEN}
+                    mapboxAccessToken={mapboxToken}
                     initialViewState={{
                       ...routeCenter,
                       zoom: 13
@@ -153,7 +153,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <p className="text-slate-500">
-                      {!MAPBOX_TOKEN ? 'Mapbox token not configured' : 'No route data available'}
+                      {!mapboxToken ? 'Loading map...' : 'No route data available'}
                     </p>
                   </div>
                 )}
