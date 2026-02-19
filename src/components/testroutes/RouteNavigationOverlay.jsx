@@ -485,8 +485,17 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         </div>
       )}
 
-      {/* Zoom Controls */}
+      {/* Zoom and Recenter Controls */}
       <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
+        {hasStarted && !followMode && (
+          <Button
+            onClick={handleRecenter}
+            size="icon"
+            className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] shadow-lg"
+          >
+            <Locate className="w-5 h-5" />
+          </Button>
+        )}
         <Button
           onClick={handleZoomIn}
           size="icon"
@@ -515,48 +524,60 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       </div>
 
       {/* Top Instruction Card */}
-      <AnimatePresence>
-        <motion.div
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -100, opacity: 0 }}
-          className="absolute top-4 left-16 right-4 z-10"
-        >
-          <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3 flex-1">
-                  <Navigation2 className="w-6 h-6 text-[#F7B602] mt-1 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-lg font-semibold text-[#071739]">
-                      {currentStep.instructionText}
-                    </p>
-                    {routeMetrics.distance > 0 && (
-                      <div className="flex items-center gap-3 mt-2">
-                        <div className="flex items-center gap-1 text-sm text-slate-600">
-                          <RouteIcon className="w-4 h-4 text-[#F7B602]" />
-                          <span className="font-medium">{routeMetrics.distance} km</span>
+      {hasStarted && !isLoading && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            className="absolute top-4 left-16 right-4 z-10"
+          >
+            <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 flex-1">
+                    <Navigation2 className="w-6 h-6 text-[#F7B602] mt-1 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-lg font-semibold text-[#071739]">
+                        {currentStep.instructionText}
+                      </p>
+                      {distanceToNextStep !== null && distanceToNextStep > 0 && (
+                        <div className="flex items-center gap-1 mt-2 text-sm text-slate-600">
+                          <span className="font-medium">
+                            {distanceToNextStep < 1000 
+                              ? `${Math.round(distanceToNextStep)} m` 
+                              : `${(distanceToNextStep / 1000).toFixed(1)} km`}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-1 text-sm text-slate-600">
-                          <Clock className="w-4 h-4 text-[#F7B602]" />
-                          <span className="font-medium">~{routeMetrics.duration} min</span>
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {isOffRoute && (
-                <div className="mt-3 flex items-center gap-2 text-orange-600 bg-orange-50 p-2 rounded">
-                  <AlertTriangle className="w-4 h-4" />
-                  <span className="text-sm font-medium">You may be off route</span>
-                </div>
-              )}
+                {isOffRoute && (
+                  <div className="mt-3 flex items-center gap-2 text-orange-600 bg-orange-50 p-2 rounded">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span className="text-sm font-medium">Return to route</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </AnimatePresence>
+      )}
+      
+      {/* Loading Indicator */}
+      {isLoading && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+          <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
+            <CardContent className="p-6 flex flex-col items-center gap-3">
+              <Loader2 className="w-8 h-8 text-[#F7B602] animate-spin" />
+              <p className="text-lg font-semibold text-[#071739]">Getting GPS fix...</p>
+              <p className="text-sm text-slate-600">Waiting for accurate location</p>
             </CardContent>
           </Card>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      )}
 
       {/* Bottom Control Bar */}
       <AnimatePresence>
