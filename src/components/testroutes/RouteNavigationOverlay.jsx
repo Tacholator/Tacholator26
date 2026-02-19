@@ -37,11 +37,6 @@ function speak(text, isMuted = false) {
 
 export default function RouteNavigationOverlay({ route, onClose }) {
   const [mapboxToken, setMapboxToken] = useState(null);
-  const [viewState, setViewState] = useState({
-    longitude: -1.5,
-    latitude: 53.8,
-    zoom: 13
-  });
   const [userLocation, setUserLocation] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -52,6 +47,27 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const watchIdRef = useRef(null);
   const mapRef = useRef(null);
 
+  // Parse route GeoJSON and calculate center
+  const routeGeoJson = route?.gpsGeoJson || null;
+  const steps = route?.stepsJson || [];
+
+  const getRouteCenter = () => {
+    if (!routeGeoJson?.geometry?.coordinates || routeGeoJson.geometry.coordinates.length === 0) {
+      return { longitude: -1.5, latitude: 53.8 };
+    }
+    const coords = routeGeoJson.geometry.coordinates;
+    const avgLon = coords.reduce((sum, [lon]) => sum + lon, 0) / coords.length;
+    const avgLat = coords.reduce((sum, [, lat]) => sum + lat, 0) / coords.length;
+    return { longitude: avgLon, latitude: avgLat };
+  };
+
+  const routeCenter = getRouteCenter();
+
+  const [viewState, setViewState] = useState({
+    ...routeCenter,
+    zoom: 14
+  });
+
   // Fetch Mapbox token
   useEffect(() => {
     base44.functions.invoke('getMapboxToken').then(({ data }) => {
@@ -61,9 +77,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     }).catch(console.error);
   }, []);
 
-  // Parse route GeoJSON
-  const routeGeoJson = route?.gpsGeoJson || null;
-  const steps = route?.stepsJson || [];
+  // Center map on route when it loads
+  useEffect(() => {
+    if (routeGeoJson && mapboxToken) {
+      setViewState({
+        ...routeCenter,
+        zoom: 14
+      });
+    }
+  }, [routeGeoJson, mapboxToken]);
 
   // Start geolocation tracking
   useEffect(() => {
