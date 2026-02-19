@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Volume2, VolumeX, RotateCcw, X, Navigation2, AlertTriangle, Plus, Minus } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, X, Navigation2, AlertTriangle, Plus, Minus, Clock, Route as RouteIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 
@@ -299,33 +299,60 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         </Button>
       </div>
 
+      {/* Close Button */}
+      <div className="absolute top-4 left-4 z-20">
+        <Button
+          onClick={handleEnd}
+          size="icon"
+          className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
+
       {/* Top Instruction Card */}
       <AnimatePresence>
         <motion.div
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
-          className="absolute top-4 left-4 right-4 z-10"
+          className="absolute top-4 left-16 right-4 z-10"
         >
           <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
             <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <Navigation2 className="w-6 h-6 text-[#F7B602] mt-1 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-lg font-semibold text-[#071739]">
-                    {currentStep.instructionText}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="outline" className="text-xs">
-                      Step {currentStepIndex + 1} of {steps.length}
-                    </Badge>
-                    {currentStep.distance && (
-                      <Badge variant="outline" className="text-xs">
-                        {currentStep.distance}
-                      </Badge>
-                    )}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3 flex-1">
+                  <Navigation2 className="w-6 h-6 text-[#F7B602] mt-1 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-lg font-semibold text-[#071739]">
+                      {currentStep.instructionText}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                      {steps.length > 0 && (
+                        <Badge variant="outline" className="text-xs">
+                          Step {currentStepIndex + 1} of {steps.length}
+                        </Badge>
+                      )}
+                      {currentStep.distance && (
+                        <Badge variant="outline" className="text-xs">
+                          {currentStep.distance}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
+                {routeMetrics.distance > 0 && (
+                  <div className="flex flex-col gap-1 text-right text-sm">
+                    <div className="flex items-center gap-1 text-slate-600">
+                      <RouteIcon className="w-4 h-4" />
+                      <span className="font-medium">{routeMetrics.distance} km</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-slate-600">
+                      <Clock className="w-4 h-4" />
+                      <span className="font-medium">~{routeMetrics.duration} min</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {isOffRoute && (
@@ -350,13 +377,27 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
             <CardContent className="p-4">
               {!hasStarted ? (
-                <Button
-                  onClick={handleStart}
-                  className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-lg py-6"
-                >
-                  <Navigation2 className="w-5 h-5 mr-2" />
-                  Start Navigation
-                </Button>
+                <div className="space-y-3">
+                  {routeMetrics.distance > 0 && (
+                    <div className="flex items-center justify-center gap-6 text-sm text-slate-600 pb-2">
+                      <div className="flex items-center gap-2">
+                        <RouteIcon className="w-4 h-4 text-[#F7B602]" />
+                        <span className="font-medium">{routeMetrics.distance} km</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-[#F7B602]" />
+                        <span className="font-medium">~{routeMetrics.duration} min</span>
+                      </div>
+                    </div>
+                  )}
+                  <Button
+                    onClick={handleStart}
+                    className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-lg py-6"
+                  >
+                    <Navigation2 className="w-5 h-5 mr-2" />
+                    Start Navigation
+                  </Button>
+                </div>
               ) : (
                 <div className="grid grid-cols-3 gap-3">
                   <Button
