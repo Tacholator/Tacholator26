@@ -409,18 +409,28 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const routeMetrics = calculateRouteMetrics();
   const currentStep = steps[currentStepIndex] || { instructionText: 'Follow the route' };
 
+  // Get start and finish coordinates
+  const startCoord = routeGeoJson?.geometry?.coordinates?.[0];
+  const endCoord = routeGeoJson?.geometry?.coordinates?.[routeGeoJson.geometry.coordinates.length - 1];
+
   return (
     <div className="fixed inset-0 z-50 bg-slate-900">
       {mapboxToken ? (
         <Map
           ref={mapRef}
           {...viewState}
-          onMove={evt => setViewState(evt.viewState)}
+          onMove={evt => {
+            setViewState(evt.viewState);
+            if (followMode && hasStarted && firstFixRef.current) {
+              setFollowMode(false); // User manually moved map
+            }
+          }}
           mapboxAccessToken={mapboxToken}
           mapStyle="mapbox://styles/mapbox/streets-v12"
           style={{ width: '100%', height: '100%' }}
           attributionControl={false}
           interactiveLayerIds={[]}
+          onLoad={() => setMapLoaded(true)}
           onError={(e) => console.error('Mapbox error:', e)}
         >
         {/* Route Line */}
@@ -430,15 +440,40 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           </Source>
         )}
 
-        {/* User Location Marker */}
-        {userLocation && (
+        {/* Start Marker */}
+        {startCoord && !hasStarted && (
+          <Marker longitude={startCoord[0]} latitude={startCoord[1]} anchor="center">
+            <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold shadow-lg">
+              S
+            </div>
+          </Marker>
+        )}
+
+        {/* Finish Marker */}
+        {endCoord && !hasStarted && (
+          <Marker longitude={endCoord[0]} latitude={endCoord[1]} anchor="center">
+            <div className="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold shadow-lg">
+              F
+            </div>
+          </Marker>
+        )}
+
+        {/* User Location Marker with Heading */}
+        {userLocation && hasStarted && (
           <Marker
             longitude={userLocation.longitude}
             latitude={userLocation.latitude}
             anchor="center"
+            rotation={userHeading || 0}
           >
             <div className="relative">
               <div className="w-6 h-6 bg-blue-500 rounded-full border-4 border-white shadow-lg" />
+              {userHeading !== null && (
+                <div 
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-8 border-l-transparent border-r-transparent border-b-blue-500"
+                  style={{ transform: `translateX(-50%)` }}
+                />
+              )}
               <div className="absolute inset-0 w-6 h-6 bg-blue-500 rounded-full animate-ping opacity-50" />
             </div>
           </Marker>
