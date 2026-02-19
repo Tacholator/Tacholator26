@@ -182,13 +182,17 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">Phone *</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => handleChange('phone', e.target.value)}
                   placeholder="07123 456789"
+                  required
                 />
+                <p className="text-xs text-slate-500">
+                  Required for SMS notifications (auto-converts to +44 format)
+                </p>
               </div>
             </div>
 
