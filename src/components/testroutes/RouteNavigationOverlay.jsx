@@ -274,9 +274,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     }
   }, [userLocation, routeGeoJson, hasStarted]);
 
-  // Update current step based on location
+  // Update distance to next step and advance when close
   useEffect(() => {
-    if (!userLocation || !steps.length || !hasStarted) return;
+    if (!userLocation || !steps.length || !hasStarted || !firstFixRef.current) return;
 
     const currentStep = steps[currentStepIndex];
     if (!currentStep?.location) return;
@@ -287,8 +287,10 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       currentStep.location.latitude,
       currentStep.location.longitude
     );
+    
+    setDistanceToNextStep(distanceToStep);
 
-    // If within 30 meters of next step, advance
+    // If within 30 meters of current step, advance to next
     if (distanceToStep < 30 && currentStepIndex < steps.length - 1) {
       const nextIndex = currentStepIndex + 1;
       setCurrentStepIndex(nextIndex);
@@ -302,41 +304,30 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   }, [userLocation, currentStepIndex, steps, isMuted, hasStarted]);
 
   const handleStart = () => {
+    setIsLoading(true);
     setHasStarted(true);
-    
-    // Get user's current location to center map
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const userLoc = {
-            longitude: position.coords.longitude,
-            latitude: position.coords.latitude
-          };
-          setUserLocation(userLoc);
-          setViewState({
-            longitude: userLoc.longitude,
-            latitude: userLoc.latitude,
-            zoom: 16
-          });
-        },
-        (error) => console.error('Location error:', error),
-        { enableHighAccuracy: true }
-      );
-    }
-    
-    speak('Starting route guidance', isMuted);
-    
-    if (steps.length > 0) {
-      setTimeout(() => {
-        speak(steps[0]?.instructionText, isMuted);
-        setLastSpokenAt(Date.now());
-      }, 1000);
-    }
+    setIsMuted(false); // Default unmuted for auto-start voice
+    setFollowMode(true);
+    // Geolocation and voice will be handled in the useEffect after map loads
   };
 
   const handleToggleMute = () => {
-    setIsMuted(!isMuted);
-    speak(!isMuted ? 'Voice guidance muted' : 'Voice guidance enabled', !isMuted);
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    speak(newMuted ? 'Voice guidance muted' : 'Voice guidance enabled', false);
+  };
+  
+  const handleRecenter = () => {
+    setFollowMode(true);
+    if (userLocation) {
+      setViewState({
+        longitude: userLocation.longitude,
+        latitude: userLocation.latitude,
+        zoom: 17,
+        pitch: 55,
+        bearing: userHeading || 0
+      });
+    }
   };
 
   const handleRepeat = () => {
