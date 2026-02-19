@@ -211,6 +211,27 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   const handleStart = () => {
     setHasStarted(true);
+    
+    // Get user's current location to center map
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLoc = {
+            longitude: position.coords.longitude,
+            latitude: position.coords.latitude
+          };
+          setUserLocation(userLoc);
+          setViewState({
+            longitude: userLoc.longitude,
+            latitude: userLoc.latitude,
+            zoom: 16
+          });
+        },
+        (error) => console.error('Location error:', error),
+        { enableHighAccuracy: true }
+      );
+    }
+    
     speak('Starting route guidance', isMuted);
     
     if (steps.length > 0) {
