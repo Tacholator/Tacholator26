@@ -35,8 +35,8 @@ Deno.serve(async (req) => {
       phoneE164 = '+44' + phoneE164;
     }
 
-    // Get instructor details
-    const instructors = await base44.entities.User.filter({ id: bookingData.instructorId });
+    // Get instructor details using service role
+    const instructors = await base44.asServiceRole.entities.User.filter({ id: bookingData.instructorId });
     const instructorName = instructors.length > 0 ? instructors[0].full_name : 'Your instructor';
 
     // Skip if too close to lesson time
