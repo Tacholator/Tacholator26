@@ -360,32 +360,20 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                     <p className="text-lg font-semibold text-[#071739]">
                       {currentStep.instructionText}
                     </p>
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
-                      {steps.length > 0 && (
-                        <Badge variant="outline" className="text-xs">
-                          Step {currentStepIndex + 1} of {steps.length}
-                        </Badge>
-                      )}
-                      {currentStep.distance && (
-                        <Badge variant="outline" className="text-xs">
-                          {currentStep.distance}
-                        </Badge>
-                      )}
-                    </div>
+                    {routeMetrics.distance > 0 && (
+                      <div className="flex items-center gap-3 mt-2">
+                        <div className="flex items-center gap-1 text-sm text-slate-600">
+                          <RouteIcon className="w-4 h-4 text-[#F7B602]" />
+                          <span className="font-medium">{routeMetrics.distance} km</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-slate-600">
+                          <Clock className="w-4 h-4 text-[#F7B602]" />
+                          <span className="font-medium">~{routeMetrics.duration} min</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-                {routeMetrics.distance > 0 && (
-                  <div className="flex flex-col gap-1 text-right text-sm">
-                    <div className="flex items-center gap-1 text-slate-600">
-                      <RouteIcon className="w-4 h-4" />
-                      <span className="font-medium">{routeMetrics.distance} km</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-slate-600">
-                      <Clock className="w-4 h-4" />
-                      <span className="font-medium">~{routeMetrics.duration} min</span>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {isOffRoute && (
