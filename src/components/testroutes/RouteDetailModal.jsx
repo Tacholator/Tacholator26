@@ -180,6 +180,21 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                       style={{ width: '100%', height: '100%' }}
                       onZoom={(e) => setMapZoom(e.viewState.zoom)}
                       attributionControl={false}
+                      onLoad={(e) => {
+                        // Fit bounds to show entire route
+                        if (routeGeoJson?.geometry?.coordinates?.length > 0) {
+                          const coords = routeGeoJson.geometry.coordinates;
+                          const lngs = coords.map(c => c[0]);
+                          const lats = coords.map(c => c[1]);
+                          
+                          const bounds = [
+                            [Math.min(...lngs), Math.min(...lats)],
+                            [Math.max(...lngs), Math.max(...lats)]
+                          ];
+                          
+                          e.target.fitBounds(bounds, { padding: 40, duration: 0 });
+                        }
+                      }}
                     >
                       {routeGeoJson && (
                         <Source id="route-preview-source" type="geojson" data={routeGeoJson}>
@@ -259,7 +274,10 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                 <Button
                   className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
                   disabled={!hasValidRoute}
-                  onClick={() => setNavigationOpen(true)}
+                  onClick={() => {
+                    onOpenChange(false);
+                    setNavigationOpen(true);
+                  }}
                 >
                   <Navigation className="w-4 h-4 mr-2" />
                   Start Navigation
