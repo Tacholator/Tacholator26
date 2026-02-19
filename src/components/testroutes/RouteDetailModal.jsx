@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Youtube, Navigation, Save, Info, Upload } from 'lucide-react';
+import { Youtube, Navigation, Save, Info, Upload, Plus, Minus, Clock, Route as RouteIcon } from 'lucide-react';
 import RouteNavigationOverlay from './RouteNavigationOverlay';
 
 function extractYouTubeId(url) {
@@ -39,6 +39,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
   const [gpsRouteUrl, setGpsRouteUrl] = useState(route?.gpsRouteUrl || '');
   const [uploading, setUploading] = useState(false);
   const [navigationOpen, setNavigationOpen] = useState(false);
+  const [mapZoom, setMapZoom] = useState(13);
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -84,11 +85,45 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
     id: 'route-preview',
     type: 'line',
     paint: {
-      'line-color': '#F7B602',
+      'line-color': '#3B82F6',
       'line-width': 4,
       'line-opacity': 0.8
     }
   };
+
+  // Calculate route metrics
+  const calculateRouteMetrics = () => {
+    if (!routeGeoJson || !routeGeoJson.geometry || !routeGeoJson.geometry.coordinates) {
+      return { distance: 0, duration: 0 };
+    }
+
+    const coords = routeGeoJson.geometry.coordinates;
+    let totalDistance = 0;
+
+    for (let i = 0; i < coords.length - 1; i++) {
+      const [lon1, lat1] = coords[i];
+      const [lon2, lat2] = coords[i + 1];
+      
+      const R = 6371e3;
+      const φ1 = (lat1 * Math.PI) / 180;
+      const φ2 = (lat2 * Math.PI) / 180;
+      const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+      const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+      const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      totalDistance += R * c;
+    }
+
+    const distanceKm = (totalDistance / 1000).toFixed(1);
+    const durationMin = Math.round((totalDistance / 1000) / 0.5);
+
+    return { distance: distanceKm, duration: durationMin };
+  };
+
+  const routeMetrics = calculateRouteMetrics();
 
   const handleSaveVideo = () => {
     onYouTubeChange(route.id, youtubeUrl);
