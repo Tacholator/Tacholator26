@@ -23,9 +23,11 @@ export default function Home() {
   }
 
   // Render the appropriate dashboard based on role
-  if (user.role === 'admin') {
+  const isInstructor = user.role === 'admin';
+  
+  if (isInstructor) {
     return <InstructorDashboard />;
+  } else {
+    return <LearnerDashboard />;
   }
-
-  return <LearnerDashboard />;
 }
