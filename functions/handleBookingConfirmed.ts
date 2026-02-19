@@ -32,12 +32,12 @@ Deno.serve(async (req) => {
       results.push({ type: 'booking_confirmed', error: error.message });
     }
 
-    // 2. Enqueue 24h reminder (skip if lesson is less than 6h away)
+    // 2. Enqueue 24h reminder (skip if lesson is less than 25h away)
     const startTime = moment(booking.startAtUtc);
     const now = moment();
     const hoursUntilLesson = startTime.diff(now, 'hours', true);
 
-    if (hoursUntilLesson >= 6) {
+    if (hoursUntilLesson >= 25) {
       try {
         const reminder24Time = moment(booking.startAtUtc).subtract(24, 'hours');
         const reminder24hResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
@@ -52,8 +52,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 3. Enqueue 1h reminder (skip if lesson is less than 10 minutes away)
-    if (hoursUntilLesson >= 0.17) { // 10 minutes
+    // 3. Enqueue 1h reminder (skip if lesson is less than 1.2h away)
+    if (hoursUntilLesson >= 1.2) { // 1.2 hours = 72 minutes
       try {
         const reminder1hResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
           bookingId: booking.id,

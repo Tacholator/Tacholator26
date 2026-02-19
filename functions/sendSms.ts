@@ -18,11 +18,9 @@ function renderTemplate(template, variables) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    
+    // Service role function - no user auth required
+    // This is called from processPendingSms which is admin-gated
 
     const { toE164, templateKey, variablesJson } = await req.json();
 

@@ -36,8 +36,8 @@ Deno.serve(async (req) => {
     }
 
     // Get instructor details using service role
-    const instructors = await base44.asServiceRole.entities.User.filter({ id: bookingData.instructorId });
-    const instructorName = instructors.length > 0 ? instructors[0].full_name : 'Your instructor';
+    const instructorProfile = await base44.asServiceRole.entities.Instructor.filter({ id: bookingData.instructorId });
+    const instructorName = instructorProfile.length > 0 ? instructorProfile[0].name : 'Your instructor';
 
     // Skip if too close to lesson time
     if (skipIfTooClose) {
@@ -61,8 +61,8 @@ Deno.serve(async (req) => {
           bookingData.pickupLocation.substring(0, 37) + '...' : 
           bookingData.pickupLocation) : 
         'TBC',
-      manageLink: `${baseUrl}${bookingData.pupilId ? '/learner' : ''}/booking/${bookingId}`,
-      supportLink: `${baseUrl}/support`
+      manageLink: `${baseUrl}/LearnerScheduledLessons`,
+      supportLink: `${baseUrl}/LearnerMyInstructor`
     };
 
     // Enqueue SMS using service role
