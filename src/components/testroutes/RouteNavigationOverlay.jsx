@@ -23,7 +23,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return R * c; // Distance in meters
 }
 
-// Text-to-speech helper
+// Text-to-speech helper with female voice preference
 function speak(text, isMuted = false) {
   if (isMuted || !text) return;
   
@@ -31,6 +31,23 @@ function speak(text, isMuted = false) {
   utterance.rate = 0.9;
   utterance.pitch = 1;
   utterance.volume = 1;
+  
+  // Try to select a female voice
+  const voices = window.speechSynthesis.getVoices();
+  const femaleVoice = voices.find(v => 
+    v.name.includes('Female') || 
+    v.name.includes('female') || 
+    v.name.includes('Google US English') || 
+    v.name.includes('Samantha') ||
+    v.name.includes('Karen') ||
+    v.name.includes('Victoria') ||
+    v.lang === 'en-US'
+  );
+  
+  if (femaleVoice) {
+    utterance.voice = femaleVoice;
+  }
+  
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utterance);
 }
