@@ -404,6 +404,11 @@ export default function PupilList() {
                               {pupil.firstName} {pupil.lastName}
                             </p>
                             <p className="text-sm text-slate-500">{pupil.phone}</p>
+                            {!pupil.phone && (
+                              <Badge className="bg-rose-100 text-rose-700 text-xs mt-1">
+                                Missing Phone
+                              </Badge>
+                            )}
                           </div>
                         </Link>
                       </TableCell>
