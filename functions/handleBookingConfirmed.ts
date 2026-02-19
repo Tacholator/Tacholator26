@@ -39,10 +39,11 @@ Deno.serve(async (req) => {
 
     if (hoursUntilLesson >= 6) {
       try {
+        const reminder24Time = moment(booking.startAtUtc).subtract(24, 'hours');
         const reminder24hResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
           bookingId: booking.id,
           templateKey: 'lesson_reminder_24h',
-          sendAtUtc: startTime.subtract(24, 'hours').toISOString(),
+          sendAtUtc: reminder24Time.toISOString(),
           skipIfTooClose: true
         });
         results.push({ type: 'lesson_reminder_24h', result: reminder24hResult.data });
