@@ -425,32 +425,18 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="absolute bottom-4 left-4 right-4 z-10"
+          className="absolute bottom-4 left-4 right-4 z-10 pb-safe"
         >
           <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
             <CardContent className="p-4">
               {!hasStarted ? (
-                <div className="space-y-3">
-                  {routeMetrics.distance > 0 && (
-                    <div className="flex items-center justify-center gap-6 text-sm text-slate-600 pb-2">
-                      <div className="flex items-center gap-2">
-                        <RouteIcon className="w-4 h-4 text-[#F7B602]" />
-                        <span className="font-medium">{routeMetrics.distance} km</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-[#F7B602]" />
-                        <span className="font-medium">~{routeMetrics.duration} min</span>
-                      </div>
-                    </div>
-                  )}
-                  <Button
-                    onClick={handleStart}
-                    className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-lg py-6"
-                  >
-                    <Navigation2 className="w-5 h-5 mr-2" />
-                    Start Navigation
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleStart}
+                  className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-lg py-6"
+                >
+                  <Navigation2 className="w-5 h-5 mr-2" />
+                  Start Navigation
+                </Button>
               ) : (
                 <div className="grid grid-cols-3 gap-3">
                   <Button

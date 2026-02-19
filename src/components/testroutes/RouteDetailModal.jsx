@@ -181,7 +181,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                       onZoom={(e) => setMapZoom(e.viewState.zoom)}
                       attributionControl={false}
                       onLoad={(e) => {
-                        // Fit bounds to show entire route
+                        // Fit bounds to show entire route with responsive padding
                         if (routeGeoJson?.geometry?.coordinates?.length > 0) {
                           const coords = routeGeoJson.geometry.coordinates;
                           const lngs = coords.map(c => c[0]);
@@ -192,7 +192,9 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                             [Math.max(...lngs), Math.max(...lats)]
                           ];
                           
-                          e.target.fitBounds(bounds, { padding: 40, duration: 0 });
+                          // Responsive padding based on screen size
+                          const padding = window.innerWidth < 768 ? 20 : 40;
+                          e.target.fitBounds(bounds, { padding, duration: 0 });
                         }
                       }}
                     >
@@ -281,11 +283,6 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                 >
                   <Navigation className="w-4 h-4 mr-2" />
                   Start Navigation
-                  {hasValidRoute && routeMetrics.distance > 0 && (
-                    <span className="ml-2 text-sm opacity-80">
-                      ({routeMetrics.distance} km · ~{routeMetrics.duration} min)
-                    </span>
-                  )}
                 </Button>
               </div>
             </div>
