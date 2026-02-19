@@ -11,8 +11,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Get booking details
-    const booking = await base44.entities.LessonBooking.filter({ id: bookingId });
+    // Get booking details using service role
+    const booking = await base44.asServiceRole.entities.LessonBooking.filter({ id: bookingId });
     if (booking.length === 0) {
       return Response.json({ error: 'Booking not found' }, { status: 404 });
     }
