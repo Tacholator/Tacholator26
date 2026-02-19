@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
     
     const { event, data } = await req.json();
 
-    if (event?.type !== 'update' || !data) {
+    if (!event?.type || !data) {
       return Response.json({ error: 'Invalid event' }, { status: 400 });
     }
 
