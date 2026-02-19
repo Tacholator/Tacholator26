@@ -167,32 +167,44 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               </div>
               
               {/* Route Map Visualization */}
-              <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden pointer-events-none">
+              <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden relative">
                 {hasValidRoute && mapboxToken ? (
-                  <Map
-                    mapboxAccessToken={mapboxToken}
-                    initialViewState={{
-                      ...routeCenter,
-                      zoom: 13
-                    }}
-                    mapStyle="mapbox://styles/mapbox/streets-v12"
-                    style={{ width: '100%', height: '100%' }}
-                    interactive={false}
-                    attributionControl={false}
-                    dragPan={false}
-                    scrollZoom={false}
-                    boxZoom={false}
-                    dragRotate={false}
-                    keyboard={false}
-                    doubleClickZoom={false}
-                    touchZoomRotate={false}
-                  >
-                    {routeGeoJson && (
-                      <Source id="route-preview-source" type="geojson" data={routeGeoJson}>
-                        <Layer {...routeLayerStyle} />
-                      </Source>
-                    )}
-                  </Map>
+                  <>
+                    <Map
+                      mapboxAccessToken={mapboxToken}
+                      initialViewState={{
+                        ...routeCenter,
+                        zoom: mapZoom
+                      }}
+                      mapStyle="mapbox://styles/mapbox/streets-v12"
+                      style={{ width: '100%', height: '100%' }}
+                      onZoom={(e) => setMapZoom(e.viewState.zoom)}
+                      attributionControl={false}
+                    >
+                      {routeGeoJson && (
+                        <Source id="route-preview-source" type="geojson" data={routeGeoJson}>
+                          <Layer {...routeLayerStyle} />
+                        </Source>
+                      )}
+                    </Map>
+                    {/* Zoom Controls */}
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-10">
+                      <Button
+                        onClick={() => setMapZoom(prev => Math.min(prev + 1, 20))}
+                        size="icon"
+                        className="h-8 w-8 bg-white hover:bg-slate-100 text-slate-900 shadow-lg"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={() => setMapZoom(prev => Math.max(prev - 1, 1))}
+                        size="icon"
+                        className="h-8 w-8 bg-white hover:bg-slate-100 text-slate-900 shadow-lg"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <p className="text-slate-500">
@@ -204,7 +216,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
 
               {/* Route Details & Start Button */}
               <div className="space-y-4 p-4 bg-white rounded-lg border">
-                <div className="flex gap-6">
+                <div className="flex gap-6 flex-wrap">
                   <div>
                     <p className="text-xs text-slate-500">Route Type</p>
                     <p className="text-lg font-semibold text-[#071739]">Test Route {route.routeNumber}</p>
@@ -215,6 +227,24 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                       {hasValidRoute ? 'Ready' : 'No GPS data'}
                     </p>
                   </div>
+                  {hasValidRoute && routeMetrics.distance > 0 && (
+                    <>
+                      <div>
+                        <p className="text-xs text-slate-500">Distance</p>
+                        <p className="text-lg font-semibold text-[#071739] flex items-center gap-1">
+                          <RouteIcon className="w-4 h-4" />
+                          {routeMetrics.distance} km
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500">Duration</p>
+                        <p className="text-lg font-semibold text-[#071739] flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          ~{routeMetrics.duration} min
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
                 
                 {!hasValidRoute && (
@@ -233,6 +263,11 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                 >
                   <Navigation className="w-4 h-4 mr-2" />
                   Start Navigation
+                  {hasValidRoute && routeMetrics.distance > 0 && (
+                    <span className="ml-2 text-sm opacity-80">
+                      ({routeMetrics.distance} km · ~{routeMetrics.duration} min)
+                    </span>
+                  )}
                 </Button>
               </div>
             </div>
