@@ -31,6 +31,14 @@ Deno.serve(async (req) => {
     }
 
     const pupil = pupils[0];
+    
+    // Convert phone to E.164 format if needed
+    let phoneE164 = pupil.phone.trim();
+    if (phoneE164.startsWith('0')) {
+      phoneE164 = '+44' + phoneE164.substring(1);
+    } else if (!phoneE164.startsWith('+')) {
+      phoneE164 = '+44' + phoneE164;
+    }
 
     // Get instructor details
     const instructors = await base44.entities.User.filter({ id: bookingData.instructorId });
@@ -66,7 +74,7 @@ Deno.serve(async (req) => {
     const notification = await base44.entities.SmsNotification.create({
       bookingId: bookingId,
       userId: bookingData.pupilId,
-      toE164: pupil.phone,
+      toE164: phoneE164,
       templateKey: templateKey,
       variablesJson: variables,
       sendAtUtc: sendAtUtc,
