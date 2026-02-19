@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Volume2, VolumeX, RotateCcw, X, Navigation2, AlertTriangle } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, X, Navigation2, AlertTriangle, Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 
@@ -196,10 +196,24 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     id: 'route',
     type: 'line',
     paint: {
-      'line-color': '#F7B602',
+      'line-color': '#3B82F6',
       'line-width': 6,
       'line-opacity': 0.8
     }
+  };
+
+  const handleZoomIn = () => {
+    setViewState(prev => ({
+      ...prev,
+      zoom: Math.min(prev.zoom + 1, 20)
+    }));
+  };
+
+  const handleZoomOut = () => {
+    setViewState(prev => ({
+      ...prev,
+      zoom: Math.max(prev.zoom - 1, 1)
+    }));
   };
 
   const currentStep = steps[currentStepIndex] || { instructionText: 'Follow the route' };
@@ -244,6 +258,24 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           <p>Mapbox token not configured</p>
         </div>
       )}
+
+      {/* Zoom Controls */}
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
+        <Button
+          onClick={handleZoomIn}
+          size="icon"
+          className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg"
+        >
+          <Plus className="w-5 h-5" />
+        </Button>
+        <Button
+          onClick={handleZoomOut}
+          size="icon"
+          className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg"
+        >
+          <Minus className="w-5 h-5" />
+        </Button>
+      </div>
 
       {/* Top Instruction Card */}
       <AnimatePresence>

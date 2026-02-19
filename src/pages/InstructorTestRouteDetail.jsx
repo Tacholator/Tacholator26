@@ -9,10 +9,42 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, ArrowLeft, Info, Navigation } from 'lucide-react';
+import { MapPin, ArrowLeft, Info, Navigation, Clock, Route } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import RouteCard from '@/components/testroutes/RouteCard';
 import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
+
+// Calculate route distance and duration from GeoJSON
+function calculateRouteMetrics(gpsGeoJson) {
+  if (!gpsGeoJson || !gpsGeoJson.geometry || !gpsGeoJson.geometry.coordinates) {
+    return { distance: 0, duration: 0 };
+  }
+
+  const coords = gpsGeoJson.geometry.coordinates;
+  let totalDistance = 0;
+
+  for (let i = 0; i < coords.length - 1; i++) {
+    const [lon1, lat1] = coords[i];
+    const [lon2, lat2] = coords[i + 1];
+    
+    const R = 6371e3;
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    totalDistance += R * c;
+  }
+
+  const distanceKm = (totalDistance / 1000).toFixed(1);
+  const durationMin = Math.round((totalDistance / 1000) / 0.5); // Assume 30 km/h average
+
+  return { distance: distanceKm, duration: durationMin };
+}
 
 function extractYouTubeId(url) {
   if (!url) return '';
@@ -112,6 +144,9 @@ export default function InstructorTestRouteDetail() {
     setModalOpen(true);
   };
 
+  // Calculate metrics for the centre's GPS route
+  const centreMetrics = centre?.gpsGeoJson ? calculateRouteMetrics(centre.gpsGeoJson) : null;
+
   if (isLoading || routesLoading) {
     return (
       <div className="p-6">
@@ -157,7 +192,29 @@ export default function InstructorTestRouteDetail() {
           </Alert>
         )}
 
-
+        {/* Route Metrics */}
+        {centreMetrics && (
+          <Card className="mb-6 border-[#F7B602] border-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Navigation className="w-5 h-5 text-[#F7B602]" />
+                Route Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <Route className="w-4 h-4 text-[#F7B602]" />
+                  <span className="font-medium">{centreMetrics.distance} km</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-[#F7B602]" />
+                  <span className="font-medium">~{centreMetrics.duration} min</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Route Cards Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

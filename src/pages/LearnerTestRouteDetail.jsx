@@ -6,9 +6,41 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, ArrowLeft, Info, Navigation } from 'lucide-react';
+import { MapPin, ArrowLeft, Info, Navigation, Clock, Route } from 'lucide-react';
 import RouteCard from '@/components/testroutes/RouteCard';
 import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
+
+// Calculate route distance and duration from GeoJSON
+function calculateRouteMetrics(gpsGeoJson) {
+  if (!gpsGeoJson || !gpsGeoJson.geometry || !gpsGeoJson.geometry.coordinates) {
+    return { distance: 0, duration: 0 };
+  }
+
+  const coords = gpsGeoJson.geometry.coordinates;
+  let totalDistance = 0;
+
+  for (let i = 0; i < coords.length - 1; i++) {
+    const [lon1, lat1] = coords[i];
+    const [lon2, lat2] = coords[i + 1];
+    
+    const R = 6371e3;
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    totalDistance += R * c;
+  }
+
+  const distanceKm = (totalDistance / 1000).toFixed(1);
+  const durationMin = Math.round((totalDistance / 1000) / 0.5); // Assume 30 km/h average
+
+  return { distance: distanceKm, duration: durationMin };
+}
 
 export default function LearnerTestRouteDetail() {
   const navigate = useNavigate();
@@ -40,6 +72,9 @@ export default function LearnerTestRouteDetail() {
     setSelectedRoute(route);
     setModalOpen(true);
   };
+
+  // Calculate metrics for the centre's GPS route
+  const centreMetrics = centre?.gpsGeoJson ? calculateRouteMetrics(centre.gpsGeoJson) : null;
 
   if (isLoading || routesLoading) {
     return (
@@ -95,7 +130,19 @@ export default function LearnerTestRouteDetail() {
               Practice following the exact test route with live GPS tracking
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            {centreMetrics && (
+              <div className="flex items-center gap-6 text-sm text-slate-600 pb-4 border-b">
+                <div className="flex items-center gap-2">
+                  <Route className="w-4 h-4 text-[#F7B602]" />
+                  <span className="font-medium">{centreMetrics.distance} km</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-[#F7B602]" />
+                  <span className="font-medium">{centreMetrics.duration} min</span>
+                </div>
+              </div>
+            )}
             <Button
               onClick={() => navigate(createPageUrl('LearnerGpsFollowAlong') + `?centreid=${centreId}`)}
               className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
