@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -18,8 +18,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Youtube, Navigation, Save, Info, Upload } from 'lucide-react';
 import RouteNavigationOverlay from './RouteNavigationOverlay';
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
-
 function extractYouTubeId(url) {
   if (!url) return '';
   const patterns = [
@@ -35,11 +33,21 @@ function extractYouTubeId(url) {
 
 export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeChange, onGpsChange, isUpdating, isAdmin = true }) {
   const navigate = useNavigate();
+  const [mapboxToken, setMapboxToken] = useState(null);
   const [youtubeUrl, setYoutubeUrl] = useState(route?.youtubeUrl || '');
   const [gpsRouteType, setGpsRouteType] = useState(route?.gpsRouteType || 'gpx_url');
   const [gpsRouteUrl, setGpsRouteUrl] = useState(route?.gpsRouteUrl || '');
   const [uploading, setUploading] = useState(false);
   const [navigationOpen, setNavigationOpen] = useState(false);
+
+  // Fetch Mapbox token
+  useEffect(() => {
+    base44.functions.invoke('getMapboxToken').then(({ data }) => {
+      if (data?.token) {
+        setMapboxToken(data.token);
+      }
+    }).catch(console.error);
+  }, []);
 
   React.useEffect(() => {
     if (route) {
