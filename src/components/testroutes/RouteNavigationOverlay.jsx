@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Volume2, VolumeX, RotateCcw, X, Navigation2, AlertTriangle, Plus, Minus, Clock, Route as RouteIcon } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, X, Navigation2, AlertTriangle, Plus, Minus, Clock, Route as RouteIcon, Locate, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 
@@ -55,14 +55,20 @@ function speak(text, isMuted = false) {
 export default function RouteNavigationOverlay({ route, onClose }) {
   const [mapboxToken, setMapboxToken] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [userHeading, setUserHeading] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isOffRoute, setIsOffRoute] = useState(false);
   const [lastSpokenAt, setLastSpokenAt] = useState(null);
   const [hasStarted, setHasStarted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [followMode, setFollowMode] = useState(true);
+  const [distanceToNextStep, setDistanceToNextStep] = useState(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
   
   const watchIdRef = useRef(null);
   const mapRef = useRef(null);
+  const firstFixRef = useRef(false);
 
   // Parse route GeoJSON and calculate center
   const routeGeoJson = route?.gpsGeoJson || null;
