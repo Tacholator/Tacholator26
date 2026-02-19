@@ -124,7 +124,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               </div>
               
               {/* Route Map Visualization */}
-              <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden">
+              <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden pointer-events-none">
                 {hasValidRoute && MAPBOX_TOKEN ? (
                   <Map
                     mapboxAccessToken={MAPBOX_TOKEN}
@@ -136,6 +136,13 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                     style={{ width: '100%', height: '100%' }}
                     interactive={false}
                     attributionControl={false}
+                    dragPan={false}
+                    scrollZoom={false}
+                    boxZoom={false}
+                    dragRotate={false}
+                    keyboard={false}
+                    doubleClickZoom={false}
+                    touchZoomRotate={false}
                   >
                     {routeGeoJson && (
                       <Source id="route-preview-source" type="geojson" data={routeGeoJson}>

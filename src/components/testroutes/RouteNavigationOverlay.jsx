@@ -197,16 +197,18 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900">
-      <Map
-        ref={mapRef}
-        {...viewState}
-        onMove={evt => setViewState(evt.viewState)}
-        mapboxAccessToken={MAPBOX_TOKEN}
-        mapStyle="mapbox://styles/mapbox/streets-v12"
-        style={{ width: '100%', height: '100%' }}
-        attributionControl={false}
-        interactiveLayerIds={[]}
-      >
+      {MAPBOX_TOKEN ? (
+        <Map
+          ref={mapRef}
+          {...viewState}
+          onMove={evt => setViewState(evt.viewState)}
+          mapboxAccessToken={MAPBOX_TOKEN}
+          mapStyle="mapbox://styles/mapbox/streets-v12"
+          style={{ width: '100%', height: '100%' }}
+          attributionControl={false}
+          interactiveLayerIds={[]}
+          onError={(e) => console.error('Mapbox error:', e)}
+        >
         {/* Route Line */}
         {routeGeoJson && routeGeoJson.geometry && (
           <Source id="route" type="geojson" data={routeGeoJson}>
@@ -227,7 +229,12 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             </div>
           </Marker>
         )}
-      </Map>
+        </Map>
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-white">
+          <p>Mapbox token not configured</p>
+        </div>
+      )}
 
       {/* Top Instruction Card */}
       <AnimatePresence>
