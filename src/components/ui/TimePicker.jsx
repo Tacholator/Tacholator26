@@ -7,11 +7,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-// Generate time options in 30-minute increments
-const generateTimeOptions = (minTime = '00:00', maxTime = '23:30') => {
+// Generate time options in 15-minute increments
+const generateTimeOptions = (minTime = '00:00', maxTime = '23:45') => {
   const times = [];
   for (let hour = 0; hour < 24; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
+    for (let minute = 0; minute < 60; minute += 15) {
       const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
       times.push(timeStr);
     }
@@ -63,9 +63,9 @@ export function TimeRangePicker({
     if (!endTime || endTime <= newStartTime) {
       const allTimes = generateTimeOptions();
       const startIndex = allTimes.indexOf(newStartTime);
-      if (startIndex !== -1 && startIndex + 2 < allTimes.length) {
-        // Default to 1 hour later (2 slots of 30 min)
-        onEndChange(allTimes[startIndex + 2]);
+      if (startIndex !== -1 && startIndex + 4 < allTimes.length) {
+        // Default to 1 hour later (4 slots of 15 min)
+        onEndChange(allTimes[startIndex + 4]);
       }
     }
   };
