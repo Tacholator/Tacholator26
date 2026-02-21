@@ -60,20 +60,22 @@ export default function Layout({ children, currentPageName }) {
     base44.auth.isAuthenticated().then(setIsAuthenticated);
   }, []);
 
-  // Determine if user is instructor or learner
-  const isInstructor = user?.role === 'admin';
-  const isMainAdmin = user?.email === 'fasobah@gmail.com';
-  
-  // Fetch pupil status for learners
+  // Check if user has a pupil record (determines if they're a learner)
   const { data: pupilProfile } = useQuery({
     queryKey: ['learnerPupilProfile', user?.id],
     queryFn: async () => {
-      if (isInstructor || !user?.id) return null;
+      if (!user?.id) return null;
       const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
       return pupils.length > 0 ? pupils[0] : null;
     },
-    enabled: !!user?.id && !isInstructor
+    enabled: !!user?.id
   });
+
+  // Determine if user is instructor or learner
+  // If user has a pupil record, they're a learner regardless of role
+  const isLearner = pupilProfile !== null && pupilProfile !== undefined;
+  const isInstructor = !isLearner && user?.role === 'admin';
+  const isMainAdmin = isInstructor && user?.email === 'fasobah@gmail.com';
   
   // Build navigation dynamically based on role and pupil status
   const pupilStatus = pupilProfile?.status || 'Active';
