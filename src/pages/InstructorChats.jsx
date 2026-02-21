@@ -88,11 +88,14 @@ export default function InstructorChats() {
   const deleteConversationMutation = useMutation({
     mutationFn: async (conversationId) => {
       const messagesToDelete = allMessages.filter(m => m.conversationId === conversationId);
-      await Promise.all(messagesToDelete.map(msg => base44.entities.Message.delete(msg.id)));
+      for (const msg of messagesToDelete) {
+        await base44.entities.Message.delete(msg.id);
+      }
+      return conversationId;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['messages']);
       setSelectedConversation(null);
+      queryClient.invalidateQueries(['messages']);
     }
   });
 
@@ -193,10 +196,11 @@ export default function InstructorChats() {
     return fullName.includes(pupilSearchQuery.toLowerCase());
   });
 
-  const handleDeleteConversation = () => {
-    if (selectedConversation && window.confirm('Are you sure you want to delete this conversation? This will delete all messages.')) {
-      deleteConversationMutation.mutate(selectedConversation.conversationId);
-    }
+  const handleDeleteConversation = async () => {
+    if (!selectedConversation) return;
+    if (!window.confirm('Are you sure you want to delete this conversation? This will delete all messages.')) return;
+    
+    await deleteConversationMutation.mutateAsync(selectedConversation.conversationId);
   };
 
   // Mobile view: show either list or chat
