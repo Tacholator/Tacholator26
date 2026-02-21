@@ -17,7 +17,9 @@ const SLOT_COLORS = {
   outside_working_hours: '#E8E8E8',
   reserved_pending: '#B39DDB',
   // Light grey for others viewing pending/confirmed
-  reserved_confirmed_other: '#F2F2F2'
+  reserved_confirmed_other: '#F2F2F2',
+  // Empty slot (no published slot available)
+  empty_slot: '#FAFAFA'
 };
 
 export default function Calendar24Hour({ 
@@ -186,9 +188,9 @@ export default function Calendar24Hour({
       }
     }
 
-    // If published slots only mode and no slot instance found, treat as unavailable
+    // If published slots only mode and no slot instance found, show as empty/not available
     if (availabilityMode === 'published_slots_only') {
-      return { state: 'unavailable' };
+      return { state: 'empty_slot' };
     }
 
     return { state: 'available' };
@@ -221,7 +223,7 @@ export default function Calendar24Hour({
       }
       // In published slots mode, instructors can click available slots or anywhere to create new slots
       if (availabilityMode === 'published_slots_only') {
-        return state === 'outside_working_hours' || state === 'unavailable' || state === 'available';
+        return state === 'outside_working_hours' || state === 'unavailable' || state === 'available' || state === 'empty_slot';
       }
       return state === 'available';
     }
@@ -354,7 +356,8 @@ export default function Calendar24Hour({
                   cancelled: 'Cancelled',
                   no_show: 'No Show',
                   lunch: 'Lunch',
-                  unavailable: 'Unavailable'
+                  unavailable: 'Unavailable',
+                  empty_slot: ''
                 };
 
                 // For non-instructors viewing pending/confirmed slots
