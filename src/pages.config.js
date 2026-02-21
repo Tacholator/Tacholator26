@@ -49,6 +49,7 @@
  */
 import AccountDeletionRequest from './pages/AccountDeletionRequest';
 import AdminDailyQuizzes from './pages/AdminDailyQuizzes';
+import AdminDashboard from './pages/AdminDashboard';
 import AdminDataManagement from './pages/AdminDataManagement';
 import AdminInstructorCalendars from './pages/AdminInstructorCalendars';
 import AdminRoleManagement from './pages/AdminRoleManagement';
@@ -114,13 +115,13 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import AdminDashboard from './pages/AdminDashboard';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AccountDeletionRequest": AccountDeletionRequest,
     "AdminDailyQuizzes": AdminDailyQuizzes,
+    "AdminDashboard": AdminDashboard,
     "AdminDataManagement": AdminDataManagement,
     "AdminInstructorCalendars": AdminInstructorCalendars,
     "AdminRoleManagement": AdminRoleManagement,
@@ -186,7 +187,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "AdminDashboard": AdminDashboard,
 }
 
 export const pagesConfig = {

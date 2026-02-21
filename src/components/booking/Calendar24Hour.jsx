@@ -501,7 +501,8 @@ export default function Calendar24Hour({
                         style={{ 
                           borderColor: isOthersReserved ? '#E0E0E0' : borderColors[state],
                           backgroundColor: displayColor,
-                          height: '100%'
+                          height: '100%',
+                          minWidth: 0
                         }}
                       >
                         {/* Diagonal hatch overlay for non-instructors viewing others' reserved slots */}

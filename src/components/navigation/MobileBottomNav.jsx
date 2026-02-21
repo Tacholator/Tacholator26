@@ -97,16 +97,19 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
         : pupilNavItems);
 
   const { data: unreadMessages = [] } = useQuery({
-    queryKey: ['unreadMessages', userId],
+    queryKey: ['unreadMessages', userId, isInstructor],
     queryFn: async () => {
       const messages = await base44.entities.Message.filter({ readAt: null });
       // Filter messages where current user is the receiver
       return messages.filter(msg => {
-        const receiverRole = isInstructor ? 'instructor' : 'pupil';
-        return msg.senderRole !== receiverRole;
+        if (isInstructor) {
+          return msg.senderRole === 'pupil' && msg.instructorId === userId;
+        } else {
+          return msg.senderRole === 'instructor' && msg.pupilId === pupilProfile?.id;
+        }
       });
     },
-    enabled: !!userId
+    enabled: !!userId && (isInstructor || !!pupilProfile?.id)
   });
 
   const unreadMessagesCount = unreadMessages.length;

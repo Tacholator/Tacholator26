@@ -59,20 +59,20 @@ export default function Layout({ children, currentPageName }) {
 
   // Fetch unread messages count
   const { data: unreadMessagesCount = 0 } = useQuery({
-    queryKey: ['unreadMessagesCount', user?.id],
+    queryKey: ['unreadMessagesCount', user?.id, isInstructor],
     queryFn: async () => {
       if (!user?.id) return 0;
       const messages = await base44.entities.Message.filter({ readAt: null });
       const unreadForUser = messages.filter(msg => {
         if (isInstructor) {
-          return msg.senderRole === 'pupil';
+          return msg.senderRole === 'pupil' && msg.instructorId === user.id;
         } else {
-          return msg.senderRole === 'instructor';
+          return msg.senderRole === 'instructor' && msg.pupilId === pupilProfile?.id;
         }
       });
       return unreadForUser.length;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id && (isInstructor || !!pupilProfile?.id),
     refetchInterval: 10000
   });
 
