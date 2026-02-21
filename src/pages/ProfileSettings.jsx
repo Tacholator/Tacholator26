@@ -64,6 +64,20 @@ export default function ProfileSettings() {
     try {
       await base44.auth.updateMe(formData);
       queryClient.invalidateQueries(['currentUser']);
+      
+      // If instructor and name changed, update all pupil records
+      if (isInstructor && (formData.firstName || formData.lastName)) {
+        const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+        if (fullName) {
+          const pupils = await base44.entities.Pupil.filter({ instructorId: user.id });
+          await Promise.all(
+            pupils.map(pupil => 
+              base44.entities.Pupil.update(pupil.id, { instructorName: fullName })
+            )
+          );
+        }
+      }
+      
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } finally {
