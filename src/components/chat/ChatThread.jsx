@@ -90,9 +90,9 @@ export default function ChatThread({
                   <div className={`flex items-center gap-1 text-xs text-slate-400 mt-1 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
                     <span>{moment(msg.created_date).format('MMM D, h:mm a')}</span>
                     {isCurrentUser && (
-                      msg.status === 'read' || msg.readAt ? (
-                        <CheckCheck className="w-3.5 h-3.5 text-[#F7B602]" />
-                      ) : msg.status === 'delivered' || msg.deliveredAt ? (
+                      msg.readAt ? (
+                        <CheckCheck className="w-3.5 h-3.5 text-blue-500" />
+                      ) : msg.deliveredAt ? (
                         <CheckCheck className="w-3.5 h-3.5 text-slate-400" />
                       ) : (
                         <Check className="w-3.5 h-3.5 text-slate-400" />
