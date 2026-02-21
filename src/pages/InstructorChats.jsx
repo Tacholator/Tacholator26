@@ -37,9 +37,9 @@ export default function InstructorChats() {
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['pupils'],
-    queryFn: () => base44.entities.Pupil.list(),
-    enabled: !!user
+    queryKey: ['pupils', user?.id],
+    queryFn: () => base44.entities.Pupil.filter({ instructorId: user.id }),
+    enabled: !!user?.id
   });
 
   const { data: allMessages = [] } = useQuery({
