@@ -49,11 +49,13 @@ export default function Calendar24Hour({
     const workingHoursRules = rules.filter(r => r.ruleType === 'working_hours');
     
     if (workingHoursRules.length === 0) {
-      // Fallback: 07:00 to 20:00
+      // Fallback: 07:00 to 20:00 with 15-minute intervals
       const slots = [];
       for (let hour = 7; hour <= 19; hour++) {
         slots.push(`${hour.toString().padStart(2, '0')}:00`);
+        slots.push(`${hour.toString().padStart(2, '0')}:15`);
         slots.push(`${hour.toString().padStart(2, '0')}:30`);
+        slots.push(`${hour.toString().padStart(2, '0')}:45`);
       }
       return slots;
     }
@@ -73,11 +75,13 @@ export default function Calendar24Hour({
       }
     });
 
-    // Generate slots from earliest to latest
+    // Generate slots from earliest to latest with 15-minute intervals
     const slots = [];
     for (let hour = earliestStart; hour < latestEnd; hour++) {
       slots.push(`${hour.toString().padStart(2, '0')}:00`);
+      slots.push(`${hour.toString().padStart(2, '0')}:15`);
       slots.push(`${hour.toString().padStart(2, '0')}:30`);
+      slots.push(`${hour.toString().padStart(2, '0')}:45`);
     }
     return slots;
   };
@@ -88,7 +92,7 @@ export default function Calendar24Hour({
     const slotDateTime = moment(`${dateStr} ${timeSlot}`, 'YYYY-MM-DD HH:mm');
 
     // Check if there's a booking at this time (exclude deleted bookings)
-    const slotEnd = slotDateTime.clone().add(30, 'minutes');
+    const slotEnd = slotDateTime.clone().add(15, 'minutes');
     const overlappingBooking = bookings.find(b => {
       if (b.isDeleted || b.status === 'deleted') return false;
       const bookingStart = moment(b.startAtUtc).local();
@@ -329,7 +333,7 @@ export default function Calendar24Hour({
               <div 
                 key={timeIdx} 
                 className="grid border-b last:border-b-0" 
-                style={{ gridTemplateColumns: viewMode === 'day' ? '60px 1fr' : `60px repeat(${days.length}, 1fr)`, height: '40px' }}
+                style={{ gridTemplateColumns: viewMode === 'day' ? '60px 1fr' : `60px repeat(${days.length}, 1fr)`, height: '30px' }}
               >
                 <div className="p-1 sm:p-2 border-r text-[10px] sm:text-xs text-slate-600 font-medium bg-slate-50">
                   {timeSlot}
@@ -389,7 +393,7 @@ export default function Calendar24Hour({
                     isBlockStart = blockStart.format('HH:mm') === timeSlot;
                     if (isBlockStart) {
                       const durationMinutes = blockEnd.diff(blockStart, 'minutes');
-                      blockSpan = Math.ceil(durationMinutes / 30);
+                      blockSpan = Math.ceil(durationMinutes / 15);
                       blockStartTime = blockStart.format('HH:mm');
                       blockEndTime = blockEnd.format('HH:mm');
                     }
@@ -399,7 +403,7 @@ export default function Calendar24Hour({
                     isBlockStart = blockStart.format('HH:mm') === timeSlot;
                     if (isBlockStart) {
                       const durationMinutes = blockEnd.diff(blockStart, 'minutes');
-                      blockSpan = Math.ceil(durationMinutes / 30);
+                      blockSpan = Math.ceil(durationMinutes / 15);
                       blockStartTime = blockStart.format('HH:mm');
                       blockEndTime = blockEnd.format('HH:mm');
                     }
@@ -409,7 +413,7 @@ export default function Calendar24Hour({
                       const ruleStart = moment(rule.startTimeLocal, 'HH:mm');
                       const ruleEnd = moment(rule.endTimeLocal, 'HH:mm');
                       const durationMinutes = ruleEnd.diff(ruleStart, 'minutes');
-                      blockSpan = Math.ceil(durationMinutes / 30);
+                      blockSpan = Math.ceil(durationMinutes / 15);
                       blockStartTime = rule.startTimeLocal;
                       blockEndTime = rule.endTimeLocal;
                     }
@@ -442,7 +446,7 @@ export default function Calendar24Hour({
 
                 // Render card-style block
                 if (shouldRenderAsCard && isBlockStart) {
-                  const exactHeight = blockSpan * 40;
+                  const exactHeight = blockSpan * 30;
 
                   const handleClick = () => {
                     if (!clickable) return;
@@ -577,7 +581,7 @@ export default function Calendar24Hour({
 
                 // Skip slots covered by multi-slot blocks
                 if (shouldRenderAsCard && !isBlockStart) {
-                  return <div key={dayIdx} className="border-r last:border-r-0" style={{ height: '40px' }} />;
+                  return <div key={dayIdx} className="border-r last:border-r-0" style={{ height: '30px' }} />;
                 }
 
                 // Render flat background slot (for outside_working_hours or default available)
@@ -591,7 +595,7 @@ export default function Calendar24Hour({
                     className={`border-r last:border-r-0 p-1 ${
                       clickable ? 'cursor-pointer hover:opacity-80' : 'cursor-default'
                     }`}
-                    style={{ backgroundColor: displayColor, height: '40px' }}
+                    style={{ backgroundColor: displayColor, height: '30px' }}
                     title={state}
                   />
                 );
