@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity } from 'lucide-react';
+import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
@@ -195,6 +195,22 @@ export default function InstructorDashboard() {
       return activities.sort((a, b) => moment(b.timestamp).diff(moment(a.timestamp))).slice(0, 10);
     },
     enabled: !!user?.id && pupils.length > 0
+  });
+
+  const { data: availableSlotsToday = [] } = useQuery({
+    queryKey: ['availableSlotsToday', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const startOfDay = moment().startOf('day').toISOString();
+      const endOfDay = moment().endOf('day').toISOString();
+      const slots = await base44.entities.BookableSlotInstance.list();
+      return slots.filter(slot => 
+        slot.instructorId === user.id &&
+        slot.status === 'available' &&
+        moment(slot.startAtUtc).isBetween(startOfDay, endOfDay, null, '[]')
+      );
+    },
+    enabled: !!user?.id
   });
 
   const today = moment().format('YYYY-MM-DD');
@@ -391,6 +407,19 @@ export default function InstructorDashboard() {
                       </Button>
                     </div>
                   </>
+                ) : availableSlotsToday.length > 0 ? (
+                  <div className="text-center py-4">
+                    <PlusCircle className="w-8 h-8 mx-auto mb-2 text-emerald-500" />
+                    <p className="text-sm text-slate-700 font-medium">Available slots found!</p>
+                    <p className="text-xs text-slate-500 mb-3">
+                      You have {availableSlotsToday.length} free slot{availableSlotsToday.length !== 1 ? 's' : ''} today.
+                    </p>
+                    <Link to={createPageUrl('InstructorBookingCalendar')}>
+                      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                        View Available Slots
+                      </Button>
+                    </Link>
+                  </div>
                 ) : (
                   <div className="text-center py-4">
                     <Calendar className="w-8 h-8 mx-auto mb-2 text-slate-300" />
