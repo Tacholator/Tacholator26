@@ -79,7 +79,7 @@ export const instructorOnlyLinks = [
     ]
   },
   { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' },
-  { name: 'Test Route Config', icon: MapPin, page: 'AdminTestRouteConfiguration', adminOnly: true }
+  { name: 'Admin Dashboard', icon: Settings, page: 'AdminDashboard', adminOnly: true }
 ];
 
 // Learner-only navigation items

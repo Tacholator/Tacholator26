@@ -81,16 +81,8 @@ export default function Layout({ children, currentPageName }) {
   const pupilStatus = pupilProfile?.status || 'Active';
   const baseNavItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus);
   
-  // Add admin pages only for main admin
-  const navItems = isInstructor && isMainAdmin
-    ? [
-        ...baseNavItems, 
-        { name: 'Role Management', icon: Settings, page: 'AdminRoleManagement' },
-        { name: 'Instructor Calendars', icon: CalendarIcon, page: 'AdminInstructorCalendars' },
-        { name: 'Data Management', icon: Trash2, page: 'AdminDataManagement' },
-        { name: 'Future Updates', icon: Sparkles, page: 'FutureUpdates' }
-      ]
-    : baseNavItems;
+  // baseNavItems already includes admin-only items filtered by isMainAdmin
+  const navItems = baseNavItems;
 
   const handleLogout = () => {
     base44.auth.logout();
