@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Plus, Youtube, Navigation, Globe, Trash2 } from 'lucide-react';
+import { MapPin, Plus, Youtube, Navigation, Globe, Trash2, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
   AlertDialog,
@@ -137,6 +137,12 @@ export default function AdminTestRouteConfiguration() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-6xl mx-auto">
+        <Link to={createPageUrl('AdminDashboard')}>
+          <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Admin Dashboard
+          </Button>
+        </Link>
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>

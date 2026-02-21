@@ -79,8 +79,7 @@ export const instructorOnlyLinks = [
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
-  { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' },
-  { name: 'Admin Dashboard', icon: Settings, page: 'AdminDashboard', adminOnly: true }
+  { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' }
 ];
 
 // Learner-only navigation items
@@ -145,10 +144,15 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
     ];
   }
 
-  // Combine: Home first, then role-specific items, then shared items (excluding Home)
+  // Combine: Home first, then role-specific items, then shared items (excluding Home), then admin items at the end
+  const adminDashboard = isInstructor && isMainAdmin 
+    ? [{ name: 'Admin Dashboard', icon: Settings, page: 'AdminDashboard' }] 
+    : [];
+  
   return [
     shared[0], // Home
     ...roleSpecific,
-    ...shared.slice(1) // Payments, Notifications, Chats (Homework excluded for instructors)
+    ...shared.slice(1), // Payments, Notifications, Chats (Homework excluded for instructors)
+    ...adminDashboard // Admin Dashboard at the end (after Chats)
   ];
 };

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Loader2, Search, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, Search, Calendar as CalendarIcon, ArrowLeft } from 'lucide-react';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
 import { useToast } from '@/components/ui/use-toast';
@@ -111,6 +111,12 @@ export default function AdminInstructorCalendars() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+        <Link to={createPageUrl('AdminDashboard')}>
+          <Button variant="ghost" className="gap-2 text-slate-600 hover:text-slate-800">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Admin Dashboard
+          </Button>
+        </Link>
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">

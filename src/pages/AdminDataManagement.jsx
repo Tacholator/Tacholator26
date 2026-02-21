@@ -206,10 +206,10 @@ export default function AdminDataManagement() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        <Link to={createPageUrl('InstructorDashboard')}>
+        <Link to={createPageUrl('AdminDashboard')}>
           <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
             <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
+            Back to Admin Dashboard
           </Button>
         </Link>
 

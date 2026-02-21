@@ -7,7 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Edit2, X } from 'lucide-react';
+import { Plus, Trash2, Edit2, X, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function FutureUpdates() {
   const [editingItem, setEditingItem] = useState(null);
@@ -108,6 +110,12 @@ export default function FutureUpdates() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      <Link to={createPageUrl('AdminDashboard')}>
+        <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Admin Dashboard
+        </Button>
+      </Link>
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Future Updates</h1>
         <p className="text-gray-600 mt-1">Plan and track upcoming features and improvements</p>

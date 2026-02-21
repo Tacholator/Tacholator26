@@ -20,8 +20,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Loader2, UserCog, Shield } from 'lucide-react';
+import { Search, Loader2, UserCog, Shield, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function AdminRoleManagement() {
   const [search, setSearch] = useState('');
@@ -106,6 +108,12 @@ export default function AdminRoleManagement() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
+        <Link to={createPageUrl('AdminDashboard')}>
+          <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Admin Dashboard
+          </Button>
+        </Link>
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
