@@ -38,6 +38,7 @@ import {
   ChevronRight,
   Sparkles
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
 import { Toaster } from '@/components/ui/toaster';
@@ -54,6 +55,25 @@ export default function Layout({ children, currentPageName }) {
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
     retry: false
+  });
+
+  // Fetch unread messages count
+  const { data: unreadMessagesCount = 0 } = useQuery({
+    queryKey: ['unreadMessagesCount', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return 0;
+      const messages = await base44.entities.Message.filter({ readAt: null });
+      const unreadForUser = messages.filter(msg => {
+        if (isInstructor) {
+          return msg.senderRole === 'pupil';
+        } else {
+          return msg.senderRole === 'instructor';
+        }
+      });
+      return unreadForUser.length;
+    },
+    enabled: !!user?.id,
+    refetchInterval: 10000
   });
 
   useEffect(() => {
@@ -177,7 +197,7 @@ export default function Layout({ children, currentPageName }) {
                     ) : (
                       <Link
                         to={createPageUrl(item.page)}
-                        className={`group flex gap-x-3 rounded-xl p-3 text-sm font-medium transition-all duration-200 ${
+                        className={`group flex gap-x-3 rounded-xl p-3 text-sm font-medium transition-all duration-200 relative ${
                           isActive
                             ? 'bg-[#F7B602] text-[#071739]'
                             : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
@@ -187,6 +207,11 @@ export default function Layout({ children, currentPageName }) {
                           isActive ? 'text-[#071739]' : 'text-slate-300 group-hover:text-white'
                         }`} />
                         {item.name}
+                        {item.name === 'Chats' && unreadMessagesCount > 0 && (
+                          <Badge className="ml-auto bg-[#F7B602] text-[#071739] text-xs font-bold px-2 h-5">
+                            {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+                          </Badge>
+                        )}
                       </Link>
                     )}
                   </li>
@@ -440,6 +465,11 @@ export default function Layout({ children, currentPageName }) {
                         >
                           <item.icon className={`w-5 h-5 ${isActive ? 'text-[#071739]' : 'text-slate-300'}`} />
                           {item.name}
+                          {item.name === 'Chats' && unreadMessagesCount > 0 && (
+                            <Badge className="ml-auto bg-[#F7B602] text-[#071739] text-xs font-bold px-2 h-5">
+                              {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+                            </Badge>
+                          )}
                         </Link>
                       )}
                     </div>
