@@ -3,13 +3,25 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 import ConversationList from '@/components/chat/ConversationList';
 import ChatThread from '@/components/chat/ChatThread';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 export default function InstructorChats() {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [showPupilSelector, setShowPupilSelector] = useState(false);
+  const [pupilSearchQuery, setPupilSearchQuery] = useState('');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -73,7 +85,7 @@ export default function InstructorChats() {
     }
   });
 
-  // Build conversations from pupils and messages
+  // Build conversations from pupils and messages - only show if conversation has messages
   const conversations = pupils.map(pupil => {
     const conversationId = `${pupil.id}_${user?.id}`;
     const conversationMessages = allMessages.filter(m => m.conversationId === conversationId);
@@ -88,7 +100,9 @@ export default function InstructorChats() {
       lastMessageTime: lastMessage?.created_date,
       unreadCount: unreadMessages.length
     };
-  }).sort((a, b) => {
+  })
+  .filter(conv => conv.lastMessageTime) // Only show conversations with messages
+  .sort((a, b) => {
     if (!a.lastMessageTime) return 1;
     if (!b.lastMessageTime) return -1;
     return new Date(b.lastMessageTime) - new Date(a.lastMessageTime);
@@ -151,14 +165,38 @@ export default function InstructorChats() {
     setSelectedConversation(null);
   };
 
+  const handleStartNewConversation = (pupil) => {
+    const conversationId = `${pupil.id}_${user?.id}`;
+    setSelectedConversation({
+      conversationId,
+      pupilId: pupil.id,
+      pupilName: `${pupil.firstName} ${pupil.lastName}`
+    });
+    setShowPupilSelector(false);
+    setPupilSearchQuery('');
+  };
+
+  // Filter pupils for search
+  const filteredPupils = pupils.filter(pupil => {
+    const fullName = `${pupil.firstName} ${pupil.lastName}`.toLowerCase();
+    return fullName.includes(pupilSearchQuery.toLowerCase());
+  });
+
   // Mobile view: show either list or chat
   if (isMobileView) {
     return (
       <div className="fixed inset-0 top-16 bottom-16 bg-white overflow-hidden">
         {!selectedConversation ? (
           <div className="h-full flex flex-col">
-            <div className="p-4 border-b bg-white">
+            <div className="p-4 border-b bg-white flex items-center justify-between">
               <h1 className="text-xl font-bold text-[#071739]">Pupil Chats</h1>
+              <Button
+                onClick={() => setShowPupilSelector(true)}
+                size="icon"
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
             </div>
             <ConversationList
               conversations={conversations}
@@ -202,8 +240,16 @@ export default function InstructorChats() {
         
         <Card className="h-[calc(100%-5rem)] flex overflow-hidden">
           <div className="w-80 border-r bg-white">
-            <div className="p-4 border-b">
+            <div className="p-4 border-b flex items-center justify-between">
               <h2 className="font-semibold text-slate-700">Conversations</h2>
+              <Button
+                onClick={() => setShowPupilSelector(true)}
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
             </div>
             <ConversationList
               conversations={conversations}
@@ -223,6 +269,55 @@ export default function InstructorChats() {
           </div>
         </Card>
       </div>
+
+      {/* Pupil Selector Dialog */}
+      <Dialog open={showPupilSelector} onOpenChange={setShowPupilSelector}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Start New Conversation</DialogTitle>
+            <DialogDescription>
+              Select a pupil to start chatting
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              placeholder="Search pupils..."
+              value={pupilSearchQuery}
+              onChange={(e) => setPupilSearchQuery(e.target.value)}
+            />
+            <ScrollArea className="h-[300px]">
+              <div className="space-y-2">
+                {filteredPupils.map((pupil) => (
+                  <button
+                    key={pupil.id}
+                    onClick={() => handleStartNewConversation(pupil)}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-[#F7B602]/20"
+                  >
+                    <Avatar>
+                      <AvatarFallback className="bg-[#F7B602]/20 text-[#071739]">
+                        {pupil.firstName?.[0]}{pupil.lastName?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 text-left">
+                      <p className="font-medium text-sm text-slate-900">
+                        {pupil.firstName} {pupil.lastName}
+                      </p>
+                      {pupil.email && (
+                        <p className="text-xs text-slate-500">{pupil.email}</p>
+                      )}
+                    </div>
+                  </button>
+                ))}
+                {filteredPupils.length === 0 && (
+                  <p className="text-center text-slate-500 text-sm py-8">
+                    No pupils found
+                  </p>
+                )}
+              </div>
+            </ScrollArea>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
