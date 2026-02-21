@@ -22,12 +22,12 @@ export default function LearnerChats() {
     enabled: !!user?.id
   });
 
-  // Fetch instructor's current name from User entity
-  const { data: instructorUser } = useQuery({
-    queryKey: ['instructorUser', pupil?.instructorId],
+  // Fetch instructor's current name from Instructor entity
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfile', pupil?.instructorId],
     queryFn: async () => {
-      const users = await base44.entities.User.filter({ id: pupil.instructorId });
-      return users[0] || null;
+      const instructors = await base44.entities.Instructor.filter({ created_by: pupil.instructorId });
+      return instructors[0] || null;
     },
     enabled: !!pupil?.instructorId
   });
@@ -76,11 +76,9 @@ export default function LearnerChats() {
   });
 
   useEffect(() => {
-    if (pupil && pupil.instructorId && instructorUser) {
+    if (pupil && pupil.instructorId && instructorProfile) {
       const conversationId = `${pupil.id}_${pupil.instructorId}`;
-      const instructorName = instructorUser.firstName && instructorUser.lastName
-        ? `${instructorUser.firstName} ${instructorUser.lastName}`
-        : instructorUser.full_name || 'Your Instructor';
+      const instructorName = instructorProfile.name || pupil.instructorName || 'Your Instructor';
       
       setConversationData({
         conversationId,
@@ -90,7 +88,7 @@ export default function LearnerChats() {
         instructorName: instructorName
       });
     }
-  }, [pupil, instructorUser]);
+  }, [pupil, instructorProfile]);
 
   const messages = conversationData
     ? allMessages.filter(m => m.conversationId === conversationData.conversationId).reverse()
@@ -142,7 +140,7 @@ export default function LearnerChats() {
     });
   };
 
-  if (!pupil || !instructorUser) {
+  if (!pupil || !instructorProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
