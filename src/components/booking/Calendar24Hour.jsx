@@ -312,14 +312,14 @@ export default function Calendar24Hour({
 
       {/* Calendar Grid */}
       <div className="border rounded-lg bg-white overflow-x-auto">
-        <div className="min-w-full w-full">
+        <div className="inline-block min-w-full">
           {/* Header Row */}
-          <div className="grid border-b bg-slate-50" style={{ gridTemplateColumns: viewMode === 'day' ? '50px 1fr' : `50px repeat(${days.length}, minmax(0, 1fr))` }}>
+          <div className="grid border-b bg-slate-50" style={{ gridTemplateColumns: viewMode === 'day' ? '50px 1fr' : `50px repeat(${days.length}, minmax(90px, 1fr))` }}>
             <div className="p-1 sm:p-2 border-r font-semibold text-[10px] sm:text-sm text-slate-600 flex items-center justify-center">Time</div>
             {days.map((day, idx) => (
-              <div key={idx} className="p-1 sm:p-2 text-center border-r last:border-r-0 min-w-0">
-                <div className="font-semibold text-slate-700 text-[10px] sm:text-sm truncate">{day.format('ddd')}</div>
-                <div className="text-[9px] sm:text-xs text-slate-500 truncate">{day.format('D MMM')}</div>
+              <div key={idx} className="p-1 sm:p-2 text-center border-r last:border-r-0">
+                <div className="font-semibold text-slate-700 text-[10px] sm:text-sm">{day.format('ddd')}</div>
+                <div className="text-[9px] sm:text-xs text-slate-500">{day.format('D MMM')}</div>
               </div>
             ))}
           </div>
@@ -333,7 +333,7 @@ export default function Calendar24Hour({
               <div 
                 key={timeIdx} 
                 className="grid border-b last:border-b-0" 
-                style={{ gridTemplateColumns: viewMode === 'day' ? '50px 1fr' : `50px repeat(${days.length}, minmax(0, 1fr))`, height: '30px' }}
+                style={{ gridTemplateColumns: viewMode === 'day' ? '50px 1fr' : `50px repeat(${days.length}, minmax(90px, 1fr))`, height: '30px' }}
               >
                 <div className="p-0.5 sm:p-2 border-r text-[9px] sm:text-xs text-slate-600 font-medium bg-slate-50 flex items-center justify-center">
                   {timeSlot}
