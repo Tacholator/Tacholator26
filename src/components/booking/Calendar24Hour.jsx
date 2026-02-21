@@ -530,9 +530,9 @@ export default function Calendar24Hour({
                         )}
 
                         {/* Content */}
-                        <div className={`${isOthersReserved ? 'pl-1.5 sm:pl-2' : 'pl-2 sm:pl-3'} pr-1.5 sm:pr-2 py-1.5 sm:py-2 h-full flex flex-col justify-center relative z-10`}>
+                        <div className={`${isOthersReserved ? 'pl-1.5 sm:pl-2' : 'pl-2 sm:pl-3'} pr-1.5 sm:pr-2 py-1.5 sm:py-2 h-full flex flex-col justify-center relative z-10 overflow-hidden`}>
                           {pupilName && (
-                            <div className={`text-[10px] sm:text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-0.5 sm:mb-1 truncate`}>
+                            <div className={`text-[10px] sm:text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-0.5 sm:mb-1 truncate`} title={pupilName}>
                               {pupilName}
                             </div>
                           )}
