@@ -14,7 +14,18 @@ export default function Home() {
     retry: false
   });
 
-  if (isLoading || !user) {
+  // Check if user is a learner by looking for a linked pupil record
+  const { data: pupilRecords, isLoading: isPupilLoading } = useQuery({
+    queryKey: ['userPupilRecord', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      return pupils.length > 0 ? pupils : null;
+    },
+    enabled: !!user?.id
+  });
+
+  if (isLoading || !user || isPupilLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-teal-50/30">
         <Loader2 className="w-8 h-8 animate-spin text-[#F7B602]" />
@@ -22,8 +33,10 @@ export default function Home() {
     );
   }
 
-  // Render the appropriate dashboard based on role
-  const isInstructor = user.role === 'admin';
+  // Determine if user is an instructor or learner
+  // Priority: If user has a pupil record, they're a learner regardless of role
+  const isLearner = pupilRecords && pupilRecords.length > 0;
+  const isInstructor = !isLearner && user.role === 'admin';
   
   if (isInstructor) {
     return <InstructorDashboard />;
