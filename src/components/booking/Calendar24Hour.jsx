@@ -312,14 +312,14 @@ export default function Calendar24Hour({
 
       {/* Calendar Grid */}
       <div className="border rounded-lg bg-white overflow-x-auto">
-        <div className="min-w-[600px] sm:min-w-[800px]">
+        <div className="min-w-full w-full">
           {/* Header Row */}
-          <div className="grid border-b bg-slate-50" style={{ gridTemplateColumns: viewMode === 'day' ? '60px 1fr' : `60px repeat(${days.length}, 1fr)` }}>
-            <div className="p-1.5 sm:p-2 border-r font-semibold text-xs sm:text-sm text-slate-600">Time</div>
+          <div className="grid border-b bg-slate-50" style={{ gridTemplateColumns: viewMode === 'day' ? '50px 1fr' : `50px repeat(${days.length}, minmax(0, 1fr))` }}>
+            <div className="p-1 sm:p-2 border-r font-semibold text-[10px] sm:text-sm text-slate-600 flex items-center justify-center">Time</div>
             {days.map((day, idx) => (
-              <div key={idx} className="p-1.5 sm:p-2 text-center border-r last:border-r-0">
-                <div className="font-semibold text-slate-700 text-xs sm:text-sm">{day.format('ddd')}</div>
-                <div className="text-[10px] sm:text-xs text-slate-500">{day.format('D MMM')}</div>
+              <div key={idx} className="p-1 sm:p-2 text-center border-r last:border-r-0 min-w-0">
+                <div className="font-semibold text-slate-700 text-[10px] sm:text-sm truncate">{day.format('ddd')}</div>
+                <div className="text-[9px] sm:text-xs text-slate-500 truncate">{day.format('D MMM')}</div>
               </div>
             ))}
           </div>
@@ -333,9 +333,9 @@ export default function Calendar24Hour({
               <div 
                 key={timeIdx} 
                 className="grid border-b last:border-b-0" 
-                style={{ gridTemplateColumns: viewMode === 'day' ? '60px 1fr' : `60px repeat(${days.length}, 1fr)`, height: '30px' }}
+                style={{ gridTemplateColumns: viewMode === 'day' ? '50px 1fr' : `50px repeat(${days.length}, minmax(0, 1fr))`, height: '30px' }}
               >
-                <div className="p-1 sm:p-2 border-r text-[10px] sm:text-xs text-slate-600 font-medium bg-slate-50">
+                <div className="p-0.5 sm:p-2 border-r text-[9px] sm:text-xs text-slate-600 font-medium bg-slate-50 flex items-center justify-center">
                   {timeSlot}
                 </div>
                 {days.map((day, dayIdx) => {
@@ -371,12 +371,14 @@ export default function Calendar24Hour({
                 // Override status label for others' confirmed slots
                 const displayStatusLabel = isOthersReserved && (state === 'confirmed' || state === 'confirmed_test') ? 'Unavailable' : (statusLabels[state] || state);
 
-                // Get pupil name for instructor view
+                // Get pupil name for instructor view - truncated for alignment
                 let pupilName = null;
                 if (isInstructor && booking && (state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test' || state === 'completed' || state === 'cancelled' || state === 'no_show')) {
                   const pupil = pupils.find(p => p.id === booking.pupilId);
                   if (pupil) {
-                    pupilName = `${pupil.firstName} ${pupil.lastName}`;
+                    // Format: "First L." for consistent alignment
+                    const lastName = pupil.lastName || '';
+                    pupilName = `${pupil.firstName}${lastName ? ' ' + lastName.charAt(0) + '.' : ''}`;
                   }
                 }
 
@@ -531,23 +533,23 @@ export default function Calendar24Hour({
                         )}
 
                         {/* Content */}
-                        <div className={`${isOthersReserved ? 'pl-1.5 sm:pl-2' : 'pl-2 sm:pl-3'} pr-1.5 sm:pr-2 py-1.5 sm:py-2 h-full flex flex-col justify-center relative z-10 overflow-hidden`}>
+                        <div className={`${isOthersReserved ? 'pl-1 sm:pl-2' : 'pl-1.5 sm:pl-3'} pr-1 sm:pr-2 py-1 sm:py-2 h-full flex flex-col justify-center relative z-10 overflow-hidden min-w-0`}>
                           {pupilName && (
-                            <div className={`text-[10px] sm:text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-0.5 sm:mb-1 truncate`} title={pupilName}>
+                            <div className={`text-[9px] sm:text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-0.5 truncate w-full`} title={pupilName}>
                               {pupilName}
                             </div>
                           )}
-                          <div className={`text-[10px] sm:text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'}`}>
+                          <div className={`text-[9px] sm:text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'} truncate`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
                           {state === 'confirmed_test' && booking?.practicalTestTime && (
-                            <div className={`text-[9px] sm:text-[10px] font-medium ${isOthersReserved ? 'text-slate-400' : 'text-slate-600'} mt-0.5`}>
+                            <div className={`text-[8px] sm:text-[10px] font-medium ${isOthersReserved ? 'text-slate-400' : 'text-slate-600'} mt-0.5 truncate`}>
                               Test: {booking.practicalTestTime}
                             </div>
                           )}
                           <div className="mt-0.5 sm:mt-1">
                             <span 
-                              className="inline-block px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase rounded"
+                              className="inline-block px-1 sm:px-1.5 py-0.5 text-[8px] sm:text-[10px] font-bold uppercase rounded whitespace-nowrap"
                               style={{ 
                                 backgroundColor: isOthersReserved ? '#E0E0E0' : `${accentColors[state]}20`,
                                 color: isOthersReserved ? '#999999' : accentColors[state]
