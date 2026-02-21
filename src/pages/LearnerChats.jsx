@@ -108,6 +108,7 @@ export default function LearnerChats() {
       conversationId: conversationData.conversationId,
       instructorId: conversationData.instructorId,
       pupilId: pupil.id,
+      senderId: user.id,
       senderRole: 'pupil',
       senderName: `${pupil.firstName} ${pupil.lastName}`,
       messageText,

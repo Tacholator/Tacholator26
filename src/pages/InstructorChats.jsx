@@ -125,6 +125,7 @@ export default function InstructorChats() {
       conversationId: selectedConversation.conversationId,
       instructorId: user.id,
       pupilId: selectedConversation.pupilId,
+      senderId: user.id,
       senderRole: 'instructor',
       senderName: user.full_name,
       messageText,
