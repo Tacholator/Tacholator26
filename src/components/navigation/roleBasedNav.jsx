@@ -17,7 +17,8 @@ import {
   MapPin,
   UserCircle,
   Pen,
-  Sparkles
+  Sparkles,
+  Settings
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
