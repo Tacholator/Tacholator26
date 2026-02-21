@@ -76,9 +76,9 @@ export default function LearnerChats() {
   });
 
   useEffect(() => {
-    if (pupil && pupil.instructorId && instructorProfile) {
+    if (pupil && pupil.instructorId) {
       const conversationId = `${pupil.id}_${pupil.instructorId}`;
-      const instructorName = instructorProfile.name || pupil.instructorName || 'Your Instructor';
+      const instructorName = instructorProfile?.name || pupil.instructorName || 'Your Instructor';
       
       setConversationData({
         conversationId,
@@ -140,12 +140,23 @@ export default function LearnerChats() {
     });
   };
 
-  if (!pupil || !instructorProfile) {
+  if (!pupil) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <MessageCircle className="w-12 h-12 mx-auto mb-3 text-slate-300" />
           <p className="text-slate-500">Loading your chat...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!conversationData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <MessageCircle className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+          <p className="text-slate-500">Setting up your conversation...</p>
         </div>
       </div>
     );
