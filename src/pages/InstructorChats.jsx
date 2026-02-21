@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import ConversationList from '@/components/chat/ConversationList';
 import ChatThread from '@/components/chat/ChatThread';
 import {
@@ -82,6 +82,17 @@ export default function InstructorChats() {
     mutationFn: async (notificationData) => {
       const { createNotificationIfAllowed } = await import('@/components/notifications/notificationHelper');
       return createNotificationIfAllowed(notificationData, false);
+    }
+  });
+
+  const deleteConversationMutation = useMutation({
+    mutationFn: async (conversationId) => {
+      const messagesToDelete = allMessages.filter(m => m.conversationId === conversationId);
+      await Promise.all(messagesToDelete.map(msg => base44.entities.Message.delete(msg.id)));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['messages']);
+      setSelectedConversation(null);
     }
   });
 
@@ -182,6 +193,12 @@ export default function InstructorChats() {
     return fullName.includes(pupilSearchQuery.toLowerCase());
   });
 
+  const handleDeleteConversation = () => {
+    if (selectedConversation && window.confirm('Are you sure you want to delete this conversation? This will delete all messages.')) {
+      deleteConversationMutation.mutate(selectedConversation.conversationId);
+    }
+  };
+
   // Mobile view: show either list or chat
   if (isMobileView) {
     return (
@@ -193,7 +210,7 @@ export default function InstructorChats() {
               <Button
                 onClick={() => setShowPupilSelector(true)}
                 size="icon"
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] rounded-full h-10 w-10"
               >
                 <Plus className="w-5 h-5" />
               </Button>
@@ -206,16 +223,26 @@ export default function InstructorChats() {
           </div>
         ) : (
           <div className="h-full flex flex-col">
-            <div className="p-3 border-b bg-white flex items-center gap-3">
+            <div className="p-3 border-b bg-white flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleBackToList}
+                  className="h-9 w-9"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <h2 className="font-semibold text-[#071739]">{selectedConversation.pupilName}</h2>
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={handleBackToList}
-                className="h-9 w-9"
+                onClick={handleDeleteConversation}
+                className="h-9 w-9 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <Trash2 className="w-4 h-4" />
               </Button>
-              <h2 className="font-semibold text-[#071739]">{selectedConversation.pupilName}</h2>
             </div>
             <div className="flex-1 overflow-hidden">
               <ChatThread
@@ -245,8 +272,7 @@ export default function InstructorChats() {
               <Button
                 onClick={() => setShowPupilSelector(true)}
                 size="icon"
-                variant="ghost"
-                className="h-8 w-8"
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] rounded-full h-8 w-8"
               >
                 <Plus className="w-4 h-4" />
               </Button>
@@ -258,14 +284,32 @@ export default function InstructorChats() {
             />
           </div>
 
-          <div className="flex-1 bg-slate-50">
-            <ChatThread
-              conversation={selectedConversation}
-              messages={selectedMessages}
-              currentUserRole="instructor"
-              onSendMessage={handleSendMessage}
-              isSending={createMessageMutation.isPending}
-            />
+          <div className="flex-1 bg-slate-50 flex flex-col">
+            <div className="p-4 border-b bg-white flex items-center justify-between">
+              <h3 className="font-semibold text-slate-800">
+                {selectedConversation?.pupilName || 'Select a conversation'}
+              </h3>
+              {selectedConversation && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleDeleteConversation}
+                  className="h-9 w-9 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <ChatThread
+                conversation={selectedConversation}
+                messages={selectedMessages}
+                currentUserRole="instructor"
+                onSendMessage={handleSendMessage}
+                isSending={createMessageMutation.isPending}
+                hideHeader={true}
+              />
+            </div>
           </div>
         </Card>
       </div>

@@ -72,7 +72,8 @@ export default function LearnerChats() {
         conversationId,
         pupilId: pupil.id,
         pupilName: pupil.instructorName || 'Your Instructor',
-        instructorId: pupil.instructorId
+        instructorId: pupil.instructorId,
+        instructorName: pupil.instructorName || 'Your Instructor'
       });
     }
   }, [pupil]);
@@ -142,7 +143,9 @@ export default function LearnerChats() {
     <div className="fixed inset-0 top-16 bottom-16 lg:relative lg:top-0 lg:bottom-0 lg:h-[calc(100vh-4rem)] bg-white lg:bg-slate-50 lg:p-4 lg:p-6 overflow-hidden">
       <div className="lg:max-w-4xl lg:mx-auto h-full flex flex-col">
         <div className="hidden lg:block mb-6">
-          <h1 className="text-2xl font-bold text-[#071739]">Chat with Instructor</h1>
+          <h1 className="text-2xl font-bold text-[#071739]">
+            Chat with {conversationData?.instructorName || 'Instructor'}
+          </h1>
         </div>
         
         <div className="flex-1 lg:rounded-xl lg:border lg:shadow-sm lg:bg-white overflow-hidden">

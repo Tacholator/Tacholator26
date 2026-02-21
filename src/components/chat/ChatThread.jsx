@@ -13,7 +13,8 @@ export default function ChatThread({
   messages,
   currentUserRole,
   onSendMessage,
-  isSending
+  isSending,
+  hideHeader = false
 }) {
   const [messageText, setMessageText] = useState('');
   const scrollRef = useRef(null);
@@ -43,24 +44,28 @@ export default function ChatThread({
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="border-b p-4 bg-white flex items-center justify-between">
-        <div>
-          <h3 className="font-semibold text-slate-800">{conversation.pupilName}</h3>
-          {conversation.pupilId && (
-            <Link 
-              to={createPageUrl('PupilProfile') + '?pupilId=' + conversation.pupilId}
-              className="text-xs text-[#F7B602] hover:underline font-medium"
-            >
-              View profile
-            </Link>
-          )}
+      {!hideHeader && (
+        <div className="border-b p-4 bg-white flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-slate-800">
+              {conversation.instructorName || conversation.pupilName}
+            </h3>
+            {conversation.pupilId && (
+              <Link 
+                to={createPageUrl('PupilProfile') + '?pupilId=' + conversation.pupilId}
+                className="text-xs text-[#F7B602] hover:underline font-medium"
+              >
+                View profile
+              </Link>
+            )}
+          </div>
+          <Avatar>
+            <AvatarFallback className="bg-[#F7B602]/20 text-[#071739] font-semibold">
+              {(conversation.instructorName || conversation.pupilName)?.[0] || 'U'}
+            </AvatarFallback>
+          </Avatar>
         </div>
-        <Avatar>
-          <AvatarFallback className="bg-[#F7B602]/20 text-[#071739] font-semibold">
-            {conversation.pupilName?.[0] || 'P'}
-          </AvatarFallback>
-        </Avatar>
-      </div>
+      )}
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
