@@ -17,6 +17,7 @@ import {
 
 export default function InstructorStripeConnect() {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -97,6 +98,32 @@ export default function InstructorStripeConnect() {
     setIsConnecting(true);
     setErrorMessage(null);
     connectMutation.mutate();
+  };
+
+  const handleRefreshStatus = async () => {
+    setIsRefreshing(true);
+    setErrorMessage(null);
+    try {
+      const response = await base44.functions.invoke('refreshStripeAccountStatus', {});
+      if (response.data.success) {
+        queryClient.invalidateQueries({ queryKey: ['myInstructorProfile'] });
+        toast({
+          title: 'Status Updated',
+          description: `Account status: ${response.data.status}`,
+          duration: 4000,
+        });
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.error || error.message;
+      setErrorMessage(errorMsg);
+      toast({
+        title: 'Refresh Failed',
+        description: errorMsg,
+        variant: 'destructive'
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   React.useEffect(() => {
@@ -208,25 +235,45 @@ export default function InstructorStripeConnect() {
                   </div>
                 </div>
 
-                <Button
-                  onClick={handleConnect}
-                  disabled={isConnecting || connectMutation.isPending}
-                  className="w-full bg-slate-600 hover:bg-slate-700"
-                  size="lg"
-                  variant="outline"
-                >
-                  {isConnecting || connectMutation.isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Loading...
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      Update Account Information
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleRefreshStatus}
+                    disabled={isRefreshing}
+                    className="flex-1 bg-teal-600 hover:bg-teal-700"
+                    size="lg"
+                  >
+                    {isRefreshing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Refreshing...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Refresh Status
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={handleConnect}
+                    disabled={isConnecting || connectMutation.isPending}
+                    className="flex-1 bg-slate-600 hover:bg-slate-700"
+                    size="lg"
+                    variant="outline"
+                  >
+                    {isConnecting || connectMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Update Account
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="space-y-6">
