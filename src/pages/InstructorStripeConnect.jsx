@@ -131,12 +131,46 @@ export default function InstructorStripeConnect() {
     
     if (urlParams.get('success') === 'true') {
       setIsConnecting(false);
-      queryClient.invalidateQueries({ queryKey: ['myInstructorProfile'] });
-      toast({
-        title: '✓ Account Connected Successfully',
-        description: 'Your Stripe account has been connected. You can now receive payouts from pupil lesson payments.',
-        duration: 6000,
-      });
+      
+      // Actually check the Stripe status instead of assuming success
+      const checkStatus = async () => {
+        try {
+          const response = await base44.functions.invoke('refreshStripeAccountStatus', {});
+          const { status, disabledReason } = response.data;
+          
+          queryClient.invalidateQueries({ queryKey: ['myInstructorProfile'] });
+          
+          if (status === 'active') {
+            toast({
+              title: '✓ Account Connected Successfully',
+              description: 'Your Stripe account is active and ready to receive payouts.',
+              duration: 6000,
+            });
+          } else if (status === 'restricted') {
+            toast({
+              title: '⚠ Account Setup Incomplete',
+              description: `Your Stripe account requires additional information (${disabledReason}). Please click "Continue Setup" to complete.`,
+              variant: 'destructive',
+              duration: 8000,
+            });
+          } else if (status === 'pending') {
+            toast({
+              title: 'Account Pending',
+              description: 'Your Stripe account setup is in progress. Click "Continue Setup" to complete any remaining steps.',
+              duration: 6000,
+            });
+          }
+        } catch (error) {
+          queryClient.invalidateQueries({ queryKey: ['myInstructorProfile'] });
+          toast({
+            title: 'Status Check Failed',
+            description: 'Could not verify Stripe status. Please click "Refresh Status" to check manually.',
+            variant: 'destructive',
+          });
+        }
+      };
+      
+      checkStatus();
       setTimeout(() => {
         window.history.replaceState({}, '', window.location.pathname);
       }, 500);
