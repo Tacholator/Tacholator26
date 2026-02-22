@@ -80,14 +80,7 @@ export default function InstructorStripeConnect() {
       if (data?.url) {
         setErrorMessage(null);
         console.log('Redirecting to:', data.url);
-        // Use window.open with fallback to direct navigation
-        const opened = window.open(data.url, '_blank');
-        if (!opened) {
-          // Popup blocked or failed, use direct navigation
-          window.location.href = data.url;
-        } else {
-          setIsConnecting(false);
-        }
+        window.location.href = data.url;
       } else {
         console.error('No URL in response:', data);
         setErrorMessage('Failed to get Stripe connection URL. Please try again.');
@@ -284,10 +277,29 @@ export default function InstructorStripeConnect() {
                   </Alert>
                 )}
 
+                <div className="bg-slate-50 rounded-lg p-4 space-y-3 text-sm">
+                  <h3 className="font-medium text-slate-800">What you'll need:</h3>
+                  <ul className="space-y-2 text-slate-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-600 mt-0.5">•</span>
+                      <span>Personal identification (passport or driver's license)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-600 mt-0.5">•</span>
+                      <span>Bank account details for receiving payments</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-600 mt-0.5">•</span>
+                      <span>Business information (if applicable)</span>
+                    </li>
+                  </ul>
+                </div>
+
                 <Button
                   onClick={handleConnect}
                   disabled={isConnecting || connectMutation.isPending}
-                  className="bg-teal-600 hover:bg-teal-700"
+                  className="w-full bg-teal-600 hover:bg-teal-700"
+                  size="lg"
                 >
                   {isConnecting || connectMutation.isPending ? (
                     <>
@@ -308,8 +320,8 @@ export default function InstructorStripeConnect() {
                 </Button>
 
                 {instructor?.stripeAccountId && (
-                  <p className="text-xs text-slate-500">
-                    ID: {instructor.stripeAccountId}
+                  <p className="text-xs text-center text-slate-500">
+                    Stripe Account ID: {instructor.stripeAccountId}
                   </p>
                 )}
               </div>
