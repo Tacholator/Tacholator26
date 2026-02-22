@@ -198,10 +198,6 @@ export default function InstructorStripeConnect() {
                       <span className="font-medium text-emerald-600">Active</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Account ID:</span>
-                      <span className="font-mono text-xs">{instructor.stripeAccountId}</span>
-                    </div>
-                    <div className="flex justify-between">
                       <span>Platform Fee:</span>
                       <span className="font-medium">5%</span>
                     </div>
@@ -277,53 +273,28 @@ export default function InstructorStripeConnect() {
                   </Alert>
                 )}
 
-                <div className="bg-slate-50 rounded-lg p-4 space-y-3 text-sm">
-                  <h3 className="font-medium text-slate-800">What you'll need:</h3>
-                  <ul className="space-y-2 text-slate-600">
-                    <li className="flex items-start gap-2">
-                      <span className="text-teal-600 mt-0.5">•</span>
-                      <span>Personal identification (passport or driver's license)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-teal-600 mt-0.5">•</span>
-                      <span>Bank account details for receiving payments</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-teal-600 mt-0.5">•</span>
-                      <span>Business information (if applicable)</span>
-                    </li>
-                  </ul>
-                </div>
-
                 <Button
                   onClick={handleConnect}
                   disabled={isConnecting || connectMutation.isPending}
-                  className="w-full bg-teal-600 hover:bg-teal-700"
-                  size="lg"
+                  className="bg-teal-600 hover:bg-teal-700"
                 >
                   {isConnecting || connectMutation.isPending ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Connecting to Stripe...
+                      Connecting...
                     </>
                   ) : isPending ? (
                     <>
                       <ExternalLink className="w-4 h-4 mr-2" />
-                      Continue Stripe Setup
+                      Continue Setup
                     </>
                   ) : (
                     <>
                       <ExternalLink className="w-4 h-4 mr-2" />
-                      Connect Stripe Account
+                      Continue to Stripe
                     </>
                   )}
                 </Button>
-
-                {instructor?.stripeAccountId && (
-                  <p className="text-xs text-center text-slate-500">
-                    Stripe Account ID: {instructor.stripeAccountId}
-                  </p>
-                )}
               </div>
             )}
           </CardContent>
