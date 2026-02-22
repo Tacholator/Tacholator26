@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/components/ui/use-toast';
+import { createPageUrl } from '@/utils';
 import { 
   CreditCard, 
   CheckCircle2, 
   AlertCircle, 
   Loader2,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  ArrowLeft
 } from 'lucide-react';
 
 export default function InstructorStripeConnect() {
@@ -198,6 +201,12 @@ export default function InstructorStripeConnect() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-3xl mx-auto">
+        <Link to={createPageUrl('PaymentMethods')}>
+          <Button variant="ghost" className="mb-4 -ml-2">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Payment Methods
+          </Button>
+        </Link>
         <h1 className="text-3xl font-bold text-slate-800 mb-2">Payment Setup</h1>
         <p className="text-slate-600 mb-8">Connect your Stripe account to receive payments from lessons</p>
 
