@@ -70,8 +70,12 @@ export default function InstructorStripeConnect() {
     onSuccess: (data) => {
       if (data?.url) {
         setErrorMessage(null);
-        // Redirect immediately
-        window.location.href = data.url;
+        // Redirect top window to avoid iframe issues
+        if (window.top) {
+          window.top.location.href = data.url;
+        } else {
+          window.location.href = data.url;
+        }
       } else {
         setErrorMessage('Failed to get Stripe connection URL. Please try again.');
         setIsConnecting(false);

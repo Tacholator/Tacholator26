@@ -76,6 +76,7 @@ import InstructorPupilNotes from './pages/InstructorPupilNotes';
 import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
 import InstructorQuizPreview from './pages/InstructorQuizPreview';
 import InstructorResources from './pages/InstructorResources';
+import InstructorStripeConnect from './pages/InstructorStripeConnect';
 import InstructorTeachingHub from './pages/InstructorTeachingHub';
 import InstructorTestRouteDetail from './pages/InstructorTestRouteDetail';
 import InstructorTestRoutes from './pages/InstructorTestRoutes';
@@ -114,7 +115,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import InstructorStripeConnect from './pages/InstructorStripeConnect';
 import __Layout from './Layout.jsx';
 
 
@@ -148,6 +148,7 @@ export const PAGES = {
     "InstructorPupilNotesList": InstructorPupilNotesList,
     "InstructorQuizPreview": InstructorQuizPreview,
     "InstructorResources": InstructorResources,
+    "InstructorStripeConnect": InstructorStripeConnect,
     "InstructorTeachingHub": InstructorTeachingHub,
     "InstructorTestRouteDetail": InstructorTestRouteDetail,
     "InstructorTestRoutes": InstructorTestRoutes,
@@ -186,7 +187,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "InstructorStripeConnect": InstructorStripeConnect,
 }
 
 export const pagesConfig = {
