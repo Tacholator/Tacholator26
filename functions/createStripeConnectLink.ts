@@ -83,10 +83,15 @@ Deno.serve(async (req) => {
       type: 'account_onboarding'
     });
 
-    console.log('Created account link:', accountLink.url);
+    if (!accountLink.url) {
+      throw new Error('Failed to generate Stripe onboarding URL');
+    }
+
     return Response.json({ url: accountLink.url });
   } catch (error) {
     console.error('Stripe Connect error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ 
+      error: error.message || 'Failed to create Stripe connection' 
+    }, { status: 500 });
   }
 });

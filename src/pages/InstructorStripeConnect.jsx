@@ -52,47 +52,40 @@ export default function InstructorStripeConnect() {
 
   const connectMutation = useMutation({
     mutationFn: async () => {
-      // Ensure we use HTTPS for production (Stripe requires it for live mode)
       let baseUrl = window.location.origin;
       
-      // For production domains, force HTTPS
       if (!baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')) {
         baseUrl = baseUrl.replace('http://', 'https://');
       }
       
       const path = window.location.pathname || '/InstructorStripeConnect';
       
-      console.log('Calling createStripeConnectLink with:', {
-        refreshUrl: `${baseUrl}${path}?refresh=true`,
-        returnUrl: `${baseUrl}${path}?success=true`
-      });
-      
       const response = await base44.functions.invoke('createStripeConnectLink', {
         refreshUrl: `${baseUrl}${path}?refresh=true`,
         returnUrl: `${baseUrl}${path}?success=true`
       });
       
-      console.log('Response from createStripeConnectLink:', response.data);
       return response.data;
     },
     onSuccess: (data) => {
-      console.log('Success data:', data);
       if (data?.url) {
         setErrorMessage(null);
-        console.log('Redirecting to:', data.url);
+        // Redirect immediately
         window.location.href = data.url;
       } else {
-        console.error('No URL in response:', data);
         setErrorMessage('Failed to get Stripe connection URL. Please try again.');
         setIsConnecting(false);
       }
     },
     onError: (error) => {
-      console.error('Connection error:', error);
-      console.error('Error response:', error.response);
       const errorMsg = error.response?.data?.error || error.message || 'Failed to connect to Stripe';
       setErrorMessage(errorMsg);
       setIsConnecting(false);
+      toast({
+        title: 'Connection Error',
+        description: errorMsg,
+        variant: 'destructive'
+      });
     }
   });
 
@@ -102,23 +95,26 @@ export default function InstructorStripeConnect() {
     connectMutation.mutate();
   };
 
-  // Check URL params for success/refresh
   React.useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    
     if (urlParams.get('success') === 'true') {
+      setIsConnecting(false);
       queryClient.invalidateQueries({ queryKey: ['myInstructorProfile'] });
       toast({
         title: '✓ Account Connected Successfully',
         description: 'Your Stripe account has been connected. You can now receive payouts from pupil lesson payments.',
         duration: 6000,
       });
-      // Wait a moment for the query to refetch before clearing URL
       setTimeout(() => {
         window.history.replaceState({}, '', window.location.pathname);
       }, 500);
     }
+    
     if (urlParams.get('refresh') === 'true') {
       setIsConnecting(false);
+      setErrorMessage('Setup was not completed. Please try again.');
+      window.history.replaceState({}, '', window.location.pathname);
     }
   }, [queryClient, toast]);
 
