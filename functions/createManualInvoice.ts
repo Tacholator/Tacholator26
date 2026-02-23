@@ -100,8 +100,7 @@ Deno.serve(async (req) => {
       hours: parseFloat(hours),
       reason: 'balance_top_up',
       createdByRole: 'instructor',
-      note: `Manual payment - Invoice ${invoiceNumber}`,
-      invoiceId: invoice.id
+      note: `Manual payment - Invoice ${invoiceNumber}`
     });
 
     // Update pupil balance
