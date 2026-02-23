@@ -50,6 +50,8 @@ export default function ProfileSettings() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSavingBusiness, setIsSavingBusiness] = useState(false);
   const [businessSaveSuccess, setBusinessSaveSuccess] = useState(false);
+  const [hasPersonalChanges, setHasPersonalChanges] = useState(false);
+  const [hasBusinessChanges, setHasBusinessChanges] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [instructorProfile, setInstructorProfile] = useState(null);
@@ -103,6 +105,7 @@ export default function ProfileSettings() {
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setSaveSuccess(false);
+    setHasPersonalChanges(true);
   };
 
   const handleSave = async () => {
@@ -131,6 +134,7 @@ export default function ProfileSettings() {
       }
       
       setSaveSuccess(true);
+      setHasPersonalChanges(false);
       setTimeout(() => setSaveSuccess(false), 3000);
     } finally {
       setIsSaving(false);
@@ -159,6 +163,7 @@ export default function ProfileSettings() {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setFormData(prev => ({ ...prev, profilePhotoUrl: file_url }));
       setSaveSuccess(false);
+      setHasPersonalChanges(true);
     } catch (error) {
       console.error('Failed to upload photo:', error);
     } finally {
@@ -169,6 +174,7 @@ export default function ProfileSettings() {
   const handleRemovePhoto = () => {
     setFormData(prev => ({ ...prev, profilePhotoUrl: '' }));
     setSaveSuccess(false);
+    setHasPersonalChanges(true);
   };
 
   const handleLogoUpload = async (e) => {
@@ -180,6 +186,7 @@ export default function ProfileSettings() {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setBusinessData(prev => ({ ...prev, businessLogoUrl: file_url }));
       setSaveSuccess(false);
+      setHasBusinessChanges(true);
     } catch (error) {
       console.error('Failed to upload logo:', error);
     } finally {
@@ -190,12 +197,14 @@ export default function ProfileSettings() {
   const handleRemoveLogo = () => {
     setBusinessData(prev => ({ ...prev, businessLogoUrl: '' }));
     setSaveSuccess(false);
+    setHasBusinessChanges(true);
   };
 
   const handleBusinessChange = (field, value) => {
     setBusinessData(prev => ({ ...prev, [field]: value }));
     setSaveSuccess(false);
     setBusinessSaveSuccess(false);
+    setHasBusinessChanges(true);
   };
 
   const handleSaveBusinessInfo = async () => {
@@ -205,6 +214,7 @@ export default function ProfileSettings() {
         await base44.entities.Instructor.update(instructorProfile.id, businessData);
       }
       setBusinessSaveSuccess(true);
+      setHasBusinessChanges(false);
       setTimeout(() => setBusinessSaveSuccess(false), 3000);
     } catch (error) {
       console.error('Failed to save business info:', error);
@@ -396,8 +406,8 @@ export default function ProfileSettings() {
                 {!saveSuccess && <div />}
                 <Button
                   onClick={handleSave}
-                  disabled={isSaving}
-                  className="bg-teal-600 hover:bg-teal-700 gap-2"
+                  disabled={isSaving || !hasPersonalChanges}
+                  className="bg-teal-600 hover:bg-teal-700 gap-2 disabled:opacity-50"
                 >
                   {isSaving ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -613,8 +623,8 @@ export default function ProfileSettings() {
                   {!businessSaveSuccess && <div />}
                   <Button
                     onClick={handleSaveBusinessInfo}
-                    disabled={isSavingBusiness}
-                    className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2"
+                    disabled={isSavingBusiness || !hasBusinessChanges}
+                    className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2 disabled:opacity-50"
                   >
                     {isSavingBusiness ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
