@@ -95,10 +95,11 @@ Deno.serve(async (req) => {
     // Update pupil's payment ledger
     await base44.asServiceRole.entities.PaymentLedger.create({
       userId: pupil.id,
-      type: 'credit',
+      type: 'payment',
       amountGbp: parseFloat(amount),
       hours: parseFloat(hours),
-      reason: 'manual_payment',
+      reason: 'balance_top_up',
+      createdByRole: 'instructor',
       note: `Manual payment - Invoice ${invoiceNumber}`,
       invoiceId: invoice.id
     });
