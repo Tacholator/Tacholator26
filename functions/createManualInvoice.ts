@@ -5,8 +5,13 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
 
-    if (!user || user.role !== 'admin') {
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only allow instructors (admins) to create manual invoices
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Only instructors can create manual invoices' }, { status: 403 });
     }
 
     const { pupilId, amount, hours, paymentMethod, paymentDate, reference, notes } = await req.json();
@@ -21,18 +26,23 @@ Deno.serve(async (req) => {
     }
 
     // Get pupil
-    const pupil = await base44.entities.Pupil.get(pupilId);
+    const pupil = await base44.asServiceRole.entities.Pupil.get(pupilId);
     if (!pupil) {
       return Response.json({ error: 'Pupil not found' }, { status: 404 });
     }
 
+    // Verify pupil belongs to this instructor
+    if (pupil.instructorId !== user.id) {
+      return Response.json({ error: 'Access denied' }, { status: 403 });
+    }
+
     // Get instructor profile
-    const instructors = await base44.entities.Instructor.filter({ id: user.id });
+    const instructors = await base44.asServiceRole.entities.Instructor.filter({ id: user.id });
     const instructor = instructors.length > 0 ? instructors[0] : null;
 
     // Get or create invoice sequence for this year
     const currentYear = new Date().getFullYear();
-    const sequences = await base44.entities.InvoiceSequence.filter({
+    const sequences = await base44.asServiceRole.entities.InvoiceSequence.filter({
       instructorId: user.id,
       year: currentYear
     });
@@ -44,13 +54,13 @@ Deno.serve(async (req) => {
       sequence = sequences[0];
       nextSeq = sequence.nextSeq;
       // Update sequence
-      await base44.entities.InvoiceSequence.update(sequence.id, {
+      await base44.asServiceRole.entities.InvoiceSequence.update(sequence.id, {
         nextSeq: nextSeq + 1
       });
     } else {
       // Create new sequence
       nextSeq = 1;
-      await base44.entities.InvoiceSequence.create({
+      await base44.asServiceRole.entities.InvoiceSequence.create({
         instructorId: user.id,
         year: currentYear,
         nextSeq: 2
@@ -61,7 +71,7 @@ Deno.serve(async (req) => {
     const invoiceNumber = `MDA-${currentYear}-${String(nextSeq).padStart(4, '0')}`;
 
     // Create invoice
-    const invoice = await base44.entities.Invoice.create({
+    const invoice = await base44.asServiceRole.entities.Invoice.create({
       invoiceNumber,
       status: 'PAID',
       type: paymentMethod === 'CASH' ? 'MANUAL_CASH' : 'MANUAL_BACS',
@@ -83,7 +93,7 @@ Deno.serve(async (req) => {
     });
 
     // Update pupil's payment ledger
-    await base44.entities.PaymentLedger.create({
+    await base44.asServiceRole.entities.PaymentLedger.create({
       userId: pupil.id,
       type: 'credit',
       amountGbp: parseFloat(amount),
@@ -95,7 +105,7 @@ Deno.serve(async (req) => {
 
     // Update pupil balance
     const currentBalance = pupil.bulkPaymentBalance || 0;
-    await base44.entities.Pupil.update(pupil.id, {
+    await base44.asServiceRole.entities.Pupil.update(pupil.id, {
       bulkPaymentBalance: currentBalance + parseFloat(amount),
       bulkAmountPaid: (pupil.bulkAmountPaid || 0) + parseFloat(amount)
     });
