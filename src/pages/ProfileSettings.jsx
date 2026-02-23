@@ -58,6 +58,8 @@ export default function ProfileSettings() {
     return localStorage.getItem('study_material_voice') || 'neutral_female';
   });
 
+  const isInstructor = user?.role === 'admin';
+
   useEffect(() => {
     if (user) {
       setFormData({
