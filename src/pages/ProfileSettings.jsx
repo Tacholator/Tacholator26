@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X, ClipboardCheck, Mic } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X, ClipboardCheck, Mic, Building2, FileText, MapPin } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -33,9 +33,24 @@ export default function ProfileSettings() {
     phone: '',
     profilePhotoUrl: ''
   });
+
+  const [businessData, setBusinessData] = useState({
+    businessName: '',
+    businessAddress: '',
+    businessCity: '',
+    businessPostcode: '',
+    businessLogoUrl: '',
+    businessRegistration: '',
+    businessPhone: '',
+    businessEmail: '',
+    usePersonalPhoneForBusiness: false,
+    usePersonalEmailForBusiness: false
+  });
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [instructorProfile, setInstructorProfile] = useState(null);
   const [audioEnabled, setAudioEnabled] = useState(() => {
     return localStorage.getItem('enable_audio_reading') !== 'false';
   });
@@ -54,6 +69,33 @@ export default function ProfileSettings() {
     }
   }, [user]);
 
+  useEffect(() => {
+    const fetchInstructorProfile = async () => {
+      if (user?.id && isInstructor) {
+        const profiles = await base44.entities.Instructor.filter({ created_by: user.email });
+        if (profiles.length > 0) {
+          const profile = profiles[0];
+          setInstructorProfile(profile);
+          setBusinessData({
+            businessName: profile.businessName || '',
+            businessAddress: profile.businessAddress || '',
+            businessCity: profile.businessCity || '',
+            businessPostcode: profile.businessPostcode || '',
+            businessLogoUrl: profile.businessLogoUrl || '',
+            businessRegistration: profile.businessRegistration || '',
+            businessPhone: profile.businessPhone || '',
+            businessEmail: profile.businessEmail || '',
+            usePersonalPhoneForBusiness: profile.usePersonalPhoneForBusiness || false,
+            usePersonalEmailForBusiness: profile.usePersonalEmailForBusiness || false
+          });
+        }
+      }
+    };
+    if (user) {
+      fetchInstructorProfile();
+    }
+  }, [user, isInstructor]);
+
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setSaveSuccess(false);
@@ -63,6 +105,12 @@ export default function ProfileSettings() {
     setIsSaving(true);
     try {
       await base44.auth.updateMe(formData);
+      
+      // Save instructor business info if instructor
+      if (isInstructor && instructorProfile) {
+        await base44.entities.Instructor.update(instructorProfile.id, businessData);
+      }
+      
       queryClient.invalidateQueries(['currentUser']);
       
       // If instructor and name changed, update all pupil records
@@ -116,6 +164,32 @@ export default function ProfileSettings() {
 
   const handleRemovePhoto = () => {
     setFormData(prev => ({ ...prev, profilePhotoUrl: '' }));
+    setSaveSuccess(false);
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploadingLogo(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setBusinessData(prev => ({ ...prev, businessLogoUrl: file_url }));
+      setSaveSuccess(false);
+    } catch (error) {
+      console.error('Failed to upload logo:', error);
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setBusinessData(prev => ({ ...prev, businessLogoUrl: '' }));
+    setSaveSuccess(false);
+  };
+
+  const handleBusinessChange = (field, value) => {
+    setBusinessData(prev => ({ ...prev, [field]: value }));
     setSaveSuccess(false);
   };
 
@@ -318,12 +392,210 @@ export default function ProfileSettings() {
           </Card>
         </motion.div>
 
-        {/* Admin: Daily Quizzes */}
+        {/* Business Information - Instructors Only */}
         {isInstructor && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
+            className="mt-6"
+          >
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="border-b border-slate-100">
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Building2 className="w-5 h-5" />
+                  Business Information
+                </CardTitle>
+                <p className="text-sm text-slate-500 mt-1">
+                  This information will appear on your invoices
+                </p>
+              </CardHeader>
+              <CardContent className="p-6 space-y-6">
+                {/* Business Logo */}
+                <div className="space-y-2">
+                  <Label htmlFor="logo" className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-slate-400" />
+                    Business Logo
+                  </Label>
+                  {businessData.businessLogoUrl && (
+                    <div className="relative inline-block mb-3">
+                      <img 
+                        src={businessData.businessLogoUrl} 
+                        alt="Business Logo" 
+                        className="h-20 w-auto border rounded-lg"
+                      />
+                      <button
+                        onClick={handleRemoveLogo}
+                        className="absolute -top-2 -right-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="file"
+                      id="logo-upload"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                    />
+                    <label htmlFor="logo-upload">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        disabled={isUploadingLogo}
+                        onClick={() => document.getElementById('logo-upload')?.click()}
+                        className="gap-2"
+                      >
+                        {isUploadingLogo ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4" />
+                        )}
+                        {isUploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                      </Button>
+                    </label>
+                    {businessData.businessLogoUrl && (
+                      <p className="text-xs text-emerald-600">Logo uploaded</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Business Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="businessName" className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-slate-400" />
+                    Business Name
+                  </Label>
+                  <Input
+                    id="businessName"
+                    value={businessData.businessName}
+                    onChange={(e) => handleBusinessChange('businessName', e.target.value)}
+                    placeholder="e.g., ABC Driving School"
+                  />
+                </div>
+
+                {/* Business Address */}
+                <div className="space-y-2">
+                  <Label htmlFor="businessAddress" className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-slate-400" />
+                    Business Address
+                  </Label>
+                  <Input
+                    id="businessAddress"
+                    value={businessData.businessAddress}
+                    onChange={(e) => handleBusinessChange('businessAddress', e.target.value)}
+                    placeholder="Street address"
+                  />
+                </div>
+
+                {/* City and Postcode */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="businessCity">City</Label>
+                    <Input
+                      id="businessCity"
+                      value={businessData.businessCity}
+                      onChange={(e) => handleBusinessChange('businessCity', e.target.value)}
+                      placeholder="City"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="businessPostcode">Postcode</Label>
+                    <Input
+                      id="businessPostcode"
+                      value={businessData.businessPostcode}
+                      onChange={(e) => handleBusinessChange('businessPostcode', e.target.value)}
+                      placeholder="Postcode"
+                    />
+                  </div>
+                </div>
+
+                {/* Business Registration (Optional) */}
+                <div className="space-y-2">
+                  <Label htmlFor="businessRegistration" className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-slate-400" />
+                    Business Registration Number (Optional)
+                  </Label>
+                  <Input
+                    id="businessRegistration"
+                    value={businessData.businessRegistration}
+                    onChange={(e) => handleBusinessChange('businessRegistration', e.target.value)}
+                    placeholder="e.g., 12345678"
+                  />
+                </div>
+
+                {/* Business Phone */}
+                <div className="space-y-3">
+                  <Label htmlFor="businessPhone" className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-slate-400" />
+                    Business Phone
+                  </Label>
+                  <div className="flex items-center gap-3 mb-2">
+                    <Switch
+                      id="usePersonalPhone"
+                      checked={businessData.usePersonalPhoneForBusiness}
+                      onCheckedChange={(checked) => {
+                        handleBusinessChange('usePersonalPhoneForBusiness', checked);
+                        if (checked) {
+                          handleBusinessChange('businessPhone', formData.phone);
+                        }
+                      }}
+                    />
+                    <Label htmlFor="usePersonalPhone" className="text-sm font-normal cursor-pointer">
+                      Use personal phone number
+                    </Label>
+                  </div>
+                  <Input
+                    id="businessPhone"
+                    value={businessData.businessPhone}
+                    onChange={(e) => handleBusinessChange('businessPhone', e.target.value)}
+                    placeholder="Business phone number"
+                    disabled={businessData.usePersonalPhoneForBusiness}
+                  />
+                </div>
+
+                {/* Business Email */}
+                <div className="space-y-3">
+                  <Label htmlFor="businessEmail" className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-slate-400" />
+                    Business Email
+                  </Label>
+                  <div className="flex items-center gap-3 mb-2">
+                    <Switch
+                      id="usePersonalEmail"
+                      checked={businessData.usePersonalEmailForBusiness}
+                      onCheckedChange={(checked) => {
+                        handleBusinessChange('usePersonalEmailForBusiness', checked);
+                        if (checked) {
+                          handleBusinessChange('businessEmail', user?.email || '');
+                        }
+                      }}
+                    />
+                    <Label htmlFor="usePersonalEmail" className="text-sm font-normal cursor-pointer">
+                      Use personal email address
+                    </Label>
+                  </div>
+                  <Input
+                    id="businessEmail"
+                    value={businessData.businessEmail}
+                    onChange={(e) => handleBusinessChange('businessEmail', e.target.value)}
+                    placeholder="Business email address"
+                    disabled={businessData.usePersonalEmailForBusiness}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Admin: Daily Quizzes */}
+        {isInstructor && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
             className="mt-6"
           >
             <Link to={createPageUrl('AdminDailyQuizzes')}>
@@ -351,7 +623,7 @@ export default function ProfileSettings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
+          transition={{ delay: 0.35 }}
           className="mt-6"
         >
           <Card className="border-0 shadow-sm">
@@ -406,7 +678,7 @@ export default function ProfileSettings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.4 }}
           className="mt-6"
         >
           <Card className="border-0 shadow-sm border-rose-200">

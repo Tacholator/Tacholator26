@@ -28,12 +28,22 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Access denied' }, { status: 403 });
     }
 
+    // Get instructor business info
+    const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by: invoice.instructorEmail || '' });
+    const instructorProfile = instructors.length > 0 ? instructors[0] : null;
+
     // Create PDF
     const doc = new jsPDF();
-    const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/55c61cd0c_2.png';
+    
+    // Use business logo if available, otherwise default
+    const logoUrl = instructorProfile?.businessLogoUrl || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/55c61cd0c_2.png';
 
     // Header - Logo
-    doc.addImage(logoUrl, 'PNG', 15, 10, 60, 20);
+    try {
+      doc.addImage(logoUrl, 'PNG', 15, 10, 60, 20);
+    } catch (error) {
+      console.error('Failed to load logo:', error);
+    }
 
     // Invoice title and number
     doc.setFontSize(24);
@@ -50,15 +60,52 @@ Deno.serve(async (req) => {
     doc.setLineWidth(1);
     doc.line(15, 40, 195, 40);
 
-    // From/To section
+    // From/To section - Use business info if available
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text('FROM:', 15, 50);
     doc.setFont('helvetica', 'normal');
-    doc.text(invoice.instructorName || 'Instructor', 15, 56);
-    doc.text(invoice.instructorEmail || '', 15, 62);
-    if (invoice.instructorPhone) {
-      doc.text(invoice.instructorPhone, 15, 68);
+    
+    let fromY = 56;
+    
+    // Business name or instructor name
+    const businessName = instructorProfile?.businessName || invoice.instructorName || 'Instructor';
+    doc.text(businessName, 15, fromY);
+    fromY += 6;
+    
+    // Business address
+    if (instructorProfile?.businessAddress) {
+      doc.text(instructorProfile.businessAddress, 15, fromY);
+      fromY += 6;
+    }
+    if (instructorProfile?.businessCity || instructorProfile?.businessPostcode) {
+      const cityPostcode = [instructorProfile.businessCity, instructorProfile.businessPostcode].filter(Boolean).join(', ');
+      doc.text(cityPostcode, 15, fromY);
+      fromY += 6;
+    }
+    
+    // Business email or instructor email
+    const businessEmail = instructorProfile?.usePersonalEmailForBusiness 
+      ? invoice.instructorEmail 
+      : (instructorProfile?.businessEmail || invoice.instructorEmail || '');
+    if (businessEmail) {
+      doc.text(businessEmail, 15, fromY);
+      fromY += 6;
+    }
+    
+    // Business phone or instructor phone
+    const businessPhone = instructorProfile?.usePersonalPhoneForBusiness 
+      ? invoice.instructorPhone 
+      : (instructorProfile?.businessPhone || invoice.instructorPhone || '');
+    if (businessPhone) {
+      doc.text(businessPhone, 15, fromY);
+      fromY += 6;
+    }
+    
+    // Business registration if available
+    if (instructorProfile?.businessRegistration) {
+      doc.setFontSize(9);
+      doc.text(`Reg: ${instructorProfile.businessRegistration}`, 15, fromY);
     }
 
     doc.setFont('helvetica', 'bold');
