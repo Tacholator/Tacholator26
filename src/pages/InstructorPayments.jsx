@@ -129,6 +129,11 @@ export default function InstructorPayments() {
     return { ...entry, pupil };
   });
 
+  // Calculate Stripe payment summaries
+  const totalCardPayments = stripePayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalStripeFees = stripePayments.reduce((sum, p) => sum + p.stripeFee, 0);
+  const totalPayoutAmount = stripePayments.reduce((sum, p) => sum + p.netPayout, 0);
+
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -214,6 +219,48 @@ export default function InstructorPayments() {
             <CardContent>
               <div className="text-3xl font-bold text-[#071739]">{activePupils.length}</div>
               <div className="text-sm text-slate-500 mt-1">Active pupils</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Stripe Payment Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-emerald-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-emerald-700 flex items-center gap-2">
+                <DollarSign className="w-4 h-4" />
+                Total Card Payments
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-emerald-700">£{totalCardPayments.toFixed(2)}</div>
+              <div className="text-sm text-emerald-600 mt-1">{stripePayments.length} transactions</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-indigo-700 flex items-center gap-2">
+                <Wallet className="w-4 h-4" />
+                Payout Amount
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-indigo-700">£{totalPayoutAmount.toFixed(2)}</div>
+              <div className="text-sm text-indigo-600 mt-1">After fees</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-rose-50 to-red-50 border-red-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-red-700 flex items-center gap-2">
+                <TrendingDown className="w-4 h-4" />
+                Stripe Charges
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-red-700">£{totalStripeFees.toFixed(2)}</div>
+              <div className="text-sm text-red-600 mt-1">Processing fees</div>
             </CardContent>
           </Card>
         </div>
