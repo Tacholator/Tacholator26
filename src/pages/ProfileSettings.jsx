@@ -193,7 +193,6 @@ export default function ProfileSettings() {
     setSaveSuccess(false);
   };
 
-  const isInstructor = user?.role === 'admin';
   const dashboardPage = isInstructor ? 'InstructorDashboard' : 'LearnerDashboard';
   const displayName = formData.firstName || user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
 
