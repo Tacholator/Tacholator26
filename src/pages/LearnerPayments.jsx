@@ -158,7 +158,7 @@ export default function LearnerPayments() {
             </Card>
           </Link>
 
-          <Link to={createPageUrl('Invoices')}>
+          <Link to={createPageUrl('LearnerInvoices')}>
             <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">

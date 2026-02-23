@@ -26,7 +26,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { FileText, Download, Plus, Search, Calendar, DollarSign, CreditCard, Banknote } from 'lucide-react';
+import { FileText, Download, Plus, Search, Calendar, DollarSign, CreditCard, Banknote, Eye } from 'lucide-react';
 import moment from 'moment';
 
 export default function Invoices() {
@@ -35,6 +35,7 @@ export default function Invoices() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [showManualDialog, setShowManualDialog] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
 
   // Manual invoice form state
   const [manualForm, setManualForm] = useState({
@@ -207,15 +208,26 @@ export default function Invoices() {
                   {invoice.hours}h • {invoice.paymentMethod}
                 </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleDownloadPdf(invoice.id, invoice.invoiceNumber)}
-                className="gap-2"
-              >
-                <Download className="w-4 h-4" />
-                PDF
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedInvoice(invoice)}
+                  className="gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  View
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDownloadPdf(invoice.id, invoice.invoiceNumber)}
+                  className="gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  PDF
+                </Button>
+              </div>
             </div>
           </div>
         ))
@@ -480,6 +492,112 @@ export default function Invoices() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Invoice Detail Modal */}
+        <Dialog open={!!selectedInvoice} onOpenChange={() => setSelectedInvoice(null)}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Invoice Details</DialogTitle>
+            </DialogHeader>
+            {selectedInvoice && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-4 border-b">
+                  <div>
+                    <div className="text-2xl font-bold text-[#071739]">{selectedInvoice.invoiceNumber}</div>
+                    <div className="text-sm text-slate-600 mt-1">
+                      {moment(selectedInvoice.created_date).format('DD MMMM YYYY')}
+                    </div>
+                  </div>
+                  <Badge className={getStatusColor(selectedInvoice.status)} className="text-sm px-3 py-1">
+                    {selectedInvoice.status}
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-xs text-slate-500 uppercase mb-1">From</div>
+                    <div className="font-medium">{selectedInvoice.instructorName}</div>
+                    <div className="text-sm text-slate-600">{selectedInvoice.instructorEmail}</div>
+                    {selectedInvoice.instructorPhone && (
+                      <div className="text-sm text-slate-600">{selectedInvoice.instructorPhone}</div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500 uppercase mb-1">To</div>
+                    <div className="font-medium">{selectedInvoice.pupilName}</div>
+                    <div className="text-sm text-slate-600">{selectedInvoice.pupilEmail}</div>
+                  </div>
+                </div>
+
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-slate-50 px-4 py-2 grid grid-cols-4 gap-4 text-sm font-medium text-slate-700">
+                    <div>Description</div>
+                    <div>Hours</div>
+                    <div>Rate</div>
+                    <div className="text-right">Amount</div>
+                  </div>
+                  <div className="px-4 py-3 grid grid-cols-4 gap-4">
+                    <div className="text-sm">{selectedInvoice.description || 'Driving lessons'}</div>
+                    <div className="text-sm">{selectedInvoice.hours}</div>
+                    <div className="text-sm">£{((selectedInvoice.amount || 0) / (selectedInvoice.hours || 1)).toFixed(2)}</div>
+                    <div className="text-sm font-medium text-right">£{(selectedInvoice.amount || 0).toFixed(2)}</div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center pt-4 border-t">
+                  <div className="text-lg font-semibold">Total</div>
+                  <div className="text-2xl font-bold text-[#071739]">£{(selectedInvoice.amount || 0).toFixed(2)}</div>
+                </div>
+
+                <div className="bg-slate-50 rounded-lg p-4 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Payment Method:</span>
+                    <span className="font-medium">{selectedInvoice.paymentMethod}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Type:</span>
+                    <span className="font-medium">{selectedInvoice.type}</span>
+                  </div>
+                  {selectedInvoice.paymentDate && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Paid On:</span>
+                      <span className="font-medium">{moment(selectedInvoice.paymentDate).format('DD MMM YYYY')}</span>
+                    </div>
+                  )}
+                  {selectedInvoice.manualReference && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Reference:</span>
+                      <span className="font-medium">{selectedInvoice.manualReference}</span>
+                    </div>
+                  )}
+                  {selectedInvoice.notes && (
+                    <div className="pt-2 border-t">
+                      <span className="text-slate-600">Notes:</span>
+                      <div className="mt-1">{selectedInvoice.notes}</div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedInvoice(null)}
+                    className="flex-1"
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    onClick={() => handleDownloadPdf(selectedInvoice.id, selectedInvoice.invoiceNumber)}
+                    className="flex-1 bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download PDF
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
