@@ -149,16 +149,12 @@ async function handleCheckoutSessionCompleted(session, base44) {
   // Create a payment ledger entry
   try {
     const payment = await base44.asServiceRole.entities.PaymentLedger.create({
-      stripePaymentIntentId: payment_intent,
-      stripeCheckoutSessionId: id,
-      stripeCustomerId: customer,
-      customerEmail: customer_email,
-      amount: amount_total / 100, // Convert from cents
-      currency: currency,
-      status: 'completed',
-      paymentMethod: 'stripe_checkout',
-      metadata: metadata || {},
-      paidAt: new Date().toISOString()
+      userId: metadata?.pupilId || 'unknown',
+      type: 'payment',
+      reason: 'balance_top_up',
+      amountGbp: amount_total / 100,
+      createdByRole: 'system',
+      note: `Stripe checkout payment - Session ${id}`
     });
 
     // If there's a pupil ID in metadata, update their balance
@@ -192,42 +188,17 @@ async function handlePaymentIntentSucceeded(paymentIntent, base44) {
     stripePaymentIntentId: paymentIntent.id
   });
 
-  if (existingPayments.length > 0) {
-    // Update existing
-    await base44.asServiceRole.entities.PaymentLedger.update(existingPayments[0].id, {
-      status: 'completed',
-      paidAt: new Date().toISOString()
-    });
-    return { success: true, updated: true };
-  } else {
-    // Create new entry
-    await base44.asServiceRole.entities.PaymentLedger.create({
-      stripePaymentIntentId: paymentIntent.id,
-      amount: paymentIntent.amount / 100,
-      currency: paymentIntent.currency,
-      status: 'completed',
-      paymentMethod: 'stripe',
-      paidAt: new Date().toISOString()
-    });
-    return { success: true, created: true };
-  }
+  // Payment intent succeeded events are handled by checkout.session.completed
+  // Just log this for tracking
+  console.log('Payment intent succeeded, already processed via checkout session');
+  return { success: true, skipped: true };
 }
 
 async function handleInvoicePaid(invoice, base44) {
   console.log('Processing invoice.paid:', invoice.id);
   
-  // Log the invoice payment
-  await base44.asServiceRole.entities.PaymentLedger.create({
-    stripeInvoiceId: invoice.id,
-    stripeCustomerId: invoice.customer,
-    amount: invoice.amount_paid / 100,
-    currency: invoice.currency,
-    status: 'completed',
-    paymentMethod: 'stripe_invoice',
-    paidAt: new Date(invoice.status_transitions.paid_at * 1000).toISOString()
-  });
-
-  return { success: true };
+  // Not currently used - Stripe invoices handled separately
+  return { success: true, skipped: true };
 }
 
 async function handleChargeRefunded(charge, base44) {
@@ -243,29 +214,25 @@ async function handleChargeRefunded(charge, base44) {
     
     // Create refund entry
     await base44.asServiceRole.entities.PaymentLedger.create({
-      stripeChargeId: charge.id,
-      stripePaymentIntentId: charge.payment_intent,
-      amount: -(charge.amount_refunded / 100), // Negative for refund
-      currency: charge.currency,
-      status: 'refunded',
-      paymentMethod: 'stripe_refund',
-      paidAt: new Date().toISOString(),
-      metadata: { originalPaymentId: payment.id }
+      userId: payment.userId,
+      type: 'refund',
+      reason: 'refund_issued',
+      amountGbp: -(charge.amount_refunded / 100),
+      createdByRole: 'system',
+      note: `Stripe refund - Charge ${charge.id}`
     });
 
-    // Update pupil balance if applicable
-    if (payment.metadata?.pupilId) {
-      const pupils = await base44.asServiceRole.entities.Pupil.filter({
-        id: payment.metadata.pupilId
+    // Update pupil balance
+    const pupils = await base44.asServiceRole.entities.Pupil.filter({
+      id: payment.userId
+    });
+    
+    if (pupils.length > 0) {
+      const pupil = pupils[0];
+      const refundAmount = charge.amount_refunded / 100;
+      await base44.asServiceRole.entities.Pupil.update(pupil.id, {
+        bulkPaymentBalance: Math.max(0, (pupil.bulkPaymentBalance || 0) - refundAmount)
       });
-      
-      if (pupils.length > 0) {
-        const pupil = pupils[0];
-        const refundAmount = charge.amount_refunded / 100;
-        await base44.asServiceRole.entities.Pupil.update(pupil.id, {
-          bulkPaymentBalance: Math.max(0, (pupil.bulkPaymentBalance || 0) - refundAmount)
-        });
-      }
     }
   }
 
