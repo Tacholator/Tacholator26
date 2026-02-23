@@ -48,6 +48,8 @@ export default function ProfileSettings() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isSavingBusiness, setIsSavingBusiness] = useState(false);
+  const [businessSaveSuccess, setBusinessSaveSuccess] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [instructorProfile, setInstructorProfile] = useState(null);
@@ -193,6 +195,22 @@ export default function ProfileSettings() {
   const handleBusinessChange = (field, value) => {
     setBusinessData(prev => ({ ...prev, [field]: value }));
     setSaveSuccess(false);
+    setBusinessSaveSuccess(false);
+  };
+
+  const handleSaveBusinessInfo = async () => {
+    setIsSavingBusiness(true);
+    try {
+      if (instructorProfile) {
+        await base44.entities.Instructor.update(instructorProfile.id, businessData);
+      }
+      setBusinessSaveSuccess(true);
+      setTimeout(() => setBusinessSaveSuccess(false), 3000);
+    } catch (error) {
+      console.error('Failed to save business info:', error);
+    } finally {
+      setIsSavingBusiness(false);
+    }
   };
 
   const dashboardPage = isInstructor ? 'InstructorDashboard' : 'LearnerDashboard';
@@ -585,6 +603,26 @@ export default function ProfileSettings() {
                     placeholder="Business email address"
                     disabled={businessData.usePersonalEmailForBusiness}
                   />
+                </div>
+
+                {/* Save Business Info Button */}
+                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                  {businessSaveSuccess && (
+                    <p className="text-sm text-emerald-600">Business information saved successfully!</p>
+                  )}
+                  {!businessSaveSuccess && <div />}
+                  <Button
+                    onClick={handleSaveBusinessInfo}
+                    disabled={isSavingBusiness}
+                    className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2"
+                  >
+                    {isSavingBusiness ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                    Save Business Info
+                  </Button>
                 </div>
               </CardContent>
             </Card>

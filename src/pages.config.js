@@ -90,6 +90,7 @@ import LearnerChats from './pages/LearnerChats';
 import LearnerDashboard from './pages/LearnerDashboard';
 import LearnerGpsFollowAlong from './pages/LearnerGpsFollowAlong';
 import LearnerHomework from './pages/LearnerHomework';
+import LearnerInvoices from './pages/LearnerInvoices';
 import LearnerLearningHub from './pages/LearnerLearningHub';
 import LearnerLessons from './pages/LearnerLessons';
 import LearnerMyInstructor from './pages/LearnerMyInstructor';
@@ -115,7 +116,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import LearnerInvoices from './pages/LearnerInvoices';
 import __Layout from './Layout.jsx';
 
 
@@ -163,6 +163,7 @@ export const PAGES = {
     "LearnerDashboard": LearnerDashboard,
     "LearnerGpsFollowAlong": LearnerGpsFollowAlong,
     "LearnerHomework": LearnerHomework,
+    "LearnerInvoices": LearnerInvoices,
     "LearnerLearningHub": LearnerLearningHub,
     "LearnerLessons": LearnerLessons,
     "LearnerMyInstructor": LearnerMyInstructor,
@@ -188,7 +189,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "LearnerInvoices": LearnerInvoices,
 }
 
 export const pagesConfig = {
