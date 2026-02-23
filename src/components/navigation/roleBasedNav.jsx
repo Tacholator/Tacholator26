@@ -18,7 +18,8 @@ import {
   UserCircle,
   Pen,
   Sparkles,
-  Settings
+  Settings,
+  Receipt
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -99,6 +100,7 @@ export const learnerOnlyLinks = [
   },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
   { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' },
+  { name: 'Invoices', icon: Receipt, page: 'LearnerInvoices' },
   { name: 'Test Routes', icon: MapPin, page: 'LearnerTestRoutes' }
 ];
 
