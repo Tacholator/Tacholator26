@@ -78,7 +78,17 @@ export default function InstructorPayments() {
     enabled: !!instructor?.id && pupils.length > 0
   });
 
-  if (pupilsLoading || ledgerLoading) {
+  const { data: stripePayments = [], isLoading: stripePaymentsLoading } = useQuery({
+    queryKey: ['stripePayments', instructor?.stripeAccountId],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchStripePayments');
+      return response.data.payments || [];
+    },
+    enabled: !!instructor?.stripeAccountId,
+    refetchInterval: 30000 // Refresh every 30 seconds
+  });
+
+  if (pupilsLoading || ledgerLoading || stripePaymentsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-slate-600">Loading payment information...</div>
@@ -213,6 +223,7 @@ export default function InstructorPayments() {
           <TabsList>
             <TabsTrigger value="pupils">Pupil Balances</TabsTrigger>
             <TabsTrigger value="activity">Recent Activity</TabsTrigger>
+            <TabsTrigger value="card-payments">Latest Card Payments</TabsTrigger>
           </TabsList>
 
           {/* Pupil Balances Tab */}
@@ -375,6 +386,113 @@ export default function InstructorPayments() {
                           {entry.hours && (
                             <div className="text-xs text-slate-500">{entry.hours}h</div>
                           )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Latest Card Payments Tab */}
+          <TabsContent value="card-payments">
+            <Card>
+              <CardHeader>
+                <CardTitle>Latest Card Payments</CardTitle>
+                <CardDescription>
+                  Card payments processed through Stripe (showing fees and net payouts)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!instructor?.stripeAccountId ? (
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Connect your Stripe account to view card payment details.{' '}
+                      <Link to={createPageUrl('PaymentMethods')} className="text-[#F7B602] hover:underline">
+                        Set up payments
+                      </Link>
+                    </AlertDescription>
+                  </Alert>
+                ) : stripePayments.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    No card payments yet
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {stripePayments.map((payment) => (
+                      <div
+                        key={payment.id}
+                        className="p-4 rounded-lg border hover:bg-slate-50 transition-colors"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-start gap-3">
+                            <div className={`p-2 rounded-full mt-1 ${
+                              payment.status === 'succeeded' 
+                                ? 'bg-green-100' 
+                                : payment.status === 'pending' 
+                                ? 'bg-yellow-100' 
+                                : 'bg-slate-100'
+                            }`}>
+                              {payment.status === 'succeeded' ? (
+                                <CheckCircle2 className="w-5 h-5 text-green-600" />
+                              ) : payment.status === 'pending' ? (
+                                <Clock className="w-5 h-5 text-yellow-600" />
+                              ) : (
+                                <AlertCircle className="w-5 h-5 text-slate-600" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-semibold text-slate-900">
+                                  {payment.currency} {payment.amount.toFixed(2)}
+                                </span>
+                                <Badge variant="outline" className="text-xs">
+                                  {payment.status}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs capitalize">
+                                  {payment.paymentMethod}
+                                </Badge>
+                              </div>
+                              {payment.customerEmail && (
+                                <div className="text-sm text-slate-600">
+                                  {payment.customerEmail}
+                                </div>
+                              )}
+                              {payment.description && (
+                                <div className="text-sm text-slate-600">
+                                  {payment.description}
+                                </div>
+                              )}
+                              <div className="text-xs text-slate-500 flex items-center gap-2 mt-2">
+                                <Clock className="w-3 h-3" />
+                                {moment.unix(payment.created).format('DD MMM YYYY, HH:mm')}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Fee Breakdown */}
+                        <div className="ml-11 pt-3 border-t space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-slate-600">Payment Amount</span>
+                            <span className="font-medium text-slate-900">
+                              £{payment.amount.toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-slate-600">Stripe Processing Fee</span>
+                            <span className="font-medium text-rose-600">
+                              -£{payment.stripeFee.toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-base font-bold border-t pt-2">
+                            <span className="text-slate-900">Net Payout to You</span>
+                            <span className="text-green-600">
+                              £{payment.netPayout.toFixed(2)}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     ))}
