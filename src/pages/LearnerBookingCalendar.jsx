@@ -127,8 +127,8 @@ export default function LearnerBookingCalendar() {
       const booking = await base44.entities.LessonBooking.create({
         instructorId: pupil.instructorId,
         pupilId: pupil.id,
-        startAtUtc: startMoment.utc().format(),
-        endAtUtc: endMoment.utc().format(),
+        startAtUtc: startMoment.utc().toISOString(),
+        endAtUtc: endMoment.utc().toISOString(),
         durationHours,
         status: 'reserved_pending_instructor',
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
