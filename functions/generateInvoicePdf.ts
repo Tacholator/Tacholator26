@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
     .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
-    .logo { max-width: 800px; max-height: 320px; }
+    .logo { max-width: 400px; max-height: 160px; }
     .business-info { text-align: right; font-size: 12px; line-height: 1.6; }
     .business-name { font-size: 16px; font-weight: bold; color: #071739; }
     .invoice-title { font-size: 32px; font-weight: bold; color: #071739; margin-bottom: 20px; }

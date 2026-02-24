@@ -248,7 +248,7 @@ export default function LearnerInvoices() {
                       <img 
                         src={instructorProfile.businessLogoUrl} 
                         alt="Business Logo" 
-                        className="h-16 mx-auto mb-3 object-contain"
+                        className="h-8 mx-auto mb-3 object-contain"
                       />
                     )}
                     <div className="text-xl font-bold text-[#071739]">
