@@ -22,8 +22,21 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Invoice not found' }, { status: 404 });
     }
 
-    // Verify access
-    if (invoice.instructorId !== user.id && invoice.pupilId !== user.id) {
+    // Verify access - check if user is instructor or learner with access to this invoice
+    let hasAccess = false;
+    
+    if (invoice.instructorId === user.id) {
+      // User is the instructor
+      hasAccess = true;
+    } else {
+      // Check if user is the learner - fetch pupil record
+      const pupils = await base44.asServiceRole.entities.Pupil.filter({ linkedUserId: user.id });
+      if (pupils.length > 0 && pupils[0].id === invoice.pupilId) {
+        hasAccess = true;
+      }
+    }
+
+    if (!hasAccess) {
       return Response.json({ error: 'Access denied' }, { status: 403 });
     }
 
