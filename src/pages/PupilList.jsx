@@ -44,6 +44,7 @@ import {
   X
 } from 'lucide-react';
 import PupilFormModal, { DVSA_SKILLS } from '@/components/modals/PupilFormModal';
+import OneOffPupilModal from '@/components/modals/OneOffPupilModal';
 import moment from 'moment';
 
 
@@ -52,6 +53,7 @@ export default function PupilList() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('Active');
   const [showPupilModal, setShowPupilModal] = useState(false);
+  const [showOneOffModal, setShowOneOffModal] = useState(false);
   const [editingPupil, setEditingPupil] = useState(null);
   const [pastTestPupils, setPastTestPupils] = useState([]);
   const [currentTestPupilIndex, setCurrentTestPupilIndex] = useState(0);
@@ -217,6 +219,27 @@ export default function PupilList() {
     }
   };
 
+  const handleSaveOneOffPupil = async (data) => {
+    // Add instructor info and set status to 'Stopped' for one-off pupils
+    const pupilData = {
+      ...data,
+      instructorId: currentUser?.id,
+      instructorEmail: currentUser?.email,
+      instructorName: currentUser?.full_name,
+      status: 'Stopped'
+    };
+    const result = await createPupilMutation.mutateAsync(pupilData);
+    // Create DVSA skills for new pupil
+    const skills = DVSA_SKILLS.map((skill, index) => ({
+      pupilId: result.id,
+      instructorId: currentUser?.id,
+      title: skill.name,
+      order: index,
+      status: 'not_started'
+    }));
+    await createSkillsMutation.mutateAsync(skills);
+  };
+
   const getNextLesson = (pupilId) => {
     const today = moment().startOf('day');
     const pupilLessons = lessons
@@ -256,7 +279,7 @@ export default function PupilList() {
   const activePupils = pupils.filter(p => p.status === 'Active');
   const onHoldPupils = pupils.filter(p => p.status === 'OnHold');
   const passedPupils = pupils.filter(p => p.status === 'Passed');
-  const newIntakePupils = pupils.filter(p => p.status === 'Stopped');
+  const oneOffPupils = pupils.filter(p => p.status === 'Stopped');
 
   if (isLoading) {
     return (
@@ -278,6 +301,7 @@ export default function PupilList() {
               <p className="text-emerald-600 font-medium">{activePupils.length} active</p>
               <p className="text-amber-600 font-medium">{onHoldPupils.length} on hold</p>
               <p className="text-blue-600 font-medium">{passedPupils.length} passed</p>
+              <p className="text-purple-600 font-medium">{oneOffPupils.length} one-offs</p>
             </div>
           </div>
           
@@ -346,8 +370,18 @@ export default function PupilList() {
             }`}
           >
             <div className="text-left">
-              <div className="text-2xl font-bold text-purple-600">{newIntakePupils.length}</div>
-              <div className="text-sm text-slate-600 mt-1">New Intake</div>
+              <div className="text-2xl font-bold text-purple-600">{oneOffPupils.length}</div>
+              <div className="text-sm text-slate-600 mt-1">One Offs</div>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowOneOffModal(true);
+                }}
+                className="mt-2 w-full bg-purple-600 hover:bg-purple-700 text-xs h-8"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add One Off
+              </Button>
             </div>
           </button>
         </div>
@@ -420,9 +454,9 @@ export default function PupilList() {
                             'Passed': 'bg-blue-100 text-blue-700',
                             'Stopped': 'bg-purple-100 text-purple-700'
                           }[pupil.status || 'Active']}>
-                            {pupil.status === 'OnHold' ? 'On Hold' : 
-                             pupil.status === 'Stopped' ? 'New Intake' : 
-                             pupil.status || 'Active'}
+                           {pupil.status === 'OnHold' ? 'On Hold' : 
+                            pupil.status === 'Stopped' ? 'One Off' : 
+                            pupil.status || 'Active'}
                           </Badge>
                           {!pupil.hasSignedUp && !pupil.linkedUserId && (
                             <Badge className="bg-rose-100 text-rose-700">
@@ -515,6 +549,12 @@ export default function PupilList() {
         }}
         existingPupil={editingPupil}
         onSave={handleSavePupil}
+      />
+
+      <OneOffPupilModal
+        open={showOneOffModal}
+        onClose={() => setShowOneOffModal(false)}
+        onSave={handleSaveOneOffPupil}
       />
 
       {/* Test Outcome Dialog */}
