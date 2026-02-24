@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Calendar, Clock, MapPin, FileText, Save, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
-import { courseWorkTopics } from '@/components/coursework/topicIndex';
+import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
 import TopicDurationSelector from './TopicDurationSelector';
 
 export default function BookingSummaryModal({ 
@@ -33,6 +33,7 @@ export default function BookingSummaryModal({
     aiSummary: ''
   });
   const [selectedTopics, setSelectedTopics] = useState([]);
+  const [mainSelectedTopicId, setMainSelectedTopicId] = useState(null);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
 
   // Check if there's an existing diary entry for this booking
@@ -66,6 +67,7 @@ export default function BookingSummaryModal({
         instructorComments: existingDiaryEntry.instructorComments || '',
         aiSummary: existingDiaryEntry.aiSummary || ''
       });
+      setMainSelectedTopicId(existingDiaryEntry.mainTopic || null);
     } else {
       setSummaryData({
         mainTopic: '',
@@ -75,6 +77,7 @@ export default function BookingSummaryModal({
         instructorComments: '',
         aiSummary: ''
       });
+      setMainSelectedTopicId(null);
     }
 
     // Load existing topic durations
@@ -152,8 +155,8 @@ Requirements:
     
     setIsSaving(true);
     try {
-      // Use first topic as main topic for backward compatibility
-      const mainTopicId = selectedTopics[0]?.topicId || '';
+      // Use selected main topic ID
+      const mainTopicId = mainSelectedTopicId || '';
 
       const diaryData = {
         pupilId: booking.pupilId,
@@ -312,6 +315,25 @@ Requirements:
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {/* Main Topic Selection */}
+          {!readOnly && (
+            <div>
+              <Label>Main Topic Covered *</Label>
+              <Select value={mainSelectedTopicId || ''} onValueChange={setMainSelectedTopicId}>
+                <SelectTrigger className="w-full mt-2">
+                  <SelectValue placeholder="Select the main topic covered in this lesson..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {drivingSkillsSections.map(section => (
+                    <SelectItem key={section.id} value={section.id}>
+                      {section.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Lesson Info Card */}
           <Card className="border-blue-200 bg-blue-50">
             <CardHeader className="pb-3">
@@ -385,6 +407,7 @@ Requirements:
                 selectedTopics={selectedTopics}
                 onChange={setSelectedTopics}
                 totalLessonMinutes={(booking.durationHours || 0) * 60}
+                mainSelectedTopicId={mainSelectedTopicId}
                 disabled={readOnly}
               />
             )}
