@@ -93,9 +93,13 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
   };
 
   const handleSubmit = async () => {
-    // Validate required fields
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
-      alert('Please fill in all required fields: First Name, Last Name, Email, and Phone Number');
+    // Validate required fields - email is optional for One Off pupils
+    const isOneOff = formData.status === 'Stopped';
+    if (!formData.firstName || !formData.lastName || (!isOneOff && !formData.email) || !formData.phone) {
+      const requiredFields = isOneOff 
+        ? 'First Name, Last Name, and Phone Number'
+        : 'First Name, Last Name, Email, and Phone Number';
+      alert(`Please fill in all required fields: ${requiredFields}`);
       return;
     }
 
@@ -169,7 +173,9 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
+                <Label htmlFor="email">
+                  Email {formData.status === 'Stopped' ? '(optional for One Offs)' : '*'}
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -178,7 +184,9 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                   placeholder="john@example.com"
                 />
                 <p className="text-xs text-slate-500">
-                  This email will be used to link the learner's account
+                  {formData.status === 'Stopped' 
+                    ? 'Optional - only needed if they want app access'
+                    : 'This email will be used to link the learner\'s account'}
                 </p>
               </div>
               <div className="space-y-2">
