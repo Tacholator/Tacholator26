@@ -141,36 +141,24 @@ Write a warm, supportive summary that highlights progress and next steps.`;
         )}
 
         <div className="space-y-5 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="date">Lesson Date</Label>
-              <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => handleChange('date', e.target.value)}
-                disabled={readOnly}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="objective">Lesson Objective</Label>
-              <Input
-                id="objective"
-                value={formData.objective}
-                onChange={(e) => handleChange('objective', e.target.value)}
-                placeholder="e.g., Roundabouts practice"
-                disabled={readOnly}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="date">Lesson Date</Label>
+            <Input
+              id="date"
+              type="date"
+              value={formData.date}
+              onChange={(e) => handleChange('date', e.target.value)}
+              disabled={readOnly}
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="mainTopic">Main Topic *</Label>
             {readOnly ? (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700">
-                {courseWorkTopics.find(t => t.topicId === formData.mainTopic)?.title || formData.mainTopic || 'Not specified'}
-              </div>
-            ) : (
+               <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
+                 {courseWorkTopics.find(t => t.topicId === formData.mainTopic)?.title || formData.mainTopic || 'Not specified'}
+               </div>
+             ) : (
               <Select 
                 value={formData.mainTopic} 
                 onValueChange={(value) => handleChange('mainTopic', value)}
@@ -186,6 +174,24 @@ Write a warm, supportive summary that highlights progress and next steps.`;
                   ))}
                 </SelectContent>
               </Select>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="objective">What was covered</Label>
+            {readOnly ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
+                {formData.objective || 'Not specified'}
+              </div>
+            ) : (
+              <Textarea
+                id="objective"
+                value={formData.objective}
+                onChange={(e) => handleChange('objective', e.target.value)}
+                placeholder="e.g., Roundabouts practice"
+                rows={2}
+                disabled={readOnly}
+              />
             )}
           </div>
 
