@@ -101,19 +101,45 @@ export default function CreateBookableSlotModal({
       return;
     }
 
-    // Check for overlaps with existing slots on the same date
+    // Check for overlaps with existing slots
     const hasOverlap = existingSlots.some(slot => {
       // Skip the slot being edited
       if (existingSlot && slot.id === existingSlot.id) return false;
 
       const slotStart = moment(slot.startAtUtc).local();
       const slotEnd = moment(slot.endAtUtc).local();
+      const slotStartDate = slotStart.format('YYYY-MM-DD');
+      const slotDayOfWeek = slotStart.format('ddd').toLowerCase();
 
-      // Check if dates match (for recurring slots, check all occurrences on this date)
-      const isSameDate = slotStart.format('YYYY-MM-DD') === startDate;
-      if (!isSameDate) return false;
+      // Check if this existing slot occurs on the target date
+      let slotOccursOnDate = false;
+      
+      if (repeatWeekly) {
+        // If new slot is recurring, check if it overlaps with existing slot's occurrence on new slot's date
+        slotOccursOnDate = slotStart.isSameOrBefore(moment(startDate)) && 
+                           (!slot.stopDate || moment(startDate).isSameOrBefore(moment(slot.stopDate)));
+        
+        if (slotOccursOnDate && slot.repeatWeekly) {
+          // Both are recurring - check if they share any days
+          const existingDays = slot.selectedDays || [slotDayOfWeek];
+          slotOccursOnDate = selectedDays.some(day => existingDays.includes(day));
+        }
+      } else {
+        // New slot is single occurrence - check if existing slot occurs on that date
+        if (slot.repeatWeekly) {
+          const existingDays = slot.selectedDays || [slotDayOfWeek];
+          const newSlotDayOfWeek = moment(startDate).format('ddd').toLowerCase();
+          slotOccursOnDate = existingDays.includes(newSlotDayOfWeek) &&
+                             slotStart.isSameOrBefore(moment(startDate)) &&
+                             (!slot.stopDate || moment(startDate).isSameOrBefore(moment(slot.stopDate)));
+        } else {
+          slotOccursOnDate = slotStartDate === startDate;
+        }
+      }
 
-      // Check if times overlap: new slot starts before existing ends AND new slot ends after existing starts
+      if (!slotOccursOnDate) return false;
+
+      // Check if times overlap
       return newStart.isBefore(slotEnd) && newEnd.isAfter(slotStart);
     });
 
