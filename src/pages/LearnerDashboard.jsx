@@ -569,56 +569,116 @@ export default function LearnerDashboard() {
           </motion.div>
         </div>
 
-        {/* 4. Overall Progress */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-        >
-          <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-100 to-amber-100">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-orange-600" />
-                Overall Driving Progress
-              </CardTitle>
-              <p className="text-sm text-slate-600">{drivingProgress.length} of 24 skills tracked</p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-sm font-medium text-slate-700">Progress</span>
-                  <span className="text-sm font-bold text-orange-600">{overallProgress}%</span>
-                </div>
-                <div className="w-full bg-white/70 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-orange-500 to-amber-500 h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${overallProgress}%` }}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 pt-2">
+        {/* 4. Overall Progress & Hours Booked */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-100 to-amber-100">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-orange-600" />
+                  Overall Driving Progress
+                </CardTitle>
+                <p className="text-sm text-slate-600">{drivingProgress.length} of 24 skills tracked</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div>
-                  <p className="text-xs text-slate-600 mb-1">Next Focus</p>
-                  <p className="text-sm font-medium text-slate-800">
-                    {nextFocusTopic?.label || 'All skills completed! 🎉'}
-                  </p>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-medium text-slate-700">Progress</span>
+                    <span className="text-sm font-bold text-orange-600">{overallProgress}%</span>
+                  </div>
+                  <div className="w-full bg-white/70 rounded-full h-3">
+                    <div 
+                      className="bg-gradient-to-r from-orange-500 to-amber-500 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${overallProgress}%` }}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-600 mb-1">Hours Completed</p>
-                  <p className="text-sm font-medium text-slate-800">
-                    {pupil.hoursCompleted || 0} / {pupil.targetHours || 45}
-                  </p>
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <p className="text-xs text-slate-600 mb-1">Next Focus</p>
+                    <p className="text-sm font-medium text-slate-800">
+                      {nextFocusTopic?.label || 'All skills completed! 🎉'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-600 mb-1">Hours Completed</p>
+                    <p className="text-sm font-medium text-slate-800">
+                      {pupil.hoursCompleted || 0} / {pupil.targetHours || 45}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <Link to={createPageUrl('LearnerProgress')}>
-                <Button variant="outline" className="w-full gap-2 bg-white/50 hover:bg-white/80 border-orange-200">
-                  <TrendingUp className="w-4 h-4" />
-                  View Progress
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
+                <Link to={createPageUrl('LearnerProgress')}>
+                  <Button variant="outline" className="w-full gap-2 bg-white/50 hover:bg-white/80 border-orange-200">
+                    <TrendingUp className="w-4 h-4" />
+                    View Progress
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            {(() => {
+              const futureBookings = bookings.filter(b => 
+                b.status === 'confirmed' && 
+                moment(b.startAtUtc).isAfter(now)
+              );
+              const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
+              const nextBooking = futureBookings.sort((a, b) => 
+                moment(a.startAtUtc).diff(moment(b.startAtUtc))
+              )[0];
+
+              return (
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-teal-100 to-cyan-100">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-teal-600" />
+                      Hours Booked
+                    </CardTitle>
+                    <p className="text-sm text-slate-600">Upcoming confirmed lessons</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-white/50 flex items-center justify-center">
+                        <Clock className="w-6 h-6 text-teal-600" />
+                      </div>
+                      <div>
+                        <p className="text-3xl font-bold text-teal-700">
+                          {totalHoursBooked.toFixed(1)}h
+                        </p>
+                        <p className="text-sm text-slate-600">
+                          {futureBookings.length} lesson{futureBookings.length !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                    </div>
+                    {nextBooking && (
+                      <div className="pt-2 border-t border-teal-200">
+                        <p className="text-xs text-slate-600 mb-1">Next lesson</p>
+                        <p className="text-sm font-medium text-slate-800">
+                          {moment(nextBooking.startAtUtc).local().format('ddd, D MMM')} at {moment(nextBooking.startAtUtc).local().format('HH:mm')}
+                        </p>
+                      </div>
+                    )}
+                    <Link to={createPageUrl('LearnerScheduledLessons')}>
+                      <Button variant="outline" className="w-full gap-2 bg-white/50 hover:bg-white/80 border-teal-200">
+                        <Calendar className="w-4 h-4" />
+                        View All Lessons
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+          </motion.div>
+        </div>
 
         {/* 5. Assigned Coursework */}
         {courseworkAssignments.length > 0 && (

@@ -442,6 +442,25 @@ export default function PupilProfile() {
                   )}
                 </div>
 
+                {/* Hours Booked Info */}
+                {(() => {
+                  const now = moment();
+                  const futureBookings = confirmedBookings.filter(b => 
+                    moment(b.startAtUtc).isAfter(now)
+                  );
+                  const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
+                  
+                  if (totalHoursBooked > 0) {
+                    return (
+                      <div className="flex items-center gap-2 text-sm">
+                        <div className="px-2 py-1 rounded-lg bg-teal-100 text-teal-700">
+                          Booked: {totalHoursBooked.toFixed(1)}h ({futureBookings.length} lesson{futureBookings.length !== 1 ? 's' : ''})
+                        </div>
+                      </div>
+                    );
+                  }
+                })()}
+
                 {/* Payment Info */}
                                       {(pupil.hourlyRate > 0 || pupil.bulkPaymentBalance !== 0) && (
                                         <div className="space-y-1">
