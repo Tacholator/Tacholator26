@@ -98,6 +98,9 @@ export default function CreateBookableSlotModal({
     const newEndTime = moment(endTime, 'HH:mm');
     const newDayOfWeek = moment(startDate).format('ddd').toLowerCase();
 
+    console.log('SaveSlot - existingSlots count:', existingSlots.length);
+    console.log('SaveSlot - newSlot:', { date: startDate, day: newDayOfWeek, time: `${startTime}-${endTime}`, repeatWeekly });
+
     if (newEndTime.isSameOrBefore(newStartTime)) {
       toast({
         title: 'Invalid time range',
@@ -116,12 +119,22 @@ export default function CreateBookableSlotModal({
       const slotStartTime = moment(slot.startTimeLocal, 'HH:mm');
       const slotEndTime = moment(slot.endTimeLocal, 'HH:mm');
 
+      console.log('Checking slot:', { 
+        day: slotDayOfWeek, 
+        time: `${slot.startTimeLocal}-${slot.endTimeLocal}`,
+        startDate: slot.startDate,
+        endDate: slot.endDate
+      });
+
       // Check if this existing slot occurs on the target date
       let slotOccursOnDate = false;
 
       if (repeatWeekly) {
         // New slot is recurring - check if existing slot's day overlaps with new slot's days
-        if (!selectedDays.includes(slotDayOfWeek)) return false;
+        if (!selectedDays.includes(slotDayOfWeek)) {
+          console.log('  -> Day mismatch, skipping');
+          return false;
+        }
         
         // Check date range: existing slot must start on or before new slot start date
         slotOccursOnDate = moment(slot.startDate).isSameOrBefore(moment(startDate));
@@ -132,7 +145,10 @@ export default function CreateBookableSlotModal({
         }
       } else {
         // New slot is single occurrence - check if existing slot occurs on that date
-        if (slotDayOfWeek !== newDayOfWeek) return false;
+        if (slotDayOfWeek !== newDayOfWeek) {
+          console.log('  -> Day mismatch:', slotDayOfWeek, '!==', newDayOfWeek, ', skipping');
+          return false;
+        }
         
         // Existing slot must start on or before new slot date
         slotOccursOnDate = moment(slot.startDate).isSameOrBefore(moment(startDate));
@@ -143,20 +159,19 @@ export default function CreateBookableSlotModal({
         }
       }
 
-      if (!slotOccursOnDate) return false;
+      if (!slotOccursOnDate) {
+        console.log('  -> Not occurring on date');
+        return false;
+      }
 
       // Check if times overlap: new start < existing end AND new end > existing start
       const timesOverlap = newStartTime.isBefore(slotEndTime) && newEndTime.isAfter(slotStartTime);
-      
-      if (timesOverlap) {
-        console.log('Overlap detected:', {
-          newSlot: { date: startDate, day: newDayOfWeek, time: `${startTime}-${endTime}` },
-          existingSlot: { day: slotDayOfWeek, time: `${slot.startTimeLocal}-${slot.endTimeLocal}` }
-        });
-      }
+      console.log('  -> Times overlap:', timesOverlap, `(${newStartTime.format('HH:mm')} < ${slotEndTime.format('HH:mm')} && ${newEndTime.format('HH:mm')} > ${slotStartTime.format('HH:mm')})`);
       
       return timesOverlap;
     });
+
+    console.log('Final hasOverlap:', hasOverlap);
 
     if (hasOverlap) {
       toast({
