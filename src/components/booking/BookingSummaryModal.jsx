@@ -198,7 +198,13 @@ Requirements:
         description: 'Hours updated and lesson marked complete' 
       });
       
+      // Close this modal
       onOpenChange(false);
+      
+      // Also close parent modal if it exists (passed as a separate callback)
+      if (typeof window !== 'undefined' && window.closeParentBookingModal) {
+        window.closeParentBookingModal();
+      }
     } catch (error) {
       toast({ 
         title: 'Failed to save', 
