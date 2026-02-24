@@ -206,6 +206,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   const renderSkillItem = (skill, level = 0) => {
     const progress = getProgressForSkill(skill.id);
     const levels = ['full_talk_through', 'prompted', 'independent'];
+    const skillHours = topicHours.find(log => log.topicId === skill.id)?.totalHours || 0;
 
     if (isInstructor) {
       return (
@@ -216,7 +217,14 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         >
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <ChevronRight className={`w-4 h-4 text-slate-400 flex-shrink-0 ${level > 0 ? 'opacity-50' : ''}`} />
-            <span className="text-sm text-slate-700 truncate">{skill.label}</span>
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <span className="text-sm text-slate-700 truncate">{skill.label}</span>
+              {skillHours > 0 && (
+                <span className="text-xs text-blue-600 font-medium whitespace-nowrap">
+                  ({skillHours.toFixed(1)}h)
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex gap-3 items-center flex-shrink-0">
             {levels.map((lvl, idx) => {
@@ -249,7 +257,14 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
       >
         <div className="flex items-center gap-3 flex-1">
           <ChevronRight className={`w-4 h-4 text-slate-400 ${level > 0 ? 'opacity-50' : ''}`} />
-          <span className="text-sm text-slate-700">{skill.label}</span>
+          <div className="flex items-center gap-2 flex-1">
+            <span className="text-sm text-slate-700">{skill.label}</span>
+            {skillHours > 0 && (
+              <span className="text-xs text-blue-600 font-medium">
+                ({skillHours.toFixed(1)}h)
+              </span>
+            )}
+          </div>
         </div>
         {progress && (
           <Badge className={`${getProgressColor(progress.progressState)} text-xs`}>
@@ -444,8 +459,22 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
           ];
           const gradient = gradients[index];
           const sectionProgress = getSectionProgress(section);
-          const topicLog = topicHours.find(log => log.topicId === section.id);
-          const hoursSpent = topicLog?.totalHours || 0;
+          // Get hours for all skills in this section
+          const sectionSkills = [];
+          const extractSkills = (items) => {
+            items.forEach(item => {
+              if (item.type === 'skill') {
+                sectionSkills.push(item.id);
+              } else if (item.subtopics) {
+                extractSkills(item.subtopics);
+              }
+            });
+          };
+          extractSkills(section.topics);
+          const hoursSpent = sectionSkills.reduce((total, skillId) => {
+            const log = topicHours.find(l => l.topicId === skillId);
+            return total + (log?.totalHours || 0);
+          }, 0);
 
           const statusConfig = {
             not_started: { label: 'Not Started', color: 'bg-slate-100 text-slate-600' },
@@ -480,13 +509,13 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                   {statusConfig[sectionProgress.status].label}
                 </Badge>
 
-                {sectionProgress.status !== 'completed' && (
-                  <div className="flex-1 flex items-center justify-center my-2">
-                    <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border-2 border-white/40 flex flex-col items-center justify-center px-2">
-                      <span className="text-2xl font-bold text-white leading-none">{hoursSpent}</span>
-                      <span className="text-[10px] text-white/90 mt-0.5 text-center leading-tight">hours covered</span>
-                    </div>
+                {hoursSpent > 0 && (
+                <div className="flex-1 flex items-center justify-center my-2">
+                  <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border-2 border-white/40 flex flex-col items-center justify-center px-2">
+                    <span className="text-2xl font-bold text-white leading-none">{hoursSpent.toFixed(1)}</span>
+                    <span className="text-[10px] text-white/90 mt-0.5 text-center leading-tight">hours covered</span>
                   </div>
+                </div>
                 )}
 
                 <div className="mt-auto">
