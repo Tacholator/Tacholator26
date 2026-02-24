@@ -34,6 +34,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   const [routeData, setRouteData] = useState({ routeDetails: '', comments: '' });
   const [originalRouteData, setOriginalRouteData] = useState({ routeDetails: '', comments: '' });
   const [expandedSection, setExpandedSection] = useState(null);
+  const [selectedCustomTopic, setSelectedCustomTopic] = useState(null);
 
   const { data: progressData = [], isLoading } = useQuery({
     queryKey: ['drivingProgress', pupilId],
@@ -62,6 +63,13 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   const { data: topicHours = [] } = useQuery({
     queryKey: ['topicHoursLog', pupilId],
     queryFn: () => base44.entities.TopicHoursLog.filter({ pupilId }),
+    enabled: !!pupilId
+  });
+
+  // Fetch LessonTopicDuration for custom topics from lesson summaries
+  const { data: lessonTopicDurations = [] } = useQuery({
+    queryKey: ['lessonTopicDurations', pupilId],
+    queryFn: () => base44.entities.LessonTopicDuration.filter({ pupilId }),
     enabled: !!pupilId
   });
 
@@ -537,41 +545,70 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
       </div>
 
       {/* Custom Topics Card - Card #25 */}
-      {topicHours.filter(log => log.topicId.startsWith('custom_')).length > 0 && (
-        <Card className="border-0 shadow-sm bg-gradient-to-r from-purple-500 to-indigo-600">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm">
-                  25
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white text-lg">Custom Topics</h3>
-                  <p className="text-xs text-white/80">Additional topics covered in lessons</p>
+      {(() => {
+        // Aggregate custom topics from LessonTopicDuration (only from lesson summaries)
+        const customTopics = lessonTopicDurations
+          .filter(ltd => {
+            // Only include topics starting with 'custom_'
+            // Exclude numeric-only IDs like '177194', '1771942'
+            return ltd.topicId?.startsWith('custom_') && !/^\d+$/.test(ltd.topicId);
+          })
+          .reduce((acc, ltd) => {
+            const existing = acc.find(t => t.topicId === ltd.topicId);
+            if (existing) {
+              existing.totalMinutes += ltd.durationMinutes;
+              existing.lessons.push(ltd);
+            } else {
+              acc.push({
+                topicId: ltd.topicId,
+                topicName: ltd.topicName,
+                totalMinutes: ltd.durationMinutes,
+                lessons: [ltd]
+              });
+            }
+            return acc;
+          }, []);
+
+        if (customTopics.length === 0) return null;
+
+        return (
+          <Card className="border-0 shadow-sm bg-gradient-to-r from-purple-500 to-indigo-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm">
+                    25
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white text-lg">Custom Topics</h3>
+                    <p className="text-xs text-white/80">Additional topics covered in lessons</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {topicHours
-                .filter(log => log.topicId.startsWith('custom_'))
-                .map(log => (
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {customTopics.map(topic => (
                   <div
-                    key={log.id}
-                    className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg p-4 text-center"
+                    key={topic.topicId}
+                    className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg p-4 text-center cursor-pointer hover:bg-white/30 transition-colors"
+                    onClick={() => setSelectedCustomTopic(topic)}
                   >
-                    <p className="text-white font-medium text-sm mb-1 truncate" title={log.topicId.replace('custom_', '')}>
-                      {log.topicId.replace('custom_', '')}
+                    <p className="text-white font-medium text-sm mb-1 truncate" title={topic.topicName}>
+                      {topic.topicName}
                     </p>
                     <p className="text-white/90 text-xs font-semibold">
-                      {log.totalHours.toFixed(1)}h
+                      {(topic.totalMinutes / 60).toFixed(1)}h
+                    </p>
+                    <p className="text-white/70 text-xs mt-1">
+                      {topic.lessons.length} lesson{topic.lessons.length !== 1 ? 's' : ''}
                     </p>
                   </div>
                 ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Test Routes Section */}
       <Card className="border-0 shadow-sm">
@@ -820,6 +857,56 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               >
                 {saveRouteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
               </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Custom Topic Details Dialog */}
+      <Dialog open={!!selectedCustomTopic} onOpenChange={() => setSelectedCustomTopic(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                25
+              </div>
+              {selectedCustomTopic?.topicName}
+            </DialogTitle>
+            <DialogDescription>
+              Time spent on this custom topic across lessons
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="bg-slate-50 rounded-lg p-4">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-[#071739]">
+                  {selectedCustomTopic && (selectedCustomTopic.totalMinutes / 60).toFixed(1)}h
+                </p>
+                <p className="text-sm text-slate-600 mt-1">Total time spent</p>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-slate-700 mb-3">Lesson History</h4>
+              <div className="space-y-2">
+                {selectedCustomTopic?.lessons.map((lesson, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">
+                        Lesson {selectedCustomTopic.lessons.length - idx}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {lesson.created_date ? moment(lesson.created_date).format('D MMM YYYY') : 'Date not available'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-[#071739]">
+                        {lesson.durationMinutes} min
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </DialogContent>
