@@ -120,8 +120,17 @@ export default function Invoices() {
 
   const handleDownloadPdf = async (invoiceId, invoiceNumber) => {
     try {
+      console.log('Requesting PDF for invoice:', invoiceId);
       const response = await base44.functions.invoke('generateInvoicePdf', { invoiceId });
+      console.log('PDF response received:', response);
+      
+      if (!response.data) {
+        throw new Error('No PDF data received from server');
+      }
+      
       const blob = new Blob([response.data], { type: 'application/pdf' });
+      console.log('PDF blob created, size:', blob.size);
+      
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -130,10 +139,16 @@ export default function Invoices() {
       a.click();
       window.URL.revokeObjectURL(url);
       a.remove();
+      
+      toast({
+        title: 'Success',
+        description: 'Invoice downloaded successfully'
+      });
     } catch (error) {
+      console.error('PDF download error:', error);
       toast({
         title: 'Error',
-        description: 'Failed to download invoice PDF',
+        description: error.message || 'Failed to download invoice PDF',
         variant: 'destructive'
       });
     }

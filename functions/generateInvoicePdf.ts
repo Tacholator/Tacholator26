@@ -29,8 +29,14 @@ Deno.serve(async (req) => {
     }
 
     // Get instructor business info
+    console.log('Fetching instructor profile for:', invoice.instructorEmail);
     const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by: invoice.instructorEmail || '' });
     const instructorProfile = instructors.length > 0 ? instructors[0] : null;
+    console.log('Instructor profile found:', !!instructorProfile, instructorProfile ? {
+      hasBusinessName: !!instructorProfile.businessName,
+      hasBusinessLogo: !!instructorProfile.businessLogoUrl,
+      hasAddress: !!instructorProfile.businessAddress
+    } : null);
 
     // Create PDF
     const doc = new jsPDF();
@@ -40,9 +46,12 @@ Deno.serve(async (req) => {
 
     // Header - Logo
     try {
+      console.log('Attempting to load logo from:', logoUrl);
       doc.addImage(logoUrl, 'PNG', 15, 10, 60, 20);
+      console.log('Logo loaded successfully');
     } catch (error) {
-      console.error('Failed to load logo:', error);
+      console.error('Failed to load logo:', error.message, error.stack);
+      // Continue without logo
     }
 
     // Invoice title and number
@@ -163,7 +172,9 @@ Deno.serve(async (req) => {
     doc.text('Please keep this invoice for your records', 105, 285, { align: 'center' });
 
     // Generate PDF buffer
+    console.log('Generating PDF buffer...');
     const pdfBuffer = doc.output('arraybuffer');
+    console.log('PDF generated successfully, size:', pdfBuffer.byteLength, 'bytes');
 
     return new Response(pdfBuffer, {
       headers: {
@@ -173,7 +184,14 @@ Deno.serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('PDF generation error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    console.error('PDF generation error:', {
+      message: error.message,
+      stack: error.stack,
+      invoiceId: await req.json().then(d => d.invoiceId).catch(() => 'unknown')
+    });
+    return Response.json({ 
+      error: error.message,
+      details: 'Check function logs for more information'
+    }, { status: 500 });
   }
 });
