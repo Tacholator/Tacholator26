@@ -49,6 +49,16 @@ export default function LearnerInvoices() {
     enabled: !!pupil?.id
   });
 
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfile', selectedInvoice?.instructorEmail],
+    queryFn: async () => {
+      if (!selectedInvoice?.instructorEmail) return null;
+      const profiles = await base44.entities.Instructor.filter({ created_by: selectedInvoice.instructorEmail });
+      return profiles[0] || null;
+    },
+    enabled: !!selectedInvoice?.instructorEmail
+  });
+
   const handleDownloadPdf = async (invoiceId, invoiceNumber) => {
     try {
       const response = await base44.functions.invoke('generateInvoicePdf', { invoiceId });
@@ -216,6 +226,47 @@ export default function LearnerInvoices() {
             </DialogHeader>
             {selectedInvoice && (
               <div className="space-y-4">
+                {/* Business Letterhead */}
+                {instructorProfile && (
+                  <div className="text-center pb-4 border-b border-[#F7B602]">
+                    {instructorProfile.businessLogoUrl && (
+                      <img 
+                        src={instructorProfile.businessLogoUrl} 
+                        alt="Business Logo" 
+                        className="h-16 mx-auto mb-3 object-contain"
+                      />
+                    )}
+                    <div className="text-xl font-bold text-[#071739]">
+                      {instructorProfile.businessName || selectedInvoice.instructorName}
+                    </div>
+                    <div className="text-sm text-slate-600 mt-1 space-y-0.5">
+                      {instructorProfile.businessAddress && (
+                        <div>{instructorProfile.businessAddress}</div>
+                      )}
+                      {(instructorProfile.businessCity || instructorProfile.businessPostcode) && (
+                        <div>
+                          {[instructorProfile.businessCity, instructorProfile.businessPostcode].filter(Boolean).join(', ')}
+                        </div>
+                      )}
+                      <div className="flex items-center justify-center gap-3 mt-2">
+                        {(instructorProfile.usePersonalEmailForBusiness ? selectedInvoice.instructorEmail : instructorProfile.businessEmail) && (
+                          <span>
+                            {instructorProfile.usePersonalEmailForBusiness ? selectedInvoice.instructorEmail : instructorProfile.businessEmail}
+                          </span>
+                        )}
+                        {(instructorProfile.usePersonalPhoneForBusiness ? selectedInvoice.instructorPhone : instructorProfile.businessPhone) && (
+                          <span>
+                            • {instructorProfile.usePersonalPhoneForBusiness ? selectedInvoice.instructorPhone : instructorProfile.businessPhone}
+                          </span>
+                        )}
+                      </div>
+                      {instructorProfile.businessRegistration && (
+                        <div className="text-xs text-slate-500 mt-1">Reg: {instructorProfile.businessRegistration}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
                 <div className="flex items-center justify-between pb-4 border-b">
                   <div>
                     <div className="text-2xl font-bold text-[#071739]">{selectedInvoice.invoiceNumber}</div>
