@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { FileText, Download, Search, Eye } from 'lucide-react';
+import { FileText, Download, Search, Eye, ArrowLeft } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -116,6 +118,10 @@ export default function LearnerInvoices() {
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div>
+          <Link to={createPageUrl('LearnerPayments')} className="inline-flex items-center gap-2 text-[#071739] hover:text-[#F7B602] mb-3 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm font-medium">Back to Payments</span>
+          </Link>
           <h1 className="text-3xl font-bold text-[#071739]">My Invoices</h1>
           <p className="text-slate-600 mt-2">View and download your payment invoices</p>
         </div>

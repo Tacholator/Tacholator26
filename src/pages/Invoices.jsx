@@ -26,7 +26,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { FileText, Download, Plus, Search, Calendar, DollarSign, CreditCard, Banknote, Eye } from 'lucide-react';
+import { FileText, Download, Plus, Search, Calendar, DollarSign, CreditCard, Banknote, Eye, ArrowLeft } from 'lucide-react';
 import moment from 'moment';
 
 export default function Invoices() {
@@ -265,6 +265,10 @@ export default function Invoices() {
         {/* Header */}
         <div className="flex justify-between items-start">
           <div>
+            <Link to={createPageUrl('InstructorPayments')} className="inline-flex items-center gap-2 text-[#071739] hover:text-[#F7B602] mb-3 transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm font-medium">Back to Payments</span>
+            </Link>
             <h1 className="text-3xl font-bold text-[#071739]">Invoices</h1>
             <p className="text-slate-600 mt-2">Manage payment invoices and receipts</p>
           </div>
