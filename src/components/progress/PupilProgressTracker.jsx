@@ -32,6 +32,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   const [mockTestData, setMockTestData] = useState({ result: '', instructorComments: '', pupilComments: '', testDate: '' });
   const [editingRoute, setEditingRoute] = useState(null);
   const [routeData, setRouteData] = useState({ routeDetails: '', comments: '' });
+  const [originalRouteData, setOriginalRouteData] = useState({ routeDetails: '', comments: '' });
   const [expandedSection, setExpandedSection] = useState(null);
 
   const { data: progressData = [], isLoading } = useQuery({
@@ -526,11 +527,13 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                   } ${route && (route.routeDetails || route.comments) ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
                   onClick={() => {
                     if (!isInstructor) return;
-                    setEditingRoute(routeNumber);
-                    setRouteData({
+                    const initialData = {
                       routeDetails: route?.routeDetails || '',
                       comments: route?.comments || ''
-                    });
+                    };
+                    setEditingRoute(routeNumber);
+                    setRouteData(initialData);
+                    setOriginalRouteData(initialData);
                   }}
                 >
                   <div className="flex items-start justify-between mb-2">
@@ -746,7 +749,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               </Button>
               <Button
                 onClick={() => saveRouteMutation.mutate({ routeNumber: editingRoute, data: routeData })}
-                disabled={saveRouteMutation.isPending}
+                disabled={saveRouteMutation.isPending || JSON.stringify(routeData) === JSON.stringify(originalRouteData)}
                 className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
               >
                 {saveRouteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
