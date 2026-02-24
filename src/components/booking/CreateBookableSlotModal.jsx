@@ -88,6 +88,44 @@ export default function CreateBookableSlotModal({
   };
 
   const handleSave = () => {
+    // Check for time overlaps
+    const newStart = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
+    const newEnd = moment(`${startDate} ${endTime}`, 'YYYY-MM-DD HH:mm');
+
+    if (newEnd.isSameOrBefore(newStart)) {
+      toast({
+        title: 'Invalid time range',
+        description: 'End time must be after start time',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Check for overlaps with existing slots on the same date
+    const hasOverlap = existingSlots.some(slot => {
+      // Skip the slot being edited
+      if (existingSlot && slot.id === existingSlot.id) return false;
+
+      const slotStart = moment(slot.startAtUtc).local();
+      const slotEnd = moment(slot.endAtUtc).local();
+
+      // Check if dates match (for recurring slots, check all occurrences on this date)
+      const isSameDate = slotStart.format('YYYY-MM-DD') === startDate;
+      if (!isSameDate) return false;
+
+      // Check if times overlap: new slot starts before existing ends AND new slot ends after existing starts
+      return newStart.isBefore(slotEnd) && newEnd.isAfter(slotStart);
+    });
+
+    if (hasOverlap) {
+      toast({
+        title: 'Time conflict',
+        description: 'This time slot overlaps with an existing lesson slot',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     onSave({
       slotId: existingSlot?.id,
       title,
