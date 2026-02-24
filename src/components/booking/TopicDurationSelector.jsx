@@ -16,36 +16,13 @@ export default function TopicDurationSelector({
   const [showCustomTopicInput, setShowCustomTopicInput] = useState(false);
   const [customTopicName, setCustomTopicName] = useState('');
 
-  // Build comprehensive topic list from driving skills data
+  // Build topic list from the 24 main driving skills sections
   const buildTopicsList = () => {
     const topics = [];
     
-    // Add all skills from drivingSkillsSections
+    // Add only the 24 main sections as topics
     drivingSkillsSections.forEach(section => {
-      section.topics.forEach(topic => {
-        if (topic.type === 'skill') {
-          topics.push({ id: topic.id, name: topic.label, category: section.title });
-        } else if (topic.type === 'group' && topic.subtopics) {
-          topic.subtopics.forEach(subtopic => {
-            if (subtopic.type === 'skill') {
-              topics.push({ id: subtopic.id, name: subtopic.label, category: `${section.title} - ${topic.label}` });
-            } else if (subtopic.type === 'group' && subtopic.subtopics) {
-              subtopic.subtopics.forEach(subsubtopic => {
-                if (subsubtopic.type === 'skill') {
-                  topics.push({ id: subsubtopic.id, name: subsubtopic.label, category: `${section.title} - ${topic.label} - ${subtopic.label}` });
-                }
-              });
-            }
-          });
-        }
-      });
-    });
-
-    // Add coursework topics
-    courseWorkTopics.forEach(topic => {
-      if (!topics.find(t => t.id === topic.topicId)) {
-        topics.push({ id: topic.topicId, name: topic.title, category: 'Theory Topics' });
-      }
+      topics.push({ id: section.id, name: section.title });
     });
 
     return topics;
