@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, Sparkles, Target, CheckCircle, AlertCircle } from 'lucide-react';
 import moment from 'moment';
+import { base44 } from '@/api/base44Client';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 export default function DiaryTimeline({ entries, onEntryClick }) {
+  const [topicDurationsMap, setTopicDurationsMap] = useState({});
   if (!entries || entries.length === 0) {
     return (
       <div className="text-center py-12 text-slate-500">
