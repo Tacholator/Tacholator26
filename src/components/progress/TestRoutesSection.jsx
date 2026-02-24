@@ -37,6 +37,7 @@ export default function TestRoutesSection({ pupilId }) {
       queryClient.invalidateQueries(['testRoutes', pupilId]);
       setShowModal(false);
       setEditingRoute(null);
+      setFormData({ routeNumber: 1, routeDetails: '', comments: '' });
       toast({ title: 'Test route saved' });
     }
   });
@@ -103,7 +104,13 @@ export default function TestRoutesSection({ pupilId }) {
         </div>
       </div>
 
-      <Dialog open={showModal} onOpenChange={setShowModal}>
+      <Dialog open={showModal} onOpenChange={(open) => {
+        setShowModal(open);
+        if (!open) {
+          setEditingRoute(null);
+          setFormData({ routeNumber: 1, routeDetails: '', comments: '' });
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingRoute ? 'Edit' : 'Add'} Test Route</DialogTitle>
