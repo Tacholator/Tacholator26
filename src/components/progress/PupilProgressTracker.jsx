@@ -868,48 +868,84 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
       <Dialog open={!!selectedCustomTopic} onOpenChange={() => setSelectedCustomTopic(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold">
-                25
-              </div>
-              {selectedCustomTopic?.topicName}
-            </DialogTitle>
-            <DialogDescription>
-              Time spent on this custom topic across lessons
-            </DialogDescription>
+            {selectedCustomTopic?.isViewAll ? (
+              <>
+                <DialogTitle className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                    25
+                  </div>
+                  All Custom Topics
+                </DialogTitle>
+                <DialogDescription>
+                  Overview of all additional topics covered in lessons
+                </DialogDescription>
+              </>
+            ) : (
+              <>
+                <DialogTitle className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                    25
+                  </div>
+                  {selectedCustomTopic?.topicName}
+                </DialogTitle>
+                <DialogDescription>
+                  Time spent on this custom topic across lessons
+                </DialogDescription>
+              </>
+            )}
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="bg-slate-50 rounded-lg p-4">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-[#071739]">
-                  {selectedCustomTopic && (selectedCustomTopic.totalMinutes / 60).toFixed(1)}h
-                </p>
-                <p className="text-sm text-slate-600 mt-1">Total time spent</p>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-slate-700 mb-3">Lesson History</h4>
-              <div className="space-y-2">
-                {selectedCustomTopic?.lessons.map((lesson, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div>
-                      <p className="text-sm font-medium text-slate-700">
-                        Lesson {selectedCustomTopic.lessons.length - idx}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {lesson.created_date ? moment(lesson.created_date).format('D MMM YYYY') : 'Date not available'}
-                      </p>
+            {selectedCustomTopic?.isViewAll ? (
+              <div className="space-y-3">
+                {selectedCustomTopic?.topics?.map((topic) => (
+                  <div 
+                    key={topic.topicId}
+                    className="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-purple-300 cursor-pointer transition-colors"
+                    onClick={() => setSelectedCustomTopic(topic)}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-semibold text-slate-700">{topic.topicName}</h4>
+                      <span className="text-sm font-bold text-[#071739]">{(topic.totalMinutes / 60).toFixed(1)}h</span>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-[#071739]">
-                        {lesson.durationMinutes} min
-                      </p>
-                    </div>
+                    <p className="text-xs text-slate-500">{topic.lessons.length} lesson{topic.lessons.length !== 1 ? 's' : ''}</p>
                   </div>
                 ))}
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="bg-slate-50 rounded-lg p-4">
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-[#071739]">
+                      {selectedCustomTopic && (selectedCustomTopic.totalMinutes / 60).toFixed(1)}h
+                    </p>
+                    <p className="text-sm text-slate-600 mt-1">Total time spent</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-slate-700 mb-3">Lesson History</h4>
+                  <div className="space-y-2">
+                    {selectedCustomTopic?.lessons.map((lesson, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div>
+                          <p className="text-sm font-medium text-slate-700">
+                            Lesson {selectedCustomTopic.lessons.length - idx}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {lesson.created_date ? moment(lesson.created_date).format('D MMM YYYY') : 'Date not available'}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-[#071739]">
+                            {lesson.durationMinutes} min
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
