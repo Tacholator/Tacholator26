@@ -25,25 +25,40 @@ export default function LearnerMyInstructor() {
   const { data: instructor, isLoading: instructorLoading } = useQuery({
     queryKey: ['myInstructor', pupil?.instructorEmail],
     queryFn: async () => {
-      if (!pupil?.instructorEmail) return null;
+      if (!pupil?.instructorEmail) {
+        console.log('No instructorEmail found:', pupil);
+        return null;
+      }
+      
+      console.log('Fetching instructor for email:', pupil.instructorEmail);
       
       // Fetch instructor User by email
       const users = await base44.entities.User.filter({ email: pupil.instructorEmail });
-      if (users.length === 0) return null;
+      console.log('User lookup result:', users);
+      
+      if (users.length === 0) {
+        console.log('No user found for email:', pupil.instructorEmail);
+        return null;
+      }
       
       const instructorUser = users[0];
       
       // Fetch Instructor entity by created_by (instructor email) for additional details
       const instructors = await base44.entities.Instructor.filter({ created_by: pupil.instructorEmail });
+      console.log('Instructor entity lookup result:', instructors);
+      
       const instructorDetails = instructors[0] || null;
       
-      return {
+      const result = {
         id: instructorUser.id,
         full_name: instructorUser.full_name || `${instructorUser.data?.firstName || ''} ${instructorUser.data?.lastName || ''}`.trim() || instructorUser.email,
         email: instructorUser.email,
         phone: instructorUser.data?.phone || instructorDetails?.phone || null,
         profilePhotoUrl: instructorUser.data?.profilePhotoUrl || instructorDetails?.profilePhotoUrl || null
       };
+      
+      console.log('Instructor result:', result);
+      return result;
     },
     enabled: !!pupil?.instructorEmail
   });
