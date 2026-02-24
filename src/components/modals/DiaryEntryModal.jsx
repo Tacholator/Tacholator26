@@ -165,12 +165,12 @@ Write a warm, supportive summary that highlights progress and next steps.`;
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="mainTopic">Main Topic *</Label>
-            {readOnly ? (
-               <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
-                 {courseWorkTopics.find(t => t.topicId === formData.mainTopic)?.title || formData.mainTopic || 'Not specified'}
-               </div>
-             ) : (
+           <Label htmlFor="mainTopic">Main Topic *</Label>
+           {readOnly ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
+                {courseWorkTopics.find(t => t.topicId === formData.mainTopic)?.title || topicDurations.find(td => td.topicId === formData.mainTopic)?.topicName || formData.mainTopic || 'Not specified'}
+              </div>
+            ) : (
               <Select 
                 value={formData.mainTopic} 
                 onValueChange={(value) => handleChange('mainTopic', value)}
