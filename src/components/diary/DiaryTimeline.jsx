@@ -10,6 +10,27 @@ import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 export default function DiaryTimeline({ entries, onEntryClick }) {
   const [topicDurationsMap, setTopicDurationsMap] = useState({});
+  useEffect(() => {
+    const fetchTopicDurations = async () => {
+      if (entries && entries.length > 0) {
+        const durations = await base44.entities.LessonTopicDuration.list();
+        const durationsMap = {};
+        entries.forEach(entry => {
+          const entryDurations = durations.filter(d => d.diaryEntryId === entry.id);
+          durationsMap[entry.id] = entryDurations;
+        });
+        setTopicDurationsMap(durationsMap);
+      }
+    };
+    fetchTopicDurations();
+  }, [entries]);
+
+  const getTopicDisplayName = (topicId) => {
+    const predefinedTopic = courseWorkTopics.find(t => t.topicId === topicId);
+    if (predefinedTopic) return predefinedTopic.title;
+    return topicId;
+  };
+
   if (!entries || entries.length === 0) {
     return (
       <div className="text-center py-12 text-slate-500">
