@@ -571,19 +571,22 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         if (customTopics.length === 0) return null;
 
         return (
-          <Card className="border-0 shadow-sm bg-gradient-to-r from-purple-500 to-indigo-600">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm">
-                    25
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white text-lg">Custom Topics</h3>
-                    <p className="text-xs text-white/80">Additional topics covered in lessons</p>
-                  </div>
-                </div>
-              </div>
+           <Card 
+             className="border-0 shadow-sm bg-gradient-to-r from-purple-500 to-indigo-600 cursor-pointer hover:shadow-lg transition-shadow"
+             onClick={() => setSelectedCustomTopic({ isViewAll: true, topics: customTopics })}
+           >
+             <CardContent className="p-6">
+               <div className="flex items-center justify-between mb-4">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm">
+                     25
+                   </div>
+                   <div>
+                     <h3 className="font-semibold text-white text-lg">Custom Topics</h3>
+                     <p className="text-xs text-white/80">Additional topics covered in lessons</p>
+                   </div>
+                 </div>
+               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {customTopics.map(topic => (
