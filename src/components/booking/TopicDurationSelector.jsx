@@ -36,10 +36,13 @@ export default function TopicDurationSelector({
     const topic = availableTopics.find(t => t.id === topicId);
     if (!topic) return;
 
+    // If this is the first topic, use full lesson duration; otherwise use remaining time
+    const defaultDuration = selectedTopics.length === 0 ? totalLessonMinutes : 15;
+
     const newTopic = {
       topicId: topic.id,
       topicName: topic.name,
-      durationMinutes: 15 // Default to 15 minutes
+      durationMinutes: defaultDuration
     };
 
     onChange([...selectedTopics, newTopic]);
@@ -49,10 +52,14 @@ export default function TopicDurationSelector({
     if (!customTopicName.trim()) return;
     
     const customId = `custom_${Date.now()}`;
+    
+    // If this is the first topic, use full lesson duration; otherwise use remaining time
+    const defaultDuration = selectedTopics.length === 0 ? totalLessonMinutes : 15;
+
     const newTopic = {
       topicId: customId,
       topicName: customTopicName.trim(),
-      durationMinutes: 15
+      durationMinutes: defaultDuration
     };
 
     onChange([...selectedTopics, newTopic]);
