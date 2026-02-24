@@ -23,18 +23,18 @@ export default function LearnerMyInstructor() {
   });
 
   const { data: instructor, isLoading: instructorLoading } = useQuery({
-    queryKey: ['myInstructor', pupil?.instructorId],
+    queryKey: ['myInstructor', pupil?.instructorEmail],
     queryFn: async () => {
-      if (!pupil?.instructorId) return null;
+      if (!pupil?.instructorEmail) return null;
       
-      // Fetch instructor User by ID
-      const users = await base44.entities.User.filter({ id: pupil.instructorId });
+      // Fetch instructor User by email
+      const users = await base44.entities.User.filter({ email: pupil.instructorEmail });
       if (users.length === 0) return null;
       
       const instructorUser = users[0];
       
       // Fetch Instructor entity by created_by (instructor email) for additional details
-      const instructors = await base44.entities.Instructor.filter({ created_by: instructorUser.email });
+      const instructors = await base44.entities.Instructor.filter({ created_by: pupil.instructorEmail });
       const instructorDetails = instructors[0] || null;
       
       return {
@@ -45,7 +45,7 @@ export default function LearnerMyInstructor() {
         profilePhotoUrl: instructorUser.data?.profilePhotoUrl || instructorDetails?.profilePhotoUrl || null
       };
     },
-    enabled: !!pupil?.instructorId
+    enabled: !!pupil?.instructorEmail
   });
 
   if (pupilLoading || instructorLoading) {
