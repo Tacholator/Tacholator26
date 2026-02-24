@@ -546,13 +546,24 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
 
       {/* Custom Topics Card - Card #25 */}
       {(() => {
-        // Aggregate custom topics from LessonTopicDuration (only from lesson summaries)
+        // Extract all skill IDs from the 24 driving sections
+        const allSkillIds = [];
+        drivingSkillsSections.forEach(section => {
+          const extractSkills = (items) => {
+            items.forEach(item => {
+              if (item.type === 'skill') {
+                allSkillIds.push(item.id);
+              } else if (item.subtopics) {
+                extractSkills(item.subtopics);
+              }
+            });
+          };
+          extractSkills(section.topics);
+        });
+
+        // Aggregate topics from LessonTopicDuration that match the 24 driving progress topics
         const customTopics = lessonTopicDurations
-          .filter(ltd => {
-            // Only include topics starting with 'custom_'
-            // Exclude numeric-only IDs like '177194', '1771942'
-            return ltd.topicId?.startsWith('custom_') && !/^\d+$/.test(ltd.topicId);
-          })
+          .filter(ltd => allSkillIds.includes(ltd.topicId))
           .reduce((acc, ltd) => {
             const existing = acc.find(t => t.topicId === ltd.topicId);
             if (existing) {
