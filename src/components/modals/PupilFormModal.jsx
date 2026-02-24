@@ -220,7 +220,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                   <SelectItem value="Active">Active</SelectItem>
                   <SelectItem value="OnHold">On Hold</SelectItem>
                   <SelectItem value="Passed">Passed</SelectItem>
-                  <SelectItem value="Stopped">New Intake</SelectItem>
+                  <SelectItem value="Stopped">One Off</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-slate-500">

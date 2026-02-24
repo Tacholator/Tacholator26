@@ -336,9 +336,9 @@ export default function PupilProfile() {
                     'Passed': 'bg-blue-100 text-blue-700',
                     'Stopped': 'bg-purple-100 text-purple-700'
                   }[pupil.status || 'Active']}>
-                    {pupil.status === 'OnHold' ? 'On Hold' : 
-                     pupil.status === 'Stopped' ? 'New Intake' : 
-                     pupil.status || 'Active'}
+                   {pupil.status === 'OnHold' ? 'On Hold' : 
+                    pupil.status === 'Stopped' ? 'One Off' : 
+                    pupil.status || 'Active'}
                   </Badge>
                   {!pupil.hasSignedUp && !pupil.linkedUserId && (
                     <Badge className="bg-rose-100 text-rose-700">
