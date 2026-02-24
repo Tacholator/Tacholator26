@@ -165,19 +165,24 @@ Write a warm, supportive summary that highlights progress and next steps.`;
           </div>
 
           <div className="space-y-2">
-           <Label htmlFor="mainTopic">Main Topic *</Label>
+           <Label htmlFor="mainTopic">{topicDurations.length > 1 ? 'Topics Covered' : 'Main Topic'} *</Label>
            {readOnly ? (
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
                 {(() => {
-                  // Check predefined topics first
+                  if (topicDurations.length > 0) {
+                    return topicDurations.map(td => {
+                      const predefinedTopic = courseWorkTopics.find(t => t.topicId === td.topicId);
+                      return predefinedTopic ? predefinedTopic.title : td.topicName;
+                    }).join(', ');
+                  }
+
+                  // Fallback to main topic
                   const predefinedTopic = courseWorkTopics.find(t => t.topicId === formData.mainTopic);
                   if (predefinedTopic) return predefinedTopic.title;
 
-                  // Check custom topics from topic durations
                   const customTopic = topicDurations.find(td => td.topicId === formData.mainTopic);
                   if (customTopic) return customTopic.topicName;
 
-                  // Fallback to the ID
                   return formData.mainTopic || 'Not specified';
                 })()}
               </div>
