@@ -349,69 +349,6 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
             )}
           </div>
 
-          {/* GPS Configuration Section */}
-          {isAdmin && (
-            <div className="space-y-4 p-4 border rounded-lg">
-              <div className="flex items-center gap-2 text-lg font-semibold text-slate-700">
-                <Navigation className="w-5 h-5" />
-                GPS Route Configuration
-              </div>
-
-              <div>
-                <Label htmlFor="gpsRouteType">Route Source</Label>
-                <Select value={gpsRouteType} onValueChange={setGpsRouteType}>
-                  <SelectTrigger id="gpsRouteType" className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gpx_url">GPX File URL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {gpsRouteType === 'gpx_url' && (
-                <div>
-                  <Label htmlFor="gpsRouteUrl">GPX File URL or Upload</Label>
-                  <div className="flex gap-2 mt-1">
-                    <Input
-                      id="gpsRouteUrl"
-                      type="url"
-                      placeholder="https://example.com/route.gpx"
-                      value={gpsRouteUrl}
-                      onChange={(e) => setGpsRouteUrl(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button
-                      variant="outline"
-                      onClick={() => document.getElementById('gpx-file-upload').click()}
-                      disabled={uploading}
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {uploading ? 'Uploading...' : 'Upload'}
-                    </Button>
-                    <input
-                      id="gpx-file-upload"
-                      type="file"
-                      accept=".gpx"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {hasGpsChanges && (
-                <Button
-                  onClick={handleSaveGps}
-                  disabled={isUpdating}
-                  className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {isUpdating ? 'Saving...' : 'Save GPS Configuration'}
-                </Button>
-              )}
-            </div>
-          )}
 
         </div>
       </DialogContent>
