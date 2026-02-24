@@ -23,6 +23,18 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
     homeworkSuggestions: '',
     aiSummary: ''
   });
+  const [topicDurations, setTopicDurations] = useState([]);
+
+  // Fetch topic durations for this lesson to get custom topic names
+  React.useEffect(() => {
+    const fetchTopicDurations = async () => {
+      if (lessonId) {
+        const durations = await base44.entities.LessonTopicDuration.filter({ lessonId });
+        setTopicDurations(durations);
+      }
+    };
+    fetchTopicDurations();
+  }, [lessonId, open]);
 
   // Update formData when existingEntry changes
   React.useEffect(() => {
