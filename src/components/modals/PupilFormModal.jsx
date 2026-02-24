@@ -292,7 +292,13 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                                   type="radio"
                                   name="theoryStatus"
                                   checked={!formData.theoryTestNotBooked && !formData.theoryTestPassed}
-                                  onChange={() => handleChange('theoryTestNotBooked', false) || handleChange('theoryTestPassed', false)}
+                                  onChange={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      theoryTestNotBooked: false,
+                                      theoryTestPassed: false
+                                    }));
+                                  }}
                                   className="w-4 h-4 text-teal-600"
                                 />
                                 <span className="text-sm text-slate-600">Date booked</span>
@@ -302,7 +308,14 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                                   type="radio"
                                   name="theoryStatus"
                                   checked={formData.theoryTestNotBooked}
-                                  onChange={() => handleChange('theoryTestNotBooked', true) || handleChange('theoryTestPassed', false) || handleChange('theoryTestDate', '')}
+                                  onChange={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      theoryTestNotBooked: true,
+                                      theoryTestPassed: false,
+                                      theoryTestDate: ''
+                                    }));
+                                  }}
                                   className="w-4 h-4 text-teal-600"
                                 />
                                 <span className="text-sm text-slate-600">Not booked</span>
@@ -312,7 +325,14 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                                   type="radio"
                                   name="theoryStatus"
                                   checked={formData.theoryTestPassed}
-                                  onChange={() => handleChange('theoryTestPassed', true) || handleChange('theoryTestNotBooked', false) || handleChange('theoryTestDate', '')}
+                                  onChange={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      theoryTestPassed: true,
+                                      theoryTestNotBooked: false,
+                                      theoryTestDate: ''
+                                    }));
+                                  }}
                                   className="w-4 h-4 text-teal-600"
                                 />
                                 <span className="text-sm text-slate-600">Passed</span>
@@ -336,7 +356,13 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                                   type="radio"
                                   name="practicalStatus"
                                   checked={!formData.practicalTestNotBooked && !formData.practicalTestPassed}
-                                  onChange={() => handleChange('practicalTestNotBooked', false) || handleChange('practicalTestPassed', false)}
+                                  onChange={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      practicalTestNotBooked: false,
+                                      practicalTestPassed: false
+                                    }));
+                                  }}
                                   className="w-4 h-4 text-teal-600"
                                 />
                                 <span className="text-sm text-slate-600">Date booked</span>
@@ -346,7 +372,15 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                                   type="radio"
                                   name="practicalStatus"
                                   checked={formData.practicalTestNotBooked}
-                                  onChange={() => handleChange('practicalTestNotBooked', true) || handleChange('practicalTestPassed', false) || handleChange('practicalTestDate', '')}
+                                  onChange={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      practicalTestNotBooked: true,
+                                      practicalTestPassed: false,
+                                      practicalTestDate: '',
+                                      practicalTestTime: ''
+                                    }));
+                                  }}
                                   className="w-4 h-4 text-teal-600"
                                 />
                                 <span className="text-sm text-slate-600">Not booked</span>
@@ -356,7 +390,15 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                                   type="radio"
                                   name="practicalStatus"
                                   checked={formData.practicalTestPassed}
-                                  onChange={() => handleChange('practicalTestPassed', true) || handleChange('practicalTestNotBooked', false) || handleChange('practicalTestDate', '')}
+                                  onChange={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      practicalTestPassed: true,
+                                      practicalTestNotBooked: false,
+                                      practicalTestDate: '',
+                                      practicalTestTime: ''
+                                    }));
+                                  }}
                                   className="w-4 h-4 text-teal-600"
                                 />
                                 <span className="text-sm text-slate-600">Passed</span>
