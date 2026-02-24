@@ -479,10 +479,9 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
             });
           };
           extractSkills(section.topics);
-          const hoursSpent = sectionSkills.reduce((total, skillId) => {
-            const log = topicHours.find(l => l.topicId === skillId);
-            return total + (log?.totalHours || 0);
-          }, 0);
+           // Get hours for this section (stored by section ID)
+           const sectionLog = topicHours.find(l => l.topicId === section.id);
+           const hoursSpent = sectionLog?.totalHours || 0;
 
           const statusConfig = {
             not_started: { label: 'Not Started', color: 'bg-slate-100 text-slate-600' },
