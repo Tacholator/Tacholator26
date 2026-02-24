@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Settings, Calendar, Trash2, Sparkles, MapPin, CreditCard } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 const adminCards = [
   {
@@ -52,6 +54,16 @@ const adminCards = [
 export default function AdminDashboard() {
   const navigate = useNavigate();
 
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const isMainAdmin = user?.email === 'fasobah@gmail.com';
+  const filteredCards = adminCards.filter(card => 
+    card.title !== 'Payments' || isMainAdmin
+  );
+
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
@@ -61,7 +73,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {adminCards.map((card) => {
+          {filteredCards.map((card) => {
             const Icon = card.icon;
             return (
               <Card
