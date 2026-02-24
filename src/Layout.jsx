@@ -62,7 +62,7 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   // Check if user has a pupil record (determines if they're a learner)
-  const { data: pupilProfile } = useQuery({
+  const { data: pupilProfile, isLoading: isPupilProfileLoading } = useQuery({
     queryKey: ['learnerPupilProfile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
