@@ -47,8 +47,8 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   });
 
   const { data: testRoutes = [] } = useQuery({
-    queryKey: ['testRoutes', pupilId],
-    queryFn: () => base44.entities.TestRoute.filter({ pupilId }, 'routeNumber'),
+    queryKey: ['pupilTestRouteNotes', pupilId],
+    queryFn: () => base44.entities.PupilTestRouteNote.filter({ pupilId }, 'routeNumber'),
     enabled: !!pupilId
   });
 
@@ -116,9 +116,9 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     mutationFn: async ({ routeNumber, data }) => {
       const existing = testRoutes.find(r => r.routeNumber === routeNumber);
       if (existing) {
-        return base44.entities.TestRoute.update(existing.id, data);
+        return base44.entities.PupilTestRouteNote.update(existing.id, data);
       } else {
-        return base44.entities.TestRoute.create({
+        return base44.entities.PupilTestRouteNote.create({
           pupilId,
           instructorId,
           routeNumber,
@@ -127,7 +127,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['testRoutes']);
+      queryClient.invalidateQueries(['pupilTestRouteNotes', pupilId]);
       setEditingRoute(null);
       setRouteData({ routeDetails: '', comments: '' });
     }

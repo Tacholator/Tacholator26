@@ -21,20 +21,20 @@ export default function TestRoutesSection({ pupilId }) {
   });
 
   const { data: testRoutes = [] } = useQuery({
-    queryKey: ['testRoutes', pupilId],
-    queryFn: () => base44.entities.TestRoute.filter({ pupilId }).then(r => r.sort((a, b) => a.routeNumber - b.routeNumber)),
+    queryKey: ['pupilTestRouteNotes', pupilId],
+    queryFn: () => base44.entities.PupilTestRouteNote.filter({ pupilId }).then(r => r.sort((a, b) => a.routeNumber - b.routeNumber)),
     enabled: !!pupilId
   });
 
   const saveRouteMutation = useMutation({
     mutationFn: (data) => {
       if (editingRoute) {
-        return base44.entities.TestRoute.update(editingRoute.id, data);
+        return base44.entities.PupilTestRouteNote.update(editingRoute.id, data);
       }
-      return base44.entities.TestRoute.create({ ...data, pupilId });
+      return base44.entities.PupilTestRouteNote.create({ ...data, pupilId });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['testRoutes', pupilId]);
+      queryClient.invalidateQueries(['pupilTestRouteNotes', pupilId]);
       setShowModal(false);
       setEditingRoute(null);
       setFormData({ routeNumber: 1, routeDetails: '', comments: '' });
