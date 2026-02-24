@@ -20,7 +20,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { progressStates, drivingSkillsSections, mockTests } from './drivingSkillsData';
-import { ChevronRight, Check, Loader2, Edit2, Award, CheckSquare, Square, MapPin, Plus } from 'lucide-react';
+import { ChevronRight, Check, Loader2, Edit2, Award, CheckSquare, Square, MapPin } from 'lucide-react';
 import moment from 'moment';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -536,99 +536,42 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         })}
       </div>
 
-      {/* Custom Topics Section */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 justify-between">
-            <div className="flex items-center gap-2">
-              <Edit2 className="w-5 h-5 text-[#F7B602]" />
-              Custom Topics
+      {/* Custom Topics Card - Card #25 */}
+      {topicHours.filter(log => log.topicId.startsWith('custom_')).length > 0 && (
+        <Card className="border-0 shadow-sm bg-gradient-to-r from-purple-500 to-indigo-600">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm">
+                  25
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white text-lg">Custom Topics</h3>
+                  <p className="text-xs text-white/80">Additional topics covered in lessons</p>
+                </div>
+              </div>
             </div>
-            {isInstructor && topicHours.filter(log => log.topicId.startsWith('custom_')).length < 10 && (
-              <Button
-                size="sm"
-                onClick={() => {
-                  const customId = `custom_${Date.now()}`;
-                  const customName = prompt('Enter custom topic name:');
-                  if (customName?.trim()) {
-                    base44.entities.TopicHoursLog.create({
-                      pupilId,
-                      instructorId,
-                      topicId: customId,
-                      totalHours: 0
-                    }).then(() => {
-                      queryClient.invalidateQueries(['topicHoursLog', pupilId]);
-                    });
-                  }
-                }}
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Add Custom Topic
-              </Button>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {topicHours
-              .filter(log => log.topicId.startsWith('custom_'))
-              .map(log => (
-                <div
-                  key={log.id}
-                  className="p-4 border-2 rounded-lg border-slate-300 bg-slate-50 min-h-[100px] flex flex-col justify-between"
-                >
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-slate-700 mb-2">{log.topicId.replace('custom_', '')}</h4>
-                    <p className="text-sm text-blue-600 font-medium">
-                      {log.totalHours.toFixed(1)} hours covered
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {topicHours
+                .filter(log => log.topicId.startsWith('custom_'))
+                .map(log => (
+                  <div
+                    key={log.id}
+                    className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg p-4 text-center"
+                  >
+                    <p className="text-white font-medium text-sm mb-1 truncate" title={log.topicId.replace('custom_', '')}>
+                      {log.topicId.replace('custom_', '')}
+                    </p>
+                    <p className="text-white/90 text-xs font-semibold">
+                      {log.totalHours.toFixed(1)}h
                     </p>
                   </div>
-                  {isInstructor && (
-                    <div className="flex gap-2 mt-3">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          const newHours = parseFloat(prompt('Enter new total hours:', log.totalHours) || log.totalHours);
-                          if (!isNaN(newHours) && newHours >= 0) {
-                            base44.entities.TopicHoursLog.update(log.id, {
-                              totalHours: newHours
-                            }).then(() => {
-                              queryClient.invalidateQueries(['topicHoursLog', pupilId]);
-                            });
-                          }
-                        }}
-                        className="flex-1"
-                      >
-                        Edit Hours
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          if (confirm('Delete this custom topic?')) {
-                            base44.entities.TopicHoursLog.delete(log.id).then(() => {
-                              queryClient.invalidateQueries(['topicHoursLog', pupilId]);
-                            });
-                          }
-                        }}
-                        className="text-rose-600 hover:bg-rose-50"
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            {topicHours.filter(log => log.topicId.startsWith('custom_')).length === 0 && (
-              <div className="col-span-full text-center py-8 text-slate-400">
-                No custom topics added yet
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Test Routes Section */}
       <Card className="border-0 shadow-sm">
