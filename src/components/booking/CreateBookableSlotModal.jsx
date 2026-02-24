@@ -7,9 +7,6 @@ import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
 import moment from 'moment';
 import { TimeRangePicker } from '@/components/ui/TimePicker';
-import { useToast } from '@/components/ui/use-toast';
-import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
 
 const DAYS = [
   { value: 'mon', label: 'Mon' },
@@ -29,26 +26,8 @@ export default function CreateBookableSlotModal({
   slotDateTime,
   existingSlot 
 }) {
-  const { toast } = useToast();
   const slotMoment = slotDateTime ? moment(slotDateTime) : moment();
   const dayOfWeek = slotMoment.format('ddd').toLowerCase();
-  
-  const { data: user } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
-    retry: false
-  });
-
-  const { data: existingSlots = [] } = useQuery({
-    queryKey: ['bookableSlots', user?.id],
-    queryFn: async () => {
-      const allSlots = await base44.entities.BookableSlotTemplate.list();
-      // Filter to current instructor's active slots
-      return allSlots.filter(slot => slot.instructorId === user.id && slot.isActive !== false);
-    },
-    enabled: !!user?.id,
-    staleTime: 0
-  });
   
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState(slotMoment.format('YYYY-MM-DD'));
@@ -93,95 +72,6 @@ export default function CreateBookableSlotModal({
   };
 
   const handleSave = () => {
-    // Check for time overlaps
-    const newStartTime = moment(startTime, 'HH:mm');
-    const newEndTime = moment(endTime, 'HH:mm');
-    const newDayOfWeek = moment(startDate).format('ddd').toLowerCase();
-
-    console.log('SaveSlot - existingSlots count:', existingSlots.length);
-    console.log('SaveSlot - newSlot:', { date: startDate, day: newDayOfWeek, time: `${startTime}-${endTime}`, repeatWeekly });
-
-    if (newEndTime.isSameOrBefore(newStartTime)) {
-      toast({
-        title: 'Invalid time range',
-        description: 'End time must be after start time',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    // Check for overlaps with existing slots
-    const hasOverlap = existingSlots.some(slot => {
-      // Skip the slot being edited
-      if (existingSlot && slot.id === existingSlot.id) return false;
-
-      const slotDayOfWeek = slot.dayOfWeek;
-      const slotStartTime = moment(slot.startTimeLocal, 'HH:mm');
-      const slotEndTime = moment(slot.endTimeLocal, 'HH:mm');
-
-      console.log('Checking slot:', { 
-        day: slotDayOfWeek, 
-        time: `${slot.startTimeLocal}-${slot.endTimeLocal}`,
-        startDate: slot.startDate,
-        endDate: slot.endDate
-      });
-
-      // Check if this existing slot occurs on the target date
-      let slotOccursOnDate = false;
-
-      if (repeatWeekly) {
-        // New slot is recurring - check if existing slot's day overlaps with new slot's days
-        if (!selectedDays.includes(slotDayOfWeek)) {
-          console.log('  -> Day mismatch, skipping');
-          return false;
-        }
-        
-        // Check date range: existing slot must start on or before new slot start date
-        slotOccursOnDate = moment(slot.startDate).isSameOrBefore(moment(startDate));
-        
-        // And existing slot's end date (if any) must be on or after new slot start date
-        if (slot.endDate) {
-          slotOccursOnDate = slotOccursOnDate && moment(slot.endDate).isSameOrAfter(moment(startDate));
-        }
-      } else {
-        // New slot is single occurrence - check if existing slot occurs on that date
-        if (slotDayOfWeek !== newDayOfWeek) {
-          console.log('  -> Day mismatch:', slotDayOfWeek, '!==', newDayOfWeek, ', skipping');
-          return false;
-        }
-        
-        // Existing slot must start on or before new slot date
-        slotOccursOnDate = moment(slot.startDate).isSameOrBefore(moment(startDate));
-        
-        // And existing slot's end date (if any) must be on or after new slot date
-        if (slot.endDate) {
-          slotOccursOnDate = slotOccursOnDate && moment(slot.endDate).isSameOrAfter(moment(startDate));
-        }
-      }
-
-      if (!slotOccursOnDate) {
-        console.log('  -> Not occurring on date');
-        return false;
-      }
-
-      // Check if times overlap: new start < existing end AND new end > existing start
-      const timesOverlap = newStartTime.isBefore(slotEndTime) && newEndTime.isAfter(slotStartTime);
-      console.log('  -> Times overlap:', timesOverlap, `(${newStartTime.format('HH:mm')} < ${slotEndTime.format('HH:mm')} && ${newEndTime.format('HH:mm')} > ${slotStartTime.format('HH:mm')})`);
-      
-      return timesOverlap;
-    });
-
-    console.log('Final hasOverlap:', hasOverlap);
-
-    if (hasOverlap) {
-      toast({
-        title: 'Time conflict',
-        description: 'This time slot overlaps with an existing lesson slot',
-        variant: 'destructive'
-      });
-      return;
-    }
-
     onSave({
       slotId: existingSlot?.id,
       title,
