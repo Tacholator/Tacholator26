@@ -46,7 +46,12 @@ export default function LearnerInvoices() {
         '-created_date',
         100
       );
-      return allInvoices;
+      // Show only system-generated card payments and manually created invoices
+      return allInvoices.filter(inv => 
+        inv.type === 'STRIPE_CARD' || 
+        inv.type === 'MANUAL_CASH' || 
+        inv.type === 'MANUAL_BACS'
+      );
     },
     enabled: !!pupil?.id
   });
