@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import moment from 'moment';
 
-export default function InstructorPayments() {
+export default function InstructorPayments({ adminProxyInstructorId = null }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: user } = useQuery({
@@ -33,10 +33,21 @@ export default function InstructorPayments() {
     queryFn: () => base44.auth.me()
   });
 
+  // Determine which instructor ID to use (admin proxy or current user)
+  const effectiveInstructorId = adminProxyInstructorId || user?.id;
+
   const { data: instructor } = useQuery({
-    queryKey: ['myInstructorProfile', user?.id],
+    queryKey: ['instructorProfile', effectiveInstructorId, adminProxyInstructorId],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!effectiveInstructorId) return null;
+      
+      // If admin proxy, fetch by ID directly
+      if (adminProxyInstructorId) {
+        const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by: adminProxyInstructorId });
+        return instructors.length > 0 ? instructors[0] : null;
+      }
+      
+      // Otherwise, fetch current user's instructor profile
       const instructors = await base44.entities.Instructor.filter({ created_by: user.email });
       
       if (instructors.length > 0) {
@@ -55,24 +66,32 @@ export default function InstructorPayments() {
       
       return null;
     },
-    enabled: !!user?.id
+    enabled: !!effectiveInstructorId
   });
 
   const { data: pupils = [], isLoading: pupilsLoading } = useQuery({
-    queryKey: ['myPupils', user?.id],
-    queryFn: () => base44.entities.Pupil.filter({ instructorId: user.id }),
-    enabled: !!user?.id
+    queryKey: ['instructorPupils', effectiveInstructorId, adminProxyInstructorId],
+    queryFn: () => {
+      if (adminProxyInstructorId) {
+        return base44.asServiceRole.entities.Pupil.filter({ instructorId: adminProxyInstructorId });
+      }
+      return base44.entities.Pupil.filter({ instructorId: effectiveInstructorId });
+    },
+    enabled: !!effectiveInstructorId
   });
 
   const { data: allLedgerEntries = [], isLoading: ledgerLoading } = useQuery({
-    queryKey: ['allPaymentLedger', instructor?.id],
+    queryKey: ['allPaymentLedger', instructor?.id, adminProxyInstructorId],
     queryFn: async () => {
       if (!instructor?.id) return [];
       const pupilIds = pupils.map(p => p.id);
       if (pupilIds.length === 0) return [];
       
       // Fetch ledger entries for all pupils
-      const entries = await base44.entities.PaymentLedger.list('-created_date', 500);
+      const fetchFn = adminProxyInstructorId 
+        ? base44.asServiceRole.entities.PaymentLedger.list 
+        : base44.entities.PaymentLedger.list;
+      const entries = await fetchFn('-created_date', 500);
       return entries.filter(e => pupilIds.includes(e.userId));
     },
     enabled: !!instructor?.id && pupils.length > 0
@@ -138,35 +157,39 @@ export default function InstructorPayments() {
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-[#071739]">Payment Management</h1>
-          <p className="text-slate-600 mt-2">Track pupil balances and payment activity</p>
-        </div>
+        {!adminProxyInstructorId && (
+          <div>
+            <h1 className="text-3xl font-bold text-[#071739]">Payment Management</h1>
+            <p className="text-slate-600 mt-2">Track pupil balances and payment activity</p>
+          </div>
+        )}
 
-        {/* Payment Methods & Invoices */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link to={createPageUrl('PaymentMethods')}>
-            <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <Wallet className="w-6 h-6 text-[#F7B602]" />
-                  <h3 className="text-lg font-semibold text-[#071739]">Payment Methods</h3>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
+        {/* Payment Methods & Invoices (only show for non-admin view) */}
+        {!adminProxyInstructorId && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Link to={createPageUrl('PaymentMethods')}>
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <Wallet className="w-6 h-6 text-[#F7B602]" />
+                    <h3 className="text-lg font-semibold text-[#071739]">Payment Methods</h3>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
 
-          <Link to={createPageUrl('Invoices')}>
-            <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <DollarSign className="w-6 h-6 text-[#F7B602]" />
-                  <h3 className="text-lg font-semibold text-[#071739]">Invoices</h3>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
+            <Link to={createPageUrl('Invoices')}>
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="w-6 h-6 text-[#F7B602]" />
+                    <h3 className="text-lg font-semibold text-[#071739]">Invoices</h3>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        )}
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
