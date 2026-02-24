@@ -610,10 +610,6 @@ export default function Invoices() {
                     <span className="text-slate-600">Payment Method:</span>
                     <span className="font-medium">{selectedInvoice.paymentMethod}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Type:</span>
-                    <span className="font-medium">{selectedInvoice.type}</span>
-                  </div>
                   {selectedInvoice.paymentDate && (
                     <div className="flex justify-between">
                       <span className="text-slate-600">Paid On:</span>

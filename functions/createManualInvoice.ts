@@ -67,8 +67,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Generate invoice number
-    const invoiceNumber = `MDA-${currentYear}-${String(nextSeq).padStart(4, '0')}`;
+    // Generate invoice number (numbers only)
+    const invoiceNumber = `${currentYear}${String(nextSeq).padStart(6, '0')}`;
 
     // Create invoice
     const invoice = await base44.asServiceRole.entities.Invoice.create({
