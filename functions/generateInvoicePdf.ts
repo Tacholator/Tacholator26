@@ -53,6 +53,18 @@ Deno.serve(async (req) => {
   <meta charset="utf-8">
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+    .back-button { 
+      background: #071739; 
+      color: white; 
+      padding: 10px 20px; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-size: 14px; 
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+    .back-button:hover { background: #0a1f4d; }
     .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
     .logo { max-width: 800px; max-height: 320px; }
     .business-info { text-align: right; font-size: 12px; line-height: 1.6; }
@@ -70,6 +82,7 @@ Deno.serve(async (req) => {
   </style>
 </head>
 <body>
+  <button class="back-button" onclick="window.close()">← Back</button>
   <div class="header">
     <div>
       ${logoUrl ? `<img src="${logoUrl}" class="logo" alt="Logo">` : ''}
