@@ -34,9 +34,12 @@ Deno.serve(async (req) => {
 
     // Build instructor cards
     const cards = instructors.map(instructor => {
-      // Filter invoices for this instructor
+      // The instructor's user ID is stored in created_by field
+      const instructorUserId = instructor.created_by;
+      
+      // Filter invoices for this instructor (invoices store instructorId as user email)
       let instructorInvoices = allInvoices.filter(inv => 
-        inv.instructorId === instructor.created_by
+        inv.instructorEmail === instructorUserId || inv.instructorId === instructorUserId
       );
 
       // Apply date filters
@@ -72,9 +75,9 @@ Deno.serve(async (req) => {
       const pendingCount = instructorInvoices.filter(inv => inv.status === 'PENDING').length;
       const refundedCount = instructorInvoices.filter(inv => inv.status === 'REFUNDED').length;
 
-      // Count transactions from payment ledger
+      // Count transactions from payment ledger (ledger uses created_by field for instructor)
       let instructorLedger = allLedger.filter(ledger => 
-        ledger.created_by === instructor.created_by && ledger.type === 'payment'
+        ledger.created_by === instructorUserId && ledger.type === 'payment'
       );
 
       if (fromDate) {
@@ -93,9 +96,9 @@ Deno.serve(async (req) => {
       const txnCount = instructorLedger.length;
 
       return {
-        id: instructor.created_by,
+        id: instructorUserId,
         name: instructor.name,
-        email: instructor.created_by,
+        email: instructorUserId,
         revenue,
         txnCount,
         pendingCount,
