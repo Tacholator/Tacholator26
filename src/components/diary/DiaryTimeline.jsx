@@ -72,15 +72,21 @@ export default function DiaryTimeline({ entries, onEntryClick }) {
                   )}
                 </div>
                 
-                {entry.mainTopic && (
-                   <div className="flex items-start gap-2 mb-2">
-                     <BookOpen className="w-4 h-4 text-blue-500 mt-0.5" />
-                     <div>
-                       <p className="text-xs text-slate-500 uppercase tracking-wide">Topic</p>
-                       <p className="text-slate-700">{entry.mainTopic}</p>
-                     </div>
-                   </div>
-                 )}
+                {entry.mainTopic || topicDurationsMap[entry.id]?.length > 0 ? (
+                  <div className="flex items-start gap-2 mb-2">
+                    <BookOpen className="w-4 h-4 text-blue-500 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-slate-500 uppercase tracking-wide">{topicDurationsMap[entry.id]?.length > 1 ? 'Topics' : 'Topic'}</p>
+                      <p className="text-slate-700">
+                        {topicDurationsMap[entry.id]?.length > 0 
+                          ? topicDurationsMap[entry.id].map(td => 
+                              courseWorkTopics.find(t => t.topicId === td.topicId)?.title || td.topicName
+                            ).join(', ')
+                          : entry.mainTopic}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
 
                 {entry.objective && (
                    <div className="flex items-start gap-2 mb-3">
