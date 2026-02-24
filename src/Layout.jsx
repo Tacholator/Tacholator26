@@ -124,6 +124,15 @@ export default function Layout({ children, currentPageName }) {
     return <>{children}</>;
   }
 
+  // Wait for pupil profile to load before rendering to prevent showing wrong dashboard
+  if (isPupilProfileLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-slate-500">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Desktop Sidebar */}
