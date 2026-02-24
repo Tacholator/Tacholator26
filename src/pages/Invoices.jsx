@@ -564,20 +564,10 @@ export default function Invoices() {
                   </Badge>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-xs text-slate-500 uppercase mb-1">From</div>
-                    <div className="font-medium">{selectedInvoice.instructorName}</div>
-                    <div className="text-sm text-slate-600">{selectedInvoice.instructorEmail}</div>
-                    {selectedInvoice.instructorPhone && (
-                      <div className="text-sm text-slate-600">{selectedInvoice.instructorPhone}</div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-500 uppercase mb-1">To</div>
-                    <div className="font-medium">{selectedInvoice.pupilName}</div>
-                    <div className="text-sm text-slate-600">{selectedInvoice.pupilEmail}</div>
-                  </div>
+                <div>
+                  <div className="text-xs text-slate-500 uppercase mb-1">Billed To</div>
+                  <div className="font-medium">{selectedInvoice.pupilName}</div>
+                  <div className="text-sm text-slate-600">{selectedInvoice.pupilEmail}</div>
                 </div>
 
                 <div className="border rounded-lg overflow-hidden">
