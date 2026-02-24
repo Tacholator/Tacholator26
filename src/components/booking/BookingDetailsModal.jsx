@@ -796,7 +796,13 @@ export default function BookingDetailsModal({
       {/* Lesson Summary Modal */}
       <BookingSummaryModal
         open={showSummaryModal}
-        onOpenChange={setShowSummaryModal}
+        onOpenChange={(isOpen) => {
+          setShowSummaryModal(isOpen);
+          if (!isOpen) {
+            // Close parent booking details modal when summary modal closes
+            onOpenChange(false);
+          }
+        }}
         booking={booking}
         pupil={pupil}
       />
