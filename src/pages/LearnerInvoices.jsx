@@ -61,35 +61,26 @@ export default function LearnerInvoices() {
 
   const handleDownloadPdf = async (invoiceId, invoiceNumber) => {
     try {
-      console.log('Requesting PDF for invoice:', invoiceId);
       const response = await base44.functions.invoke('generateInvoicePdf', { invoiceId });
-      console.log('PDF response received:', response);
       
       if (!response.data) {
-        throw new Error('No PDF data received from server');
+        throw new Error('No invoice data received');
       }
       
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      console.log('PDF blob created, size:', blob.size);
-      
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${invoiceNumber}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
+      // Open HTML invoice in new window for printing
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(response.data);
+      printWindow.document.close();
       
       toast({
         title: 'Success',
-        description: 'Invoice downloaded successfully'
+        description: 'Invoice opened - use browser print to save as PDF'
       });
     } catch (error) {
-      console.error('PDF download error:', error);
+      console.error('Invoice generation error:', error);
       toast({
         title: 'Error',
-        description: error.message || 'Failed to download invoice PDF',
+        description: error.message || 'Failed to generate invoice',
         variant: 'destructive'
       });
     }
