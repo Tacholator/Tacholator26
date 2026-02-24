@@ -225,7 +225,7 @@ Requirements:
         });
       }
 
-      // Update topic hours log for each topic
+      // Update topic hours log for each topic (aggregating by section ID)
       for (const topic of selectedTopics) {
         const topicHours = topic.durationMinutes / 60;
         const existingTopicLog = await base44.entities.TopicHoursLog.filter({
@@ -243,6 +243,7 @@ Requirements:
             pupilId: booking.pupilId,
             instructorId: booking.instructorId,
             topicId: topic.topicId,
+            topicName: topic.topicName,
             totalHours: topicHours
           });
         }
