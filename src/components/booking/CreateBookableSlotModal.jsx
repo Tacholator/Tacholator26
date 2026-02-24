@@ -42,11 +42,9 @@ export default function CreateBookableSlotModal({
   const { data: existingSlots = [] } = useQuery({
     queryKey: ['bookableSlots', user?.id],
     queryFn: async () => {
-      const slots = await base44.entities.BookableSlotTemplate.filter({ 
-        instructorId: user.id,
-        isActive: true
-      });
-      return slots;
+      const allSlots = await base44.entities.BookableSlotTemplate.list();
+      // Filter to current instructor's active slots
+      return allSlots.filter(slot => slot.instructorId === user.id && slot.isActive !== false);
     },
     enabled: !!user?.id,
     staleTime: 0
