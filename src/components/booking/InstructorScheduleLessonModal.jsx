@@ -48,13 +48,16 @@ export default function InstructorScheduleLessonModal({
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['activePupils', user?.id],
+    queryKey: ['bookablePupils', user?.id],
     queryFn: async () => {
       const allPupils = await base44.entities.Pupil.filter({ 
-        instructorId: user.id,
-        status: 'Active'
+        instructorId: user.id
       });
-      return allPupils.sort((a, b) => 
+      // Include both Active and Stopped (one-off) pupils
+      const bookablePupils = allPupils.filter(p => 
+        p.status === 'Active' || p.status === 'Stopped'
+      );
+      return bookablePupils.sort((a, b) => 
         `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
       );
     },
@@ -258,11 +261,18 @@ export default function InstructorScheduleLessonModal({
                   ) : (
                     filteredPupils.map(pupil => (
                       <SelectItem key={pupil.id} value={pupil.id}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{pupil.firstName} {pupil.lastName}</span>
-                          {(pupil.email || pupil.phone) && (
-                            <span className="text-xs text-slate-500">
-                              {pupil.email || pupil.phone}
+                        <div className="flex items-center justify-between w-full gap-2">
+                          <div className="flex flex-col">
+                            <span className="font-medium">{pupil.firstName} {pupil.lastName}</span>
+                            {(pupil.email || pupil.phone) && (
+                              <span className="text-xs text-slate-500">
+                                {pupil.email || pupil.phone}
+                              </span>
+                            )}
+                          </div>
+                          {pupil.status === 'Stopped' && (
+                            <span className="text-xs px-2 py-0.5 rounded bg-purple-100 text-purple-700">
+                              One Off
                             </span>
                           )}
                         </div>
