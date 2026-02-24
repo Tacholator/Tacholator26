@@ -11,6 +11,7 @@ import { Loader2, Calendar, Clock, MapPin, FileText, Save, Sparkles } from 'luci
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
+import TopicDurationSelector from './TopicDurationSelector';
 
 export default function BookingSummaryModal({ 
   open, 
@@ -31,6 +32,7 @@ export default function BookingSummaryModal({
     instructorComments: '',
     aiSummary: ''
   });
+  const [selectedTopics, setSelectedTopics] = useState([]);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
 
   // Check if there's an existing diary entry for this booking
@@ -40,6 +42,16 @@ export default function BookingSummaryModal({
       if (!booking?.id) return null;
       const entries = await base44.entities.DiaryEntry.filter({ lessonId: booking.id });
       return entries[0] || null;
+    },
+    enabled: !!booking?.id && open
+  });
+
+  // Fetch existing lesson topic durations
+  const { data: existingTopicDurations = [] } = useQuery({
+    queryKey: ['lessonTopicDurations', booking?.id],
+    queryFn: async () => {
+      if (!booking?.id) return [];
+      return await base44.entities.LessonTopicDuration.filter({ lessonId: booking.id });
     },
     enabled: !!booking?.id && open
   });
@@ -64,7 +76,18 @@ export default function BookingSummaryModal({
         aiSummary: ''
       });
     }
-  }, [existingDiaryEntry, booking]);
+
+    // Load existing topic durations
+    if (existingTopicDurations.length > 0) {
+      setSelectedTopics(existingTopicDurations.map(td => ({
+        topicId: td.topicId,
+        topicName: td.topicName,
+        durationMinutes: td.durationMinutes
+      })));
+    } else {
+      setSelectedTopics([]);
+    }
+  }, [existingDiaryEntry, existingTopicDurations, booking]);
 
   const handleGenerateAISummary = async () => {
     setIsGeneratingSummary(true);
@@ -106,10 +129,22 @@ Requirements:
   const handleSave = async () => {
     if (!booking || !pupil) return;
     
-    if (!summaryData.mainTopic) {
+    if (selectedTopics.length === 0) {
       toast({ 
-        title: 'Main topic required', 
-        description: 'Please select the main topic covered in this lesson', 
+        title: 'Topics required', 
+        description: 'Please add at least one topic covered in this lesson', 
+        variant: 'destructive' 
+      });
+      return;
+    }
+
+    // Validate total duration matches lesson duration
+    const totalMinutes = selectedTopics.reduce((sum, t) => sum + t.durationMinutes, 0);
+    const lessonMinutes = (booking.durationHours || 0) * 60;
+    if (totalMinutes !== lessonMinutes) {
+      toast({ 
+        title: 'Duration mismatch', 
+        description: `Total topic duration (${totalMinutes} mins) must equal lesson duration (${lessonMinutes} mins)`, 
         variant: 'destructive' 
       });
       return;
@@ -117,12 +152,15 @@ Requirements:
     
     setIsSaving(true);
     try {
+      // Use first topic as main topic for backward compatibility
+      const mainTopicId = selectedTopics[0]?.topicId || '';
+
       const diaryData = {
         pupilId: booking.pupilId,
         instructorId: booking.instructorId,
         lessonId: booking.id,
         date: moment(booking.startAtUtc).format('YYYY-MM-DD'),
-        mainTopic: summaryData.mainTopic,
+        mainTopic: mainTopicId,
         objective: summaryData.whatWasCovered,
         whatWentWell: summaryData.progressNotes,
         areasToImprove: summaryData.nextSteps,
@@ -132,11 +170,36 @@ Requirements:
       };
 
       // Save diary entry
+      let diaryEntryId;
       if (existingDiaryEntry) {
         await base44.entities.DiaryEntry.update(existingDiaryEntry.id, diaryData);
+        diaryEntryId = existingDiaryEntry.id;
       } else {
-        await base44.entities.DiaryEntry.create(diaryData);
+        const newEntry = await base44.entities.DiaryEntry.create(diaryData);
+        diaryEntryId = newEntry.id;
       }
+
+      // Delete existing topic durations for this lesson
+      if (existingTopicDurations.length > 0) {
+        await Promise.all(
+          existingTopicDurations.map(td => base44.entities.LessonTopicDuration.delete(td.id))
+        );
+      }
+
+      // Save new topic durations
+      await Promise.all(
+        selectedTopics.map(topic =>
+          base44.entities.LessonTopicDuration.create({
+            lessonId: booking.id,
+            diaryEntryId: diaryEntryId,
+            pupilId: booking.pupilId,
+            instructorId: booking.instructorId,
+            topicId: topic.topicId,
+            topicName: topic.topicName,
+            durationMinutes: topic.durationMinutes
+          })
+        )
+      );
 
       // Update pupil hours and deduct from bulk payment
       const updatedHours = (pupil.hoursCompleted || 0) + (booking.durationHours || 0);
@@ -162,24 +225,27 @@ Requirements:
         });
       }
 
-      // Update topic hours log
-      const existingTopicLog = await base44.entities.TopicHoursLog.filter({
-        pupilId: booking.pupilId,
-        topicId: summaryData.mainTopic
-      });
-
-      if (existingTopicLog.length > 0) {
-        const log = existingTopicLog[0];
-        await base44.entities.TopicHoursLog.update(log.id, {
-          totalHours: (log.totalHours || 0) + (booking.durationHours || 0)
-        });
-      } else {
-        await base44.entities.TopicHoursLog.create({
+      // Update topic hours log for each topic
+      for (const topic of selectedTopics) {
+        const topicHours = topic.durationMinutes / 60;
+        const existingTopicLog = await base44.entities.TopicHoursLog.filter({
           pupilId: booking.pupilId,
-          instructorId: booking.instructorId,
-          topicId: summaryData.mainTopic,
-          totalHours: booking.durationHours || 0
+          topicId: topic.topicId
         });
+
+        if (existingTopicLog.length > 0) {
+          const log = existingTopicLog[0];
+          await base44.entities.TopicHoursLog.update(log.id, {
+            totalHours: (log.totalHours || 0) + topicHours
+          });
+        } else {
+          await base44.entities.TopicHoursLog.create({
+            pupilId: booking.pupilId,
+            instructorId: booking.instructorId,
+            topicId: topic.topicId,
+            totalHours: topicHours
+          });
+        }
       }
 
       // Mark booking as completed
@@ -189,6 +255,8 @@ Requirements:
 
       queryClient.invalidateQueries(['diaryEntry', booking.id]);
       queryClient.invalidateQueries(['diaryEntries', booking.pupilId]);
+      queryClient.invalidateQueries(['lessonTopicDurations', booking.id]);
+      queryClient.invalidateQueries(['topicHoursLog']);
       queryClient.invalidateQueries(['pupils']);
       queryClient.invalidateQueries(['bookings']);
       queryClient.invalidateQueries(['lessonBookings']);
@@ -294,30 +362,32 @@ Requirements:
 
           {/* Summary Form */}
           <div className="space-y-4">
-            <div>
-              <Label htmlFor="mainTopic">Main Topic *</Label>
-              {readOnly ? (
-                <div className="mt-2 p-3 bg-slate-50 border rounded-md text-slate-700">
-                  {courseWorkTopics.find(t => t.topicId === summaryData.mainTopic)?.title || summaryData.mainTopic || 'Not specified'}
+            {/* Topic Duration Selector */}
+            {readOnly ? (
+              <div>
+                <Label>Topics Covered</Label>
+                <div className="mt-2 space-y-2">
+                  {selectedTopics.map((topic, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-slate-50 border rounded-md">
+                      <span className="text-slate-700 font-medium">{topic.topicName}</span>
+                      <span className="text-slate-600">{topic.durationMinutes} mins</span>
+                    </div>
+                  ))}
+                  {selectedTopics.length === 0 && (
+                    <div className="p-3 bg-slate-50 border rounded-md text-slate-500">
+                      No topics recorded
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <Select 
-                  value={summaryData.mainTopic} 
-                  onValueChange={(value) => setSummaryData({ ...summaryData, mainTopic: value })}
-                >
-                  <SelectTrigger className="mt-2">
-                    <SelectValue placeholder="Select main topic covered..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {courseWorkTopics.map((topic) => (
-                      <SelectItem key={topic.topicId} value={topic.topicId}>
-                        {topic.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
+              </div>
+            ) : (
+              <TopicDurationSelector
+                selectedTopics={selectedTopics}
+                onChange={setSelectedTopics}
+                totalLessonMinutes={(booking.durationHours || 0) * 60}
+                disabled={readOnly}
+              />
+            )}
 
             <div>
               <Label htmlFor="whatWasCovered">What Was Covered</Label>
