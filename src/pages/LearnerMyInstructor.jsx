@@ -33,9 +33,9 @@ export default function LearnerMyInstructor() {
       
       const instructorUser = users[0];
       
-      // Fetch Instructor entity for additional details
-      const instructors = await base44.entities.Instructor.list();
-      const instructorDetails = instructors.find(i => i.id === pupil.instructorId) || null;
+      // Fetch Instructor entity by created_by (instructor email) for additional details
+      const instructors = await base44.entities.Instructor.filter({ created_by: instructorUser.email });
+      const instructorDetails = instructors[0] || null;
       
       return {
         id: instructorUser.id,
