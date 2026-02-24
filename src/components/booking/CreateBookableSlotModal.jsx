@@ -146,7 +146,16 @@ export default function CreateBookableSlotModal({
       if (!slotOccursOnDate) return false;
 
       // Check if times overlap: new start < existing end AND new end > existing start
-      return newStartTime.isBefore(slotEndTime) && newEndTime.isAfter(slotStartTime);
+      const timesOverlap = newStartTime.isBefore(slotEndTime) && newEndTime.isAfter(slotStartTime);
+      
+      if (timesOverlap) {
+        console.log('Overlap detected:', {
+          newSlot: { date: startDate, day: newDayOfWeek, time: `${startTime}-${endTime}` },
+          existingSlot: { day: slotDayOfWeek, time: `${slot.startTimeLocal}-${slot.endTimeLocal}` }
+        });
+      }
+      
+      return timesOverlap;
     });
 
     if (hasOverlap) {
