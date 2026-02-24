@@ -29,8 +29,21 @@ export default function CreateBookableSlotModal({
   slotDateTime,
   existingSlot 
 }) {
+  const { toast } = useToast();
   const slotMoment = slotDateTime ? moment(slotDateTime) : moment();
   const dayOfWeek = slotMoment.format('ddd').toLowerCase();
+  
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+    retry: false
+  });
+
+  const { data: existingSlots = [] } = useQuery({
+    queryKey: ['bookableSlots', user?.id],
+    queryFn: () => base44.entities.BookableSlotTemplate.list(),
+    enabled: !!user?.id
+  });
   
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState(slotMoment.format('YYYY-MM-DD'));
