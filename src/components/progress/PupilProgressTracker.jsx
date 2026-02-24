@@ -34,6 +34,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   const [routeData, setRouteData] = useState({ routeDetails: '', comments: '' });
   const [originalRouteData, setOriginalRouteData] = useState({ routeDetails: '', comments: '' });
   const [expandedSection, setExpandedSection] = useState(null);
+  const [selectedCustomTopic, setSelectedCustomTopic] = useState(null);
 
   const { data: progressData = [], isLoading } = useQuery({
     queryKey: ['drivingProgress', pupilId],
@@ -545,24 +546,13 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
 
       {/* Custom Topics Card - Card #25 */}
       {(() => {
-        // Extract all skill IDs from the 24 driving sections
-        const allSkillIds = [];
-        drivingSkillsSections.forEach(section => {
-          const extractSkills = (items) => {
-            items.forEach(item => {
-              if (item.type === 'skill') {
-                allSkillIds.push(item.id);
-              } else if (item.subtopics) {
-                extractSkills(item.subtopics);
-              }
-            });
-          };
-          extractSkills(section.topics);
-        });
-
-        // Aggregate topics from LessonTopicDuration that match the 24 driving progress topics
+        // Aggregate custom topics from LessonTopicDuration (only from lesson summaries)
         const customTopics = lessonTopicDurations
-          .filter(ltd => allSkillIds.includes(ltd.topicId))
+          .filter(ltd => {
+            // Only include topics starting with 'custom_'
+            // Exclude numeric-only IDs like '177194', '1771942'
+            return ltd.topicId?.startsWith('custom_') && !/^\d+$/.test(ltd.topicId);
+          })
           .reduce((acc, ltd) => {
             const existing = acc.find(t => t.topicId === ltd.topicId);
             if (existing) {
@@ -600,13 +590,17 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                 {customTopics.map(topic => (
                   <div
                     key={topic.topicId}
-                    className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg p-4 text-center"
+                    className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg p-4 text-center cursor-pointer hover:bg-white/30 transition-colors"
+                    onClick={() => setSelectedCustomTopic(topic)}
                   >
                     <p className="text-white font-medium text-sm mb-1 truncate" title={topic.topicName}>
                       {topic.topicName}
                     </p>
                     <p className="text-white/90 text-xs font-semibold">
                       {(topic.totalMinutes / 60).toFixed(1)}h
+                    </p>
+                    <p className="text-white/70 text-xs mt-1">
+                      {topic.lessons.length} lesson{topic.lessons.length !== 1 ? 's' : ''}
                     </p>
                   </div>
                 ))}
@@ -863,6 +857,56 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               >
                 {saveRouteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
               </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Custom Topic Details Dialog */}
+      <Dialog open={!!selectedCustomTopic} onOpenChange={() => setSelectedCustomTopic(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                25
+              </div>
+              {selectedCustomTopic?.topicName}
+            </DialogTitle>
+            <DialogDescription>
+              Time spent on this custom topic across lessons
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="bg-slate-50 rounded-lg p-4">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-[#071739]">
+                  {selectedCustomTopic && (selectedCustomTopic.totalMinutes / 60).toFixed(1)}h
+                </p>
+                <p className="text-sm text-slate-600 mt-1">Total time spent</p>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-slate-700 mb-3">Lesson History</h4>
+              <div className="space-y-2">
+                {selectedCustomTopic?.lessons.map((lesson, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">
+                        Lesson {selectedCustomTopic.lessons.length - idx}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {lesson.created_date ? moment(lesson.created_date).format('D MMM YYYY') : 'Date not available'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-[#071739]">
+                        {lesson.durationMinutes} min
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </DialogContent>
