@@ -7,8 +7,8 @@ Deno.serve(async (req) => {
 
     const { event, data } = payload;
 
-    // Only process create events
-    if (event.type !== 'create') {
+    // Only process create/update events
+    if (event.type !== 'create' && event.type !== 'update') {
       return Response.json({ success: true });
     }
 
@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const instructorId = users[0].id;
 
-    // Update the pupil with the instructor ID
+    // Update the pupil with the instructor ID if it's different
     await base44.asServiceRole.entities.Pupil.update(pupilId, {
       instructorId
     });
