@@ -197,50 +197,74 @@ Write a warm, supportive summary that highlights progress and next steps.`;
 
           <div className="space-y-2">
             <Label htmlFor="whatWentWell">What Went Well</Label>
-            <Textarea
-              id="whatWentWell"
-              value={formData.whatWentWell}
-              onChange={(e) => handleChange('whatWentWell', e.target.value)}
-              placeholder="Positive observations from the lesson..."
-              rows={3}
-              disabled={readOnly}
-            />
+            {readOnly ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
+                {formData.whatWentWell || 'Not specified'}
+              </div>
+            ) : (
+              <Textarea
+                id="whatWentWell"
+                value={formData.whatWentWell}
+                onChange={(e) => handleChange('whatWentWell', e.target.value)}
+                placeholder="Positive observations from the lesson..."
+                rows={3}
+                disabled={readOnly}
+              />
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="areasToImprove">Areas to Improve</Label>
-            <Textarea
-              id="areasToImprove"
-              value={formData.areasToImprove}
-              onChange={(e) => handleChange('areasToImprove', e.target.value)}
-              placeholder="Things to work on..."
-              rows={3}
-              disabled={readOnly}
-            />
+            {readOnly ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
+                {formData.areasToImprove || 'Not specified'}
+              </div>
+            ) : (
+              <Textarea
+                id="areasToImprove"
+                value={formData.areasToImprove}
+                onChange={(e) => handleChange('areasToImprove', e.target.value)}
+                placeholder="Things to work on..."
+                rows={3}
+                disabled={readOnly}
+              />
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="instructorComments">Instructor Comments</Label>
-            <Textarea
-              id="instructorComments"
-              value={formData.instructorComments}
-              onChange={(e) => handleChange('instructorComments', e.target.value)}
-              placeholder="Additional notes..."
-              rows={2}
-              disabled={readOnly}
-            />
+            {readOnly ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
+                {formData.instructorComments || 'Not specified'}
+              </div>
+            ) : (
+              <Textarea
+                id="instructorComments"
+                value={formData.instructorComments}
+                onChange={(e) => handleChange('instructorComments', e.target.value)}
+                placeholder="Additional notes..."
+                rows={2}
+                disabled={readOnly}
+              />
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="homeworkSuggestions">Homework Suggestions</Label>
-            <Textarea
-              id="homeworkSuggestions"
-              value={formData.homeworkSuggestions}
-              onChange={(e) => handleChange('homeworkSuggestions', e.target.value)}
-              placeholder="Practice exercises or study topics..."
-              rows={2}
-              disabled={readOnly}
-            />
+            {readOnly ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
+                {formData.homeworkSuggestions || 'Not specified'}
+              </div>
+            ) : (
+              <Textarea
+                id="homeworkSuggestions"
+                value={formData.homeworkSuggestions}
+                onChange={(e) => handleChange('homeworkSuggestions', e.target.value)}
+                placeholder="Practice exercises or study topics..."
+                rows={2}
+                disabled={readOnly}
+              />
+            )}
           </div>
 
           {!readOnly && (
