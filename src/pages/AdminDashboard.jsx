@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, Calendar, Trash2, Sparkles, MapPin } from 'lucide-react';
+import { Settings, Calendar, Trash2, Sparkles, MapPin, CreditCard } from 'lucide-react';
 
 const adminCards = [
   {
@@ -39,6 +39,13 @@ const adminCards = [
     icon: MapPin,
     page: 'AdminTestRouteConfiguration',
     color: 'from-teal-500 to-teal-600'
+  },
+  {
+    title: 'Payments',
+    description: 'View instructor transactions & invoices',
+    icon: CreditCard,
+    page: 'AdminPaymentsHub',
+    color: 'from-emerald-500 to-emerald-600'
   }
 ];
 

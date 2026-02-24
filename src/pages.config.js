@@ -116,6 +116,8 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
+import AdminPaymentsHub from './pages/AdminPaymentsHub';
+import AdminInstructorPayments from './pages/AdminInstructorPayments';
 import __Layout from './Layout.jsx';
 
 
@@ -189,6 +191,8 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
+    "AdminPaymentsHub": AdminPaymentsHub,
+    "AdminInstructorPayments": AdminInstructorPayments,
 }
 
 export const pagesConfig = {
