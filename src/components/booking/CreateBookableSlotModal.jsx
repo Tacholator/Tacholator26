@@ -96,11 +96,11 @@ export default function CreateBookableSlotModal({
 
   const handleSave = () => {
     // Check for time overlaps
-    const newStart = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
-    const newEnd = moment(`${startDate} ${endTime}`, 'YYYY-MM-DD HH:mm');
+    const newStartTime = moment(startTime, 'HH:mm');
+    const newEndTime = moment(endTime, 'HH:mm');
     const newDayOfWeek = moment(startDate).format('ddd').toLowerCase();
 
-    if (newEnd.isSameOrBefore(newStart)) {
+    if (newEndTime.isSameOrBefore(newStartTime)) {
       toast({
         title: 'Invalid time range',
         description: 'End time must be after start time',
@@ -121,28 +121,34 @@ export default function CreateBookableSlotModal({
       // Check if this existing slot occurs on the target date
       let slotOccursOnDate = false;
 
-      if (slot.recurrence === 'weekly' || slot.recurrence === 'none') {
-        if (repeatWeekly) {
-          // New slot is recurring - check if existing slot's day overlaps with new slot's days
-          slotOccursOnDate = selectedDays.includes(slotDayOfWeek);
-          
-          if (slotOccursOnDate) {
-            // Check date range
-            slotOccursOnDate = moment(slot.startDate).isSameOrBefore(moment(startDate)) &&
-                               (!slot.endDate || moment(startDate).isSameOrBefore(moment(slot.endDate)));
-          }
-        } else {
-          // New slot is single occurrence - check if existing slot occurs on that date
-          slotOccursOnDate = slotDayOfWeek === newDayOfWeek &&
-                             moment(slot.startDate).isSameOrBefore(moment(startDate)) &&
-                             (!slot.endDate || moment(startDate).isSameOrBefore(moment(slot.endDate)));
+      if (repeatWeekly) {
+        // New slot is recurring - check if existing slot's day overlaps with new slot's days
+        if (!selectedDays.includes(slotDayOfWeek)) return false;
+        
+        // Check date range: existing slot must start on or before new slot start date
+        slotOccursOnDate = moment(slot.startDate).isSameOrBefore(moment(startDate));
+        
+        // And existing slot's end date (if any) must be on or after new slot start date
+        if (slot.endDate) {
+          slotOccursOnDate = slotOccursOnDate && moment(slot.endDate).isSameOrAfter(moment(startDate));
+        }
+      } else {
+        // New slot is single occurrence - check if existing slot occurs on that date
+        if (slotDayOfWeek !== newDayOfWeek) return false;
+        
+        // Existing slot must start on or before new slot date
+        slotOccursOnDate = moment(slot.startDate).isSameOrBefore(moment(startDate));
+        
+        // And existing slot's end date (if any) must be on or after new slot date
+        if (slot.endDate) {
+          slotOccursOnDate = slotOccursOnDate && moment(slot.endDate).isSameOrAfter(moment(startDate));
         }
       }
 
       if (!slotOccursOnDate) return false;
 
-      // Check if times overlap
-      return newStart.isBefore(slotEndTime) && newEnd.isAfter(slotStartTime);
+      // Check if times overlap: new start < existing end AND new end > existing start
+      return newStartTime.isBefore(slotEndTime) && newEndTime.isAfter(slotStartTime);
     });
 
     if (hasOverlap) {
