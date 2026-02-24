@@ -5,39 +5,53 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { X, Plus } from 'lucide-react';
 import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
+
 export default function TopicDurationSelector({ 
   selectedTopics, 
   onChange, 
   totalLessonMinutes,
-  mainSelectedTopicId,
   disabled = false 
 }) {
   const [showCustomTopicInput, setShowCustomTopicInput] = useState(false);
   const [customTopicName, setCustomTopicName] = useState('');
 
-  // Build skills list for the selected main topic only
-  const buildSkillsForMainTopic = (mainTopicId) => {
-    if (!mainTopicId) return [];
+  // Build comprehensive topic list from driving skills data
+  const buildTopicsList = () => {
+    const topics = [];
+    
+    // Add all skills from drivingSkillsSections
+    drivingSkillsSections.forEach(section => {
+      section.topics.forEach(topic => {
+        if (topic.type === 'skill') {
+          topics.push({ id: topic.id, name: topic.label, category: section.title });
+        } else if (topic.type === 'group' && topic.subtopics) {
+          topic.subtopics.forEach(subtopic => {
+            if (subtopic.type === 'skill') {
+              topics.push({ id: subtopic.id, name: subtopic.label, category: `${section.title} - ${topic.label}` });
+            } else if (subtopic.type === 'group' && subtopic.subtopics) {
+              subtopic.subtopics.forEach(subsubtopic => {
+                if (subsubtopic.type === 'skill') {
+                  topics.push({ id: subsubtopic.id, name: subsubtopic.label, category: `${section.title} - ${topic.label} - ${subtopic.label}` });
+                }
+              });
+            }
+          });
+        }
+      });
+    });
 
-    const skills = [];
-    const mainSection = drivingSkillsSections.find(section => section.id === mainTopicId);
+    // Add coursework topics
+    courseWorkTopics.forEach(topic => {
+      if (!topics.find(t => t.id === topic.topicId)) {
+        topics.push({ id: topic.topicId, name: topic.title, category: 'Theory Topics' });
+      }
+    });
 
-    if (mainSection) {
-      const extractSkills = (items, categoryPrefix = mainSection.title) => {
-        items.forEach(item => {
-          if (item.type === 'skill') {
-            skills.push({ id: item.id, name: item.label, category: categoryPrefix });
-          } else if (item.type === 'group' && item.subtopics) {
-            extractSkills(item.subtopics, `${categoryPrefix} - ${item.label}`);
-          }
-        });
-      };
-      extractSkills(mainSection.topics);
-    }
-    return skills;
+    return topics;
   };
 
-  const availableTopics = buildSkillsForMainTopic(mainSelectedTopicId);
+  const availableTopics = buildTopicsList();
 
   const handleAddTopic = (topicId) => {
     if (!topicId || selectedTopics.some(t => t.topicId === topicId)) return;
@@ -157,12 +171,11 @@ export default function TopicDurationSelector({
       )}
 
       {/* Add topic selector */}
-      {!disabled && mainSelectedTopicId && (
+      {!disabled && (
         <div className="space-y-2">
-          <Label>Sub-Topics (Skills) *</Label>
           <Select onValueChange={handleAddTopic}>
-            <SelectTrigger className="mt-2">
-              <SelectValue placeholder="Add a skill from the selected main topic..." />
+            <SelectTrigger>
+              <SelectValue placeholder="Add a topic..." />
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
               {availableTopics
