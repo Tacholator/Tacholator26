@@ -167,10 +167,9 @@ Write a warm, supportive summary that highlights progress and next steps.`;
           <div className="space-y-2">
             <Label htmlFor="mainTopic">Main Topic *</Label>
             {readOnly ? (
-              <Input
-                value={courseWorkTopics.find(t => t.topicId === formData.mainTopic)?.title || formData.mainTopic || 'Not specified'}
-                disabled
-              />
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700">
+                {courseWorkTopics.find(t => t.topicId === formData.mainTopic)?.title || formData.mainTopic || 'Not specified'}
+              </div>
             ) : (
               <Select 
                 value={formData.mainTopic} 
