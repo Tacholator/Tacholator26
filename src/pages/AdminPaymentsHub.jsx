@@ -46,7 +46,14 @@ export default function AdminPaymentsHub() {
   const { data: instructorCards = [], isLoading: loadingCards } = useQuery({
     queryKey: ['adminInstructorCards', search, fromDate, toDate, status, method],
     queryFn: async () => {
-      const response = await base44.functions.invoke('getAdminInstructorPaymentCards', queryParams.toString());
+      const params = {};
+      if (search) params.search = search;
+      if (fromDate) params.fromDate = fromDate;
+      if (toDate) params.toDate = toDate;
+      if (status !== 'ALL') params.statusFilter = status;
+      if (method !== 'ALL') params.methodFilter = method;
+      
+      const response = await base44.functions.invoke('getAdminInstructorPaymentCards', params);
       return response.data || [];
     }
   });
@@ -55,7 +62,14 @@ export default function AdminPaymentsHub() {
   const { data: transactionsData, isLoading: loadingTransactions } = useQuery({
     queryKey: ['adminGlobalTransactions', search, fromDate, toDate, status, method],
     queryFn: async () => {
-      const response = await base44.functions.invoke('getAdminGlobalTransactions', queryParams.toString());
+      const params = {};
+      if (search) params.search = search;
+      if (fromDate) params.fromDate = fromDate;
+      if (toDate) params.toDate = toDate;
+      if (status !== 'ALL') params.statusFilter = status;
+      if (method !== 'ALL') params.methodFilter = method;
+      
+      const response = await base44.functions.invoke('getAdminGlobalTransactions', params);
       return response.data || { transactions: [], total: 0 };
     }
   });

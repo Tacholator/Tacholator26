@@ -52,6 +52,8 @@ import AdminDailyQuizzes from './pages/AdminDailyQuizzes';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminDataManagement from './pages/AdminDataManagement';
 import AdminInstructorCalendars from './pages/AdminInstructorCalendars';
+import AdminInstructorPayments from './pages/AdminInstructorPayments';
+import AdminPaymentsHub from './pages/AdminPaymentsHub';
 import AdminRoleManagement from './pages/AdminRoleManagement';
 import AdminTestRouteConfiguration from './pages/AdminTestRouteConfiguration';
 import AdminTestRouteDetail from './pages/AdminTestRouteDetail';
@@ -116,8 +118,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import AdminPaymentsHub from './pages/AdminPaymentsHub';
-import AdminInstructorPayments from './pages/AdminInstructorPayments';
 import __Layout from './Layout.jsx';
 
 
@@ -127,6 +127,8 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "AdminDataManagement": AdminDataManagement,
     "AdminInstructorCalendars": AdminInstructorCalendars,
+    "AdminInstructorPayments": AdminInstructorPayments,
+    "AdminPaymentsHub": AdminPaymentsHub,
     "AdminRoleManagement": AdminRoleManagement,
     "AdminTestRouteConfiguration": AdminTestRouteConfiguration,
     "AdminTestRouteDetail": AdminTestRouteDetail,
@@ -191,8 +193,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "AdminPaymentsHub": AdminPaymentsHub,
-    "AdminInstructorPayments": AdminInstructorPayments,
 }
 
 export const pagesConfig = {
