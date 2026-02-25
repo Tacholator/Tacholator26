@@ -444,7 +444,7 @@ export default function LearnerDashboard() {
           >
             <Card className="border-0 shadow-sm bg-gradient-to-br from-[#071739] to-[#0a2142] text-white">
               <CardHeader>
-                <CardTitle className="text-lg text-white/90">Next Lesson</CardTitle>
+                <CardTitle className="text-lg text-white/90">Next Lesson & Hours Booked</CardTitle>
               </CardHeader>
               <CardContent>
                 {nextLesson ? (
@@ -472,10 +472,29 @@ export default function LearnerDashboard() {
                         </div>
                       )}
                     </div>
+                    {(() => {
+                      const futureBookings = bookings.filter(b => 
+                        b.status === 'confirmed' && 
+                        moment(b.startAtUtc).isAfter(now)
+                      );
+                      const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
+                      
+                      return (
+                        <div className="pt-3 border-t border-white/20">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-white/80">Total Hours Booked</span>
+                            <span className="text-2xl font-bold">{totalHoursBooked.toFixed(1)}h</span>
+                          </div>
+                          <p className="text-xs text-white/70 mt-1">
+                            {futureBookings.length} upcoming lesson{futureBookings.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                      );
+                    })()}
                     <div className="grid grid-cols-2 gap-3 pt-2">
                       <Link to={createPageUrl('LearnerScheduledLessons')}>
                         <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
-                          View Lesson
+                          View Lessons
                         </Button>
                       </Link>
                       <Link to={createPageUrl('LearnerChats')}>
@@ -489,7 +508,26 @@ export default function LearnerDashboard() {
                 ) : (
                   <div className="text-center py-6">
                     <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p className="text-white/80 mb-4">You don't have a lesson booked</p>
+                    <p className="text-white/80 mb-2">You don't have a lesson booked</p>
+                    {(() => {
+                      const futureBookings = bookings.filter(b => 
+                        b.status === 'confirmed' && 
+                        moment(b.startAtUtc).isAfter(now)
+                      );
+                      const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
+                      
+                      if (totalHoursBooked > 0) {
+                        return (
+                          <div className="mb-4 p-3 rounded-lg bg-white/10">
+                            <span className="text-white/80 text-sm">{totalHoursBooked.toFixed(1)}h booked</span>
+                            <p className="text-xs text-white/60 mt-1">
+                              {futureBookings.length} upcoming lesson{futureBookings.length !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                     <Link to={createPageUrl('LearnerBookingCalendar')}>
                       <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
                         Book a Lesson
@@ -569,8 +607,8 @@ export default function LearnerDashboard() {
           </motion.div>
         </div>
 
-        {/* 4. Overall Progress & Hours Booked */}
-        <div className="grid md:grid-cols-2 gap-6">
+        {/* 4. Overall Progress */}
+        <div className="grid md:grid-cols-1 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -619,64 +657,6 @@ export default function LearnerDashboard() {
                 </Link>
               </CardContent>
             </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-          >
-            {(() => {
-              const futureBookings = bookings.filter(b => 
-                b.status === 'confirmed' && 
-                moment(b.startAtUtc).isAfter(now)
-              );
-              const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
-              const nextBooking = futureBookings.sort((a, b) => 
-                moment(a.startAtUtc).diff(moment(b.startAtUtc))
-              )[0];
-
-              return (
-                <Card className="border-0 shadow-sm bg-gradient-to-br from-teal-100 to-cyan-100">
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-teal-600" />
-                      Hours Booked
-                    </CardTitle>
-                    <p className="text-sm text-slate-600">Upcoming confirmed lessons</p>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-white/50 flex items-center justify-center">
-                        <Clock className="w-6 h-6 text-teal-600" />
-                      </div>
-                      <div>
-                        <p className="text-3xl font-bold text-teal-700">
-                          {totalHoursBooked.toFixed(1)}h
-                        </p>
-                        <p className="text-sm text-slate-600">
-                          {futureBookings.length} lesson{futureBookings.length !== 1 ? 's' : ''}
-                        </p>
-                      </div>
-                    </div>
-                    {nextBooking && (
-                      <div className="pt-2 border-t border-teal-200">
-                        <p className="text-xs text-slate-600 mb-1">Next lesson</p>
-                        <p className="text-sm font-medium text-slate-800">
-                          {moment(nextBooking.startAtUtc).local().format('ddd, D MMM')} at {moment(nextBooking.startAtUtc).local().format('HH:mm')}
-                        </p>
-                      </div>
-                    )}
-                    <Link to={createPageUrl('LearnerScheduledLessons')}>
-                      <Button variant="outline" className="w-full gap-2 bg-white/50 hover:bg-white/80 border-teal-200">
-                        <Calendar className="w-4 h-4" />
-                        View All Lessons
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              );
-            })()}
           </motion.div>
         </div>
 
