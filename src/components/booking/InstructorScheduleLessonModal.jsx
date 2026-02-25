@@ -144,10 +144,11 @@ export default function InstructorScheduleLessonModal({
       return booking;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['lessonBookings']);
-      queryClient.invalidateQueries(['slotInstances']);
-      queryClient.invalidateQueries(['instructorBookings']);
-      queryClient.invalidateQueries(['instructorSlotInstances']);
+      queryClient.invalidateQueries({ queryKey: ['lessonBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['slotInstances'] });
+      queryClient.invalidateQueries({ queryKey: ['instructorBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['instructorSlotInstances'] });
+      queryClient.invalidateQueries({ queryKey: ['myBookings'] });
       toast({ 
         title: 'Lesson Scheduled! ✓', 
         description: 'The lesson has been successfully added to your calendar.',
