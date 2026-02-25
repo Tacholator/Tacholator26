@@ -607,8 +607,8 @@ export default function LearnerDashboard() {
           </motion.div>
         </div>
 
-        {/* 4. Overall Progress */}
-        <div className="grid md:grid-cols-1 gap-6">
+        {/* 4. Overall Progress & Last Lesson Summary */}
+        <div className="grid md:grid-cols-2 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -655,6 +655,66 @@ export default function LearnerDashboard() {
                     View Progress
                   </Button>
                 </Link>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-indigo-50">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-600" />
+                  Last Lesson Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {latestDiary ? (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs font-medium text-slate-600 mb-1">Last Lesson</p>
+                      <p className="text-sm font-semibold text-slate-800">{moment(latestDiary.date).format('DD MMM YYYY')}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{moment(latestDiary.date).fromNow()}</p>
+                    </div>
+                    {latestDiary.mainTopic && (
+                      <div>
+                        <p className="text-xs font-medium text-slate-600 mb-1">Topics Covered</p>
+                        <p className="text-sm text-slate-700 line-clamp-2">{latestDiary.mainTopic}</p>
+                      </div>
+                    )}
+                    {(latestDiary.whatWentWell || latestDiary.areasToImprove) && (
+                      <div className="grid grid-cols-2 gap-3">
+                        {latestDiary.whatWentWell && (
+                          <div className="bg-emerald-50 rounded-lg p-3">
+                            <p className="text-xs font-medium text-emerald-700 mb-1.5">✓ Went Well</p>
+                            <p className="text-xs text-slate-600 line-clamp-3">{latestDiary.whatWentWell}</p>
+                          </div>
+                        )}
+                        {latestDiary.areasToImprove && (
+                          <div className="bg-amber-50 rounded-lg p-3">
+                            <p className="text-xs font-medium text-amber-700 mb-1.5">⚠ To Improve</p>
+                            <p className="text-xs text-slate-600 line-clamp-3">{latestDiary.areasToImprove}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <Link to={createPageUrl('LearnerLessons')}>
+                      <Button variant="outline" className="w-full gap-2 bg-white/50 hover:bg-white/80 border-purple-200">
+                        <FileText className="w-4 h-4" />
+                        View All Lessons
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <FileText className="w-12 h-12 mx-auto mb-3 text-purple-300" />
+                    <p className="text-sm text-slate-600">No lesson diary entries yet</p>
+                    <p className="text-xs text-slate-500 mt-1">Your instructor will add notes after each lesson</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
