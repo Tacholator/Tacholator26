@@ -53,9 +53,9 @@ export default function InstructorScheduleLessonModal({
       const allPupils = await base44.entities.Pupil.filter({ 
         instructorId: user.id
       });
-      // Include both Active and Stopped (one-off) pupils
+      // Double-check filter and include both Active and Stopped (one-off) pupils
       const bookablePupils = allPupils.filter(p => 
-        p.status === 'Active' || p.status === 'Stopped'
+        p.instructorId === user.id && (p.status === 'Active' || p.status === 'Stopped')
       );
       return bookablePupils.sort((a, b) => 
         `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
