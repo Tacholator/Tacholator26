@@ -6,10 +6,11 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle } from 'lucide-react';
+import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
+import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 
 // Warm color palette - stable per section
 const warmPalette = {
@@ -24,6 +25,8 @@ const warmPalette = {
 export default function InstructorDashboard() {
   const [outcomeModalOpen, setOutcomeModalOpen] = useState(false);
   const [selectedLessonId, setSelectedLessonId] = useState(null);
+  const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+  const [selectedPupilForSummary, setSelectedPupilForSummary] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -197,6 +200,18 @@ export default function InstructorDashboard() {
     enabled: !!user?.id && pupils.length > 0
   });
 
+  // Fetch last diary entry for next pupil
+  const nextPupil = nextRelevantBooking ? pupils.find(p => p.id === nextRelevantBooking.pupilId) : null;
+  const { data: lastDiaryEntry } = useQuery({
+    queryKey: ['lastDiaryEntry', nextPupil?.id],
+    queryFn: async () => {
+      if (!nextPupil?.id) return null;
+      const diaries = await base44.entities.DiaryEntry.filter({ pupilId: nextPupil.id }, '-date', 1);
+      return diaries.length > 0 ? diaries[0] : null;
+    },
+    enabled: !!nextPupil?.id
+  });
+
   const { data: availableSlotsToday = [] } = useQuery({
     queryKey: ['availableSlotsToday', user?.id],
     queryFn: async () => {
@@ -318,6 +333,16 @@ export default function InstructorDashboard() {
     setOutcomeModalOpen(true);
   };
 
+  const handleViewSummary = (pupil) => {
+    setSelectedPupilForSummary(pupil);
+    setSummaryModalOpen(true);
+  };
+
+  const getLastLessonDiaryEntry = (pupilId) => {
+    if (nextPupil?.id === pupilId) return lastDiaryEntry;
+    return null;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
@@ -406,6 +431,71 @@ export default function InstructorDashboard() {
                         Set Outcome
                       </Button>
                     </div>
+
+                    {/* Pupil Lesson Summary */}
+                    {nextPupil && (
+                      <div className="mt-4 pt-4 border-t border-emerald-200">
+                        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Sparkles className="w-4 h-4 text-purple-600" />
+                            <h4 className="font-semibold text-slate-800 text-sm">Lesson Summary</h4>
+                          </div>
+                          {lastDiaryEntry ? (
+                            <>
+                              <div className="space-y-2 text-sm">
+                                <div>
+                                  <p className="text-xs font-medium text-slate-600 mb-1">Last Lesson</p>
+                                  <p className="text-slate-700">{moment(lastDiaryEntry.date).format('DD MMM YYYY')}</p>
+                                </div>
+                                {lastDiaryEntry.mainTopic && (
+                                  <div>
+                                    <p className="text-xs font-medium text-slate-600 mb-1">Topics Covered</p>
+                                    <p className="text-slate-700 line-clamp-2">{lastDiaryEntry.mainTopic}</p>
+                                  </div>
+                                )}
+                                {(lastDiaryEntry.whatWentWell || lastDiaryEntry.areasToImprove) && (
+                                  <div className="grid grid-cols-2 gap-2 pt-1">
+                                    {lastDiaryEntry.whatWentWell && (
+                                      <div className="bg-emerald-50 rounded p-2">
+                                        <p className="text-xs font-medium text-emerald-700 mb-1">✓ Went Well</p>
+                                        <p className="text-xs text-slate-600 line-clamp-2">{lastDiaryEntry.whatWentWell}</p>
+                                      </div>
+                                    )}
+                                    {lastDiaryEntry.areasToImprove && (
+                                      <div className="bg-amber-50 rounded p-2">
+                                        <p className="text-xs font-medium text-amber-700 mb-1">⚠ To Improve</p>
+                                        <p className="text-xs text-slate-600 line-clamp-2">{lastDiaryEntry.areasToImprove}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full mt-3 bg-white/50 hover:bg-white text-purple-700 border-purple-200"
+                                onClick={() => handleViewSummary(nextPupil)}
+                              >
+                                <Sparkles className="w-3 h-3 mr-1" />
+                                View Full Summary
+                              </Button>
+                            </>
+                          ) : (
+                            <div className="text-center py-3">
+                              <p className="text-xs text-slate-600 mb-2">No previous lesson recorded yet</p>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="bg-white/50 hover:bg-white text-slate-700"
+                                onClick={() => handleViewSummary(nextPupil)}
+                              >
+                                View Pupil Summary
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </>
                 ) : availableSlotsToday.length > 0 ? (
                   <div className="text-center py-4">
@@ -635,6 +725,16 @@ export default function InstructorDashboard() {
         }}
         lessonId={nextRelevantBooking?.type === 'lesson' && selectedLessonId === nextRelevantBooking.id ? selectedLessonId : null}
         bookingId={nextRelevantBooking?.type === 'booking' && selectedLessonId === nextRelevantBooking.id ? selectedLessonId : (todayNeedingOutcome.find(item => item.id === selectedLessonId)?.type === 'booking' ? selectedLessonId : null)}
+      />
+
+      <PupilLessonSummaryModal
+        open={summaryModalOpen}
+        onClose={() => {
+          setSummaryModalOpen(false);
+          setSelectedPupilForSummary(null);
+        }}
+        pupil={selectedPupilForSummary}
+        lastDiaryEntry={selectedPupilForSummary ? getLastLessonDiaryEntry(selectedPupilForSummary.id) : null}
       />
     </div>
   );
