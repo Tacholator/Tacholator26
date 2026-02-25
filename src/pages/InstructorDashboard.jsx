@@ -411,19 +411,21 @@ export default function InstructorDashboard() {
                       {nextRelevantBooking.pickupLocation && (
                         <p className="text-sm text-slate-500 mt-1 truncate">{nextRelevantBooking.pickupLocation}</p>
                       )}
-                      <div className="flex gap-2 mt-3 flex-wrap">
-                        <Link to={createPageUrl('Calendar')}>
-                          <Button size="sm" variant="outline">View Lesson</Button>
-                        </Link>
-                        <NotifyArrivalButton 
-                          lessonId={nextRelevantBooking.type === 'lesson' ? nextRelevantBooking.id : null}
-                          bookingId={nextRelevantBooking.type === 'booking' ? nextRelevantBooking.id : null}
-                          pupilId={nextRelevantBooking.pupilId}
-                        />
+                      <div className="space-y-2 mt-3">
+                        <div className="flex gap-2">
+                          <Link to={createPageUrl('Calendar')} className="flex-1">
+                            <Button size="sm" variant="outline" className="w-full">View Lesson</Button>
+                          </Link>
+                          <NotifyArrivalButton 
+                            lessonId={nextRelevantBooking.type === 'lesson' ? nextRelevantBooking.id : null}
+                            bookingId={nextRelevantBooking.type === 'booking' ? nextRelevantBooking.id : null}
+                            pupilId={nextRelevantBooking.pupilId}
+                          />
+                        </div>
                         <Button 
                           size="sm" 
                           onClick={() => handleMarkLesson(nextRelevantBooking.id)}
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
                         >
                           Set Outcome
                         </Button>
