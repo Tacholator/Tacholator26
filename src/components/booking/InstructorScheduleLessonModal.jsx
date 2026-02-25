@@ -48,34 +48,31 @@ export default function InstructorScheduleLessonModal({
   });
 
   const { data: pupils = [], refetch: refetchPupils } = useQuery({
-    queryKey: ['instructorSchedulePupils', user?.id, user?.email, Date.now()],
+    queryKey: ['instructorSchedulePupils', user?.email],
     queryFn: async () => {
-      if (!user?.id || !user?.email) {
-        console.log('⚠️ User data missing:', { userId: user?.id, userEmail: user?.email });
+      if (!user?.email) {
+        console.log('⚠️ User email missing');
         return [];
       }
       
-      const instructorUserId = user.id;
       const instructorUserEmail = user.email;
       
-      console.log('🔍 Fetching pupils for instructor:', { instructorUserId, instructorUserEmail });
+      console.log('🔍 Fetching pupils for instructor email:', instructorUserEmail);
       
-      // Use direct filter query first
-      const directFiltered = await base44.entities.Pupil.filter({ 
-        instructorId: instructorUserId,
+      // Filter by instructorEmail ONLY (most reliable field)
+      const allPupils = await base44.entities.Pupil.filter({ 
         instructorEmail: instructorUserEmail
       });
       
-      console.log('📊 Direct filter results:', directFiltered.length);
+      console.log('📊 Pupils with matching instructorEmail:', allPupils.length);
       
       // Apply status filter
-      const bookablePupils = directFiltered.filter(p => 
+      const bookablePupils = allPupils.filter(p => 
         p.status === 'Active' || p.status === 'Stopped'
       );
       
       console.log('✅ Final bookable pupils:', bookablePupils.map(p => ({
         name: `${p.firstName} ${p.lastName}`,
-        instructorId: p.instructorId,
         instructorEmail: p.instructorEmail,
         status: p.status
       })));
@@ -84,7 +81,7 @@ export default function InstructorScheduleLessonModal({
         `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
       );
     },
-    enabled: !!user?.id && !!user?.email && open,
+    enabled: !!user?.email && open,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: 'always',
@@ -93,10 +90,10 @@ export default function InstructorScheduleLessonModal({
   
   // Refetch when modal opens
   React.useEffect(() => {
-    if (open && user?.id && user?.email) {
+    if (open && user?.email) {
       refetchPupils();
     }
-  }, [open, user?.id, user?.email, refetchPupils]);
+  }, [open, user?.email, refetchPupils]);
 
   const filteredPupils = React.useMemo(() => {
     if (!searchQuery.trim()) return pupils;
