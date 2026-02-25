@@ -50,26 +50,36 @@ export default function InstructorScheduleLessonModal({
   const { data: pupils = [] } = useQuery({
     queryKey: ['instructorOwnPupils', user?.id, user?.email],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id || !user?.email) return [];
       
-      const allPupils = await base44.entities.Pupil.filter({ 
-        instructorId: user.id
+      console.log('🔍 Fetching pupils for instructor:', { userId: user.id, userEmail: user.email });
+      
+      // Fetch ALL pupils first to debug
+      const allPupilsInDb = await base44.entities.Pupil.list();
+      console.log('📊 Total pupils in database:', allPupilsInDb.length);
+      
+      // Now filter explicitly by BOTH instructorId AND instructorEmail
+      const myPupils = allPupilsInDb.filter(p => {
+        const matchesId = p.instructorId === user.id;
+        const matchesEmail = p.instructorEmail === user.email;
+        const matchesStatus = p.status === 'Active' || p.status === 'Stopped';
+        
+        if (!matchesId || !matchesEmail) {
+          console.log('❌ Excluding pupil:', p.firstName, p.lastName, 'instructorId:', p.instructorId, 'instructorEmail:', p.instructorEmail);
+        }
+        
+        return matchesId && matchesEmail && matchesStatus;
       });
       
-      // Triple-check: Filter by instructorId AND instructorEmail AND status
-      const bookablePupils = allPupils.filter(p => 
-        p.instructorId === user.id && 
-        p.instructorEmail === user.email &&
-        (p.status === 'Active' || p.status === 'Stopped')
-      );
+      console.log('✅ Filtered pupils for this instructor:', myPupils.length, myPupils.map(p => `${p.firstName} ${p.lastName}`));
       
-      return bookablePupils.sort((a, b) => 
+      return myPupils.sort((a, b) => 
         `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
       );
     },
     enabled: !!user?.id && !!user?.email,
-    staleTime: 0, // Always fetch fresh data
-    cacheTime: 0 // Don't cache to prevent showing stale data
+    staleTime: 0,
+    cacheTime: 0
   });
 
   const filteredPupils = React.useMemo(() => {
