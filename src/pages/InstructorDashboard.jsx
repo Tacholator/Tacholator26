@@ -200,18 +200,6 @@ export default function InstructorDashboard() {
     enabled: !!user?.id && pupils.length > 0
   });
 
-  // Fetch last diary entry for next pupil
-  const nextPupil = nextRelevantBooking ? pupils.find(p => p.id === nextRelevantBooking.pupilId) : null;
-  const { data: lastDiaryEntry } = useQuery({
-    queryKey: ['lastDiaryEntry', nextPupil?.id],
-    queryFn: async () => {
-      if (!nextPupil?.id) return null;
-      const diaries = await base44.entities.DiaryEntry.filter({ pupilId: nextPupil.id }, '-date', 1);
-      return diaries.length > 0 ? diaries[0] : null;
-    },
-    enabled: !!nextPupil?.id
-  });
-
   const { data: availableSlotsToday = [] } = useQuery({
     queryKey: ['availableSlotsToday', user?.id],
     queryFn: async () => {
@@ -310,6 +298,18 @@ export default function InstructorDashboard() {
   ).sort((a, b) => moment(a.practicalTestDate).diff(moment(b.practicalTestDate)));
 
   const unreadNotifications = notifications.filter(n => !n.readAt);
+
+  // Fetch last diary entry for next pupil (must be after nextRelevantBooking is defined)
+  const nextPupil = nextRelevantBooking ? pupils.find(p => p.id === nextRelevantBooking.pupilId) : null;
+  const { data: lastDiaryEntry } = useQuery({
+    queryKey: ['lastDiaryEntry', nextPupil?.id],
+    queryFn: async () => {
+      if (!nextPupil?.id) return null;
+      const diaries = await base44.entities.DiaryEntry.filter({ pupilId: nextPupil.id }, '-date', 1);
+      return diaries.length > 0 ? diaries[0] : null;
+    },
+    enabled: !!nextPupil?.id
+  });
 
   const getTimeOfDay = () => {
     const hour = moment().hour();
