@@ -103,7 +103,11 @@ export default function Calendar() {
 
   const { data: bookings = [] } = useQuery({
     queryKey: ['lessonBookings', currentUser?.id],
-    queryFn: () => base44.entities.LessonBooking.filter({ instructorId: currentUser.id }),
+    queryFn: async () => {
+      const allBookings = await base44.entities.LessonBooking.filter({ instructorId: currentUser.id });
+      // Filter out deleted bookings
+      return allBookings.filter(b => !b.isDeleted);
+    },
     enabled: !!currentUser?.id
   });
 
