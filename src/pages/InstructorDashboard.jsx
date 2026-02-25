@@ -338,11 +338,6 @@ export default function InstructorDashboard() {
     setSummaryModalOpen(true);
   };
 
-  const getLastLessonDiaryEntry = (pupilId) => {
-    if (nextPupil?.id === pupilId) return lastDiaryEntry;
-    return null;
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
@@ -734,7 +729,7 @@ export default function InstructorDashboard() {
           setSelectedPupilForSummary(null);
         }}
         pupil={selectedPupilForSummary}
-        lastDiaryEntry={selectedPupilForSummary ? getLastLessonDiaryEntry(selectedPupilForSummary.id) : null}
+        lastDiaryEntry={selectedPupilForSummary?.id === nextPupil?.id ? lastDiaryEntry : null}
       />
     </div>
   );
