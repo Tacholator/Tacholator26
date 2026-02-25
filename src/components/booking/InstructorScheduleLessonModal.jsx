@@ -48,20 +48,28 @@ export default function InstructorScheduleLessonModal({
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['bookablePupils', user?.id],
+    queryKey: ['instructorOwnPupils', user?.id, user?.email],
     queryFn: async () => {
+      if (!user?.id) return [];
+      
       const allPupils = await base44.entities.Pupil.filter({ 
         instructorId: user.id
       });
-      // Double-check filter and include both Active and Stopped (one-off) pupils
+      
+      // Triple-check: Filter by instructorId AND instructorEmail AND status
       const bookablePupils = allPupils.filter(p => 
-        p.instructorId === user.id && (p.status === 'Active' || p.status === 'Stopped')
+        p.instructorId === user.id && 
+        p.instructorEmail === user.email &&
+        (p.status === 'Active' || p.status === 'Stopped')
       );
+      
       return bookablePupils.sort((a, b) => 
         `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
       );
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !!user?.email,
+    staleTime: 0, // Always fetch fresh data
+    cacheTime: 0 // Don't cache to prevent showing stale data
   });
 
   const filteredPupils = React.useMemo(() => {
