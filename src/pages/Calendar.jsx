@@ -120,7 +120,10 @@ export default function Calendar() {
   });
 
   const createLessonMutation = useMutation({
-    mutationFn: (data) => base44.entities.Lesson.create(data),
+    mutationFn: (data) => base44.entities.Lesson.create({
+      ...data,
+      instructorId: currentUser?.id
+    }),
     onSuccess: () => queryClient.invalidateQueries(['lessons'])
   });
 
