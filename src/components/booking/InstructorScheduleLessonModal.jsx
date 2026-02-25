@@ -47,40 +47,56 @@ export default function InstructorScheduleLessonModal({
     queryFn: () => base44.auth.me()
   });
 
-  const { data: pupils = [] } = useQuery({
-    queryKey: ['instructorOwnPupils', user?.id, user?.email],
+  const { data: pupils = [], refetch: refetchPupils } = useQuery({
+    queryKey: ['instructorSchedulePupils', user?.id, user?.email, Date.now()],
     queryFn: async () => {
-      if (!user?.id || !user?.email) return [];
+      if (!user?.id || !user?.email) {
+        console.log('⚠️ User data missing:', { userId: user?.id, userEmail: user?.email });
+        return [];
+      }
       
-      console.log('🔍 Fetching pupils for instructor:', { userId: user.id, userEmail: user.email });
+      const instructorUserId = user.id;
+      const instructorUserEmail = user.email;
       
-      // Fetch ALL pupils first to debug
-      const allPupilsInDb = await base44.entities.Pupil.list();
-      console.log('📊 Total pupils in database:', allPupilsInDb.length);
+      console.log('🔍 Fetching pupils for instructor:', { instructorUserId, instructorUserEmail });
       
-      // Now filter explicitly by BOTH instructorId AND instructorEmail
-      const myPupils = allPupilsInDb.filter(p => {
-        const matchesId = p.instructorId === user.id;
-        const matchesEmail = p.instructorEmail === user.email;
-        const matchesStatus = p.status === 'Active' || p.status === 'Stopped';
-        
-        if (!matchesId || !matchesEmail) {
-          console.log('❌ Excluding pupil:', p.firstName, p.lastName, 'instructorId:', p.instructorId, 'instructorEmail:', p.instructorEmail);
-        }
-        
-        return matchesId && matchesEmail && matchesStatus;
+      // Use direct filter query first
+      const directFiltered = await base44.entities.Pupil.filter({ 
+        instructorId: instructorUserId,
+        instructorEmail: instructorUserEmail
       });
       
-      console.log('✅ Filtered pupils for this instructor:', myPupils.length, myPupils.map(p => `${p.firstName} ${p.lastName}`));
+      console.log('📊 Direct filter results:', directFiltered.length);
       
-      return myPupils.sort((a, b) => 
+      // Apply status filter
+      const bookablePupils = directFiltered.filter(p => 
+        p.status === 'Active' || p.status === 'Stopped'
+      );
+      
+      console.log('✅ Final bookable pupils:', bookablePupils.map(p => ({
+        name: `${p.firstName} ${p.lastName}`,
+        instructorId: p.instructorId,
+        instructorEmail: p.instructorEmail,
+        status: p.status
+      })));
+      
+      return bookablePupils.sort((a, b) => 
         `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
       );
     },
-    enabled: !!user?.id && !!user?.email,
+    enabled: !!user?.id && !!user?.email && open,
     staleTime: 0,
-    cacheTime: 0
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: false
   });
+  
+  // Refetch when modal opens
+  React.useEffect(() => {
+    if (open && user?.id && user?.email) {
+      refetchPupils();
+    }
+  }, [open, user?.id, user?.email, refetchPupils]);
 
   const filteredPupils = React.useMemo(() => {
     if (!searchQuery.trim()) return pupils;
