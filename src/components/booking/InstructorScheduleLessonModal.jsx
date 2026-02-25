@@ -48,40 +48,28 @@ export default function InstructorScheduleLessonModal({
   });
 
   const { data: pupils = [], refetch: refetchPupils } = useQuery({
-    queryKey: ['instructorSchedulePupils', user?.email],
+    queryKey: ['instructorSchedulePupils', user?.id, user?.email],
     queryFn: async () => {
-      if (!user?.email) {
-        console.log('⚠️ User email missing');
+      if (!user?.id || !user?.email) {
         return [];
       }
       
-      const instructorUserEmail = user.email;
-      
-      console.log('🔍 Fetching pupils for instructor email:', instructorUserEmail);
-      
-      // Filter by instructorEmail ONLY (most reliable field)
+      // Use both instructorId AND instructorEmail for strict filtering
       const allPupils = await base44.entities.Pupil.filter({ 
-        instructorEmail: instructorUserEmail
+        instructorId: user.id,
+        instructorEmail: user.email
       });
-      
-      console.log('📊 Pupils with matching instructorEmail:', allPupils.length);
       
       // Apply status filter
       const bookablePupils = allPupils.filter(p => 
         p.status === 'Active' || p.status === 'Stopped'
       );
       
-      console.log('✅ Final bookable pupils:', bookablePupils.map(p => ({
-        name: `${p.firstName} ${p.lastName}`,
-        instructorEmail: p.instructorEmail,
-        status: p.status
-      })));
-      
       return bookablePupils.sort((a, b) => 
         `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
       );
     },
-    enabled: !!user?.email && open,
+    enabled: !!user?.id && !!user?.email && open,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: 'always',
@@ -90,10 +78,10 @@ export default function InstructorScheduleLessonModal({
   
   // Refetch when modal opens
   React.useEffect(() => {
-    if (open && user?.email) {
+    if (open && user?.id && user?.email) {
       refetchPupils();
     }
-  }, [open, user?.email, refetchPupils]);
+  }, [open, user?.id, user?.email, refetchPupils]);
 
   const filteredPupils = React.useMemo(() => {
     if (!searchQuery.trim()) return pupils;
