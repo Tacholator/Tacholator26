@@ -598,7 +598,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         >
           <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
             <CardContent className="p-4">
-              {!hasStarted ? (
+              {!hasStarted && (
                 <Button
                   onClick={handleStart}
                   className="w-full bg-[#228B22] hover:bg-[#1a6b1a] text-white text-lg py-6"
