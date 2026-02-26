@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Volume2, VolumeX, X, Navigation2, Plus, Minus, Locate,
-  Loader2, RotateCcw, AlertTriangle, MapPin
+  Loader2, MapPin, Route
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
