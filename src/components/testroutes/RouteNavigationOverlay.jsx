@@ -510,6 +510,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         >
           <Minus className="w-5 h-5" />
         </Button>
+        {hasStarted && (
+          <Button
+            onClick={handleToggleMute}
+            size="icon"
+            className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg"
+          >
+            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          </Button>
+        )}
       </div>
 
       {/* Close Button */}
