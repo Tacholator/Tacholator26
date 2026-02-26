@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, ArrowLeft, Info, Navigation, Clock, Route } from 'lucide-react';
+import { MapPin, ArrowLeft, Info, Navigation, Clock, Navigation2 } from 'lucide-react';
 import RouteCard from '@/components/testroutes/RouteCard';
 import RouteDetailModal from '@/components/testroutes/RouteDetailModal';
 
