@@ -563,12 +563,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                   </div>
                 </div>
 
-                {isOffRoute && (
-                  <div className="mt-3 flex items-center gap-2 text-orange-600 bg-orange-50 p-2 rounded">
-                    <AlertTriangle className="w-4 h-4" />
-                    <span className="text-sm font-medium">Return to route</span>
-                  </div>
-                )}
+
               </CardContent>
             </Card>
           </motion.div>
