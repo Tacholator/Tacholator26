@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Sparkles, TrendingUp, AlertCircle, MessageSquare, Target, Loader2 } from 'lucide-react';
 import moment from 'moment';
 
-export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiaryEntry, isGenerating }) {
+export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiaryEntry, isGenerating, showNextSteps = true }) {
   if (!pupil) return null;
 
   const sections = [
