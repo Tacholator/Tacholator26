@@ -134,7 +134,7 @@ export default function LearnerTestRouteDetail() {
             {centreMetrics && (
               <div className="flex items-center gap-6 text-sm text-slate-600 pb-4 border-b">
                 <div className="flex items-center gap-2">
-                  <Route className="w-4 h-4 text-[#F7B602]" />
+                  <Navigation2 className="w-4 h-4 text-[#F7B602]" />
                   <span className="font-medium">{centreMetrics.distance} km</span>
                 </div>
                 <div className="flex items-center gap-2">
