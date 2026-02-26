@@ -533,7 +533,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       </div>
 
       {/* Top Instruction Card */}
-      {hasStarted && !isLoading && (
+      {hasStarted && !isLoading && currentStep && (
         <AnimatePresence>
           <motion.div
             initial={{ y: -100, opacity: 0 }}
