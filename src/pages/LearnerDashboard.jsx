@@ -302,7 +302,8 @@ export default function LearnerDashboard() {
     };
   }, [dailyQuiz, mcqAttempts, pupil?.id]);
 
-  if (userLoading || pupilLoading) {
+  // Show loading while user is loading, or while pupil is being looked up (including when user just loaded)
+  if (userLoading || pupilLoading || (user && pupil === undefined)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
