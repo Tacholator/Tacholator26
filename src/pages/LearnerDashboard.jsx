@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import moment from 'moment';
 import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
+import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
