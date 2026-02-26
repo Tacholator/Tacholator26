@@ -407,7 +407,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   };
 
   const routeMetrics = calculateRouteMetrics();
-  const currentStep = steps[currentStepIndex] || null;
+  const currentStep = steps[currentStepIndex] || { instructionText: 'Follow the route' };
 
   // Get start and finish coordinates
   const startCoord = routeGeoJson?.geometry?.coordinates?.[0];
@@ -533,7 +533,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       </div>
 
       {/* Top Instruction Card */}
-      {hasStarted && !isLoading && currentStep && (
+      {hasStarted && !isLoading && (
         <AnimatePresence>
           <motion.div
             initial={{ y: -100, opacity: 0 }}
