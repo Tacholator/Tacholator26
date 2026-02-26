@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,20 +27,39 @@ export default function InstructorDashboard() {
   const [selectedLessonId, setSelectedLessonId] = useState(null);
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
   const [selectedPupilForSummary, setSelectedPupilForSummary] = useState(null);
+  const navigate = useNavigate();
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
 
+  // Guard: check if this user is actually a learner (has a pupil record)
+  const { data: pupilCheck, isLoading: isPupilCheckLoading } = useQuery({
+    queryKey: ['instructorDashboardGuard', user?.id, user?.email],
+    queryFn: async () => {
+      if (!user?.id || !user?.email) return null;
+      const allPupils = await base44.entities.Pupil.list();
+      const match = allPupils.find(p => p.linkedUserId === user.id) ||
+        allPupils.find(p => p.email && p.email.toLowerCase() === user.email.toLowerCase());
+      return match || null;
+    },
+    enabled: !!user?.id && !!user?.email
+  });
+
+  // Redirect learners away from instructor dashboard
+  useEffect(() => {
+    if (!isPupilCheckLoading && pupilCheck) {
+      navigate(createPageUrl('Home'), { replace: true });
+    }
+  }, [pupilCheck, isPupilCheckLoading, navigate]);
+
   const { data: instructor } = useQuery({
     queryKey: ['instructor', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      // Try to find by user ID first (most reliable)
       let instructors = await base44.entities.Instructor.filter({ created_by: user.email });
       
-      // If not found by email, try to find any instructor created by this user
       if (instructors.length === 0) {
         const allInstructors = await base44.entities.Instructor.list();
         instructors = allInstructors.filter(i => i.created_by === user.email);
@@ -50,7 +69,6 @@ export default function InstructorDashboard() {
         return instructors[0];
       }
       
-      // Auto-create instructor profile for admin users
       if (user.role === 'admin') {
         const newInstructor = await base44.entities.Instructor.create({
           name: user.full_name || user.email,
@@ -63,39 +81,31 @@ export default function InstructorDashboard() {
       }
       return null;
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['pupils', instructor?.id, user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      // Fetch pupils by user ID directly (more reliable)
       const allPupils = await base44.entities.Pupil.filter({ instructorEmail: user.email });
       if (allPupils.length > 0) return allPupils;
-      
-      // Fallback to instructor ID if available
       if (instructor?.id) {
         return await base44.entities.Pupil.filter({ instructorId: instructor.id });
       }
       return [];
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
 
   const { data: bookings = [] } = useQuery({
     queryKey: ['bookings', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      
-      // Fetch bookings by user ID (instructorId in bookings is the user ID)
       const allBookings = await base44.entities.LessonBooking.filter({ instructorId: user.id }, '-startAtUtc');
-      
-      // Filter out deleted bookings and deduplicate
       const activeBookings = allBookings.filter(b => !b.isDeleted);
       const uniqueBookings = [];
       const seen = new Set();
-      
       for (const booking of activeBookings) {
         const key = `${booking.pupilId}_${booking.startAtUtc}_${booking.endAtUtc}`;
         if (!seen.has(key)) {
@@ -103,33 +113,28 @@ export default function InstructorDashboard() {
           uniqueBookings.push(booking);
         }
       }
-      
       return uniqueBookings;
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
 
   const { data: lessons = [] } = useQuery({
     queryKey: ['lessons', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      
-      // Fetch lessons by user ID (instructorId in lessons is the user ID)
       return await base44.entities.Lesson.filter({ instructorId: user.id }, '-date');
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
 
   const { data: dailyQuiz } = useQuery({
     queryKey: ['todayDailyQuiz'],
     queryFn: async () => {
       const today = moment().format('YYYY-MM-DD');
-      const quizzes = await base44.entities.DailyQuiz.filter({ 
-        date: today,
-        status: 'published'
-      });
+      const quizzes = await base44.entities.DailyQuiz.filter({ date: today, status: 'published' });
       return quizzes.length > 0 ? quizzes[0] : null;
-    }
+    },
+    enabled: !isPupilCheckLoading && !pupilCheck
   });
 
   const { data: notifications = [] } = useQuery({
@@ -138,18 +143,14 @@ export default function InstructorDashboard() {
       if (!user?.id) return [];
       return await base44.entities.Notification.filter({ userId: user.id }, '-created_date', 20);
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
 
   const { data: pupilActivities = [] } = useQuery({
     queryKey: ['pupilActivities', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      
       const activities = [];
-      const pupilIds = pupils.map(p => p.id);
-      
-      // Recent homework completions
       const recentHomework = await base44.entities.HomeworkItem.filter({ instructorId: user.id }, '-updated_date', 10);
       recentHomework.filter(hw => hw.status === 'Completed').forEach(hw => {
         const pupil = pupils.find(p => p.id === hw.pupilId);
@@ -163,8 +164,6 @@ export default function InstructorDashboard() {
           });
         }
       });
-      
-      // Recent MCQ attempts
       const recentMcqAttempts = await base44.entities.McqAttempt.filter({ instructorId: user.id }, '-submittedAt', 10);
       recentMcqAttempts.forEach(attempt => {
         const pupil = pupils.find(p => p.id === attempt.pupilId);
@@ -178,8 +177,6 @@ export default function InstructorDashboard() {
           });
         }
       });
-      
-      // Recent diary entries
       const recentDiaries = await base44.entities.DiaryEntry.filter({ instructorId: user.id }, '-created_date', 10);
       recentDiaries.forEach(diary => {
         const pupil = pupils.find(p => p.id === diary.pupilId);
@@ -193,11 +190,9 @@ export default function InstructorDashboard() {
           });
         }
       });
-      
-      // Sort by timestamp descending
       return activities.sort((a, b) => moment(b.timestamp).diff(moment(a.timestamp))).slice(0, 10);
     },
-    enabled: !!user?.id && pupils.length > 0
+    enabled: !!user?.id && pupils.length > 0 && !isPupilCheckLoading && !pupilCheck
   });
 
   const { data: availableSlotsToday = [] } = useQuery({
@@ -207,22 +202,19 @@ export default function InstructorDashboard() {
       const startOfDay = moment().startOf('day').toISOString();
       const endOfDay = moment().endOf('day').toISOString();
       const slots = await base44.entities.BookableSlotInstance.list();
-      return slots.filter(slot => 
+      return slots.filter(slot =>
         slot.instructorId === user.id &&
         slot.status === 'available' &&
         moment(slot.startAtUtc).isBetween(startOfDay, endOfDay, null, '[]')
       );
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
 
   const today = moment().format('YYYY-MM-DD');
   const now = moment();
 
-  // Today's lessons from Lesson entity
-  const todayLessons = lessons.filter(l => {
-    return l.date === today;
-  }).map(l => ({
+  const todayLessons = lessons.filter(l => l.date === today).map(l => ({
     ...l,
     type: 'lesson',
     startAtUtc: moment(`${l.date} ${l.startTime}`, 'YYYY-MM-DD HH:mm').toISOString(),
@@ -230,17 +222,13 @@ export default function InstructorDashboard() {
     durationHours: moment(l.endTime, 'HH:mm').diff(moment(l.startTime, 'HH:mm'), 'minutes') / 60
   }));
 
-  // Today's bookings that are upcoming or need outcome
   const todayBookings = bookings.filter(b => {
     if (!b.startAtUtc) return false;
-    const startTime = moment(b.startAtUtc).local();
-    return startTime.isSame(today, 'day');
+    return moment(b.startAtUtc).local().isSame(today, 'day');
   }).map(b => ({ ...b, type: 'booking' }));
 
-  // Combine lessons and bookings for today's schedule
   const todaySchedule = [...todayLessons, ...todayBookings];
 
-  // Find closest lesson to current time (upcoming or ongoing)
   const nextRelevantBooking = todaySchedule
     .filter(item => {
       if (!item.startAtUtc || !item.endAtUtc) return false;
@@ -251,21 +239,13 @@ export default function InstructorDashboard() {
       const validStatus = item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
       return (isUpcoming || isOngoing) && validStatus;
     })
-    .sort((a, b) => {
-      // Sort by how close they are to current time
-      const aStart = moment(a.startAtUtc).local();
-      const bStart = moment(b.startAtUtc).local();
-      return Math.abs(aStart.diff(now)) - Math.abs(bStart.diff(now));
-    })[0];
+    .sort((a, b) => Math.abs(moment(a.startAtUtc).local().diff(now)) - Math.abs(moment(b.startAtUtc).local().diff(now)))[0];
 
   const upcomingTodayBookings = todaySchedule.filter(item => {
     if (!item.startAtUtc) return false;
     const startTime = moment(item.startAtUtc).local();
     const validStatus = item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
-    // Exclude the next relevant booking from this list
-    return startTime.isAfter(now) && 
-           validStatus &&
-           item.id !== nextRelevantBooking?.id;
+    return startTime.isAfter(now) && validStatus && item.id !== nextRelevantBooking?.id;
   }).sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()));
 
   const todayNeedingOutcome = todaySchedule.filter(item => {
@@ -299,7 +279,6 @@ export default function InstructorDashboard() {
 
   const unreadNotifications = notifications.filter(n => !n.readAt);
 
-  // Fetch last diary entry for next pupil (must be after nextRelevantBooking is defined)
   const nextPupil = nextRelevantBooking ? pupils.find(p => p.id === nextRelevantBooking.pupilId) : null;
   const { data: lastDiaryEntry } = useQuery({
     queryKey: ['lastDiaryEntry', nextPupil?.id],
@@ -318,7 +297,17 @@ export default function InstructorDashboard() {
     return 'evening';
   };
 
-  if (!user) {
+  // Show loading while checking if user is a learner
+  if (!user || isPupilCheckLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      </div>
+    );
+  }
+
+  // Don't render instructor content if user is a learner (redirect is happening)
+  if (pupilCheck) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
@@ -341,9 +330,6 @@ export default function InstructorDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
-
-
-        {/* Fixed card order - cards show/hide in place */}
         <div className="space-y-4">
 
           {/* 1. Greeting Card */}
@@ -358,8 +344,6 @@ export default function InstructorDashboard() {
               </p>
             </CardContent>
           </Card>
-
-
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (
@@ -387,12 +371,10 @@ export default function InstructorDashboard() {
                 Today's Schedule
               </h3>
 
-              {/* Next Relevant Lesson */}
               <div className="bg-white/70 rounded-lg p-4 mb-4">
                 <p className="text-xs font-medium text-slate-500 mb-2">Next Lesson</p>
                 {nextRelevantBooking ? (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Lesson Details */}
                     <div>
                       <p className="text-lg font-semibold text-slate-800">
                         {moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')} – {moment(nextRelevantBooking.endAtUtc).local().format('HH:mm')}
@@ -416,14 +398,14 @@ export default function InstructorDashboard() {
                           <Link to={createPageUrl('Calendar')} className="flex-1">
                             <Button size="sm" variant="outline" className="w-full">View Lesson</Button>
                           </Link>
-                          <NotifyArrivalButton 
+                          <NotifyArrivalButton
                             lessonId={nextRelevantBooking.type === 'lesson' ? nextRelevantBooking.id : null}
                             bookingId={nextRelevantBooking.type === 'booking' ? nextRelevantBooking.id : null}
                             pupilId={nextRelevantBooking.pupilId}
                           />
                         </div>
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           onClick={() => handleMarkLesson(nextRelevantBooking.id)}
                           className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
                         >
@@ -432,7 +414,6 @@ export default function InstructorDashboard() {
                       </div>
                     </div>
 
-                    {/* Pupil Lesson Summary */}
                     {nextPupil && (
                       <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-3">
@@ -516,7 +497,6 @@ export default function InstructorDashboard() {
                 )}
               </div>
 
-              {/* Upcoming Lessons Today */}
               {upcomingTodayBookings.length > 0 && (
                 <div className="mb-4">
                   <p className="text-sm font-medium text-slate-700 mb-2">Upcoming Today</p>
@@ -543,7 +523,6 @@ export default function InstructorDashboard() {
                 </div>
               )}
 
-              {/* Lessons Needing Outcome Today */}
               {todayNeedingOutcome.length > 0 && (
                 <>
                   <div className="border-t my-4"></div>
@@ -624,9 +603,8 @@ export default function InstructorDashboard() {
             </Card>
           )}
 
-          {/* 5. Notifications Card and Pupil Activities - Side by Side on Desktop */}
+          {/* 5. Notifications + Pupil Activities */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Notifications Card */}
             {(unreadNotifications.length > 0 || notifications.length > 0) && (
               <Card className={`${warmPalette.card_notifications} border-0 shadow-sm overflow-hidden`}>
                 <CardContent className="p-6">
@@ -673,7 +651,6 @@ export default function InstructorDashboard() {
               </Card>
             )}
 
-            {/* Pupil Activities Card */}
             {pupilActivities.length > 0 && (
               <Card className={`${warmPalette.card_pupil_activities} border-0 shadow-sm overflow-hidden`}>
                 <CardContent className="p-6">
