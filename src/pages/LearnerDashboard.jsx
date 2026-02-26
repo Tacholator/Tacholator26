@@ -582,12 +582,14 @@ export default function LearnerDashboard() {
                         )}
                       </div>
                     )}
-                    <Link to={createPageUrl('LearnerLessons')}>
-                      <Button variant="outline" className="w-full gap-2 bg-white/50 hover:bg-white/80 border-purple-200">
-                        <Sparkles className="w-4 h-4" />
-                        View Full Summary
-                      </Button>
-                    </Link>
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2 bg-white/50 hover:bg-white/80 border-purple-200"
+                      onClick={() => setSummaryModalOpen(true)}
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      View Full Summary
+                    </Button>
                   </div>
                 ) : (
                   <div className="text-center py-8">
