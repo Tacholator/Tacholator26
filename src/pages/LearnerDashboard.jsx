@@ -38,6 +38,7 @@ import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
+  const [summaryModalOpen, setSummaryModalOpen] = React.useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
