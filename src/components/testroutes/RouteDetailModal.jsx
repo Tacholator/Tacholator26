@@ -358,7 +358,10 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
     {navigationOpen && (
       <RouteNavigationOverlay
         route={route}
-        onClose={() => setNavigationOpen(false)}
+        onClose={() => {
+          setNavigationOpen(false);
+          onOpenChange(true);
+        }}
       />
     )}
   </>
