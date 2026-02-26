@@ -145,8 +145,8 @@ export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiar
             </div>
           )}
 
-          {/* Proposed Next Steps */}
-          <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border border-teal-200">
+          {/* Proposed Next Steps - instructors only */}
+          {showNextSteps && <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border border-teal-200">
             <div className="flex items-center gap-2 mb-3">
               <Target className="w-5 h-5 text-teal-600" />
               <h3 className="font-semibold text-slate-800">Proposed Next Steps</h3>
