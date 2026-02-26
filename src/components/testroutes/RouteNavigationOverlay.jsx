@@ -22,6 +22,37 @@ function haversineMeters(lat1, lng1, lat2, lng2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+// Compute bearing from two points (fallback when GPS heading unavailable)
+function computeBearing(lat1, lng1, lat2, lng2) {
+  const toRad = d => d * Math.PI / 180;
+  const toDeg = r => r * 180 / Math.PI;
+  const φ1 = toRad(lat1), φ2 = toRad(lat2);
+  const Δλ = toRad(lng2 - lng1);
+  const y = Math.sin(Δλ) * Math.cos(φ2);
+  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+function computeHeadingOrBearing(headingDeg, lat, lng, lastLat, lastLng) {
+  if (headingDeg != null && !isNaN(Number(headingDeg))) return Number(headingDeg);
+  if (lastLat == null || lastLng == null) return 0;
+  const dLat = Math.abs(lat - lastLat), dLng = Math.abs(lng - lastLng);
+  if (dLat < 0.00001 && dLng < 0.00001) return 0;
+  return computeBearing(lastLat, lastLng, lat, lng);
+}
+
+function geojsonBounds(geojson) {
+  const coords = geojson?.geometry?.coordinates || [];
+  let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+  coords.forEach(([lng, lat]) => {
+    if (lng < minLng) minLng = lng;
+    if (lat < minLat) minLat = lat;
+    if (lng > maxLng) maxLng = lng;
+    if (lat > maxLat) maxLat = lat;
+  });
+  return isFinite(minLng) ? { minLng, minLat, maxLng, maxLat } : null;
+}
+
 function distanceToRoute(lat, lng, routeCoords) {
   if (!routeCoords || routeCoords.length === 0) return Infinity;
   let best = Infinity;
