@@ -14,15 +14,15 @@ export default function Home() {
     retry: false
   });
 
-  // Check if user is a learner by looking for a linked pupil record
+  // Check if user is a learner by looking for a pupil record matching their email
   const { data: pupilRecords, isLoading: isPupilLoading } = useQuery({
-    queryKey: ['userPupilRecord', user?.id],
+    queryKey: ['userPupilRecord', user?.email],
     queryFn: async () => {
-      if (!user?.id) return null;
-      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (!user?.email) return null;
+      const pupils = await base44.entities.Pupil.filter({ email: user.email });
       return pupils.length > 0 ? pupils : null;
     },
-    enabled: !!user?.id
+    enabled: !!user?.email
   });
 
   if (isLoading || !user || isPupilLoading) {

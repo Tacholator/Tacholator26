@@ -63,13 +63,13 @@ export default function Layout({ children, currentPageName }) {
 
   // Check if user has a pupil record (determines if they're a learner)
   const { data: pupilProfile, isLoading: isPupilProfileLoading } = useQuery({
-    queryKey: ['learnerPupilProfile', user?.id],
+    queryKey: ['learnerPupilProfile', user?.email],
     queryFn: async () => {
-      if (!user?.id) return null;
-      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (!user?.email) return null;
+      const pupils = await base44.entities.Pupil.filter({ email: user.email });
       return pupils.length > 0 ? pupils[0] : null;
     },
-    enabled: !!user?.id
+    enabled: !!user?.email
   });
 
   // Determine if user is instructor or learner
