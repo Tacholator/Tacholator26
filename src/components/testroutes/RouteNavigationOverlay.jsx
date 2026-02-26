@@ -720,7 +720,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           )}
           {routeGeoJson && (
             <Button onClick={handleOverviewRoute} size="icon" className={`shadow-lg ${!followMode && !hasStarted ? 'bg-[#F7B602] text-[#071739]' : 'bg-white hover:bg-slate-100 text-slate-900'}`} title="Overview route">
-              <Route className="w-5 h-5" />
+              <MapIcon className="w-5 h-5" />
             </Button>
           )}
           <Button onClick={() => setViewState(p => ({ ...p, zoom: Math.min(p.zoom + 1, 20) }))} size="icon" className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg">
