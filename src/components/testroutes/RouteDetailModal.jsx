@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Youtube, Navigation, Save, Info, Upload, Plus, Minus, Clock, Route as RouteIcon } from 'lucide-react';
+import { Youtube, Navigation, Save, Info, Upload, Plus, Minus, Clock, Navigation2 as RouteIcon } from 'lucide-react';
 import RouteNavigationOverlay from './RouteNavigationOverlay';
 
 function extractYouTubeId(url) {
