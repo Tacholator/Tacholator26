@@ -49,6 +49,20 @@ export default function Home() {
   const isLearner = !!pupilRecord;
   const isInstructor = !isLearner && user.role === 'admin';
   
+  // Debug logging
+  console.log('🔍 Home Dashboard Debug:', {
+    userId: user?.id,
+    userEmail: user?.email,
+    userRole: user?.role,
+    hasPupilRecord: !!pupilRecord,
+    pupilRecordId: pupilRecord?.id,
+    pupilRecordEmail: pupilRecord?.email,
+    pupilLinkedUserId: pupilRecord?.linkedUserId,
+    isLearner,
+    isInstructor,
+    renderingDashboard: isInstructor ? 'InstructorDashboard' : 'LearnerDashboard'
+  });
+  
   if (isInstructor) {
     return <InstructorDashboard />;
   } else {
