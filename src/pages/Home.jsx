@@ -19,8 +19,12 @@ export default function Home() {
     queryKey: ['userPupilRecord', user?.email],
     queryFn: async () => {
       if (!user?.email) return null;
-      const pupils = await base44.entities.Pupil.filter({ email: user.email });
-      return pupils.length > 0 ? pupils : null;
+      // Fetch all pupils and match case-insensitively
+      const allPupils = await base44.entities.Pupil.list();
+      const matchingPupils = allPupils.filter(
+        p => p.email && p.email.toLowerCase() === user.email.toLowerCase()
+      );
+      return matchingPupils.length > 0 ? matchingPupils : null;
     },
     enabled: !!user?.email
   });

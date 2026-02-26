@@ -66,8 +66,12 @@ export default function Layout({ children, currentPageName }) {
     queryKey: ['learnerPupilProfile', user?.email],
     queryFn: async () => {
       if (!user?.email) return null;
-      const pupils = await base44.entities.Pupil.filter({ email: user.email });
-      return pupils.length > 0 ? pupils[0] : null;
+      // Fetch all pupils and match case-insensitively
+      const allPupils = await base44.entities.Pupil.list();
+      const matchingPupil = allPupils.find(
+        p => p.email && p.email.toLowerCase() === user.email.toLowerCase()
+      );
+      return matchingPupil || null;
     },
     enabled: !!user?.email
   });
