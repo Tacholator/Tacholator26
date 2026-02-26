@@ -300,10 +300,14 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const lastRerouteRef = useRef(0);
   const milestonesRef = useRef({ prepare: false, approach: false, now: false });
   const lastSpokenAtRef = useRef(0);
+  const lastCameraUpdateRef = useRef(0);
+  const lastLatRef = useRef(null);
+  const lastLngRef = useRef(null);
   const userLocationRef = useRef(null);
   const navStepsRef = useRef([]);
   const stepIndexRef = useRef(0);
   const isMutedRef = useRef(false);
+  const computedBearingRef = useRef(0);
 
   // Keep refs in sync
   useEffect(() => { userLocationRef.current = userLocation; }, [userLocation]);
