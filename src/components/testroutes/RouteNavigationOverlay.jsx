@@ -595,7 +595,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                   className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-lg py-6"
                 >
                   <Navigation2 className="w-5 h-5 mr-2" />
-                  Start Navigation
+                  GO
                 </Button>
               ) : (
                 <div className="grid grid-cols-3 gap-3">
