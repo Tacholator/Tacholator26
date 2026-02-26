@@ -928,6 +928,7 @@ export default function LearnerDashboard() {
         onClose={() => setSummaryModalOpen(false)}
         pupil={pupil}
         lastDiaryEntry={latestDiary}
+        showNextSteps={false}
       />
     </div>
   );
