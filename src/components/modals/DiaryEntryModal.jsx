@@ -84,18 +84,12 @@ Homework suggestions: ${formData.homeworkSuggestions}
 Write a warm, supportive summary that highlights progress and next steps.`;
 
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            summary: { type: 'string' }
-          }
-        }
+        prompt
       });
       
       setFormData(prev => ({ 
         ...prev, 
-        aiSummary: response.summary,
+        aiSummary: typeof response === 'string' ? response : (response?.summary || response?.text || JSON.stringify(response)),
         aiSummaryGeneratedAt: new Date().toISOString()
       }));
     } catch (error) {
