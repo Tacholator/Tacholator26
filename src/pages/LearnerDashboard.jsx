@@ -920,6 +920,13 @@ export default function LearnerDashboard() {
           )}
         </motion.div>
       </div>
+
+      <PupilLessonSummaryModal
+        open={summaryModalOpen}
+        onClose={() => setSummaryModalOpen(false)}
+        pupil={pupil}
+        lastDiaryEntry={latestDiary}
+      />
     </div>
   );
 }
