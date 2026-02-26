@@ -561,6 +561,10 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     setIsLoading(true);
     setHasStarted(true);
     setFollowMode(true);
+    // Request browser fullscreen
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
   };
 
   const handleEnd = () => {
