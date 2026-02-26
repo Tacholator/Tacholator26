@@ -159,7 +159,7 @@ export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiar
                 </li>
               ))}
             </ul>
-          </div>
+          </div>}
 
           {/* Action Buttons */}
           <div className="flex gap-2 pt-4">
