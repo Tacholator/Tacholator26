@@ -583,8 +583,8 @@ export default function LearnerDashboard() {
                     )}
                     <Link to={createPageUrl('LearnerLessons')}>
                       <Button variant="outline" className="w-full gap-2 bg-white/50 hover:bg-white/80 border-purple-200">
-                        <FileText className="w-4 h-4" />
-                        View All Lessons
+                        <Sparkles className="w-4 h-4" />
+                        View Full Summary
                       </Button>
                     </Link>
                   </div>
