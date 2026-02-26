@@ -606,39 +606,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                   <Navigation2 className="w-5 h-5 mr-2" />
                   GO
                 </Button>
-              ) : (
-                <div className="grid grid-cols-3 gap-3">
-                  <Button
-                    onClick={handleToggleMute}
-                    variant="outline"
-                    className="flex flex-col items-center gap-1 h-auto py-3"
-                  >
-                    {isMuted ? (
-                      <VolumeX className="w-5 h-5" />
-                    ) : (
-                      <Volume2 className="w-5 h-5" />
-                    )}
-                    <span className="text-xs">{isMuted ? 'Unmute' : 'Mute'}</span>
-                  </Button>
-
-                  <Button
-                    onClick={handleRepeat}
-                    variant="outline"
-                    className="flex flex-col items-center gap-1 h-auto py-3"
-                  >
-                    <RotateCcw className="w-5 h-5" />
-                    <span className="text-xs">Repeat</span>
-                  </Button>
-
-                  <Button
-                    onClick={handleEnd}
-                    variant="destructive"
-                    className="flex flex-col items-center gap-1 h-auto py-3"
-                  >
-                    <X className="w-5 h-5" />
-                    <span className="text-xs">End</span>
-                  </Button>
-                </div>
               )}
             </CardContent>
           </Card>
