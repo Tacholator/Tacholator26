@@ -76,8 +76,9 @@ export default function BookingSummaryModal({
         aiSummary: ''
       });
     }
+  }, [existingDiaryEntry?.id]);
 
-    // Load existing topic durations
+  React.useEffect(() => {
     if (existingTopicDurations.length > 0) {
       setSelectedTopics(existingTopicDurations.map(td => ({
         topicId: td.topicId,
@@ -87,7 +88,7 @@ export default function BookingSummaryModal({
     } else {
       setSelectedTopics([]);
     }
-  }, [existingDiaryEntry, existingTopicDurations, booking]);
+  }, [existingTopicDurations.length, booking?.id]);
 
   const handleGenerateAISummary = async () => {
     setIsGeneratingSummary(true);
