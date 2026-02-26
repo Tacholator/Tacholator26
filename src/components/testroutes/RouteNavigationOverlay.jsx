@@ -570,6 +570,11 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const handleEnd = () => {
     window.speechSynthesis.cancel();
     if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
+    // Exit fullscreen if active
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
     onClose();
   };
 
