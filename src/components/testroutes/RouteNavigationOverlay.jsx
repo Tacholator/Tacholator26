@@ -592,7 +592,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               {!hasStarted ? (
                 <Button
                   onClick={handleStart}
-                  className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-lg py-6"
+                  className="w-full bg-[#228B22] hover:bg-[#1a6b1a] text-white text-lg py-6"
                 >
                   <Navigation2 className="w-5 h-5 mr-2" />
                   GO
