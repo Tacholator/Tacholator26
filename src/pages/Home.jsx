@@ -14,19 +14,26 @@ export default function Home() {
     retry: false
   });
 
-  // Check if user is a learner by looking for a pupil record matching their email
+  // Check if user is a learner by looking for a pupil record
   const { data: pupilRecords, isLoading: isPupilLoading } = useQuery({
-    queryKey: ['userPupilRecord', user?.email],
+    queryKey: ['userPupilRecord', user?.id, user?.email],
     queryFn: async () => {
-      if (!user?.email) return null;
-      // Fetch all pupils and match case-insensitively
+      if (!user?.id || !user?.email) return null;
       const allPupils = await base44.entities.Pupil.list();
-      const matchingPupils = allPupils.filter(
-        p => p.email && p.email.toLowerCase() === user.email.toLowerCase()
-      );
+      
+      // First try to match by linkedUserId (most reliable)
+      let matchingPupils = allPupils.filter(p => p.linkedUserId === user.id);
+      
+      // Fallback to case-insensitive email match if no linkedUserId match
+      if (matchingPupils.length === 0) {
+        matchingPupils = allPupils.filter(
+          p => p.email && p.email.toLowerCase() === user.email.toLowerCase()
+        );
+      }
+      
       return matchingPupils.length > 0 ? matchingPupils : null;
     },
-    enabled: !!user?.email
+    enabled: !!user?.id && !!user?.email
   });
 
   if (isLoading || !user || isPupilLoading) {

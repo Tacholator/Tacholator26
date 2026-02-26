@@ -63,17 +63,24 @@ export default function Layout({ children, currentPageName }) {
 
   // Check if user has a pupil record (determines if they're a learner)
   const { data: pupilProfile, isLoading: isPupilProfileLoading } = useQuery({
-    queryKey: ['learnerPupilProfile', user?.email],
+    queryKey: ['learnerPupilProfile', user?.id, user?.email],
     queryFn: async () => {
-      if (!user?.email) return null;
-      // Fetch all pupils and match case-insensitively
+      if (!user?.id || !user?.email) return null;
       const allPupils = await base44.entities.Pupil.list();
-      const matchingPupil = allPupils.find(
-        p => p.email && p.email.toLowerCase() === user.email.toLowerCase()
-      );
+      
+      // First try to match by linkedUserId (most reliable)
+      let matchingPupil = allPupils.find(p => p.linkedUserId === user.id);
+      
+      // Fallback to case-insensitive email match if no linkedUserId match
+      if (!matchingPupil) {
+        matchingPupil = allPupils.find(
+          p => p.email && p.email.toLowerCase() === user.email.toLowerCase()
+        );
+      }
+      
       return matchingPupil || null;
     },
-    enabled: !!user?.email
+    enabled: !!user?.id && !!user?.email
   });
 
   // Determine if user is instructor or learner
