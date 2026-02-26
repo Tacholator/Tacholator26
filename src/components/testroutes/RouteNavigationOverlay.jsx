@@ -584,9 +584,28 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         longitude: userLocation.longitude,
         latitude: userLocation.latitude,
         zoom: 17, pitch: 55,
-        bearing: userHeading || 0
+        bearing: computedBearingRef.current || 0
       });
     }
+  };
+
+  const handleOverviewRoute = () => {
+    if (!routeGeoJson) return;
+    setFollowMode(false);
+    const bounds = geojsonBounds(routeGeoJson);
+    if (!bounds) return;
+    const { minLng, minLat, maxLng, maxLat } = bounds;
+    const centerLng = (minLng + maxLng) / 2;
+    const centerLat = (minLat + maxLat) / 2;
+    const lngDiff = maxLng - minLng;
+    const latDiff = maxLat - minLat;
+    const maxDiff = Math.max(lngDiff, latDiff);
+    let zoom = 14;
+    if (maxDiff > 0.1) zoom = 10;
+    else if (maxDiff > 0.05) zoom = 11;
+    else if (maxDiff > 0.02) zoom = 12;
+    else if (maxDiff > 0.01) zoom = 13;
+    setViewState({ longitude: centerLng, latitude: centerLat, zoom, pitch: 0, bearing: 0 });
   };
 
   // ── Route metrics ───────────────────────────────────────────────────────────
