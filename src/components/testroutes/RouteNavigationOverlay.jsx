@@ -397,19 +397,25 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   // ── Handle location updates ─────────────────────────────────────────────────
   const handleLocationUpdate = useCallback((position) => {
-    const { latitude, longitude, accuracy, heading } = position.coords;
+    const { latitude, longitude, accuracy, heading, speed } = position.coords;
 
     if (!firstFixRef.current && accuracy > 50) return;
+
+    // Compute bearing (use native heading or calculate from movement)
+    const bearing = computeHeadingOrBearing(heading, latitude, longitude, lastLatRef.current, lastLngRef.current);
+    computedBearingRef.current = bearing;
+    lastLatRef.current = latitude;
+    lastLngRef.current = longitude;
 
     const newLoc = { latitude, longitude, accuracy };
     setUserLocation(newLoc);
     userLocationRef.current = newLoc;
-    if (heading !== null) setUserHeading(heading);
+    setUserHeading(bearing);
 
     if (!firstFixRef.current) {
       firstFixRef.current = true;
       setIsLoading(false);
-      setViewState({ longitude, latitude, zoom: 17, pitch: 55, bearing: heading || 0 });
+      setViewState({ longitude, latitude, zoom: 17, pitch: 55, bearing });
 
       buildRoute(latitude, longitude).then(steps => {
         if (steps?.length && !isMutedRef.current) {
@@ -423,14 +429,18 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       return;
     }
 
-    // Follow mode camera
+    // Follow mode camera — throttled to 500ms
     if (followMode) {
-      setViewState(prev => ({
-        ...prev,
-        longitude,
-        latitude,
-        bearing: heading !== null ? heading : prev.bearing
-      }));
+      const now = Date.now();
+      if (now - lastCameraUpdateRef.current >= 500) {
+        lastCameraUpdateRef.current = now;
+        setViewState(prev => ({
+          ...prev,
+          longitude,
+          latitude,
+          bearing: (speed != null && speed >= 1.0) ? bearing : prev.bearing
+        }));
+      }
     }
 
     const steps = navStepsRef.current;
