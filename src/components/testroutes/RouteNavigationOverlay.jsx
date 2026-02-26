@@ -711,11 +711,16 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           </Button>
         </div>
 
-        {/* ── Zoom + recenter controls ───────────────────────────────────── */}
+        {/* ── Zoom + recenter + overview controls ─────────────────────────── */}
         <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
           {hasStarted && !followMode && (
-            <Button onClick={handleRecenter} size="icon" className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] shadow-lg">
+            <Button onClick={handleRecenter} size="icon" className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] shadow-lg" title="Recenter">
               <Locate className="w-5 h-5" />
+            </Button>
+          )}
+          {routeGeoJson && (
+            <Button onClick={handleOverviewRoute} size="icon" className={`shadow-lg ${!followMode && !hasStarted ? 'bg-[#F7B602] text-[#071739]' : 'bg-white hover:bg-slate-100 text-slate-900'}`} title="Overview route">
+              <Route className="w-5 h-5" />
             </Button>
           )}
           <Button onClick={() => setViewState(p => ({ ...p, zoom: Math.min(p.zoom + 1, 20) }))} size="icon" className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg">
