@@ -145,21 +145,22 @@ export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiar
             </div>
           )}
 
-          {/* Proposed Next Steps - instructors only */}
-          {showNextSteps && <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border border-teal-200">
-            <div className="flex items-center gap-2 mb-3">
-              <Target className="w-5 h-5 text-teal-600" />
-              <h3 className="font-semibold text-slate-800">Proposed Next Steps</h3>
+          {showNextSteps && (
+            <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border border-teal-200">
+              <div className="flex items-center gap-2 mb-3">
+                <Target className="w-5 h-5 text-teal-600" />
+                <h3 className="font-semibold text-slate-800">Proposed Next Steps</h3>
+              </div>
+              <ul className="space-y-2">
+                {nextSteps.map((step, index) => (
+                  <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+                    <span className="text-teal-600 font-bold mt-0.5">{index + 1}.</span>
+                    <span className="flex-1">{step}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-2">
-              {nextSteps.map((step, index) => (
-                <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
-                  <span className="text-teal-600 font-bold mt-0.5">{index + 1}.</span>
-                  <span className="flex-1">{step}</span>
-                </li>
-              ))}
-            </ul>
-          </div>}
+          )}
 
           {/* Action Buttons */}
           <div className="flex gap-2 pt-4">
