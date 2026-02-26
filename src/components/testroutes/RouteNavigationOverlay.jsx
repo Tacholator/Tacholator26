@@ -407,7 +407,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   };
 
   const routeMetrics = calculateRouteMetrics();
-  const currentStep = steps[currentStepIndex] || { instructionText: 'Follow the route' };
+  const currentStep = steps[currentStepIndex] || null;
 
   // Get start and finish coordinates
   const startCoord = routeGeoJson?.geometry?.coordinates?.[0];
