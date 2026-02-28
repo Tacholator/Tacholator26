@@ -478,7 +478,14 @@ export default function PupilProfile() {
                     <WalletMinimal className="w-4 h-4 shrink-0 text-slate-500" />
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-slate-700">Allow booking without balance</p>
-                      <p className="text-xs text-slate-400">Bypass the balance requirement for this pupil</p>
+                      <p className="text-xs text-slate-400">
+                        Bypass the balance requirement for this pupil
+                        {pupil.allowBookingWithoutBalance && totalEscrowedGbp > 0 && (
+                          <span className="block text-amber-600 mt-0.5">
+                            Balance left after booked lessons: £{availableBalance.toFixed(2)}
+                          </span>
+                        )}
+                      </p>
                     </div>
                   </div>
                   <Switch
