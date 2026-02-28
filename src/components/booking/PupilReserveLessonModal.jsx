@@ -109,7 +109,7 @@ export default function PupilReserveLessonModal({
   const totalPrice = (hourlyRate || 50) * durationHours;
 
   const balanceOverridden = !!pupil?.allowBookingWithoutBalance;
-  const hasEnoughBalance = balanceOverridden || ledgerBalance >= totalPrice;
+  const hasEnoughBalance = balanceOverridden || availableBalance >= totalPrice;
 
   const isFormValid = pickupLocation.trim() !== '' && 
                       (!dropoffSameAsPickup ? dropoffLocation.trim() !== '' : true) &&
