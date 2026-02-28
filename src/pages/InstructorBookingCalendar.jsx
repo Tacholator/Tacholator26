@@ -130,7 +130,10 @@ export default function InstructorBookingCalendar() {
 
   const declineBookingMutation = useMutation({
     mutationFn: async ({ bookingId, reason }) => {
-      const booking = bookings.find(b => b.id === bookingId);
+      // Fetch booking fresh to avoid stale closure data
+      const allCurrentBookings = await base44.entities.LessonBooking.filter({ id: bookingId });
+      const booking = allCurrentBookings[0] || bookings.find(b => b.id === bookingId);
+
       await base44.entities.LessonBooking.update(bookingId, {
         status: 'declined_by_instructor',
         cancelledAt: new Date().toISOString(),
@@ -138,17 +141,19 @@ export default function InstructorBookingCalendar() {
         cancellationReason: reason
       });
 
-      // Create notification for pupil - use linkedUserId (user account ID), not pupil record ID
-      const pupil = pupils.find(p => p.id === booking.pupilId);
-      const notifyUserId = pupil?.linkedUserId;
-      if (notifyUserId) {
-        await base44.entities.Notification.create({
-          userId: notifyUserId,
-          title: 'Lesson Declined',
-          message: `Your lesson request for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined.${reason ? ` Reason: ${reason}` : ''}`,
-          type: 'booking',
-          linkTarget: 'LearnerMyBookings'
-        });
+      // Fetch pupil fresh to guarantee linkedUserId is present
+      if (booking?.pupilId) {
+        const pupilResults = await base44.entities.Pupil.filter({ id: booking.pupilId });
+        const pupil = pupilResults[0];
+        if (pupil?.linkedUserId) {
+          await base44.entities.Notification.create({
+            userId: pupil.linkedUserId,
+            title: 'Lesson Declined',
+            message: `Your lesson request for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined.${reason ? ` Reason: ${reason}` : ''}`,
+            type: 'booking',
+            linkTarget: 'LearnerMyBookings'
+          });
+        }
       }
     },
     onSuccess: () => {
