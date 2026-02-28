@@ -6,6 +6,13 @@ import { createPageUrl } from '@/utils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
 import { playNotificationSound } from '@/components/notifications/soundHelper';
 import {
@@ -19,7 +26,8 @@ import {
   AlertCircle,
   Check,
   CheckCheck,
-  Loader2
+  Loader2,
+  ExternalLink
 } from 'lucide-react';
 import moment from 'moment';
 
