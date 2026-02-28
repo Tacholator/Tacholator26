@@ -107,6 +107,18 @@ export default function Layout({ children, currentPageName }) {
     enabled: !!user?.id && (isInstructor || !!pupilProfile?.id),
     refetchInterval: 10000
   });
+
+  // Fetch unread notifications count
+  const { data: unreadNotificationsCount = 0 } = useQuery({
+    queryKey: ['unreadNotificationsCount', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return 0;
+      const notifications = await base44.entities.Notification.filter({ userId: user.id });
+      return notifications.filter(n => !n.readAt).length;
+    },
+    enabled: !!user?.id,
+    refetchInterval: 15000
+  });
   
   // Build navigation dynamically based on role and pupil status
   const pupilStatus = pupilProfile?.status || 'Active';
