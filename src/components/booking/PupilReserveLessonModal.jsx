@@ -66,25 +66,13 @@ export default function PupilReserveLessonModal({
     enabled: !!pupil?.id
   });
 
-  // Fetch ledger balance
-  const { data: ledgerEntries = [] } = useQuery({
-    queryKey: ['ledgerBalance', pupil?.id],
-    queryFn: () => base44.entities.PaymentLedger.filter({ userId: pupil.id }),
-    enabled: !!pupil?.id
-  });
-
-  const ledgerBalance = ledgerEntries.reduce((sum, entry) => {
-    if (entry.type === 'payment' || entry.type === 'refund') return sum + (entry.amountGbp || 0);
-    if (entry.type === 'charge' || entry.type === 'adjustment') return sum - (entry.amountGbp || 0);
-    return sum;
-  }, 0);
-
   // Subtract the cost of all pending bookings (not yet charged) to get the true available balance
   const pendingBookingsCost = existingBookings
     .filter(b => b.status === 'reserved_pending_instructor')
     .reduce((sum, b) => sum + (b.totalPriceGbp || 0), 0);
 
-  const availableBalance = ledgerBalance - pendingBookingsCost;
+  // Use bulkPaymentBalance from the pupil record as the source of truth
+  const availableBalance = (pupil?.bulkPaymentBalance || 0) - pendingBookingsCost;
 
   const isFirstBooking = existingBookings.length === 0;
 
