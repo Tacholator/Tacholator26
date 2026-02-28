@@ -334,7 +334,7 @@ export default function PupilReserveLessonModal({
               disabled={isSaving || !isFormValid}
               className="bg-teal-600 hover:bg-teal-700"
             >
-              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Request Lesson'}
+              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Book Lesson'}
             </Button>
           )}
         </DialogFooter>
