@@ -79,6 +79,13 @@ export default function PupilReserveLessonModal({
     return sum;
   }, 0);
 
+  // Subtract the cost of all pending bookings (not yet charged) to get the true available balance
+  const pendingBookingsCost = existingBookings
+    .filter(b => b.status === 'reserved_pending_instructor')
+    .reduce((sum, b) => sum + (b.totalPriceGbp || 0), 0);
+
+  const availableBalance = ledgerBalance - pendingBookingsCost;
+
   const isFirstBooking = existingBookings.length === 0;
 
   const handleReserve = () => {
