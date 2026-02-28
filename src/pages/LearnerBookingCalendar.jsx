@@ -153,7 +153,7 @@ export default function LearnerBookingCalendar() {
         title: 'New Lesson Request',
         message: `${pupil.firstName} ${pupil.lastName} requested a lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} | Pickup: ${pickupLocation}`,
         type: 'booking',
-        linkTarget: 'InstructorBookingCalendar'
+        linkTarget: 'Calendar'
       });
 
       return booking;
