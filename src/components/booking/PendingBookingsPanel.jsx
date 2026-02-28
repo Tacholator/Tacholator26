@@ -126,11 +126,11 @@ export default function PendingBookingsPanel({
           <DialogHeader>
             <DialogTitle>Decline Booking</DialogTitle>
             <DialogDescription>
-              Optionally provide a reason for declining this booking request
+              Please provide a reason for declining this booking request. The pupil will be notified.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Label>Reason (Optional)</Label>
+            <Label>Reason <span className="text-rose-500">*</span></Label>
             <Textarea
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
@@ -143,6 +143,7 @@ export default function PendingBookingsPanel({
             <Button variant="outline" onClick={() => setShowDeclineDialog(false)}>Cancel</Button>
             <Button 
               onClick={handleDeclineConfirm}
+              disabled={!declineReason.trim()}
               className="bg-rose-600 hover:bg-rose-700"
             >
               Decline Booking
