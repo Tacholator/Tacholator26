@@ -129,6 +129,13 @@ export default function PupilProfile() {
     enabled: !!pupilId
   });
 
+  // Calculate total escrowed amount from upcoming confirmed bookings
+  const now = moment();
+  const upcomingConfirmedBookings = confirmedBookings.filter(b => moment(b.startAtUtc).isAfter(now));
+  const totalEscrowedGbp = upcomingConfirmedBookings.reduce((sum, b) => sum + (b.escrowAmountGbp || 0), 0);
+  const availableBalance = (pupil?.bulkPaymentBalance || 0);
+  const totalBalance = availableBalance + totalEscrowedGbp;
+
   const { data: homework = [] } = useQuery({
     queryKey: ['homework', pupilId],
     queryFn: async () => {
