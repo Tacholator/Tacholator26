@@ -100,13 +100,16 @@ export default function NotificationsList({ userId, isInstructor }) {
     if (!notification.readAt) {
       markAsReadMutation.mutate(notification.id);
     }
+    setSelectedNotification(notification);
+  };
 
-    if (notification.linkTarget) {
-      const url = notification.linkParams 
-        ? `${createPageUrl(notification.linkTarget)}?${notification.linkParams}`
-        : createPageUrl(notification.linkTarget);
-      navigate(url);
-    }
+  const handleNavigateFromDetail = () => {
+    if (!selectedNotification?.linkTarget) return;
+    const url = selectedNotification.linkParams
+      ? `${createPageUrl(selectedNotification.linkTarget)}?${selectedNotification.linkParams}`
+      : createPageUrl(selectedNotification.linkTarget);
+    setSelectedNotification(null);
+    navigate(url);
   };
 
   const unreadCount = notifications.filter(n => !n.readAt).length;
