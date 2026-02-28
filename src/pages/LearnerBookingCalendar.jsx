@@ -53,32 +53,28 @@ export default function LearnerBookingCalendar() {
     queryKey: ['instructorCalendarRules', pupil?.instructorId],
     queryFn: () => base44.entities.CalendarRule.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
-    refetchInterval: 5000 // Poll every 5 seconds for real-time updates
+    refetchInterval: 5000
   });
 
   const { data: allInstructorBookings = [] } = useQuery({
     queryKey: ['instructorBookings', pupil?.instructorId],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
-    refetchInterval: 5000 // Poll every 5 seconds for real-time updates
+    refetchInterval: 5000
   });
 
   const { data: allSlotInstances = [] } = useQuery({
     queryKey: ['instructorSlotInstances', pupil?.instructorId],
     queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
-    refetchInterval: 5000 // Poll every 5 seconds for real-time updates
+    refetchInterval: 5000
   });
 
-  // Filter bookings and slots for pupil view
   const now = moment();
   
-  // Bookings: Only show pupil's own bookings (future: pending/confirmed, past: completed)
   const bookings = allInstructorBookings.filter(b => {
     if (b.isDeleted) return false;
-    // ONLY show bookings that belong to this pupil
     if (b.pupilId !== pupil?.id) return false;
-    
     const bookingStart = moment(b.startAtUtc);
     if (bookingStart.isAfter(now)) {
       return ['reserved_pending_instructor', 'confirmed'].includes(b.status);
@@ -87,20 +83,15 @@ export default function LearnerBookingCalendar() {
     }
   });
 
-  // Slots: Future (available + pupil's own reserved) | Past (pupil's own completed)
   const slotInstances = allSlotInstances.filter(slot => {
     const slotStart = moment(slot.startAtUtc);
     const belongsToPupil = slot.reservedByPupilId === pupil?.id;
     const belongsToOtherPupil = slot.reservedByPupilId && slot.reservedByPupilId !== pupil?.id;
-    
     if (slotStart.isAfter(now)) {
-      // Future: show available slots (not reserved by anyone) OR slots reserved by this pupil
-      // Explicitly hide slots reserved by other pupils
       if (belongsToOtherPupil) return false;
       return slot.status === 'available' || 
              (belongsToPupil && ['reserved_pending', 'confirmed'].includes(slot.status));
     } else {
-      // Past: only show slots completed by this pupil
       return belongsToPupil && slot.status === 'completed';
     }
   });
@@ -111,12 +102,10 @@ export default function LearnerBookingCalendar() {
     enabled: !!pupil?.id
   });
 
-  // Filter out deleted bookings
   const myBookings = allMyBookings.filter(b => !b.isDeleted);
 
   const reserveBookingMutation = useMutation({
     mutationFn: async ({ pickupLocation, dropoffLocation, notesFromPupil, firstTimeData }) => {
-      // Use slot instance times as source of truth
       const startMoment = selectedSlotInstance 
         ? moment(selectedSlotInstance.startAtUtc).local()
         : moment(selectedSlot);
@@ -124,37 +113,72 @@ export default function LearnerBookingCalendar() {
         ? moment(selectedSlotInstance.endAtUtc).local()
         : startMoment.clone().add(1, 'hours');
       const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
+      const totalPrice = (pupil.hourlyRate || 50) * durationHours;
+
+      // Race condition check: verify slot is still available
+      if (selectedSlotInstance?.id) {
+        const freshSlots = await base44.entities.BookableSlotInstance.filter({ id: selectedSlotInstance.id });
+        if (!freshSlots.length || freshSlots[0].status !== 'available') {
+          throw new Error('This slot is no longer available. Please choose another time.');
+        }
+      }
+
+      // Auto-confirm instantly since pupil has sufficient balance
       const booking = await base44.entities.LessonBooking.create({
         instructorId: pupil.instructorId,
         pupilId: pupil.id,
         startAtUtc: startMoment.utc().toISOString(),
         endAtUtc: endMoment.utc().toISOString(),
         durationHours,
-        status: 'reserved_pending_instructor',
+        status: 'confirmed',
+        confirmedAt: new Date().toISOString(),
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
-        totalPriceGbp: (pupil.hourlyRate || 50) * durationHours,
+        totalPriceGbp: totalPrice,
         notesFromPupil: `Pickup: ${pickupLocation} | Dropoff: ${dropoffLocation}${notesFromPupil ? ' | ' + notesFromPupil : ''}${firstTimeData ? ` | First booking - Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''}`,
         requestedAt: new Date().toISOString(),
         slotInstanceId: selectedSlotInstance?.id || null
       });
 
-      // Update slot instance if linked
+      // Update slot instance to confirmed
       if (selectedSlotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(selectedSlotInstance.id, {
-          status: 'reserved_pending',
+          status: 'confirmed',
           reservedByPupilId: pupil.id,
           bookingId: booking.id
         });
       }
 
+      // Apply charge immediately
+      await base44.entities.PaymentLedger.create({
+        userId: pupil.id,
+        bookingId: booking.id,
+        type: 'charge',
+        reason: 'lesson_confirmed_charge',
+        amountGbp: totalPrice,
+        hours: durationHours,
+        createdByRole: 'system',
+        note: 'Charge applied on instant confirmation'
+      });
+
       // Notify instructor
       await base44.entities.Notification.create({
         userId: pupil.instructorId,
-        title: 'New Lesson Request',
-        message: `${pupil.firstName} ${pupil.lastName} requested a lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} | Pickup: ${pickupLocation}`,
+        title: 'Lesson Booked',
+        message: `${pupil.firstName} ${pupil.lastName} booked a lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} (auto-confirmed) | Pickup: ${pickupLocation}`,
         type: 'booking',
-        linkTarget: 'Calendar'
+        linkTarget: 'InstructorBookingCalendar'
       });
+
+      // Notify pupil
+      if (pupil.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: pupil.linkedUserId,
+          title: 'Lesson Confirmed!',
+          message: `Your lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} is confirmed. £${totalPrice.toFixed(2)} has been deducted from your balance.`,
+          type: 'booking',
+          linkTarget: 'LearnerMyBookings'
+        });
+      }
 
       return booking;
     },
@@ -165,7 +189,10 @@ export default function LearnerBookingCalendar() {
       setShowReserveModal(false);
       setSelectedSlot(null);
       setSelectedSlotInstance(null);
-      toast({ title: 'Booking request sent', description: 'Awaiting instructor confirmation' });
+      toast({ title: 'Lesson confirmed!', description: 'Your lesson has been booked and confirmed instantly.' });
+    },
+    onError: (error) => {
+      toast({ title: 'Booking failed', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -183,7 +210,6 @@ export default function LearnerBookingCalendar() {
 
       await base44.entities.LessonBooking.update(bookingId, updates);
 
-      // Free up the slot instance if linked
       if (booking.slotInstanceId) {
         await base44.entities.BookableSlotInstance.update(booking.slotInstanceId, {
           status: 'available',
@@ -205,7 +231,6 @@ export default function LearnerBookingCalendar() {
         });
       }
 
-      // Notify instructor
       await base44.entities.Notification.create({
         userId: pupil.instructorId,
         title: isLate ? 'Late Cancellation' : 'Lesson Cancelled',
@@ -255,7 +280,6 @@ export default function LearnerBookingCalendar() {
 
   const handleCancelClick = (booking) => {
     const hoursUntilStart = moment(booking.startAtUtc).diff(moment(), 'hours', true);
-    
     if (hoursUntilStart < 48) {
       setCancellingBooking(booking);
       setShowLateCancelDialog(true);
@@ -291,10 +315,9 @@ export default function LearnerBookingCalendar() {
 
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-800 mb-2">Book a Lesson</h1>
-          <p className="text-slate-500">Click on available slots to request a lesson</p>
+          <p className="text-slate-500">Click on available slots to book a lesson instantly</p>
         </div>
 
-        {/* Upcoming Bookings */}
         {upcomingBookings.length > 0 && (
           <Card className="border-0 shadow-sm mb-6">
             <CardHeader>
@@ -344,7 +367,6 @@ export default function LearnerBookingCalendar() {
           </Card>
         )}
 
-        {/* Calendar */}
         <Card className="border-0 shadow-sm">
           <CardContent className="p-6">
             <Calendar24Hour
@@ -362,7 +384,6 @@ export default function LearnerBookingCalendar() {
           </CardContent>
         </Card>
 
-        {/* Reserve Lesson Modal */}
         <PupilReserveLessonModal
           open={showReserveModal}
           onOpenChange={setShowReserveModal}
@@ -373,7 +394,6 @@ export default function LearnerBookingCalendar() {
           hourlyRate={pupil.hourlyRate || 50}
         />
 
-        {/* Booking Details Modal */}
         <PupilBookingDetailsModal
           open={showBookingDetailsModal}
           onOpenChange={setShowBookingDetailsModal}
@@ -382,7 +402,6 @@ export default function LearnerBookingCalendar() {
           isCancelling={cancelBookingMutation.isPending}
         />
 
-        {/* Late Cancellation Dialog */}
         <AlertDialog open={showLateCancelDialog} onOpenChange={setShowLateCancelDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>

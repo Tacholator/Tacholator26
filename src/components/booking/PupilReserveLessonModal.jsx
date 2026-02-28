@@ -292,7 +292,7 @@ export default function PupilReserveLessonModal({
               Payment & Cancellation
             </h3>
             <ul className="text-sm text-slate-600 space-y-1 list-disc list-inside">
-              <li>This request will be marked as Pending until your instructor confirms it</li>
+              <li>Your lesson will be confirmed instantly and the cost deducted from your balance</li>
               <li>Free cancellation up to 48 hours before the lesson start time</li>
               <li>If you cancel within 48 hours (or do not attend), the full lesson price may be deducted</li>
             </ul>
