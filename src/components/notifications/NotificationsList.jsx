@@ -46,6 +46,7 @@ export default function NotificationsList({ userId, isInstructor }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [filterUnread, setFilterUnread] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ['notifications', userId],
