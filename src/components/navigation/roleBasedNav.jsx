@@ -19,7 +19,8 @@ import {
   Pen,
   Sparkles,
   Settings,
-  Receipt
+  Receipt,
+  BookMarked
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
