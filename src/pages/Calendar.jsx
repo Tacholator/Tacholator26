@@ -384,7 +384,7 @@ export default function Calendar() {
       await base44.entities.Notification.create({
         userId: booking.pupilId,
         title: 'Lesson Declined',
-        message: `Your lesson request for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined.`,
+        message: `Your lesson request for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined.${reason ? ` Reason: ${reason}` : ''}`,
         type: 'booking',
         linkTarget: 'Calendar'
       });
