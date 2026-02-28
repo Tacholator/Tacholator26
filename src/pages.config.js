@@ -119,6 +119,7 @@ import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
 import Calendar from './pages/Calendar';
+import LearnerMyBookings from './pages/LearnerMyBookings';
 import __Layout from './Layout.jsx';
 
 
@@ -195,6 +196,7 @@ export const PAGES = {
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
     "Calendar": Calendar,
+    "LearnerMyBookings": LearnerMyBookings,
 }
 
 export const pagesConfig = {
