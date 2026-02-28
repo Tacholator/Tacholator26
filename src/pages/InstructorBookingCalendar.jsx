@@ -92,6 +92,7 @@ export default function InstructorBookingCalendar() {
   const confirmBookingMutation = useMutation({
     mutationFn: async (bookingId) => {
       const booking = bookings.find(b => b.id === bookingId);
+      const pupil = pupils.find(p => p.id === booking.pupilId);
       await base44.entities.LessonBooking.update(bookingId, {
         status: 'confirmed',
         confirmedAt: new Date().toISOString()
@@ -109,14 +110,17 @@ export default function InstructorBookingCalendar() {
         note: 'Charge applied on confirmation'
       });
 
-      // Create notification for pupil
-      await base44.entities.Notification.create({
-        userId: booking.pupilId,
-        title: 'Lesson Confirmed',
-        message: `Your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} has been confirmed.`,
-        type: 'booking',
-        linkTarget: 'LearnerMyBookings'
-      });
+      // Create notification for pupil using linkedUserId (user account ID)
+      const notifyUserId = pupil?.linkedUserId;
+      if (notifyUserId) {
+        await base44.entities.Notification.create({
+          userId: notifyUserId,
+          title: 'Lesson Confirmed',
+          message: `Your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} has been confirmed.`,
+          type: 'booking',
+          linkTarget: 'LearnerMyBookings'
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);
