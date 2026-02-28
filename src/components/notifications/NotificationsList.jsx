@@ -232,6 +232,47 @@ export default function NotificationsList({ userId, isInstructor }) {
           })}
         </div>
       )}
+
+      {/* Notification Detail Dialog */}
+      <Dialog open={!!selectedNotification} onOpenChange={(open) => !open && setSelectedNotification(null)}>
+        <DialogContent className="max-w-md">
+          {selectedNotification && (() => {
+            const Icon = notificationIcons[selectedNotification.type] || Bell;
+            return (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center gap-3 mb-1">
+                    <div className="p-2 rounded-lg bg-[#F7B602]/20 shrink-0">
+                      <Icon className="w-5 h-5 text-[#F7B602]" />
+                    </div>
+                    <DialogTitle className="text-left leading-snug">{selectedNotification.title}</DialogTitle>
+                  </div>
+                  <p className="text-xs text-slate-400 pl-12">{moment(selectedNotification.created_date).format('D MMM YYYY [at] HH:mm')}</p>
+                </DialogHeader>
+                <div className="py-2">
+                  <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{selectedNotification.message}</p>
+                </div>
+                <DialogFooter className="gap-2 flex-row justify-end">
+                  {selectedNotification.linkTarget && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleNavigateFromDetail}
+                      className="gap-2"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      View Details
+                    </Button>
+                  )}
+                  <Button size="sm" onClick={() => setSelectedNotification(null)} className="bg-[#071739] text-white hover:bg-[#071739]/90">
+                    Close
+                  </Button>
+                </DialogFooter>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
