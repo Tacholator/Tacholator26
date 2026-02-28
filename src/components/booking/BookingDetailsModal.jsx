@@ -151,13 +151,15 @@ export default function BookingDetailsModal({
       }
 
       // Notify pupil
-      await base44.entities.Notification.create({
-        userId: pupil.linkedUserId,
-        title: 'Lesson Request Declined',
-        message: `Your lesson request for ${moment(booking.startAtUtc).format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined`,
-        type: 'booking',
-        linkTarget: 'LearnerBookingCalendar'
-      });
+      if (pupil?.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: pupil.linkedUserId,
+          title: 'Lesson Request Declined',
+          message: `Your lesson request for ${moment(booking.startAtUtc).format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined${reason ? `: ${reason}` : ''}.`,
+          type: 'booking',
+          linkTarget: 'LearnerMyBookings'
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['instructorBookings']);
