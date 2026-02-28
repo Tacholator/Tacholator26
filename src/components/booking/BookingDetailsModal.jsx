@@ -595,11 +595,11 @@ export default function BookingDetailsModal({
             <>
               <Button 
                 variant="outline" 
-                onClick={() => declineMutation.mutate()}
+                onClick={() => { setDeclineReason(''); setShowDeclineDialog(true); }}
                 disabled={isProcessing}
                 className="border-rose-300 text-rose-600 hover:bg-rose-50"
               >
-                {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Decline'}
+                Decline
               </Button>
               <Button 
                 onClick={() => confirmMutation.mutate()}
