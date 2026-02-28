@@ -170,16 +170,22 @@ export default function PupilReserveLessonModal({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">Your balance:</span>
-                  <span className={`font-semibold ${ledgerBalance >= totalPrice ? 'text-emerald-700' : 'text-rose-600'}`}>
-                    £{ledgerBalance.toFixed(2)}
+                  <span className={`font-semibold ${availableBalance >= totalPrice ? 'text-emerald-700' : 'text-rose-600'}`}>
+                    £{availableBalance.toFixed(2)}
                   </span>
                 </div>
+                {pendingBookingsCost > 0 && (
+                  <div className="flex items-center justify-between text-xs text-slate-500">
+                    <span>Held for pending lessons:</span>
+                    <span>-£{pendingBookingsCost.toFixed(2)}</span>
+                  </div>
+                )}
                 {!hasEnoughBalance && (
                   <div className="flex items-start gap-2 bg-rose-50 border border-rose-200 rounded-lg p-3 mt-1">
                     <WalletMinimal className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
                     <div className="text-sm text-rose-700">
                       <p className="font-medium">Insufficient balance</p>
-                      <p>You need £{(totalPrice - ledgerBalance).toFixed(2)} more to book this slot. Please top up your balance or contact your instructor.</p>
+                      <p>You need £{(totalPrice - availableBalance).toFixed(2)} more to book this slot. Please top up your balance or contact your instructor.</p>
                     </div>
                   </div>
                 )}
