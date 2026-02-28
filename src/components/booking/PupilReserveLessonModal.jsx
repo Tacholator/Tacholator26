@@ -317,15 +317,24 @@ export default function PupilReserveLessonModal({
             </label>
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button 
-            onClick={handleReserve} 
-            disabled={isSaving || !isFormValid}
-            className="bg-teal-600 hover:bg-teal-700"
-          >
-            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Request Lesson'}
-          </Button>
+          {!hasEnoughBalance ? (
+            <Link to={createPageUrl('LearnerChats')}>
+              <Button className="bg-[#071739] hover:bg-[#0a2155] gap-2 w-full sm:w-auto">
+                <MessageCircle className="w-4 h-4" />
+                Contact Instructor
+              </Button>
+            </Link>
+          ) : (
+            <Button 
+              onClick={handleReserve} 
+              disabled={isSaving || !isFormValid}
+              className="bg-teal-600 hover:bg-teal-700"
+            >
+              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Request Lesson'}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
       </Dialog>
