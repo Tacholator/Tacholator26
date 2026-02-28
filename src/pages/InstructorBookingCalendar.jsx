@@ -134,14 +134,18 @@ export default function InstructorBookingCalendar() {
         cancellationReason: reason
       });
 
-      // Create notification for pupil
-      await base44.entities.Notification.create({
-        userId: booking.pupilId,
-        title: 'Lesson Declined',
-        message: `Your lesson request for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined.`,
-        type: 'booking',
-        linkTarget: 'LearnerMyBookings'
-      });
+      // Create notification for pupil - use linkedUserId (user account ID), not pupil record ID
+      const pupil = pupils.find(p => p.id === booking.pupilId);
+      const notifyUserId = pupil?.linkedUserId;
+      if (notifyUserId) {
+        await base44.entities.Notification.create({
+          userId: notifyUserId,
+          title: 'Lesson Declined',
+          message: `Your lesson request for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined.${reason ? ` Reason: ${reason}` : ''}`,
+          type: 'booking',
+          linkTarget: 'LearnerMyBookings'
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);

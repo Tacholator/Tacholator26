@@ -58,6 +58,7 @@ import AdminRoleManagement from './pages/AdminRoleManagement';
 import AdminSubscriptionManagement from './pages/AdminSubscriptionManagement';
 import AdminTestRouteConfiguration from './pages/AdminTestRouteConfiguration';
 import AdminTestRouteDetail from './pages/AdminTestRouteDetail';
+import Calendar from './pages/Calendar';
 import CourseWork from './pages/CourseWork';
 import CourseWorkDetail from './pages/CourseWorkDetail';
 import DVSASkillDetail from './pages/DVSASkillDetail';
@@ -95,6 +96,7 @@ import LearnerHomework from './pages/LearnerHomework';
 import LearnerInvoices from './pages/LearnerInvoices';
 import LearnerLearningHub from './pages/LearnerLearningHub';
 import LearnerLessons from './pages/LearnerLessons';
+import LearnerMyBookings from './pages/LearnerMyBookings';
 import LearnerMyInstructor from './pages/LearnerMyInstructor';
 import LearnerMyLearning from './pages/LearnerMyLearning';
 import LearnerNotes from './pages/LearnerNotes';
@@ -118,8 +120,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import Calendar from './pages/Calendar';
-import LearnerMyBookings from './pages/LearnerMyBookings';
 import __Layout from './Layout.jsx';
 
 
@@ -135,6 +135,7 @@ export const PAGES = {
     "AdminSubscriptionManagement": AdminSubscriptionManagement,
     "AdminTestRouteConfiguration": AdminTestRouteConfiguration,
     "AdminTestRouteDetail": AdminTestRouteDetail,
+    "Calendar": Calendar,
     "CourseWork": CourseWork,
     "CourseWorkDetail": CourseWorkDetail,
     "DVSASkillDetail": DVSASkillDetail,
@@ -172,6 +173,7 @@ export const PAGES = {
     "LearnerInvoices": LearnerInvoices,
     "LearnerLearningHub": LearnerLearningHub,
     "LearnerLessons": LearnerLessons,
+    "LearnerMyBookings": LearnerMyBookings,
     "LearnerMyInstructor": LearnerMyInstructor,
     "LearnerMyLearning": LearnerMyLearning,
     "LearnerNotes": LearnerNotes,
@@ -195,8 +197,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "Calendar": Calendar,
-    "LearnerMyBookings": LearnerMyBookings,
 }
 
 export const pagesConfig = {
