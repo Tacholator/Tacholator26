@@ -155,16 +155,26 @@ export default function PupilReserveLessonModal({
                   </p>
                 </div>
               </div>
-              <div className="pt-2 border-t border-blue-200">
+              <div className="pt-2 border-t border-blue-200 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Price:</span>
+                  <span className="text-slate-500">Lesson price:</span>
                   <span className="text-lg font-bold text-emerald-700">£{totalPrice.toFixed(2)}</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  {pupil?.bulkPaymentBalance > 0 
-                    ? 'May be deducted from your prepaid balance' 
-                    : 'Charged upon instructor confirmation'}
-                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Your balance:</span>
+                  <span className={`font-semibold ${ledgerBalance >= totalPrice ? 'text-emerald-700' : 'text-rose-600'}`}>
+                    £{ledgerBalance.toFixed(2)}
+                  </span>
+                </div>
+                {!hasEnoughBalance && (
+                  <div className="flex items-start gap-2 bg-rose-50 border border-rose-200 rounded-lg p-3 mt-1">
+                    <WalletMinimal className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
+                    <div className="text-sm text-rose-700">
+                      <p className="font-medium">Insufficient balance</p>
+                      <p>You need £{(totalPrice - ledgerBalance).toFixed(2)} more to book this slot. Please top up your balance or contact your instructor.</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
