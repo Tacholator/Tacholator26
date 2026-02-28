@@ -634,6 +634,35 @@ export default function BookingDetailsModal({
       </DialogContent>
     </Dialog>
 
+    {/* Decline Dialog */}
+    <Dialog open={showDeclineDialog} onOpenChange={setShowDeclineDialog}>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle>Decline Booking</DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          <Label>Reason <span className="text-rose-500">*</span></Label>
+          <Textarea
+            value={declineReason}
+            onChange={(e) => setDeclineReason(e.target.value)}
+            placeholder="e.g., Slot no longer available"
+            rows={3}
+            className="mt-2"
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowDeclineDialog(false)} disabled={isProcessing}>Cancel</Button>
+          <Button
+            onClick={() => { declineMutation.mutate(declineReason); setShowDeclineDialog(false); }}
+            disabled={!declineReason.trim() || isProcessing}
+            className="bg-rose-600 hover:bg-rose-700"
+          >
+            {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Decline Booking'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
     <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
       <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <AlertDialogHeader>
