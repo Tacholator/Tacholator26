@@ -71,8 +71,7 @@ export default function NotificationsList({ userId, isInstructor }) {
   const markAsReadMutation = useMutation({
     mutationFn: (id) => base44.entities.Notification.update(id, { readAt: new Date().toISOString() }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['notifications']);
-      queryClient.invalidateQueries(['unreadMessages']);
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     }
   });
 
@@ -84,8 +83,7 @@ export default function NotificationsList({ userId, isInstructor }) {
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['notifications']);
-      queryClient.invalidateQueries(['unreadMessages']);
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     }
   });
 
