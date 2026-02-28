@@ -101,10 +101,13 @@ export default function PupilReserveLessonModal({
   const durationHours = slotEnd ? slotEnd.diff(slotStart, 'minutes') / 60 : 1;
   const totalPrice = (hourlyRate || 50) * durationHours;
 
+  const hasEnoughBalance = ledgerBalance >= totalPrice;
+
   const isFormValid = pickupLocation.trim() !== '' && 
                       (!dropoffSameAsPickup ? dropoffLocation.trim() !== '' : true) &&
                       (isFirstBooking ? (drivingExperience !== '' && transmissionType !== '') : true) &&
-                      agreeTerms;
+                      agreeTerms &&
+                      hasEnoughBalance;
 
   return (
       <Dialog open={open} onOpenChange={onOpenChange}>
