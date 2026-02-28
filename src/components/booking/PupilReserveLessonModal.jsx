@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Calendar, Clock, PoundSterling, MapPin, AlertCircle, User } from 'lucide-react';
+import { Loader2, Calendar, MapPin, AlertCircle, User, MessageCircle, WalletMinimal } from 'lucide-react';
 import moment from 'moment';
 
 export default function PupilReserveLessonModal({ 
