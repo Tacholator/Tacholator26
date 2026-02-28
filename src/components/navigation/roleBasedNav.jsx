@@ -139,10 +139,12 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
       )?.id)
     );
     const bookLessonLink = learnerOnlyLinks.find(l => l.page === 'LearnerCalendar');
+    const myBookingsLink = learnerOnlyLinks.find(l => l.page === 'LearnerMyBookings');
     
     return [
       shared[0], // Home
       bookLessonLink, // Book a Lesson
+      myBookingsLink, // My Bookings
       ...allowedShared.filter(s => s.page !== (isInstructor ? 'Home' : 'Home')) // Payments, Notifications, Chats
     ];
   }
