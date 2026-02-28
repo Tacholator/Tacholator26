@@ -305,11 +305,11 @@ export default function PupilProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-4 lg:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Back Button */}
         <Link to={createPageUrl('PupilList')}>
-          <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
+          <Button variant="ghost" className="mb-4 gap-2 text-slate-600 hover:text-slate-800">
             <ArrowLeft className="w-4 h-4" />
             Back to Pupils
           </Button>
@@ -319,82 +319,87 @@ export default function PupilProfile() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border p-6 mb-6"
+          className="bg-white rounded-2xl shadow-sm border p-4 lg:p-6 mb-6"
         >
-          <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-            {/* Avatar & Basic Info */}
-            <div className="flex items-start gap-4 flex-1">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-2xl font-bold">
+          <div className="flex flex-col gap-4">
+            {/* Top row: avatar + name + edit button */}
+            <div className="flex items-start gap-3">
+              <div className="w-14 h-14 lg:w-20 lg:h-20 shrink-0 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-xl lg:text-2xl font-bold">
                 {pupil.firstName?.[0]}{pupil.lastName?.[0]}
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl font-bold text-slate-800">
-                    {pupil.firstName} {pupil.lastName}
-                  </h1>
-                  <Badge className={{
-                    'Active': 'bg-emerald-100 text-emerald-700',
-                    'OnHold': 'bg-amber-100 text-amber-700',
-                    'Passed': 'bg-blue-100 text-blue-700',
-                    'Stopped': 'bg-purple-100 text-purple-700'
-                  }[pupil.status || 'Active']}>
-                   {pupil.status === 'OnHold' ? 'On Hold' : 
-                    pupil.status === 'Stopped' ? 'One Off' : 
-                    pupil.status || 'Active'}
-                  </Badge>
-                  {!pupil.hasSignedUp && !pupil.linkedUserId && (
-                    <Badge className="bg-rose-100 text-rose-700">
-                      Not Signed Up
-                    </Badge>
-                  )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h1 className="text-xl lg:text-2xl font-bold text-slate-800 truncate">
+                      {pupil.firstName} {pupil.lastName}
+                    </h1>
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      <Badge className={{
+                        'Active': 'bg-emerald-100 text-emerald-700',
+                        'OnHold': 'bg-amber-100 text-amber-700',
+                        'Passed': 'bg-blue-100 text-blue-700',
+                        'Stopped': 'bg-purple-100 text-purple-700'
+                      }[pupil.status || 'Active']}>
+                        {pupil.status === 'OnHold' ? 'On Hold' : 
+                         pupil.status === 'Stopped' ? 'One Off' : 
+                         pupil.status || 'Active'}
+                      </Badge>
+                      {!pupil.hasSignedUp && !pupil.linkedUserId && (
+                        <Badge className="bg-rose-100 text-rose-700">Not Signed Up</Badge>
+                      )}
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowEditModal(true)}
+                    className="shrink-0"
+                  >
+                    <Edit className="w-4 h-4 mr-1 lg:mr-2" />
+                    <span>Edit</span>
+                  </Button>
                 </div>
-                <div className="flex flex-wrap gap-4 text-sm text-slate-500">
+                <div className="flex flex-wrap gap-3 text-sm text-slate-500 mt-2">
                   {pupil.phone && (
                     <div className="flex items-center gap-1">
-                      <Phone className="w-4 h-4" />
-                      {pupil.phone}
+                      <Phone className="w-4 h-4 shrink-0" />
+                      <span className="truncate">{pupil.phone}</span>
                     </div>
                   )}
                   {pupil.email && (
                     <div className="flex items-center gap-1">
-                      <Mail className="w-4 h-4" />
-                      {pupil.email}
+                      <Mail className="w-4 h-4 shrink-0" />
+                      <span className="truncate">{pupil.email}</span>
                     </div>
                   )}
                   {pupil.pickupAddress && (
                     <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      {pupil.pickupAddress}
+                      <MapPin className="w-4 h-4 shrink-0" />
+                      <span>{pupil.pickupAddress}</span>
                     </div>
                   )}
                 </div>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowEditModal(true)}
-              >
-                <Edit className="w-4 h-4 mr-2" />
-                Edit
-              </Button>
             </div>
 
-            {/* Progress Ring */}
-            <div className="flex items-center gap-8">
-              <ProgressRing
-                current={pupil.hoursCompleted || 0}
-                target={pupil.targetHours || 45}
-              />
+            {/* Progress Ring + Stats */}
+            <div className="flex flex-col sm:flex-row gap-4 sm:items-start pt-2 border-t">
+              <div className="flex justify-center sm:justify-start">
+                <ProgressRing
+                  current={pupil.hoursCompleted || 0}
+                  target={pupil.targetHours || 45}
+                />
+              </div>
               
-              <div className="space-y-3">
+              <div className="flex-1 space-y-2.5">
                 {/* Theory Test */}
                 <div className="flex items-center gap-2 text-sm">
                   {pupil.theoryTestPassed ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
                   ) : pupil.theoryTestNotBooked ? (
-                    <CircleDashed className="w-4 h-4 text-slate-400" />
+                    <CircleDashed className="w-4 h-4 shrink-0 text-slate-400" />
                   ) : (
-                    <Calendar className="w-4 h-4 text-blue-500" />
+                    <Calendar className="w-4 h-4 shrink-0 text-blue-500" />
                   )}
                   <div>
                     <p className="text-slate-400 text-xs">Theory Test</p>
@@ -409,11 +414,11 @@ export default function PupilProfile() {
                 {/* Practical Test */}
                 <div className="flex items-center gap-2 text-sm">
                   {pupil.practicalTestPassed ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
                   ) : pupil.practicalTestNotBooked ? (
-                    <CircleDashed className="w-4 h-4 text-slate-400" />
+                    <CircleDashed className="w-4 h-4 shrink-0 text-slate-400" />
                   ) : (
-                    <Calendar className="w-4 h-4 text-rose-500" />
+                    <Calendar className="w-4 h-4 shrink-0 text-rose-500" />
                   )}
                   <div>
                     <p className="text-slate-400 text-xs">Practical Test</p>
@@ -433,12 +438,12 @@ export default function PupilProfile() {
                 <div className="flex items-center gap-2 text-sm">
                   {pupil.licenseChecked && pupil.eyeTestChecked ? (
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-700">
-                      <CheckCircle2 className="w-4 h-4" />
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
                       <span className="font-medium">First Lesson Checks Complete</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700">
-                      <CircleDashed className="w-4 h-4" />
+                      <CircleDashed className="w-4 h-4 shrink-0" />
                       <span className="font-medium">Checks Pending</span>
                     </div>
                   )}
@@ -451,13 +456,10 @@ export default function PupilProfile() {
                     moment(b.startAtUtc).isAfter(now)
                   );
                   const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
-                  
                   if (totalHoursBooked > 0) {
                     return (
-                      <div className="flex items-center gap-2 text-sm">
-                        <div className="px-2 py-1 rounded-lg bg-teal-100 text-teal-700">
-                          Booked: {totalHoursBooked.toFixed(1)}h ({futureBookings.length} lesson{futureBookings.length !== 1 ? 's' : ''})
-                        </div>
+                      <div className="px-2 py-1 rounded-lg bg-teal-100 text-teal-700 text-sm w-fit">
+                        Booked: {totalHoursBooked.toFixed(1)}h ({futureBookings.length} lesson{futureBookings.length !== 1 ? 's' : ''})
                       </div>
                     );
                   }
@@ -465,9 +467,9 @@ export default function PupilProfile() {
 
                 {/* Balance Override Toggle */}
                 <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 border border-slate-200">
-                  <div className="flex items-center gap-2">
-                    <WalletMinimal className="w-4 h-4 text-slate-500" />
-                    <div>
+                  <div className="flex items-center gap-2 min-w-0 flex-1 mr-3">
+                    <WalletMinimal className="w-4 h-4 shrink-0 text-slate-500" />
+                    <div className="min-w-0">
                       <p className="text-sm font-medium text-slate-700">Allow booking without balance</p>
                       <p className="text-xs text-slate-400">Bypass the balance requirement for this pupil</p>
                     </div>
@@ -479,68 +481,66 @@ export default function PupilProfile() {
                 </div>
 
                 {/* Payment Info */}
-                                      {(pupil.hourlyRate > 0 || pupil.bulkPaymentBalance !== 0) && (
-                                        <div className="space-y-1">
-                                          <div className="flex items-center gap-2 text-sm">
-                                            <div className={`px-2 py-1 rounded-lg ${pupil.bulkPaymentBalance < 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                                              Balance: £{(pupil.bulkPaymentBalance || 0).toFixed(2)}
-                                            </div>
-                                            {pupil.hourlyRate > 0 && (
-                                              <span className="text-slate-400">@ £{pupil.hourlyRate}/hr</span>
-                                            )}
-                                          </div>
-                                          
-                                          {/* Audit Hours */}
-                                          {((pupil.auditNoShowHours || 0) > 0 || (pupil.auditLateCancellationHours || 0) > 0) && (
-                                            <div className="text-xs text-slate-500 space-y-0.5">
-                                              {(pupil.auditNoShowHours || 0) > 0 && (
-                                                <div className="flex items-center gap-1">
-                                                  <span className="text-amber-600">No-show:</span>
-                                                  <span>{pupil.auditNoShowHours.toFixed(1)}h</span>
-                                                </div>
-                                              )}
-                                              {(pupil.auditLateCancellationHours || 0) > 0 && (
-                                                <div className="flex items-center gap-1">
-                                                  <span className="text-amber-600">Late cancellation:</span>
-                                                  <span>{pupil.auditLateCancellationHours.toFixed(1)}h</span>
-                                                </div>
-                                              )}
-                                            </div>
-                                          )}
-                                        </div>
-                                      )}
+                {(pupil.hourlyRate > 0 || pupil.bulkPaymentBalance !== 0) && (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className={`px-2 py-1 rounded-lg ${pupil.bulkPaymentBalance < 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                        Balance: £{(pupil.bulkPaymentBalance || 0).toFixed(2)}
+                      </div>
+                      {pupil.hourlyRate > 0 && (
+                        <span className="text-slate-400">@ £{pupil.hourlyRate}/hr</span>
+                      )}
+                    </div>
+                    {((pupil.auditNoShowHours || 0) > 0 || (pupil.auditLateCancellationHours || 0) > 0) && (
+                      <div className="text-xs text-slate-500 space-y-0.5">
+                        {(pupil.auditNoShowHours || 0) > 0 && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-amber-600">No-show:</span>
+                            <span>{pupil.auditNoShowHours.toFixed(1)}h</span>
+                          </div>
+                        )}
+                        {(pupil.auditLateCancellationHours || 0) > 0 && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-amber-600">Late cancellation:</span>
+                            <span>{pupil.auditLateCancellationHours.toFixed(1)}h</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
-                                      {/* Account Activity */}
-                                                                                  <div className="text-xs text-slate-500 space-y-1 border-t pt-2 mt-2">
-                                                                                    <p className="font-medium text-slate-600">Account Status</p>
-                                                                                    {pupil.hasSignedUp ? (
-                                                                                      <>
-                                                                                        {pupil.firstLoginTimestamp && (
-                                                                                          <p>First login: {moment(pupil.firstLoginTimestamp).format('D MMM YYYY, h:mm a')}</p>
-                                                                                        )}
-                                                                                        {pupil.lastLoginTimestamp && (
-                                                                                          <p>Last login: {moment(pupil.lastLoginTimestamp).fromNow()}</p>
-                                                                                        )}
-                                                                                        {pupil.lastActivityTimestamp && (
-                                                                                          <p>Last activity: {moment(pupil.lastActivityTimestamp).fromNow()}</p>
-                                                                                        )}
-                                                                                      </>
-                                                                                    ) : (
-                                                                                      <p className="text-rose-500">Not signed up yet</p>
-                                                                                    )}
-                                                                                  </div>
+                {/* Account Activity */}
+                <div className="text-xs text-slate-500 space-y-1 border-t pt-2 mt-2">
+                  <p className="font-medium text-slate-600">Account Status</p>
+                  {pupil.hasSignedUp ? (
+                    <>
+                      {pupil.firstLoginTimestamp && (
+                        <p>First login: {moment(pupil.firstLoginTimestamp).format('D MMM YYYY, h:mm a')}</p>
+                      )}
+                      {pupil.lastLoginTimestamp && (
+                        <p>Last login: {moment(pupil.lastLoginTimestamp).fromNow()}</p>
+                      )}
+                      {pupil.lastActivityTimestamp && (
+                        <p>Last activity: {moment(pupil.lastActivityTimestamp).fromNow()}</p>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-rose-500">Not signed up yet</p>
+                  )}
+                </div>
 
-                                                                                  {pupil.googleSheetUrl && (
-                                                                                    <a 
-                                                                                      href={pupil.googleSheetUrl} 
-                                                                                      target="_blank" 
-                                                                                      rel="noopener noreferrer"
-                                                                                      className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700"
-                                                                                    >
-                                                                                      <ExternalLink className="w-4 h-4" />
-                                                                                      Google Sheet
-                                                                                    </a>
-                                                                                  )}
+                {pupil.googleSheetUrl && (
+                  <a 
+                    href={pupil.googleSheetUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Google Sheet
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -548,38 +548,40 @@ export default function PupilProfile() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-sm mb-6 p-1">
-                          <TabsTrigger 
-                            value="progress"
-                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#F7B602] data-[state=active]:to-[#d99f02] data-[state=active]:text-[#071739] data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
-                          >
-                            Driving Progress
-                          </TabsTrigger>
-                          <TabsTrigger 
-                            value="checks"
-                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
-                          >
-                            First Lesson Checks
-                          </TabsTrigger>
-                          <TabsTrigger 
-                            value="diary"
-                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
-                          >
-                            Lesson Diary
-                          </TabsTrigger>
-                          <TabsTrigger 
-                            value="lessons"
-                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
-                          >
-                            Lessons
-                          </TabsTrigger>
-                          <TabsTrigger 
-                            value="homework"
-                            className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all"
-                          >
-                            Homework
-                          </TabsTrigger>
-                        </TabsList>
+          <div className="overflow-x-auto mb-6">
+            <TabsList className="bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-sm p-1 w-max min-w-full">
+              <TabsTrigger 
+                value="progress"
+                className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#F7B602] data-[state=active]:to-[#d99f02] data-[state=active]:text-[#071739] data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all text-xs sm:text-sm"
+              >
+                Progress
+              </TabsTrigger>
+              <TabsTrigger 
+                value="checks"
+                className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all text-xs sm:text-sm"
+              >
+                Checks
+              </TabsTrigger>
+              <TabsTrigger 
+                value="diary"
+                className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all text-xs sm:text-sm"
+              >
+                Diary
+              </TabsTrigger>
+              <TabsTrigger 
+                value="lessons"
+                className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all text-xs sm:text-sm"
+              >
+                Lessons
+              </TabsTrigger>
+              <TabsTrigger 
+                value="homework"
+                className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all text-xs sm:text-sm"
+              >
+                Homework
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="progress">
             {/* Audit Hours Section */}
