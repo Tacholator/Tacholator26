@@ -100,6 +100,7 @@ export const learnerOnlyLinks = [
     ]
   },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
+  { name: 'My Bookings', icon: BookMarked, page: 'LearnerMyBookings' },
   { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' },
   { name: 'Invoices', icon: Receipt, page: 'LearnerInvoices' }
 ];
