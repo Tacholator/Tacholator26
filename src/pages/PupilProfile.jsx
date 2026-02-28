@@ -490,14 +490,24 @@ export default function PupilProfile() {
                 {/* Payment Info */}
                 {(pupil.hourlyRate > 0 || pupil.bulkPaymentBalance !== 0) && (
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className={`px-2 py-1 rounded-lg ${pupil.bulkPaymentBalance < 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                        Balance: £{(pupil.bulkPaymentBalance || 0).toFixed(2)}
+                    <div className="flex items-center gap-2 text-sm flex-wrap">
+                      <div className={`px-2 py-1 rounded-lg ${availableBalance < 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                        Available: £{availableBalance.toFixed(2)}
                       </div>
+                      {totalEscrowedGbp > 0 && (
+                        <div className="px-2 py-1 rounded-lg bg-amber-100 text-amber-700 text-xs">
+                          In escrow: £{totalEscrowedGbp.toFixed(2)}
+                        </div>
+                      )}
                       {pupil.hourlyRate > 0 && (
                         <span className="text-slate-400">@ £{pupil.hourlyRate}/hr</span>
                       )}
                     </div>
+                    {totalEscrowedGbp > 0 && (
+                      <div className="text-xs text-slate-500 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                        Total balance: £{totalBalance.toFixed(2)} ({upcomingConfirmedBookings.length} lesson{upcomingConfirmedBookings.length !== 1 ? 's' : ''} pending)
+                      </div>
+                    )}
                     {((pupil.auditNoShowHours || 0) > 0 || (pupil.auditLateCancellationHours || 0) > 0) && (
                       <div className="text-xs text-slate-500 space-y-0.5">
                         {(pupil.auditNoShowHours || 0) > 0 && (
