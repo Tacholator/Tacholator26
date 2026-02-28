@@ -26,8 +26,10 @@ import {
   Loader2,
   Edit,
   CheckCircle2,
-  CircleDashed
+  CircleDashed,
+  WalletMinimal
 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import ProgressRing from '@/components/ui/ProgressRing';
 import SkillsGrid from '@/components/skills/SkillsGrid';
 import DiaryTimeline from '@/components/diary/DiaryTimeline';
