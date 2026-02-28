@@ -507,6 +507,11 @@ export default function Layout({ children, currentPageName }) {
                               {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
                             </Badge>
                           )}
+                          {item.name === 'Notifications' && unreadNotificationsCount > 0 && (
+                            <Badge className="ml-auto bg-rose-500 text-white text-xs font-bold px-2 h-5">
+                              {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                            </Badge>
+                          )}
                         </Link>
                       )}
                     </div>
