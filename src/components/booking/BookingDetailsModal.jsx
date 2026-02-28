@@ -38,6 +38,8 @@ export default function BookingDetailsModal({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showDeclineDialog, setShowDeclineDialog] = useState(false);
+  const [declineReason, setDeclineReason] = useState('');
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showReassignDialog, setShowReassignDialog] = useState(false);
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
