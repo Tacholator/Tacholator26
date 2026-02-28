@@ -130,12 +130,15 @@ export default function BookingDetailsModal({
   });
 
   const declineMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (reason) => {
       setIsProcessing(true);
       
       // Update booking status
       await base44.entities.LessonBooking.update(booking.id, {
-        status: 'declined_by_instructor'
+        status: 'declined_by_instructor',
+        cancellationReason: reason,
+        cancelledAt: new Date().toISOString(),
+        cancelledByRole: 'instructor'
       });
 
       // Release slot instance if exists
