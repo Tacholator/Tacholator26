@@ -140,7 +140,7 @@ export default function InstructorBookingCalendar() {
         title: 'Lesson Declined',
         message: `Your lesson request for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined.`,
         type: 'booking',
-        linkTarget: 'LearnerCalendar'
+        linkTarget: 'LearnerMyBookings'
       });
     },
     onSuccess: () => {
