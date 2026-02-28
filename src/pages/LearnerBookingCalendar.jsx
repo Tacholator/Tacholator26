@@ -153,7 +153,7 @@ export default function LearnerBookingCalendar() {
         });
       }
 
-      // Apply charge immediately
+      // Log the escrow deduction in ledger
       await base44.entities.PaymentLedger.create({
         userId: pupil.id,
         bookingId: booking.id,
@@ -162,7 +162,7 @@ export default function LearnerBookingCalendar() {
         amountGbp: totalPrice,
         hours: durationHours,
         createdByRole: 'system',
-        note: 'Charge applied on instant confirmation'
+        note: `Escrow held: £${totalPrice.toFixed(2)} deducted on booking confirmation`
       });
 
       // Notify instructor
