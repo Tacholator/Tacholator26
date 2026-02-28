@@ -204,13 +204,16 @@ export default function LearnerBookingCalendar() {
   const cancelBookingMutation = useMutation({
     mutationFn: async ({ bookingId, isLate }) => {
       const booking = myBookings.find(b => b.id === bookingId);
+      const escrowAmount = booking.escrowAmountGbp || 0;
+
       const updates = {
         status: isLate ? 'cancelled_late_by_pupil' : 'cancelled_by_pupil',
         cancelledAt: new Date().toISOString(),
         cancelledByRole: 'pupil',
         lateCancellation: isLate,
         penaltyAmountGbp: isLate ? booking.totalPriceGbp : 0,
-        penaltyHours: isLate ? booking.durationHours : 0
+        penaltyHours: isLate ? booking.durationHours : 0,
+        escrowAmountGbp: 0 // escrow is cleared either way
       };
 
       await base44.entities.LessonBooking.update(bookingId, updates);
@@ -223,7 +226,26 @@ export default function LearnerBookingCalendar() {
         });
       }
 
+      if (!isLate && escrowAmount > 0) {
+        // Early cancellation: refund escrow back to pupil balance
+        const currentPupilData = await base44.entities.Pupil.filter({ id: pupil.id });
+        const currentBalance = currentPupilData[0]?.bulkPaymentBalance || 0;
+        await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: currentBalance + escrowAmount });
+
+        await base44.entities.PaymentLedger.create({
+          userId: pupil.id,
+          bookingId: bookingId,
+          type: 'refund',
+          reason: 'refund_issued',
+          amountGbp: escrowAmount,
+          hours: booking.durationHours,
+          createdByRole: 'system',
+          note: `Escrow refunded on early cancellation`
+        });
+      }
+
       if (isLate) {
+        // Late cancellation: balance was already deducted at booking time (escrow), no further change needed
         await base44.entities.PaymentLedger.create({
           userId: pupil.id,
           bookingId: bookingId,
@@ -232,7 +254,7 @@ export default function LearnerBookingCalendar() {
           amountGbp: booking.totalPriceGbp,
           hours: booking.durationHours,
           createdByRole: 'system',
-          note: 'Full deduction applied due to late cancellation (<48h)'
+          note: 'Full deduction retained - late cancellation (<48h)'
         });
       }
 
