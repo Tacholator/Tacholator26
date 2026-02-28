@@ -463,6 +463,21 @@ export default function PupilProfile() {
                   }
                 })()}
 
+                {/* Balance Override Toggle */}
+                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <WalletMinimal className="w-4 h-4 text-slate-500" />
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">Allow booking without balance</p>
+                      <p className="text-xs text-slate-400">Bypass the balance requirement for this pupil</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={!!pupil.allowBookingWithoutBalance}
+                    onCheckedChange={(checked) => updatePupilMutation.mutate({ allowBookingWithoutBalance: checked })}
+                  />
+                </div>
+
                 {/* Payment Info */}
                                       {(pupil.hourlyRate > 0 || pupil.bulkPaymentBalance !== 0) && (
                                         <div className="space-y-1">
