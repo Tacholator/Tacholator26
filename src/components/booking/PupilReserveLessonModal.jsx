@@ -101,7 +101,8 @@ export default function PupilReserveLessonModal({
   const durationHours = slotEnd ? slotEnd.diff(slotStart, 'minutes') / 60 : 1;
   const totalPrice = (hourlyRate || 50) * durationHours;
 
-  const hasEnoughBalance = ledgerBalance >= totalPrice;
+  const balanceOverridden = !!pupil?.allowBookingWithoutBalance;
+  const hasEnoughBalance = balanceOverridden || ledgerBalance >= totalPrice;
 
   const isFormValid = pickupLocation.trim() !== '' && 
                       (!dropoffSameAsPickup ? dropoffLocation.trim() !== '' : true) &&
