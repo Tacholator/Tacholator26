@@ -115,7 +115,7 @@ export default function InstructorBookingCalendar() {
         title: 'Lesson Confirmed',
         message: `Your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} has been confirmed.`,
         type: 'booking',
-        linkTarget: 'LearnerCalendar'
+        linkTarget: 'LearnerMyBookings'
       });
     },
     onSuccess: () => {
