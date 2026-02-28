@@ -134,10 +134,15 @@ export default function LearnerBookingCalendar() {
         confirmedAt: new Date().toISOString(),
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
         totalPriceGbp: totalPrice,
+        escrowAmountGbp: totalPrice,
         notesFromPupil: `Pickup: ${pickupLocation} | Dropoff: ${dropoffLocation}${notesFromPupil ? ' | ' + notesFromPupil : ''}${firstTimeData ? ` | First booking - Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''}`,
         requestedAt: new Date().toISOString(),
         slotInstanceId: selectedSlotInstance?.id || null
       });
+
+      // Deduct escrow amount from pupil's balance immediately
+      const newBalance = (pupil.bulkPaymentBalance || 0) - totalPrice;
+      await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: newBalance });
 
       // Update slot instance to confirmed
       if (selectedSlotInstance?.id) {
