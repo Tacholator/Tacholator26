@@ -45,7 +45,16 @@ export const sharedNavLinks = [
     name: 'Payments & Plans',
     icon: CreditCard,
     instructorPage: 'InstructorPayments',
-    learnerPage: 'LearnerPayments'
+    learnerPage: 'LearnerPayments',
+    isCollapsible: true,
+    instructorChildren: [
+      { name: 'Payment Management', icon: CreditCard, page: 'InstructorPayments' },
+      { name: 'Subscription', icon: Star, page: 'InstructorSubscription' }
+    ],
+    learnerChildren: [
+      { name: 'Payment Management', icon: CreditCard, page: 'LearnerPayments' },
+      { name: 'Subscription', icon: Star, page: 'LearnerSubscription' }
+    ]
   },
   {
     id: 'notifications',
