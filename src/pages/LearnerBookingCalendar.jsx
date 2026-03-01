@@ -194,14 +194,18 @@ export default function LearnerBookingCalendar() {
 
       return booking;
     },
-    onSuccess: () => {
+    onSuccess: (booking) => {
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowReserveModal(false);
       setSelectedSlot(null);
       setSelectedSlotInstance(null);
-      toast({ title: 'Lesson confirmed!', description: 'Your lesson has been booked and confirmed instantly.' });
+      const isPending = booking?.status === 'reserved_pending_instructor';
+      toast({ 
+        title: isPending ? 'Booking request sent!' : 'Lesson confirmed!', 
+        description: isPending ? 'Your request is awaiting instructor approval.' : 'Your lesson has been booked and confirmed instantly.' 
+      });
     },
     onError: (error) => {
       toast({ title: 'Booking failed', description: error.message, variant: 'destructive' });
