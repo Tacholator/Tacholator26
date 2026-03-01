@@ -470,7 +470,13 @@ export default function Layout({ children, currentPageName }) {
                       {item.isCollapsible ? (
                         <>
                           <button
-                            onClick={() => setExpandedMenus(prev => ({ ...prev, [item.name]: !prev[item.name] }))}
+                            onClick={() => {
+                              if (expandedMenus[item.name]) {
+                                setExpandedMenus(prev => ({ ...prev, [item.name]: false }));
+                              } else {
+                                setExpandedMenus({ [item.name]: true });
+                              }
+                            }}
                             className={`flex items-center gap-3 rounded-xl p-3 text-sm font-medium transition-all w-full ${
                               isActive || hasActiveChild
                                 ? 'bg-[#F7B602] text-[#071739]'
