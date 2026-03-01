@@ -20,7 +20,8 @@ import {
   Sparkles,
   Settings,
   Receipt,
-  BookMarked
+  BookMarked,
+  Star
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
