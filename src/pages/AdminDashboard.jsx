@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, Calendar, Trash2, Sparkles, MapPin, CreditCard } from 'lucide-react';
+import { Settings, Calendar, Trash2, Sparkles, MapPin, CreditCard, Gift } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
@@ -48,6 +48,13 @@ const adminCards = [
     icon: CreditCard,
     page: 'AdminPaymentsHub',
     color: 'from-emerald-500 to-emerald-600'
+  },
+  {
+    title: 'Subscriptions',
+    description: 'Manage learner and instructor plans',
+    icon: Gift,
+    page: 'AdminSubscriptions',
+    color: 'from-pink-500 to-pink-600'
   }
 ];
 
