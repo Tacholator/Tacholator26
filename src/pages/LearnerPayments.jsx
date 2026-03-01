@@ -147,7 +147,7 @@ export default function LearnerPayments() {
         </div>
 
         {/* Top-level sub-tabs */}
-        <Tabs defaultValue="payment-management" className="space-y-6">
+        <Tabs value={new URLSearchParams(window.location.search).get('tab') || 'payment-management'} className="space-y-6">
           <TabsList>
             <TabsTrigger value="payment-management" className="flex items-center gap-2">
               <CreditCard className="w-4 h-4" />
