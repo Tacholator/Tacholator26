@@ -376,15 +376,17 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
 
-      const refundAmount = booking.totalPriceGbp || 0;
+      const escrowAmount = booking.escrowAmountGbp || 0;
+      const refundAmount = escrowAmount > 0 ? escrowAmount : (booking.totalPriceGbp || 0);
       const wasConfirmed = booking.status === 'confirmed';
 
-      // Mark booking as deleted
+      // Mark booking as deleted (also clear escrow)
       await base44.entities.LessonBooking.update(booking.id, {
         isDeleted: true,
         deletedAt: new Date().toISOString(),
         deletedByRole: 'instructor',
-        status: 'deleted'
+        status: 'deleted',
+        escrowAmountGbp: 0
       });
 
       // Release slot instance
@@ -396,10 +398,13 @@ export default function BookingDetailsModal({
         });
       }
 
-      // Refund pupil if booking was confirmed and had a price
+      // Refund pupil if booking was confirmed
       if (wasConfirmed && pupil && refundAmount > 0) {
+        // Fetch fresh pupil balance before updating
+        const freshPupils = await base44.entities.Pupil.filter({ id: pupil.id });
+        const freshPupil = freshPupils[0];
         await base44.entities.Pupil.update(pupil.id, {
-          bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + refundAmount
+          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + refundAmount
         });
         await base44.entities.PaymentLedger.create({
           userId: pupil.linkedUserId || pupil.id,
@@ -409,13 +414,13 @@ export default function BookingDetailsModal({
           amountGbp: refundAmount,
           hours: booking.durationHours || 0,
           createdByRole: 'instructor',
-          note: `Refund issued: instructor deleted confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}`
+          note: `Refund issued: instructor deleted confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}${escrowAmount > 0 ? ' (escrow returned)' : ''}`
         });
       }
 
       // Notify pupil
       if (pupil?.linkedUserId) {
-        const refundMsg = wasConfirmed && refundAmount > 0 ? ` £${refundAmount.toFixed(2)} has been refunded to your balance.` : '';
+        const refundMsg = wasConfirmed && refundAmount > 0 ? ` £${refundAmount.toFixed(2)} has been returned to your balance.` : '';
         await base44.entities.Notification.create({
           userId: pupil.linkedUserId,
           title: 'Lesson Cancelled by Instructor',
@@ -428,6 +433,7 @@ export default function BookingDetailsModal({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lessonBookings'] });
       queryClient.invalidateQueries({ queryKey: ['slotInstances'] });
+      queryClient.invalidateQueries({ queryKey: ['pupils'] });
       toast({ title: 'Booking deleted and slot restored to available' });
       setIsProcessing(false);
       setShowDeleteDialog(false);
