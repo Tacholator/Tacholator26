@@ -480,7 +480,12 @@ export default function Layout({ children, currentPageName }) {
                             )}
                           </button>
                           {isExpanded && item.children && (
-                            <div className="ml-4 mt-1 space-y-1">
+                            <motion.div
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -20 }}
+                              className="mt-2 space-y-1 bg-[#071739]/50 rounded-lg p-3 border-l-2 border-[#F7B602]"
+                            >
                               {item.children.map((child) => {
                                 const isChildActive = currentPageName === child.page;
                                 return (
@@ -488,7 +493,7 @@ export default function Layout({ children, currentPageName }) {
                                     key={child.name}
                                     to={createPageUrl(child.page)}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center gap-3 rounded-xl p-2 text-sm transition-all ${
+                                    className={`flex items-center gap-3 rounded-lg p-2 text-sm transition-all ${
                                       isChildActive
                                         ? 'bg-[#F7B602] text-[#071739]'
                                         : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
@@ -499,7 +504,7 @@ export default function Layout({ children, currentPageName }) {
                                   </Link>
                                 );
                               })}
-                            </div>
+                            </motion.div>
                           )}
                         </>
                       ) : (
