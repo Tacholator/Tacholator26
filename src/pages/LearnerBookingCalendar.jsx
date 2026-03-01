@@ -132,8 +132,8 @@ export default function LearnerBookingCalendar() {
         }
       }
 
-      // Check if instructor requires manual approval for this pupil
-      const requiresApproval = !!pupil.requireBookingApproval;
+      // Check if instructor requires manual approval (global setting, default true)
+      const requiresApproval = instructorProfile?.requireBookingApproval !== false;
       const bookingStatus = requiresApproval ? 'reserved_pending_instructor' : 'confirmed';
 
       const booking = await base44.entities.LessonBooking.create({
