@@ -327,7 +327,9 @@ export default function LearnerPayments() {
                           {entry.reason === 'lesson_confirmed_charge' && 'Lesson Charge'}
                           {entry.reason === 'late_cancellation_penalty' && 'Late Cancellation Penalty'}
                           {entry.reason === 'manual_adjustment' && 'Balance Adjustment'}
-                          {!['lesson_confirmed_charge', 'late_cancellation_penalty', 'manual_adjustment'].includes(entry.reason) && entry.reason}
+                          {entry.reason === 'refund_issued' && 'Refund'}
+                          {entry.reason === 'balance_top_up' && 'Balance Top Up'}
+                          {!['lesson_confirmed_charge', 'late_cancellation_penalty', 'manual_adjustment', 'refund_issued', 'balance_top_up'].includes(entry.reason) && entry.reason}
                         </div>
                         <div className="text-sm text-slate-500 flex items-center gap-2">
                           <Clock className="w-3 h-3" />
