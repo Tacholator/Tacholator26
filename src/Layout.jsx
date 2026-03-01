@@ -208,7 +208,7 @@ export default function Layout({ children, currentPageName }) {
                               return (
                                 <li key={child.name}>
                                   <Link
-                                    to={child.params ? `${createPageUrl(child.page)}?${child.params}` : createPageUrl(child.page)}
+                                    to={createPageUrl(child.page)}
                                     className={`group flex gap-x-3 rounded-xl p-2 text-sm transition-all duration-200 ${
                                       isChildActive
                                         ? 'bg-[#F7B602] text-[#071739]'
@@ -474,7 +474,7 @@ export default function Layout({ children, currentPageName }) {
                                 return (
                                   <Link
                                     key={child.name}
-                                    to={child.params ? `${createPageUrl(child.page)}?${child.params}` : createPageUrl(child.page)}
+                                    to={createPageUrl(child.page)}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className={`flex items-center gap-3 rounded-xl p-2 text-sm transition-all ${
                                       isChildActive

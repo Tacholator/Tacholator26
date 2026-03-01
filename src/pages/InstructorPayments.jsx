@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CreditCard, Layers } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   TrendingUp, 
@@ -160,31 +159,10 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
         {/* Header */}
         {!adminProxyInstructorId && (
           <div>
-            <h1 className="text-3xl font-bold text-[#071739]">Payments & Plans</h1>
+            <h1 className="text-3xl font-bold text-[#071739]">Payment Management</h1>
             <p className="text-slate-600 mt-2">Track pupil balances and payment activity</p>
           </div>
         )}
-
-        {/* Top-level sub-tabs */}
-        <Tabs value={new URLSearchParams(window.location.search).get('tab') || 'payment-management'} className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="payment-management" className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4" />
-              Payment Management
-            </TabsTrigger>
-            <TabsTrigger value="subscription" className="flex items-center gap-2">
-              <Layers className="w-4 h-4" />
-              Subscription
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Subscription Tab */}
-          <TabsContent value="subscription">
-            <h2 className="text-2xl font-bold text-[#071739]">Subscription</h2>
-          </TabsContent>
-
-          {/* Payment Management Tab */}
-          <TabsContent value="payment-management" className="space-y-6">
 
         {/* Payment Methods & Invoices (only show for non-admin view) */}
         {!adminProxyInstructorId && (
@@ -593,10 +571,8 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
               </CardContent>
             </Card>
           </TabsContent>
-          </Tabs>
-          </TabsContent>
-          </Tabs>
-          </div>
-          </div>
-          );
-          }
+        </Tabs>
+      </div>
+    </div>
+  );
+}

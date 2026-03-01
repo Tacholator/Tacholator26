@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CreditCard, TrendingUp, TrendingDown, Wallet, Calendar, Clock, AlertCircle, DollarSign, FileText, Layers } from 'lucide-react';
+import { CreditCard, TrendingUp, TrendingDown, Wallet, Calendar, Clock, AlertCircle, DollarSign, FileText } from 'lucide-react';
 import moment from 'moment';
 
 export default function LearnerPayments() {
@@ -142,30 +141,9 @@ export default function LearnerPayments() {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-[#071739]">Payments & Plans</h1>
+          <h1 className="text-3xl font-bold text-[#071739]">Payments</h1>
           <p className="text-slate-600 mt-2">Manage your lesson credits and payment history</p>
         </div>
-
-        {/* Top-level sub-tabs */}
-        <Tabs value={new URLSearchParams(window.location.search).get('tab') || 'payment-management'} className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="payment-management" className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4" />
-              Payment Management
-            </TabsTrigger>
-            <TabsTrigger value="subscription" className="flex items-center gap-2">
-              <Layers className="w-4 h-4" />
-              Subscription
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Subscription Tab */}
-          <TabsContent value="subscription">
-            <h2 className="text-2xl font-bold text-[#071739]">Subscription</h2>
-          </TabsContent>
-
-          {/* Payment Management Tab */}
-          <TabsContent value="payment-management" className="space-y-6">
 
         {/* Payment Methods & Invoices */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -378,9 +356,7 @@ export default function LearnerPayments() {
             )}
           </CardContent>
         </Card>
-          </TabsContent>
-        </Tabs>
-        </div>
-        </div>
-        );
-        }
+      </div>
+    </div>
+  );
+}

@@ -44,16 +44,7 @@ export const sharedNavLinks = [
     name: 'Payments & Plans',
     icon: CreditCard,
     instructorPage: 'InstructorPayments',
-    learnerPage: 'LearnerPayments',
-    isCollapsible: true,
-    instructorChildren: [
-      { name: 'Payment Management', icon: CreditCard, page: 'InstructorPayments', params: 'tab=payment-management' },
-      { name: 'Subscription', icon: Wallet, page: 'InstructorPayments', params: 'tab=subscription' }
-    ],
-    learnerChildren: [
-      { name: 'Payment Management', icon: CreditCard, page: 'LearnerPayments', params: 'tab=payment-management' },
-      { name: 'Subscription', icon: Wallet, page: 'LearnerPayments', params: 'tab=subscription' }
-    ]
+    learnerPage: 'LearnerPayments'
   },
   {
     id: 'notifications',
@@ -128,11 +119,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
       name: link.name,
       icon: link.icon,
       page: isInstructor ? link.instructorPage : link.learnerPage,
-      isShared: true,
-      isCollapsible: link.isCollapsible || false,
-      children: link.isCollapsible
-        ? (isInstructor ? link.instructorChildren : link.learnerChildren)
-        : undefined
+      isShared: true
     }))
     .filter(link => link.page !== null); // Filter out items with null pages
 
