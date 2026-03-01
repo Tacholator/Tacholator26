@@ -138,8 +138,8 @@ export default function LearnerBookingCalendar() {
         }
       }
 
-      // Check if instructor has global booking approval requirement
-      const requiresApproval = !!instructorProfile?.requireBookingApproval;
+      // Check if instructor has global booking approval requirement (default ON if not set)
+      const requiresApproval = instructorProfile?.requireBookingApproval !== false;
       const bookingStatus = requiresApproval ? 'reserved_pending_instructor' : 'confirmed';
 
       const booking = await base44.entities.LessonBooking.create({
