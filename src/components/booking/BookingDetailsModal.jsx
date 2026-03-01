@@ -749,7 +749,14 @@ export default function BookingDetailsModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Cancel Confirmed Lesson</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to cancel this confirmed lesson? The pupil will be notified and the slot will become available again. This action cannot be undone.
+            {(() => {
+              const escrow = booking.escrowAmountGbp || 0;
+              const refund = escrow > 0 ? escrow : (booking.totalPriceGbp || 0);
+              if (refund > 0) {
+                return `Are you sure you want to cancel this confirmed lesson? £${refund.toFixed(2)} held in escrow will be returned to the pupil's balance immediately. The pupil will be notified. This action cannot be undone.`;
+              }
+              return 'Are you sure you want to cancel this confirmed lesson? The pupil will be notified and the slot will become available again. This action cannot be undone.';
+            })()}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
