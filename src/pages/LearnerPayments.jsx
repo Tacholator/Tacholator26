@@ -378,6 +378,8 @@ export default function LearnerPayments() {
             )}
           </CardContent>
         </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
