@@ -31,7 +31,9 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
     ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
     : user?.full_name || user?.email;
 
-  if (selectedItem?.component === 'profile') {
+  const isDesktop = window.innerWidth >= 1024;
+
+  if (selectedItem?.component === 'profile' && !isDesktop) {
     return (
       <div className="flex flex-col h-full">
         <button
