@@ -56,6 +56,13 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000
   });
 
+  const { data: instructors = [] } = useQuery({
+    queryKey: ['instructorProfile', pupil?.instructorId],
+    queryFn: () => base44.entities.Instructor.filter({ id: pupil.instructorId }),
+    enabled: !!pupil?.instructorId
+  });
+  const instructorProfile = instructors[0];
+
   const { data: allInstructorBookings = [] } = useQuery({
     queryKey: ['instructorBookings', pupil?.instructorId],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
