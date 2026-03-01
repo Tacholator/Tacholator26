@@ -136,24 +136,59 @@ export default function LearnerCalendar() {
         ? moment(selectedSlotInstance.endAtUtc).local()
         : startMoment.clone().add(1, 'hours');
       const durationHours = endMoment.diff(startMoment, 'minutes') / 60;
-      
+      const totalPrice = (pupil.hourlyRate || 50) * durationHours;
+
+      // Race condition check: verify slot is still available
+      if (selectedSlotInstance?.id) {
+        const freshSlots = await base44.entities.BookableSlotInstance.filter({ id: selectedSlotInstance.id });
+        if (!freshSlots.length || freshSlots[0].status !== 'available') {
+          throw new Error('This slot is no longer available. Please choose another time.');
+        }
+      }
+
+      // Fetch fresh instructor profile to get latest requireBookingApproval setting
+      const freshInstructorProfiles = await base44.entities.Instructor.filter({ created_by: pupil.instructorEmail });
+      const freshInstructorProfile = freshInstructorProfiles[0] || null;
+      // Global instructor setting: default true (approval required) unless explicitly set to false
+      const requiresApproval = freshInstructorProfile?.requireBookingApproval !== false;
+      const bookingStatus = requiresApproval ? 'reserved_pending_instructor' : 'confirmed';
+
       const booking = await base44.entities.LessonBooking.create({
         instructorId: pupil.instructorId,
         pupilId: pupil.id,
-        startAtUtc: startMoment.utc().format(),
-        endAtUtc: endMoment.utc().format(),
+        startAtUtc: startMoment.utc().toISOString(),
+        endAtUtc: endMoment.utc().toISOString(),
         durationHours,
-        status: 'reserved_pending_instructor',
+        status: bookingStatus,
+        confirmedAt: requiresApproval ? null : new Date().toISOString(),
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
-        totalPriceGbp: (pupil.hourlyRate || 50) * durationHours,
+        totalPriceGbp: totalPrice,
+        escrowAmountGbp: requiresApproval ? 0 : totalPrice,
         notesFromPupil: `Pickup: ${pickupLocation} | Dropoff: ${dropoffLocation}${notesFromPupil ? ' | ' + notesFromPupil : ''}${firstTimeData ? ` | First booking - Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''}`,
         requestedAt: new Date().toISOString(),
         slotInstanceId: selectedSlotInstance?.id || null
       });
 
+      if (!requiresApproval) {
+        // Deduct escrow amount from pupil's balance immediately
+        const newBalance = (pupil.bulkPaymentBalance || 0) - totalPrice;
+        await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: newBalance });
+
+        await base44.entities.PaymentLedger.create({
+          userId: pupil.id,
+          bookingId: booking.id,
+          type: 'charge',
+          reason: 'lesson_confirmed_charge',
+          amountGbp: totalPrice,
+          hours: durationHours,
+          createdByRole: 'system',
+          note: `Escrow held: £${totalPrice.toFixed(2)} deducted on booking confirmation`
+        });
+      }
+
       if (selectedSlotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(selectedSlotInstance.id, {
-          status: 'reserved_pending',
+          status: requiresApproval ? 'reserved_pending' : 'confirmed',
           reservedByPupilId: pupil.id,
           bookingId: booking.id
         });
@@ -161,22 +196,38 @@ export default function LearnerCalendar() {
 
       await base44.entities.Notification.create({
         userId: pupil.instructorId,
-        title: 'New Lesson Request',
-        message: `${pupil.firstName} ${pupil.lastName} requested a lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} | Pickup: ${pickupLocation}`,
+        title: requiresApproval ? 'New Booking Request' : 'Lesson Booked',
+        message: `${pupil.firstName} ${pupil.lastName} ${requiresApproval ? 'requested' : 'booked'} a lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')}${requiresApproval ? ' — awaiting your approval' : ' (auto-confirmed)'} | Pickup: ${pickupLocation}`,
         type: 'booking',
         linkTarget: 'Calendar'
       });
 
+      if (pupil.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: pupil.linkedUserId,
+          title: requiresApproval ? 'Booking Request Sent' : 'Lesson Confirmed!',
+          message: requiresApproval
+            ? `Your lesson request for ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} has been sent. Awaiting instructor approval.`
+            : `Your lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} is confirmed. £${totalPrice.toFixed(2)} has been deducted from your balance.`,
+          type: 'booking',
+          linkTarget: 'LearnerMyBookings'
+        });
+      }
+
       return booking;
     },
-    onSuccess: () => {
+    onSuccess: (booking) => {
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       setShowReserveModal(false);
       setSelectedSlot(null);
       setSelectedSlotInstance(null);
-      toast({ title: 'Booking request sent', description: 'Awaiting instructor confirmation' });
+      const isPending = booking?.status === 'reserved_pending_instructor';
+      toast({ 
+        title: isPending ? 'Booking request sent!' : 'Lesson confirmed!', 
+        description: isPending ? 'Your request is awaiting instructor approval.' : 'Your lesson has been booked and confirmed instantly.'
+      });
     },
     onError: (error) => {
       toast({ title: 'Booking failed', description: error.message, variant: 'destructive' });
