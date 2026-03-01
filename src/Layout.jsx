@@ -497,6 +497,40 @@ export default function Layout({ children, currentPageName }) {
         isInstructor={isInstructor}
       />
 
+      {/* Mobile Account Panel Full Screen */}
+      <AnimatePresence>
+        {showAccountPanel && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed inset-0 z-50 bg-white lg:hidden overflow-y-auto"
+          >
+            <div className="flex flex-col h-full">
+              <div className="flex items-center gap-4 p-4 border-b border-slate-200">
+                <button
+                  onClick={() => setShowAccountPanel(false)}
+                  className="p-2 -m-2 text-slate-600 hover:text-slate-900"
+                >
+                  <ChevronRight className="w-6 h-6 rotate-180" />
+                </button>
+                <h1 className="text-lg font-semibold text-[#071739]">Account</h1>
+              </div>
+              <div className="flex-1">
+                <AccountProfilePanel 
+                  user={user}
+                  isInstructor={isInstructor}
+                  onLogout={handleLogout}
+                  onDelete={() => setShowDeleteDialog(true)}
+                  onClose={() => setShowAccountPanel(false)}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Delete Account Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
