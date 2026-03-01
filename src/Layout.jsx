@@ -41,6 +41,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
+import AccountProfilePanel from '@/components/account/AccountProfilePanel';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Toaster } from '@/components/ui/toaster';
 
 export default function Layout({ children, currentPageName }) {
