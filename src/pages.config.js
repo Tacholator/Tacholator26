@@ -73,11 +73,13 @@ import InstructorGpsRouteSetup from './pages/InstructorGpsRouteSetup';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
 import InstructorMyTeaching from './pages/InstructorMyTeaching';
 import InstructorNotifications from './pages/InstructorNotifications';
+import InstructorPayments from './pages/InstructorPayments';
 import InstructorPupilNotes from './pages/InstructorPupilNotes';
 import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
 import InstructorQuizPreview from './pages/InstructorQuizPreview';
 import InstructorResources from './pages/InstructorResources';
 import InstructorStripeConnect from './pages/InstructorStripeConnect';
+import InstructorSubscription from './pages/InstructorSubscription';
 import InstructorTeachingHub from './pages/InstructorTeachingHub';
 import InstructorTestRouteDetail from './pages/InstructorTestRouteDetail';
 import InstructorTestRoutes from './pages/InstructorTestRoutes';
@@ -99,11 +101,13 @@ import LearnerMyInstructor from './pages/LearnerMyInstructor';
 import LearnerMyLearning from './pages/LearnerMyLearning';
 import LearnerNotes from './pages/LearnerNotes';
 import LearnerNotifications from './pages/LearnerNotifications';
+import LearnerPayments from './pages/LearnerPayments';
 import LearnerProgress from './pages/LearnerProgress';
 import LearnerResources from './pages/LearnerResources';
 import LearnerScheduledLessons from './pages/LearnerScheduledLessons';
 import LearnerSkillStudy from './pages/LearnerSkillStudy';
 import LearnerSkills from './pages/LearnerSkills';
+import LearnerSubscription from './pages/LearnerSubscription';
 import LearnerTestRouteDetail from './pages/LearnerTestRouteDetail';
 import LearnerTestRoutes from './pages/LearnerTestRoutes';
 import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
@@ -117,10 +121,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import InstructorPayments from './pages/InstructorPayments';
-import LearnerPayments from './pages/LearnerPayments';
-import InstructorSubscription from './pages/InstructorSubscription';
-import LearnerSubscription from './pages/LearnerSubscription';
 import __Layout from './Layout.jsx';
 
 
@@ -151,11 +151,13 @@ export const PAGES = {
     "InstructorMcqReporting": InstructorMcqReporting,
     "InstructorMyTeaching": InstructorMyTeaching,
     "InstructorNotifications": InstructorNotifications,
+    "InstructorPayments": InstructorPayments,
     "InstructorPupilNotes": InstructorPupilNotes,
     "InstructorPupilNotesList": InstructorPupilNotesList,
     "InstructorQuizPreview": InstructorQuizPreview,
     "InstructorResources": InstructorResources,
     "InstructorStripeConnect": InstructorStripeConnect,
+    "InstructorSubscription": InstructorSubscription,
     "InstructorTeachingHub": InstructorTeachingHub,
     "InstructorTestRouteDetail": InstructorTestRouteDetail,
     "InstructorTestRoutes": InstructorTestRoutes,
@@ -177,11 +179,13 @@ export const PAGES = {
     "LearnerMyLearning": LearnerMyLearning,
     "LearnerNotes": LearnerNotes,
     "LearnerNotifications": LearnerNotifications,
+    "LearnerPayments": LearnerPayments,
     "LearnerProgress": LearnerProgress,
     "LearnerResources": LearnerResources,
     "LearnerScheduledLessons": LearnerScheduledLessons,
     "LearnerSkillStudy": LearnerSkillStudy,
     "LearnerSkills": LearnerSkills,
+    "LearnerSubscription": LearnerSubscription,
     "LearnerTestRouteDetail": LearnerTestRouteDetail,
     "LearnerTestRoutes": LearnerTestRoutes,
     "LessonTermsAndConditions": LessonTermsAndConditions,
@@ -195,10 +199,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "InstructorPayments": InstructorPayments,
-    "LearnerPayments": LearnerPayments,
-    "InstructorSubscription": InstructorSubscription,
-    "LearnerSubscription": LearnerSubscription,
 }
 
 export const pagesConfig = {

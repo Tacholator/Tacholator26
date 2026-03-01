@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProgressRing from '@/components/ui/ProgressRing';
 import ArrivalBanner from '@/components/lessons/ArrivalBanner';
+import ReferralBanner from '@/components/referral/ReferralBanner';
+import ReferralPopup from '@/components/referral/ReferralPopup';
 import { 
   Calendar, 
   Clock, 
