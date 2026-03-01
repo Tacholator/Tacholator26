@@ -380,7 +380,7 @@ export default function LearnerPayments() {
         </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
-  );
-}
+        </div>
+        </div>
+        );
+        }

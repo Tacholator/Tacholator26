@@ -593,10 +593,10 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
+          </Tabs>
           </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
-}
+          </Tabs>
+          </div>
+          </div>
+          );
+          }
