@@ -334,64 +334,27 @@ export default function Layout({ children, currentPageName }) {
                         <span className="font-bold text-lg text-white">Tacholator</span>
                                 </div>
                       <div className="flex items-center gap-2">
-                      <DropdownMenu modal={false}>
-                        <DropdownMenuTrigger asChild>
+                      <Sheet>
+                        <SheetTrigger asChild>
                           <button className="focus:outline-none">
                             <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
+                              <AvatarImage src={user?.profilePhotoUrl} />
                               <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-sm">
                                 {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                               </AvatarFallback>
                             </Avatar>
                           </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent 
-                          align="end" 
-                          className="w-56"
-                          onInteractOutside={(e) => e.preventDefault()}
-                          onEscapeKeyDown={(e) => e.preventDefault()}
-                        >
-                          <Link to={createPageUrl('ProfileSettings')}>
-                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                              <Settings className="w-4 h-4 mr-2" />
-                              Profile Settings
-                            </DropdownMenuItem>
-                          </Link>
-                          <Link to={createPageUrl('LessonTermsAndConditions')}>
-                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                              <FileText className="w-4 h-4 mr-2" />
-                              Lesson T&Cs
-                            </DropdownMenuItem>
-                          </Link>
-                          <Link to={createPageUrl('RefundPolicy')}>
-                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                              <Receipt className="w-4 h-4 mr-2" />
-                              Refund Policy
-                            </DropdownMenuItem>
-                          </Link>
-                          <Link to={createPageUrl('TermsAndConditions')}>
-                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                              <FileText className="w-4 h-4 mr-2" />
-                              Terms & Conditions
-                            </DropdownMenuItem>
-                          </Link>
-                          <Link to={createPageUrl('PrivacyPolicy')}>
-                            <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                              <Shield className="w-4 h-4 mr-2" />
-                              Privacy Policy
-                            </DropdownMenuItem>
-                          </Link>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={handleLogout} className="text-slate-600">
-                            <LogOut className="w-4 h-4 mr-2" />
-                            Sign out
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-rose-600">
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Delete Account
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                        </SheetTrigger>
+                        <SheetContent side="bottom" className="h-screen flex flex-col p-0 bg-white rounded-t-2xl">
+                          <AccountProfilePanel 
+                            user={user}
+                            isInstructor={isInstructor}
+                            onLogout={handleLogout}
+                            onDelete={() => setShowDeleteDialog(true)}
+                            onClose={() => {}}
+                          />
+                        </SheetContent>
+                      </Sheet>
           </div>
       </div>
 
