@@ -208,7 +208,7 @@ export default function Layout({ children, currentPageName }) {
                               return (
                                 <li key={child.name}>
                                   <Link
-                                    to={createPageUrl(child.page)}
+                                    to={child.params ? `${createPageUrl(child.page)}?${child.params}` : createPageUrl(child.page)}
                                     className={`group flex gap-x-3 rounded-xl p-2 text-sm transition-all duration-200 ${
                                       isChildActive
                                         ? 'bg-[#F7B602] text-[#071739]'
