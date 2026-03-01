@@ -56,21 +56,6 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000
   });
 
-  // Fetch the instructor's user record to get their email, then fetch Instructor profile
-  const { data: instructorUsers = [] } = useQuery({
-    queryKey: ['instructorUser', pupil?.instructorId],
-    queryFn: () => base44.entities.User.filter({ id: pupil.instructorId }),
-    enabled: !!pupil?.instructorId
-  });
-  const instructorUser = instructorUsers[0];
-
-  const { data: instructors = [] } = useQuery({
-    queryKey: ['instructorProfile', instructorUser?.email],
-    queryFn: () => base44.entities.Instructor.filter({ created_by: instructorUser.email }),
-    enabled: !!instructorUser?.email
-  });
-  const instructorProfile = instructors[0];
-
   const { data: allInstructorBookings = [] } = useQuery({
     queryKey: ['instructorBookings', pupil?.instructorId],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
@@ -138,8 +123,8 @@ export default function LearnerBookingCalendar() {
         }
       }
 
-      // Check if instructor has global booking approval requirement (default ON if not set)
-      const requiresApproval = instructorProfile?.requireBookingApproval !== false;
+      // Check if instructor requires manual approval for this pupil
+      const requiresApproval = !!pupil.requireBookingApproval;
       const bookingStatus = requiresApproval ? 'reserved_pending_instructor' : 'confirmed';
 
       const booking = await base44.entities.LessonBooking.create({
