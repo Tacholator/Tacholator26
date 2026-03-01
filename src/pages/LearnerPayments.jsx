@@ -142,9 +142,30 @@ export default function LearnerPayments() {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-[#071739]">Payments</h1>
+          <h1 className="text-3xl font-bold text-[#071739]">Payments & Plans</h1>
           <p className="text-slate-600 mt-2">Manage your lesson credits and payment history</p>
         </div>
+
+        {/* Top-level sub-tabs */}
+        <Tabs defaultValue="payment-management" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="payment-management" className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4" />
+              Payment Management
+            </TabsTrigger>
+            <TabsTrigger value="subscription" className="flex items-center gap-2">
+              <Layers className="w-4 h-4" />
+              Subscription
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Subscription Tab */}
+          <TabsContent value="subscription">
+            <h2 className="text-2xl font-bold text-[#071739]">Subscription</h2>
+          </TabsContent>
+
+          {/* Payment Management Tab */}
+          <TabsContent value="payment-management" className="space-y-6">
 
         {/* Payment Methods & Invoices */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
