@@ -10,7 +10,8 @@ import {
   Receipt,
   Shield,
   LogOut,
-  Trash2
+  Trash2,
+  ChevronRight
 } from 'lucide-react';
 
 export default function AccountProfilePanel({ user, isInstructor, onLogout, onDelete, onClose }) {
