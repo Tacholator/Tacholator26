@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { motion } from 'framer-motion';
 import {
   Settings,
   FileText,
@@ -11,12 +11,16 @@ import {
   Shield,
   LogOut,
   Trash2,
-  ChevronRight
+  ChevronRight,
+  ArrowLeft
 } from 'lucide-react';
+import ProfileSettingsContent from './ProfileSettingsContent';
 
 export default function AccountProfilePanel({ user, isInstructor, onLogout, onDelete, onClose }) {
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const menuItems = [
-    { icon: Settings, label: 'Profile Settings', page: 'ProfileSettings' },
+    { icon: Settings, label: 'Profile Settings', page: 'ProfileSettings', component: 'profile' },
     { icon: FileText, label: 'Lesson T&Cs', page: 'LessonTermsAndConditions' },
     { icon: Receipt, label: 'Refund Policy', page: 'RefundPolicy' },
     { icon: FileText, label: 'Terms & Conditions', page: 'TermsAndConditions' },
@@ -26,6 +30,23 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
   const userName = user?.firstName 
     ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
     : user?.full_name || user?.email;
+
+  if (selectedItem?.component === 'profile') {
+    return (
+      <div className="flex flex-col h-full">
+        <button
+          onClick={() => setSelectedItem(null)}
+          className="flex items-center gap-2 p-4 text-slate-600 hover:text-slate-900"
+        >
+          <ArrowLeft className="w-4 h-4 rotate-180" />
+          <span className="text-sm font-medium">Back</span>
+        </button>
+        <div className="flex-1 overflow-y-auto">
+          <ProfileSettingsContent user={user} isInstructor={isInstructor} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -51,15 +72,20 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
         {menuItems.map((item) => {
           const Icon = item.icon;
           return (
-            <Link
+            <button
               key={item.page}
-              to={createPageUrl(item.page)}
-              onClick={onClose}
-              className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+              onClick={() => {
+                if (item.component === 'profile') {
+                  setSelectedItem(item);
+                } else {
+                  window.location.href = createPageUrl(item.page);
+                }
+              }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
             >
               <Icon className="w-5 h-5 group-hover:text-[#F7B602]" />
               <span className="text-sm font-medium">{item.label}</span>
-            </Link>
+            </button>
           );
         })}
       </div>
