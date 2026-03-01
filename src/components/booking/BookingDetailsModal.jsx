@@ -199,11 +199,15 @@ export default function BookingDetailsModal({
         });
       }
 
-      // Refund pupil if booking was confirmed and had a price
+      // Refund pupil if booking was confirmed
       if (wasConfirmed && pupil && refundAmount > 0) {
+        // Fetch fresh pupil balance before updating
+        const freshPupils = await base44.entities.Pupil.filter({ id: pupil.id });
+        const freshPupil = freshPupils[0];
         await base44.entities.Pupil.update(pupil.id, {
-          bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + refundAmount
+          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + refundAmount
         });
+        await base44.entities.LessonBooking.update(booking.id, { escrowAmountGbp: 0 });
         await base44.entities.PaymentLedger.create({
           userId: pupil.linkedUserId || pupil.id,
           bookingId: booking.id,
@@ -212,13 +216,13 @@ export default function BookingDetailsModal({
           amountGbp: refundAmount,
           hours: booking.durationHours || 0,
           createdByRole: 'instructor',
-          note: `Refund issued: instructor cancelled confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}`
+          note: `Refund issued: instructor cancelled confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}${escrowAmount > 0 ? ' (escrow returned)' : ''}`
         });
       }
 
       // Notify pupil
       if (pupil?.linkedUserId) {
-        const refundMsg = wasConfirmed && refundAmount > 0 ? ` £${refundAmount.toFixed(2)} has been refunded to your balance.` : '';
+        const refundMsg = wasConfirmed && refundAmount > 0 ? ` £${refundAmount.toFixed(2)} has been returned to your balance.` : '';
         await base44.entities.Notification.create({
           userId: pupil.linkedUserId,
           title: 'Lesson Cancelled by Instructor',
@@ -235,6 +239,7 @@ export default function BookingDetailsModal({
       queryClient.invalidateQueries(['lessonBookings']);
       queryClient.invalidateQueries(['slotInstances']);
       queryClient.invalidateQueries(['pupilConfirmedBookings']);
+      queryClient.invalidateQueries(['pupils']);
       toast({ title: 'Lesson cancelled successfully', description: 'The pupil has been notified' });
       setIsProcessing(false);
       setShowCancelDialog(false);
