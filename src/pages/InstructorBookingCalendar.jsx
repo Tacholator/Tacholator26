@@ -279,12 +279,34 @@ export default function InstructorBookingCalendar() {
           });
         }
 
+        // If booking was confirmed, refund the lesson cost to the pupil's balance
+        const isConfirmed = booking.status === 'confirmed';
+        const refundAmount = booking.totalPriceGbp || 0;
+        if (isConfirmed && pupil && refundAmount > 0) {
+          await base44.entities.Pupil.update(pupil.id, {
+            bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + refundAmount
+          });
+          await base44.entities.PaymentLedger.create({
+            userId: pupil.linkedUserId || pupil.id,
+            bookingId: booking.id,
+            type: 'refund',
+            reason: 'refund_issued',
+            amountGbp: refundAmount,
+            hours: booking.durationHours || 0,
+            createdByRole: 'instructor',
+            note: `Refund issued: instructor cancelled confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}`
+          });
+        }
+
         // Notify pupil
         if (pupil?.linkedUserId) {
+          const refundMsg = isConfirmed && refundAmount > 0
+            ? ` £${refundAmount.toFixed(2)} has been refunded to your balance.`
+            : '';
           await base44.entities.Notification.create({
             userId: pupil.linkedUserId,
-            title: 'Lesson Cancelled',
-            message: `Your instructor has cancelled the lesson scheduled for ${moment(booking.startAtUtc).local().format('D MMM [at] HH:mm')}.`,
+            title: 'Lesson Cancelled by Instructor',
+            message: `Your instructor has cancelled the lesson scheduled for ${moment(booking.startAtUtc).local().format('D MMM [at] HH:mm')}.${refundMsg}`,
             type: 'booking',
             linkTarget: 'LearnerBookingCalendar'
           });
@@ -306,12 +328,13 @@ export default function InstructorBookingCalendar() {
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
       queryClient.invalidateQueries(['myBookings']);
-      toast({ title: 'Booking deleted successfully' });
+      queryClient.invalidateQueries(['pupils']);
+      toast({ title: 'Booking cancelled successfully' });
       setShowDeleteDialog(false);
       setDeleteTarget(null);
     },
     onError: (error) => {
-      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+      toast({ title: 'Cancel failed', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -321,6 +344,15 @@ export default function InstructorBookingCalendar() {
     
     setDeleteTarget({ booking, slotInstance, state });
     setShowDeleteDialog(true);
+  };
+
+  // Build delete dialog description based on whether booking is confirmed
+  const deleteDialogDescription = () => {
+    const booking = deleteTarget?.booking;
+    if (booking?.status === 'confirmed' && (booking?.totalPriceGbp || 0) > 0) {
+      return `Are you sure you want to cancel this confirmed booking? The pupil will be notified and £${booking.totalPriceGbp.toFixed(2)} will be refunded to their balance.`;
+    }
+    return 'Are you sure you want to cancel this booking? The pupil will be notified and the slot will become available again.';
   };
 
   if (rulesLoading || bookingsLoading) {
@@ -454,18 +486,18 @@ export default function InstructorBookingCalendar() {
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Booking</AlertDialogTitle>
+              <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this booking? The pupil will be notified and the slot will become available again. This action cannot be undone.
+                {deleteDialogDescription()}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>Keep Booking</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => deleteBookingMutation.mutate(deleteTarget)}
                 className="bg-rose-600 hover:bg-rose-700"
               >
-                Delete Booking
+                Cancel Booking
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
