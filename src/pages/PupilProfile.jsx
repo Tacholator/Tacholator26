@@ -494,6 +494,23 @@ export default function PupilProfile() {
                   />
                 </div>
 
+                {/* Require Approval Toggle */}
+                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <div className="flex items-center gap-2 min-w-0 flex-1 mr-3">
+                    <ClipboardCheck className="w-4 h-4 shrink-0 text-slate-500" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-slate-700">Require approval for all bookings</p>
+                      <p className="text-xs text-slate-400">
+                        Bookings will need your manual approval even when the pupil has sufficient balance
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={!!pupil.requireBookingApproval}
+                    onCheckedChange={(checked) => updatePupilMutation.mutate({ requireBookingApproval: checked })}
+                  />
+                </div>
+
                 {/* Payment Info */}
                 {(pupil.hourlyRate > 0 || pupil.bulkPaymentBalance !== 0) && (
                   <div className="space-y-1">
