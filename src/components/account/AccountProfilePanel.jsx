@@ -77,7 +77,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             <button
               key={item.page}
               onClick={() => {
-                if (item.component === 'profile') {
+                if (item.component === 'profile' && !isDesktop) {
                   setSelectedItem(item);
                 } else {
                   window.location.href = createPageUrl(item.page);
