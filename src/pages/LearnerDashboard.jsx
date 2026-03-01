@@ -353,7 +353,11 @@ export default function LearnerDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
+      <ReferralPopup />
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Referral Banner */}
+        <ReferralBanner />
+
         {/* Congratulations Banner for Passed Pupils */}
         {pupil.status === 'Passed' && (
           <motion.div
