@@ -885,7 +885,14 @@ export default function BookingDetailsModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Booking</AlertDialogTitle>
           <AlertDialogDescription>
-            Delete this booking entirely and restore the slot to available? The pupil will be notified. This action cannot be undone.
+            {(() => {
+              const escrow = booking.escrowAmountGbp || 0;
+              const refund = escrow > 0 ? escrow : (booking.totalPriceGbp || 0);
+              if (isConfirmed && refund > 0) {
+                return `Delete this booking and restore the slot to available? £${refund.toFixed(2)} held in escrow will be returned to the pupil's balance immediately. The pupil will be notified. This action cannot be undone.`;
+              }
+              return 'Delete this booking entirely and restore the slot to available? The pupil will be notified. This action cannot be undone.';
+            })()}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
