@@ -335,27 +335,17 @@ export default function Layout({ children, currentPageName }) {
                         <span className="font-bold text-lg text-white">Tacholator</span>
                                 </div>
                       <div className="flex items-center gap-2">
-                      <Sheet>
-                        <SheetTrigger asChild>
-                          <button className="focus:outline-none">
-                            <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
-                              <AvatarImage src={user?.profilePhotoUrl} />
-                              <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-sm">
-                                {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
-                              </AvatarFallback>
-                            </Avatar>
-                          </button>
-                        </SheetTrigger>
-                        <SheetContent side="bottom" className="h-screen flex flex-col p-0 bg-white rounded-t-2xl">
-                          <AccountProfilePanel 
-                            user={user}
-                            isInstructor={isInstructor}
-                            onLogout={handleLogout}
-                            onDelete={() => setShowDeleteDialog(true)}
-                            onClose={() => {}}
-                          />
-                        </SheetContent>
-                      </Sheet>
+                      <button 
+                        onClick={() => setShowAccountPanel(true)}
+                        className="focus:outline-none"
+                      >
+                        <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
+                          <AvatarImage src={user?.profilePhotoUrl} />
+                          <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-sm">
+                            {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </button>
           </div>
       </div>
 
