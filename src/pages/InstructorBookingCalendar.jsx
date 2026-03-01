@@ -351,8 +351,14 @@ export default function InstructorBookingCalendar() {
   // Build delete dialog description based on whether booking is confirmed
   const deleteDialogDescription = () => {
     const booking = deleteTarget?.booking;
-    if (booking?.status === 'confirmed' && (booking?.totalPriceGbp || 0) > 0) {
-      return `Are you sure you want to cancel this confirmed booking? The pupil will be notified and £${booking.totalPriceGbp.toFixed(2)} will be refunded to their balance.`;
+    if (booking?.status === 'confirmed') {
+      const escrowAmount = booking?.escrowAmountGbp || 0;
+      const totalPrice = booking?.totalPriceGbp || 0;
+      const refundAmount = escrowAmount > 0 ? escrowAmount : totalPrice;
+      if (refundAmount > 0) {
+        return `Are you sure you want to cancel this confirmed booking? The pupil will be notified and £${refundAmount.toFixed(2)} held in escrow will be returned to their balance immediately.`;
+      }
+      return 'Are you sure you want to cancel this confirmed booking? The pupil will be notified and the slot will become available again.';
     }
     return 'Are you sure you want to cancel this booking? The pupil will be notified and the slot will become available again.';
   };
