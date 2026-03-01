@@ -260,7 +260,9 @@ export default function InstructorBookingCalendar() {
   const deleteBookingMutation = useMutation({
     mutationFn: async ({ booking, slotInstance }) => {
       if (booking) {
-        const pupil = pupils.find(p => p.id === booking.pupilId);
+        // Fetch pupil fresh to get current (non-stale) balance
+        const pupilResults = await base44.entities.Pupil.filter({ id: booking.pupilId });
+        const pupil = pupilResults[0];
         
         // Soft delete the booking - mark as deleted
         await base44.entities.LessonBooking.update(booking.id, {
