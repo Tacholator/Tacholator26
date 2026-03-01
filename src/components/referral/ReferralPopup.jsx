@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Sparkles } from 'lucide-react';
+import { Gift, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const REFERRAL_POPUP_KEY = 'referralPopupDismissed';
 
