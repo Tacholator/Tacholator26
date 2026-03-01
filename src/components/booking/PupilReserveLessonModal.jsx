@@ -107,7 +107,8 @@ export default function PupilReserveLessonModal({
 
   const balanceOverridden = !!pupil?.allowBookingWithoutBalance;
   const hasEnoughBalance = balanceOverridden || availableBalance >= totalPrice;
-  const requiresApproval = !!pupil?.requireBookingApproval;
+  // Global instructor setting: default true (approval required) unless explicitly set to false
+  const requiresApproval = instructorProfile?.requireBookingApproval !== false;
 
   const isFormValid = pickupLocation.trim() !== '' && 
                       (!dropoffSameAsPickup ? dropoffLocation.trim() !== '' : true) &&
