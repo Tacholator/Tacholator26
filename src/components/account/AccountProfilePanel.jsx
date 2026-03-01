@@ -14,7 +14,7 @@ import {
   ChevronRight,
   ArrowLeft
 } from 'lucide-react';
-import ProfileSettingsContent from './ProfileSettingsContent';
+import ProfileSettingsContent from './ProfileSettingsContent.jsx';
 
 export default function AccountProfilePanel({ user, isInstructor, onLogout, onDelete, onClose }) {
   const [selectedItem, setSelectedItem] = useState(null);
