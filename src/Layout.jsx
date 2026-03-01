@@ -49,6 +49,7 @@ export default function Layout({ children, currentPageName }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({});
+  const [activeCollapsibleMenu, setActiveCollapsibleMenu] = useState(null);
   const navigate = useNavigate();
 
   const { data: user } = useQuery({
