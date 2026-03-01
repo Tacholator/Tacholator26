@@ -1,8 +1,10 @@
 import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, Coffee, CalendarDays } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Clock, Coffee, CalendarDays, ClipboardCheck } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 export default function CalendarSettingsDrawer({ 
   open, 
@@ -11,6 +13,30 @@ export default function CalendarSettingsDrawer({
   onOpenLunch,
   onOpenUnavailable
 }) {
+  const queryClient = useQueryClient();
+
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfile', user?.id],
+    queryFn: async () => {
+      const profiles = await base44.entities.Instructor.filter({ created_by: user.email });
+      return profiles[0] || null;
+    },
+    enabled: !!user?.id
+  });
+
+  const updateInstructorMutation = useMutation({
+    mutationFn: (data) => base44.entities.Instructor.update(instructorProfile.id, data),
+    onSuccess: () => queryClient.invalidateQueries(['instructorProfile'])
+  });
+
+  // Default is true (approval required) if not explicitly set to false
+  const requiresApproval = instructorProfile?.requireBookingApproval !== false;
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md">
@@ -62,6 +88,30 @@ export default function CalendarSettingsDrawer({
               <div className="text-xs text-slate-500">Block specific times</div>
             </div>
           </Button>
+
+          {/* Booking Approval Toggle */}
+          <div className="flex items-center justify-between px-4 py-4 border rounded-lg bg-slate-50">
+            <div className="flex items-center gap-3">
+              <ClipboardCheck className="w-5 h-5 text-indigo-600 shrink-0" />
+              <div>
+                <div className="font-medium text-slate-800">Require booking approval</div>
+                <div className="text-xs text-slate-500">
+                  {requiresApproval 
+                    ? 'All bookings need your manual approval' 
+                    : 'Bookings auto-confirm if pupil has sufficient balance'}
+                </div>
+              </div>
+            </div>
+            <Switch
+              checked={requiresApproval}
+              onCheckedChange={(checked) => {
+                if (instructorProfile?.id) {
+                  updateInstructorMutation.mutate({ requireBookingApproval: checked });
+                }
+              }}
+              disabled={!instructorProfile?.id || updateInstructorMutation.isPending}
+            />
+          </div>
         </div>
       </SheetContent>
     </Sheet>
