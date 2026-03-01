@@ -116,7 +116,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             </div>
           </TabsContent>
         )}
-      </div>
+      </Tabs>
 
       {/* Actions */}
       <div className="border-t border-slate-200 p-3 space-y-2">
