@@ -185,8 +185,14 @@ export default function Layout({ children, currentPageName }) {
                     {item.isCollapsible ? (
                       <>
                         <button
-                          onClick={() => setExpandedMenus(prev => ({ ...prev, [item.name]: !prev[item.name] }))}
-                          className={`group flex gap-x-3 rounded-xl p-3 text-sm font-medium transition-all duration-200 w-full ${
+                           onClick={() => {
+                             if (expandedMenus[item.name]) {
+                               setExpandedMenus(prev => ({ ...prev, [item.name]: false }));
+                             } else {
+                               setExpandedMenus({ [item.name]: true });
+                             }
+                           }}
+                           className={`group flex gap-x-3 rounded-xl p-3 text-sm font-medium transition-all duration-200 w-full ${
                             isActive || hasActiveChild
                               ? 'bg-[#F7B602] text-[#071739]'
                               : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
