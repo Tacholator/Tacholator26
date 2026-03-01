@@ -594,6 +594,8 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
             </Card>
           </TabsContent>
         </Tabs>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
