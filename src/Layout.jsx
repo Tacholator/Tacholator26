@@ -161,7 +161,7 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen bg-slate-50">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[#071739] border-r border-[#071739] px-6 pb-4">
+        <div className="flex grow flex-col gap-y-5 overflow-visible bg-[#071739] border-r border-[#071739] px-6 pb-4">
           {/* Logo */}
                       <div className="flex h-16 shrink-0 items-center gap-2">
                         <img 
