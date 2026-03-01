@@ -96,6 +96,15 @@ export default function LearnerBookingCalendar() {
     }
   });
 
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfile', pupil?.instructorId],
+    queryFn: async () => {
+      const profiles = await base44.entities.Instructor.filter({ created_by: pupil.instructorEmail });
+      return profiles[0] || null;
+    },
+    enabled: !!pupil?.instructorEmail
+  });
+
   const { data: allMyBookings = [] } = useQuery({
     queryKey: ['myBookings', user?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ pupilId: pupil.id }),
