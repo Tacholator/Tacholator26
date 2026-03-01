@@ -474,7 +474,7 @@ export default function Layout({ children, currentPageName }) {
                                 return (
                                   <Link
                                     key={child.name}
-                                    to={createPageUrl(child.page)}
+                                    to={child.params ? `${createPageUrl(child.page)}?${child.params}` : createPageUrl(child.page)}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className={`flex items-center gap-3 rounded-xl p-2 text-sm transition-all ${
                                       isChildActive
