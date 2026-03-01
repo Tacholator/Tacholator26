@@ -302,7 +302,8 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
 
-      const refundAmount = booking.totalPriceGbp || 0;
+      const escrowAmount = booking.escrowAmountGbp || 0;
+      const refundAmount = escrowAmount > 0 ? escrowAmount : (booking.totalPriceGbp || 0);
       const wasConfirmed = booking.status === 'confirmed';
 
       // Mark booking as deleted
