@@ -486,7 +486,7 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="lg:pl-64 pb-20 lg:pb-0">
+      <main className={`lg:pl-64 pb-20 lg:pb-0 ${Object.values(expandedMenus).some(v => v) ? 'pointer-events-none' : ''}`}>
         {children}
       </main>
 
