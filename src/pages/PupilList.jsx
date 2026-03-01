@@ -361,13 +361,13 @@ export default function PupilList() {
             </div>
           </button>
 
-          <button
-            onClick={() => setStatusFilter('Stopped')}
-            className={`p-4 rounded-xl border-2 transition-all ${
+          <div
+            className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
               statusFilter === 'Stopped'
                 ? 'border-purple-500 bg-purple-50'
                 : 'border-slate-200 bg-white hover:border-purple-300'
             }`}
+            onClick={() => setStatusFilter('Stopped')}
           >
             <div className="text-left">
               <div className="text-2xl font-bold text-purple-600">{oneOffPupils.length}</div>
@@ -383,7 +383,7 @@ export default function PupilList() {
                 Add One Off
               </Button>
             </div>
-          </button>
+          </div>
         </div>
 
         {/* Search */}
