@@ -120,6 +120,7 @@ import TermsAndConditions from './pages/TermsAndConditions';
 import InstructorPayments from './pages/InstructorPayments';
 import LearnerPayments from './pages/LearnerPayments';
 import InstructorSubscription from './pages/InstructorSubscription';
+import LearnerSubscription from './pages/LearnerSubscription';
 import __Layout from './Layout.jsx';
 
 
@@ -197,6 +198,7 @@ export const PAGES = {
     "InstructorPayments": InstructorPayments,
     "LearnerPayments": LearnerPayments,
     "InstructorSubscription": InstructorSubscription,
+    "LearnerSubscription": LearnerSubscription,
 }
 
 export const pagesConfig = {
