@@ -130,9 +130,8 @@ export default function InstructorBookingCalendar() {
 
   const declineBookingMutation = useMutation({
     mutationFn: async ({ bookingId, reason }) => {
-      // Fetch booking fresh to avoid stale closure data
-      const allCurrentBookings = await base44.entities.LessonBooking.filter({ id: bookingId });
-      const booking = allCurrentBookings[0] || bookings.find(b => b.id === bookingId);
+      // Get the booking from local state (already loaded)
+      const booking = bookings.find(b => b.id === bookingId);
 
       await base44.entities.LessonBooking.update(bookingId, {
         status: 'declined_by_instructor',
@@ -141,19 +140,29 @@ export default function InstructorBookingCalendar() {
         cancellationReason: reason
       });
 
-      // Fetch pupil fresh to guarantee linkedUserId is present
+      // Notify pupil via their linked user account
       if (booking?.pupilId) {
+        // Fetch pupil fresh to guarantee linkedUserId is present
         const pupilResults = await base44.entities.Pupil.filter({ id: booking.pupilId });
         const pupil = pupilResults[0];
         if (pupil?.linkedUserId) {
           await base44.entities.Notification.create({
             userId: pupil.linkedUserId,
-            title: 'Lesson Declined',
+            title: 'Lesson Request Declined',
             message: `Your lesson request for ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} was declined.${reason ? ` Reason: ${reason}` : ''}`,
             type: 'booking',
             linkTarget: 'LearnerMyBookings'
           });
         }
+      }
+
+      // Release the slot if linked
+      if (booking?.slotInstanceId) {
+        await base44.entities.BookableSlotInstance.update(booking.slotInstanceId, {
+          status: 'available',
+          reservedByPupilId: null,
+          bookingId: null
+        });
       }
     },
     onSuccess: () => {
