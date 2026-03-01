@@ -283,6 +283,7 @@ export default function Layout({ children, currentPageName }) {
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-[#071739]/80 transition-colors">
                   <Avatar className="h-9 w-9">
+                    <AvatarImage src={user?.profilePhotoUrl} />
                     <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739]">
                       {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                     </AvatarFallback>
@@ -299,51 +300,18 @@ export default function Layout({ children, currentPageName }) {
               </DropdownMenuTrigger>
               <DropdownMenuContent 
                 align="end" 
-                className="w-56"
+                className="w-72 p-0"
                 onInteractOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
               >
-                  <Link to={createPageUrl('ProfileSettings')}>
-                    <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Profile Settings
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to={createPageUrl('LessonTermsAndConditions')}>
-                    <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                      <FileText className="w-4 h-4 mr-2" />
-                      Lesson T&Cs
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to={createPageUrl('RefundPolicy')}>
-                    <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                      <Receipt className="w-4 h-4 mr-2" />
-                      Refund Policy
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to={createPageUrl('TermsAndConditions')}>
-                    <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                      <FileText className="w-4 h-4 mr-2" />
-                      Terms & Conditions
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to={createPageUrl('PrivacyPolicy')}>
-                    <DropdownMenuItem className="text-slate-600 cursor-pointer">
-                      <Shield className="w-4 h-4 mr-2" />
-                      Privacy Policy
-                    </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-slate-600">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign out
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-rose-600">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete Account
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
+                <AccountProfilePanel 
+                  user={user}
+                  isInstructor={isInstructor}
+                  onLogout={handleLogout}
+                  onDelete={() => setShowDeleteDialog(true)}
+                  onClose={() => {}}
+                />
+              </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
