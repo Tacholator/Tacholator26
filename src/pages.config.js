@@ -87,6 +87,7 @@ import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
 import InstructorWhiteboardEditor from './pages/InstructorWhiteboardEditor';
 import InstructorWhiteboardLibrary from './pages/InstructorWhiteboardLibrary';
 import Invoices from './pages/Invoices';
+import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
 import LearnerCalendar from './pages/LearnerCalendar';
 import LearnerChats from './pages/LearnerChats';
 import LearnerDashboard from './pages/LearnerDashboard';
@@ -114,12 +115,11 @@ import PaymentMethods from './pages/PaymentMethods';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
+import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import PupilProfile from './pages/PupilProfile';
-import LearnerBookingCalendar from './pages/LearnerBookingCalendar';
 import __Layout from './Layout.jsx';
 
 
@@ -164,6 +164,7 @@ export const PAGES = {
     "InstructorWhiteboardEditor": InstructorWhiteboardEditor,
     "InstructorWhiteboardLibrary": InstructorWhiteboardLibrary,
     "Invoices": Invoices,
+    "LearnerBookingCalendar": LearnerBookingCalendar,
     "LearnerCalendar": LearnerCalendar,
     "LearnerChats": LearnerChats,
     "LearnerDashboard": LearnerDashboard,
@@ -191,12 +192,11 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "ProfileSettings": ProfileSettings,
     "PupilList": PupilList,
+    "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "PupilProfile": PupilProfile,
-    "LearnerBookingCalendar": LearnerBookingCalendar,
 }
 
 export const pagesConfig = {
