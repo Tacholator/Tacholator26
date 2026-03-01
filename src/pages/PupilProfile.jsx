@@ -27,7 +27,8 @@ import {
   Edit,
   CheckCircle2,
   CircleDashed,
-  WalletMinimal
+  WalletMinimal,
+  ClipboardCheck
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import ProgressRing from '@/components/ui/ProgressRing';

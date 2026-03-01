@@ -123,53 +123,58 @@ export default function LearnerBookingCalendar() {
         }
       }
 
-      // Auto-confirm instantly since pupil has sufficient balance
+      // Check if instructor requires manual approval for this pupil
+      const requiresApproval = !!pupil.requireBookingApproval;
+      const bookingStatus = requiresApproval ? 'reserved_pending_instructor' : 'confirmed';
+
       const booking = await base44.entities.LessonBooking.create({
         instructorId: pupil.instructorId,
         pupilId: pupil.id,
         startAtUtc: startMoment.utc().toISOString(),
         endAtUtc: endMoment.utc().toISOString(),
         durationHours,
-        status: 'confirmed',
-        confirmedAt: new Date().toISOString(),
+        status: bookingStatus,
+        confirmedAt: requiresApproval ? null : new Date().toISOString(),
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
         totalPriceGbp: totalPrice,
-        escrowAmountGbp: totalPrice,
+        escrowAmountGbp: requiresApproval ? 0 : totalPrice,
         notesFromPupil: `Pickup: ${pickupLocation} | Dropoff: ${dropoffLocation}${notesFromPupil ? ' | ' + notesFromPupil : ''}${firstTimeData ? ` | First booking - Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''}`,
         requestedAt: new Date().toISOString(),
         slotInstanceId: selectedSlotInstance?.id || null
       });
 
-      // Deduct escrow amount from pupil's balance immediately
-      const newBalance = (pupil.bulkPaymentBalance || 0) - totalPrice;
-      await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: newBalance });
+      if (!requiresApproval) {
+        // Deduct escrow amount from pupil's balance immediately
+        const newBalance = (pupil.bulkPaymentBalance || 0) - totalPrice;
+        await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: newBalance });
 
-      // Update slot instance to confirmed
+        // Log the escrow deduction in ledger
+        await base44.entities.PaymentLedger.create({
+          userId: pupil.id,
+          bookingId: booking.id,
+          type: 'charge',
+          reason: 'lesson_confirmed_charge',
+          amountGbp: totalPrice,
+          hours: durationHours,
+          createdByRole: 'system',
+          note: `Escrow held: £${totalPrice.toFixed(2)} deducted on booking confirmation`
+        });
+      }
+
+      // Update slot instance status
       if (selectedSlotInstance?.id) {
         await base44.entities.BookableSlotInstance.update(selectedSlotInstance.id, {
-          status: 'confirmed',
+          status: requiresApproval ? 'reserved_pending' : 'confirmed',
           reservedByPupilId: pupil.id,
           bookingId: booking.id
         });
       }
 
-      // Log the escrow deduction in ledger
-      await base44.entities.PaymentLedger.create({
-        userId: pupil.id,
-        bookingId: booking.id,
-        type: 'charge',
-        reason: 'lesson_confirmed_charge',
-        amountGbp: totalPrice,
-        hours: durationHours,
-        createdByRole: 'system',
-        note: `Escrow held: £${totalPrice.toFixed(2)} deducted on booking confirmation`
-      });
-
       // Notify instructor
       await base44.entities.Notification.create({
         userId: pupil.instructorId,
-        title: 'Lesson Booked',
-        message: `${pupil.firstName} ${pupil.lastName} booked a lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} (auto-confirmed) | Pickup: ${pickupLocation}`,
+        title: requiresApproval ? 'New Booking Request' : 'Lesson Booked',
+        message: `${pupil.firstName} ${pupil.lastName} ${requiresApproval ? 'requested' : 'booked'} a lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')}${requiresApproval ? ' — awaiting your approval' : ' (auto-confirmed)'} | Pickup: ${pickupLocation}`,
         type: 'booking',
         linkTarget: 'InstructorBookingCalendar'
       });
@@ -178,8 +183,10 @@ export default function LearnerBookingCalendar() {
       if (pupil.linkedUserId) {
         await base44.entities.Notification.create({
           userId: pupil.linkedUserId,
-          title: 'Lesson Confirmed!',
-          message: `Your lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} is confirmed. £${totalPrice.toFixed(2)} has been deducted from your balance.`,
+          title: requiresApproval ? 'Booking Request Sent' : 'Lesson Confirmed!',
+          message: requiresApproval
+            ? `Your lesson request for ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} has been sent. Awaiting instructor approval.`
+            : `Your lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} is confirmed. £${totalPrice.toFixed(2)} has been deducted from your balance.`,
           type: 'booking',
           linkTarget: 'LearnerMyBookings'
         });
