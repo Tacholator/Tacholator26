@@ -281,13 +281,16 @@ export default function InstructorBookingCalendar() {
           });
         }
 
-        // If booking was confirmed, refund the lesson cost to the pupil's balance
+        // If booking was confirmed, refund the escrow (or total price) to the pupil's balance
         const isConfirmed = booking.status === 'confirmed';
-        const refundAmount = booking.totalPriceGbp || 0;
+        const escrowAmount = booking.escrowAmountGbp || 0;
+        const refundAmount = escrowAmount > 0 ? escrowAmount : (booking.totalPriceGbp || 0);
         if (isConfirmed && pupil && refundAmount > 0) {
           await base44.entities.Pupil.update(pupil.id, {
             bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + refundAmount
           });
+          // Clear escrow on the booking
+          await base44.entities.LessonBooking.update(booking.id, { escrowAmountGbp: 0 });
           await base44.entities.PaymentLedger.create({
             userId: pupil.linkedUserId || pupil.id,
             bookingId: booking.id,
@@ -296,14 +299,14 @@ export default function InstructorBookingCalendar() {
             amountGbp: refundAmount,
             hours: booking.durationHours || 0,
             createdByRole: 'instructor',
-            note: `Refund issued: instructor cancelled confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}`
+            note: `Refund issued: instructor cancelled confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}${escrowAmount > 0 ? ' (escrow returned)' : ''}`
           });
         }
 
         // Notify pupil
         if (pupil?.linkedUserId) {
           const refundMsg = isConfirmed && refundAmount > 0
-            ? ` £${refundAmount.toFixed(2)} has been refunded to your balance.`
+            ? ` £${refundAmount.toFixed(2)} has been returned to your balance.`
             : '';
           await base44.entities.Notification.create({
             userId: pupil.linkedUserId,
