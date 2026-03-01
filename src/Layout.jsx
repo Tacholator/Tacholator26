@@ -212,13 +212,13 @@ export default function Layout({ children, currentPageName }) {
                           )}
                         </button>
                         {isExpanded && item.children && (
-                          <AnimatePresence>
-                            <motion.div
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              exit={{ opacity: 0, x: -20 }}
-                              className="absolute left-64 top-0 w-56 bg-[#071739]/95 backdrop-blur-sm border-r border-slate-700 h-[75vh] overflow-y-auto z-30 rounded-xl"
-                            >
+                           <AnimatePresence>
+                             <motion.div
+                               initial={{ opacity: 0, x: -20 }}
+                               animate={{ opacity: 1, x: 0 }}
+                               exit={{ opacity: 0, x: -20 }}
+                               className="fixed left-64 top-24 w-56 bg-[#071739]/95 backdrop-blur-sm border-r border-slate-700 h-[calc(100vh-6rem)] overflow-y-auto z-40 rounded-xl"
+                             >
                               <div className="p-4 space-y-1">
                                 <p className="text-xs font-semibold text-slate-400 uppercase mb-3">
                                   {item.name}
