@@ -128,7 +128,11 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
       name: link.name,
       icon: link.icon,
       page: isInstructor ? link.instructorPage : link.learnerPage,
-      isShared: true
+      isShared: true,
+      isCollapsible: link.isCollapsible || false,
+      children: link.isCollapsible
+        ? (isInstructor ? link.instructorChildren : link.learnerChildren)
+        : undefined
     }))
     .filter(link => link.page !== null); // Filter out items with null pages
 
