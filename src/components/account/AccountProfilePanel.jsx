@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Settings,
   FileText,
@@ -15,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export default function AccountProfilePanel({ user, isInstructor, onLogout, onDelete, onClose }) {
+  const [activeTab, setActiveTab] = useState('personal');
   const menuItems = [
     { icon: Settings, label: 'Profile Settings', page: 'ProfileSettings' },
     { icon: FileText, label: 'Lesson T&Cs', page: 'LessonTermsAndConditions' },
