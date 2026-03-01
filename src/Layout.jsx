@@ -173,7 +173,7 @@ export default function Layout({ children, currentPageName }) {
                       </div>
 
           {/* Navigation */}
-          <nav className="flex flex-1 flex-col">
+          <nav className="flex flex-1 flex-col relative">
             <ul role="list" className="flex flex-1 flex-col gap-y-1">
               {navItems.map((item) => {
                 const isActive = currentPageName === item.page;
