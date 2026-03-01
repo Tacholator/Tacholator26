@@ -56,6 +56,15 @@ export default function PupilReserveLessonModal({
     enabled: !!pupil?.instructorId
   });
 
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfile', pupil?.instructorEmail],
+    queryFn: async () => {
+      const profiles = await base44.entities.Instructor.filter({ created_by: pupil.instructorEmail });
+      return profiles[0] || null;
+    },
+    enabled: !!pupil?.instructorEmail
+  });
+
   // Check if this is first booking (exclude deleted bookings)
   const { data: existingBookings = [] } = useQuery({
     queryKey: ['myBookings', pupil?.id],
