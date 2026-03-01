@@ -203,28 +203,39 @@ export default function Layout({ children, currentPageName }) {
                           )}
                         </button>
                         {isExpanded && item.children && (
-                          <ul className="ml-4 mt-1 space-y-1">
-                            {item.children.map((child) => {
-                              const isChildActive = currentPageName === child.page;
-                              return (
-                                <li key={child.name}>
-                                  <Link
-                                    to={createPageUrl(child.page)}
-                                    className={`group flex gap-x-3 rounded-xl p-2 text-sm transition-all duration-200 ${
-                                      isChildActive
-                                        ? 'bg-[#F7B602] text-[#071739]'
-                                        : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
-                                    }`}
-                                  >
-                                    <child.icon className={`w-4 h-4 shrink-0 ${
-                                      isChildActive ? 'text-[#071739]' : 'text-slate-300 group-hover:text-white'
-                                    }`} />
-                                    {child.name}
-                                  </Link>
-                                </li>
-                              );
-                            })}
-                          </ul>
+                          <AnimatePresence>
+                            <motion.div
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -20 }}
+                              className="absolute left-64 top-0 w-56 bg-[#071739]/95 backdrop-blur-sm border-r border-slate-700 h-screen overflow-y-auto z-30"
+                            >
+                              <div className="p-4 space-y-1">
+                                <p className="text-xs font-semibold text-slate-400 uppercase mb-3">
+                                  {item.name}
+                                </p>
+                                {item.children.map((child) => {
+                                  const isChildActive = currentPageName === child.page;
+                                  return (
+                                    <Link
+                                      key={child.name}
+                                      to={createPageUrl(child.page)}
+                                      className={`group flex gap-x-3 rounded-xl p-3 text-sm transition-all duration-200 block ${
+                                        isChildActive
+                                          ? 'bg-[#F7B602] text-[#071739]'
+                                          : 'text-slate-300 hover:bg-[#071739]/80 hover:text-white'
+                                      }`}
+                                    >
+                                      <child.icon className={`w-4 h-4 shrink-0 ${
+                                        isChildActive ? 'text-[#071739]' : 'text-slate-300 group-hover:text-white'
+                                      }`} />
+                                      {child.name}
+                                    </Link>
+                                  );
+                                })}
+                              </div>
+                            </motion.div>
+                          </AnimatePresence>
                         )}
                       </>
                     ) : (
