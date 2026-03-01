@@ -217,7 +217,7 @@ export default function Layout({ children, currentPageName }) {
                                initial={{ opacity: 0, x: -20 }}
                                animate={{ opacity: 1, x: 0 }}
                                exit={{ opacity: 0, x: -20 }}
-                               className="fixed left-64 top-24 w-56 bg-[#071739]/95 backdrop-blur-sm border-r border-slate-700 h-[calc(100vh-6rem)] overflow-y-auto z-40 rounded-xl"
+                               className="fixed left-64 top-24 w-56 bg-[#071739]/95 backdrop-blur-sm border-r border-slate-700 h-[calc(100vh-6rem)] overflow-y-auto z-50 rounded-xl"
                              >
                               <div className="p-4 space-y-1">
                                 <p className="text-xs font-semibold text-slate-400 uppercase mb-3">
@@ -486,7 +486,7 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className={`lg:pl-64 pb-20 lg:pb-0 ${Object.values(expandedMenus).some(v => v) ? 'pointer-events-none' : ''}`}>
+      <main className="lg:pl-64 pb-20 lg:pb-0">
         {children}
       </main>
 
