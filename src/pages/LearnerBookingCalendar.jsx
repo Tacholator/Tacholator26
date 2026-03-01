@@ -56,10 +56,18 @@ export default function LearnerBookingCalendar() {
     refetchInterval: 5000
   });
 
-  const { data: instructors = [] } = useQuery({
-    queryKey: ['instructorProfile', pupil?.instructorId],
-    queryFn: () => base44.entities.Instructor.filter({ id: pupil.instructorId }),
+  // Fetch the instructor's user record to get their email, then fetch Instructor profile
+  const { data: instructorUsers = [] } = useQuery({
+    queryKey: ['instructorUser', pupil?.instructorId],
+    queryFn: () => base44.entities.User.filter({ id: pupil.instructorId }),
     enabled: !!pupil?.instructorId
+  });
+  const instructorUser = instructorUsers[0];
+
+  const { data: instructors = [] } = useQuery({
+    queryKey: ['instructorProfile', instructorUser?.email],
+    queryFn: () => base44.entities.Instructor.filter({ created_by: instructorUser.email }),
+    enabled: !!instructorUser?.email
   });
   const instructorProfile = instructors[0];
 
