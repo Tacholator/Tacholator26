@@ -369,7 +369,10 @@ export default function BookingDetailsModal({
   const deleteMutation = useMutation({
     mutationFn: async () => {
       setIsProcessing(true);
-      
+
+      const refundAmount = booking.totalPriceGbp || 0;
+      const wasConfirmed = booking.status === 'confirmed';
+
       // Mark booking as deleted
       await base44.entities.LessonBooking.update(booking.id, {
         isDeleted: true,
@@ -387,12 +390,30 @@ export default function BookingDetailsModal({
         });
       }
 
+      // Refund pupil if booking was confirmed and had a price
+      if (wasConfirmed && pupil && refundAmount > 0) {
+        await base44.entities.Pupil.update(pupil.id, {
+          bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + refundAmount
+        });
+        await base44.entities.PaymentLedger.create({
+          userId: pupil.linkedUserId || pupil.id,
+          bookingId: booking.id,
+          type: 'refund',
+          reason: 'refund_issued',
+          amountGbp: refundAmount,
+          hours: booking.durationHours || 0,
+          createdByRole: 'instructor',
+          note: `Refund issued: instructor deleted confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}`
+        });
+      }
+
       // Notify pupil
       if (pupil?.linkedUserId) {
+        const refundMsg = wasConfirmed && refundAmount > 0 ? ` £${refundAmount.toFixed(2)} has been refunded to your balance.` : '';
         await base44.entities.Notification.create({
           userId: pupil.linkedUserId,
-          title: 'Lesson Cancelled',
-          message: 'Your instructor has cancelled a booking. Please book another slot.',
+          title: 'Lesson Cancelled by Instructor',
+          message: `Your instructor has cancelled your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')}.${refundMsg}`,
           type: 'booking',
           linkTarget: 'LearnerScheduledLessons'
         });
