@@ -52,6 +52,7 @@ export default function Layout({ children, currentPageName }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({});
   const [activeCollapsibleMenu, setActiveCollapsibleMenu] = useState(null);
+  const [showAccountPanel, setShowAccountPanel] = useState(false);
   const navigate = useNavigate();
 
   const { data: user } = useQuery({
