@@ -264,9 +264,9 @@ export default function Calendar24Hour({
         </h3>
       </div>
 
-      {/* Legend - Only show for instructors */}
+      {/* Legend - Only show for instructors on desktop */}
       {isInstructor && (
-        <div className="flex flex-wrap gap-3 text-xs">
+        <div className="hidden sm:flex flex-wrap gap-3 text-xs">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded" style={{ backgroundColor: SLOT_COLORS.available }} />
             <span>Available</span>
