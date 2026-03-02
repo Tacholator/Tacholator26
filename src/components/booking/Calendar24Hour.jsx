@@ -20,8 +20,8 @@ const SLOT_COLORS = {
   reserved_confirmed_other: '#F2F2F2'
 };
 
-export default function Calendar24Hour({ 
-  viewMode = 'week',
+export default function Calendar24Hour({
+  viewMode: externalViewMode = 'week',
   onViewModeChange,
   rules = [], 
   bookings = [], 
