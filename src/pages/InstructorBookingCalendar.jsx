@@ -444,32 +444,7 @@ export default function InstructorBookingCalendar() {
           </Sheet>
         </div>
 
-        {/* Quick Actions - Desktop */}
-        <div className="hidden sm:flex flex-wrap gap-3 mb-6">
-          <Button
-            onClick={() => setShowWorkingHoursModal(true)}
-            className="bg-teal-600 hover:bg-teal-700 gap-2"
-          >
-            <Clock className="w-4 h-4" />
-            Set Working Hours
-          </Button>
-          <Button
-            onClick={() => setShowUnavailableModal(true)}
-            variant="outline"
-            className="gap-2"
-          >
-            <CalendarDays className="w-4 h-4" />
-            Add Unavailable Block
-          </Button>
-          <Button
-            onClick={() => setShowLunchModal(true)}
-            variant="outline"
-            className="gap-2"
-          >
-            <Coffee className="w-4 h-4" />
-            Add Lunch Break
-          </Button>
-        </div>
+
 
 
 
