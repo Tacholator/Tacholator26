@@ -421,7 +421,7 @@ export default function Calendar24Hour({
 
                 // Render card-style block
                 if (shouldRenderAsCard && isBlockStart) {
-                  const exactHeight = blockSpan * 30;
+                  const exactHeight = blockSpan * 22.5;
 
                   const handleClick = () => {
                     if (!clickable) return;
