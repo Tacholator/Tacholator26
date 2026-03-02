@@ -208,7 +208,7 @@ export default function Calendar24Hour({
   };
 
   const handleToday = () => {
-    setCurrentDate(moment());
+    setCurrentDate(moment().clone());
   };
 
   const days = getDaysInView();
