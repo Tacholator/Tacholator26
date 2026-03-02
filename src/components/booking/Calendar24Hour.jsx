@@ -306,7 +306,7 @@ export default function Calendar24Hour({
               <div 
                 key={timeIdx} 
                 className="grid border-b last:border-b-0" 
-                style={{ gridTemplateColumns: viewMode === 'day' ? '50px 1fr' : `50px repeat(${days.length}, minmax(90px, 1fr))`, height: '30px' }}
+                style={{ gridTemplateColumns: viewMode === 'day' ? '50px 1fr' : `50px repeat(${days.length}, minmax(90px, 1fr))`, height: '22.5px' }}
               >
                 <div className="p-0.5 sm:p-2 border-r text-[9px] sm:text-xs text-slate-600 font-medium bg-slate-50 flex items-center justify-center">
                   {timeSlot}
