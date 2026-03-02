@@ -246,7 +246,7 @@ export default function Calendar24Hour({
     <div className="space-y-4">
       {/* Navigation */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 justify-center sm:justify-start">
+        <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
           <Button onClick={handlePrevious} variant="outline" size="sm">
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -256,6 +256,22 @@ export default function Calendar24Hour({
           <Button onClick={handleToday} variant="outline" size="sm">
             Today
           </Button>
+          {onViewModeChange && (
+            <div className="flex rounded-md border overflow-hidden">
+              <button
+                onClick={() => onViewModeChange('day')}
+                className={`px-3 py-1.5 text-sm font-medium transition-colors ${viewMode === 'day' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+              >
+                Day
+              </button>
+              <button
+                onClick={() => onViewModeChange('week')}
+                className={`px-3 py-1.5 text-sm font-medium transition-colors border-l ${viewMode === 'week' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+              >
+                Week
+              </button>
+            </div>
+          )}
         </div>
         <h3 className="text-sm sm:text-lg font-semibold text-slate-700 text-center sm:text-right">
           {viewMode === 'day' 
