@@ -383,8 +383,8 @@ export default function InstructorBookingCalendar() {
           <p className="text-slate-500">Manage your availability and bookings</p>
         </div>
 
-        {/* Quick Actions */}
-        <div className="flex flex-wrap gap-3 mb-6">
+        {/* Quick Actions - Desktop */}
+        <div className="hidden sm:flex flex-wrap gap-3 mb-6">
           <Button
             onClick={() => setShowWorkingHoursModal(true)}
             className="bg-teal-600 hover:bg-teal-700 gap-2"
@@ -408,6 +408,70 @@ export default function InstructorBookingCalendar() {
             <Coffee className="w-4 h-4" />
             Add Lunch Break
           </Button>
+        </div>
+
+        {/* Mobile Settings Icon */}
+        <div className="flex sm:hidden justify-end mb-4">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Settings className="w-5 h-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-80">
+              <SheetHeader>
+                <SheetTitle>Calendar Settings</SheetTitle>
+              </SheetHeader>
+              <div className="mt-6 flex flex-col gap-3">
+                <Button
+                  onClick={() => setShowWorkingHoursModal(true)}
+                  className="bg-teal-600 hover:bg-teal-700 gap-2 justify-start"
+                >
+                  <Clock className="w-4 h-4" />
+                  Set Working Hours
+                </Button>
+                <Button
+                  onClick={() => setShowUnavailableModal(true)}
+                  variant="outline"
+                  className="gap-2 justify-start"
+                >
+                  <CalendarDays className="w-4 h-4" />
+                  Add Unavailable Block
+                </Button>
+                <Button
+                  onClick={() => setShowLunchModal(true)}
+                  variant="outline"
+                  className="gap-2 justify-start"
+                >
+                  <Coffee className="w-4 h-4" />
+                  Add Lunch Break
+                </Button>
+
+                <div className="border-t pt-4 mt-2">
+                  <p className="text-sm font-semibold text-slate-700 mb-3">Colour Key</p>
+                  <div className="flex flex-col gap-2 text-sm">
+                    {[
+                      { label: 'Available', color: '#B7F7C9' },
+                      { label: 'Confirmed', color: '#87CEFA' },
+                      { label: 'Practical Test', color: '#D2B48C' },
+                      { label: 'Completed', color: '#CFCFCF' },
+                      { label: 'Cancelled', color: '#FFCC80' },
+                      { label: 'No Show', color: '#FF8A80' },
+                      { label: 'Pending', color: '#B39DDB' },
+                      { label: 'Lunch', color: '#F7B602' },
+                      { label: 'Unavailable', color: '#FFB3B3' },
+                      { label: 'Outside Hours', color: '#E8E8E8' },
+                    ].map(({ label, color }) => (
+                      <div key={label} className="flex items-center gap-3">
+                        <div className="w-5 h-5 rounded border border-slate-200 shrink-0" style={{ backgroundColor: color }} />
+                        <span className="text-slate-600">{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
         {/* Tabs for View Mode */}
