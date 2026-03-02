@@ -476,14 +476,6 @@ export default function InstructorBookingCalendar() {
 
 
 
-        {/* Tabs for View Mode */}
-        <Tabs value={viewMode} onValueChange={setViewMode} className="mb-6">
-          <TabsList>
-            <TabsTrigger value="day">Day View</TabsTrigger>
-            <TabsTrigger value="week">Week View</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
         {/* Pending Bookings */}
         {pendingBookings.length > 0 && (
           <div className="mb-6">
