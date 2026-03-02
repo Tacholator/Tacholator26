@@ -253,6 +253,9 @@ export default function Calendar24Hour({
           <Button onClick={handleNext} variant="outline" size="sm" className="px-2 sm:px-3">
             <ChevronRight className="w-4 h-4" />
           </Button>
+          <Button onClick={handleToday} variant="outline" size="sm" className="px-2 sm:px-3">
+            Today
+          </Button>
           {onViewModeChange && (
             <div className="flex rounded-md border overflow-hidden">
               <button
