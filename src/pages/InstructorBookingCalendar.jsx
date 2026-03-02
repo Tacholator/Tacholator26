@@ -494,6 +494,7 @@ export default function InstructorBookingCalendar() {
           <CardContent className="p-6">
             <Calendar24Hour
               viewMode={viewMode}
+              onViewModeChange={setViewMode}
               rules={rules}
               bookings={bookings}
               slotInstances={slotInstances}
