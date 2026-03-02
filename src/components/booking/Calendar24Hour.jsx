@@ -571,7 +571,7 @@ export default function Calendar24Hour({
                     className={`border-r last:border-r-0 p-1 ${
                       clickable ? 'cursor-pointer hover:opacity-80' : 'cursor-default'
                     }`}
-                    style={{ backgroundColor: displayColor, height: '30px' }}
+                    style={{ backgroundColor: displayColor, height: '22.5px' }}
                     title={state}
                   />
                 );
