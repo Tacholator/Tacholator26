@@ -190,7 +190,7 @@ export default function Layout({ children, currentPageName }) {
                         <button
                            onClick={() => {
                              if (expandedMenus[item.name]) {
-                               setExpandedMenus(prev => ({ ...prev, [item.name]: false }));
+                               setExpandedMenus({});
                              } else {
                                setExpandedMenus({ [item.name]: true });
                              }
