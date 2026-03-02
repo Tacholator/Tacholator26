@@ -557,7 +557,7 @@ export default function Calendar24Hour({
 
                 // Skip slots covered by multi-slot blocks
                 if (shouldRenderAsCard && !isBlockStart) {
-                  return <div key={dayIdx} className="border-r last:border-r-0" style={{ height: '30px' }} />;
+                  return <div key={dayIdx} className="border-r last:border-r-0" style={{ height: '22.5px' }} />;
                 }
 
                 // Render flat background slot (for outside_working_hours or default available)
