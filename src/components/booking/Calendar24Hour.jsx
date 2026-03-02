@@ -245,38 +245,38 @@ export default function Calendar24Hour({
   return (
     <div className="space-y-4">
       {/* Navigation */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
-          <Button onClick={handlePrevious} variant="outline" size="sm">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Button onClick={handlePrevious} variant="outline" size="sm" className="px-2 sm:px-3">
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <Button onClick={handleNext} variant="outline" size="sm">
+          <Button onClick={handleNext} variant="outline" size="sm" className="px-2 sm:px-3">
             <ChevronRight className="w-4 h-4" />
           </Button>
-          <Button onClick={handleToday} variant="outline" size="sm">
+          <Button onClick={handleToday} variant="outline" size="sm" className="px-2 sm:px-3">
             Today
           </Button>
           {onViewModeChange && (
             <div className="flex rounded-md border overflow-hidden">
               <button
                 onClick={() => onViewModeChange('day')}
-                className={`px-3 py-1.5 text-sm font-medium transition-colors ${viewMode === 'day' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${viewMode === 'day' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
               >
                 Day
               </button>
               <button
                 onClick={() => onViewModeChange('week')}
-                className={`px-3 py-1.5 text-sm font-medium transition-colors border-l ${viewMode === 'week' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors border-l ${viewMode === 'week' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
               >
                 Week
               </button>
             </div>
           )}
         </div>
-        <h3 className="text-sm sm:text-lg font-semibold text-slate-700 text-center sm:text-right">
+        <h3 className="text-xs sm:text-lg font-semibold text-slate-700 text-right whitespace-nowrap">
           {viewMode === 'day' 
             ? currentDate.format('ddd, D MMM YYYY')
-            : `${days[0].format('D MMM')} - ${days[6].format('D MMM')}`
+            : `${days[0].format('D MMM')} – ${days[6].format('D MMM')}`
           }
         </h3>
       </div>
