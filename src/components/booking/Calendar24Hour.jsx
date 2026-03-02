@@ -34,7 +34,8 @@ export default function Calendar24Hour({
   currentPupilId = null,
   pupils = []
 }) {
-  const [currentDate, setCurrentDate] = useState(moment());
+  const [currentDateStr, setCurrentDateStr] = useState(() => moment().format('YYYY-MM-DD'));
+  const currentDate = moment(currentDateStr, 'YYYY-MM-DD');
 
   const getDaysInView = () => {
     if (viewMode === 'day') {
