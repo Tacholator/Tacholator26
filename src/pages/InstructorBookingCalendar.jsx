@@ -375,12 +375,12 @@ export default function InstructorBookingCalendar() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-3 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Booking Calendar</h1>
-            <p className="text-slate-500">Manage your availability and bookings</p>
+            <h1 className="text-xl sm:text-3xl font-bold text-slate-800 mb-0.5 sm:mb-2">Booking Calendar</h1>
+            <p className="text-xs sm:text-sm text-slate-500">Manage your availability and bookings</p>
           </div>
           {/* Mobile Settings Icon - top right */}
           <div className="flex sm:hidden">
