@@ -37,9 +37,6 @@ export default function Calendar24Hour({
   const [currentDateStr, setCurrentDateStr] = useState(() => moment().format('YYYY-MM-DD'));
   const currentDate = moment(currentDateStr, 'YYYY-MM-DD');
 
-  // Debug: uncomment to verify state changes
-  // console.log('currentDateStr:', currentDateStr);
-
   const getDaysInView = () => {
     if (viewMode === 'day') {
       return [currentDate];
