@@ -21,7 +21,8 @@ const SLOT_COLORS = {
 };
 
 export default function Calendar24Hour({ 
-  viewMode = 'week', 
+  viewMode = 'week',
+  onViewModeChange,
   rules = [], 
   bookings = [], 
   slotInstances = [],
