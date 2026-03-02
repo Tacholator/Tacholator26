@@ -210,6 +210,7 @@ export default function Calendar24Hour({
 
   const handleToday = () => {
     setCurrentDateStr(moment().format('YYYY-MM-DD'));
+    onViewModeChange && onViewModeChange('day');
   };
 
   const days = getDaysInView();
