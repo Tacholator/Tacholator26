@@ -14,7 +14,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Clock, CalendarDays, Coffee, Loader2 } from 'lucide-react';
+import { Clock, CalendarDays, Coffee, Loader2, Settings } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
 import WorkingHoursModal from '@/components/booking/WorkingHoursModal';
 import UnavailableModal from '@/components/booking/UnavailableModal';
