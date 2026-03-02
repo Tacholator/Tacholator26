@@ -201,15 +201,15 @@ export default function Calendar24Hour({
   };
 
   const handlePrevious = () => {
-    setCurrentDate(prev => prev.clone().subtract(viewMode === 'day' ? 1 : 7, 'days'));
+    setCurrentDateStr(currentDate.clone().subtract(viewMode === 'day' ? 1 : 7, 'days').format('YYYY-MM-DD'));
   };
 
   const handleNext = () => {
-    setCurrentDate(prev => prev.clone().add(viewMode === 'day' ? 1 : 7, 'days'));
+    setCurrentDateStr(currentDate.clone().add(viewMode === 'day' ? 1 : 7, 'days').format('YYYY-MM-DD'));
   };
 
   const handleToday = () => {
-    setCurrentDate(moment().clone());
+    setCurrentDateStr(moment().format('YYYY-MM-DD'));
   };
 
   const days = getDaysInView();
