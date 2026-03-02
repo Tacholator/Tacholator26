@@ -490,7 +490,7 @@ export default function InstructorBookingCalendar() {
 
         {/* Calendar */}
         <Card className="border-0 shadow-sm">
-          <CardContent className="p-6">
+          <CardContent className="p-2 sm:p-6">
             <Calendar24Hour
               viewMode={viewMode}
               onViewModeChange={setViewMode}
