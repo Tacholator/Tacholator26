@@ -51,8 +51,7 @@ export const sharedNavLinks = [
       { name: 'Payment Management', icon: CreditCard, page: 'InstructorPayments' }
     ],
     learnerChildren: [
-      { name: 'Payment Management', icon: CreditCard, page: 'LearnerPayments' },
-      { name: 'Subscription', icon: Star, page: 'LearnerSubscription' }
+      { name: 'Payment Management', icon: CreditCard, page: 'LearnerPayments' }
     ]
   },
   {
