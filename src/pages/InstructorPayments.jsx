@@ -193,58 +193,58 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
         {/* Summary Cards - Revenue & Card Payments */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Revenue Card */}
-          <Card className="border-[#071739]/20 aspect-square flex flex-col">
+          <Card className="border-[#071739]/20">
             <CardHeader className="pb-3 border-b">
               <CardTitle className="text-base font-semibold text-[#071739] flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-[#F7B602]" />
                 Revenue
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 flex-1 flex flex-col justify-center">
+            <CardContent className="pt-4">
               <div className="grid grid-cols-3 divide-x divide-slate-200">
-                <div className="pr-4 text-center">
-                  <div className="text-xs text-slate-500 mb-2">Total Revenue</div>
+                <div className="pr-4">
+                  <div className="text-xs text-slate-500 mb-1">Total Revenue</div>
                   <div className="text-2xl font-bold text-[#071739]">£{totalRevenue.toFixed(2)}</div>
-                  <div className="text-xs text-slate-400 mt-2">All time</div>
+                  <div className="text-xs text-slate-400 mt-1">All time</div>
                 </div>
-                <div className="px-4 text-center">
-                  <div className="text-xs text-slate-500 mb-2">This Month</div>
+                <div className="px-4">
+                  <div className="text-xs text-slate-500 mb-1">This Month</div>
                   <div className="text-2xl font-bold text-[#071739]">£{thisMonthRevenue.toFixed(2)}</div>
-                  <div className="text-xs text-slate-400 mt-2">{moment().format('MMM YYYY')}</div>
+                  <div className="text-xs text-slate-400 mt-1">{moment().format('MMM YYYY')}</div>
                 </div>
-                <div className="pl-4 text-center">
-                  <div className="text-xs text-slate-500 mb-2">Pupil Balances</div>
+                <div className="pl-4">
+                  <div className="text-xs text-slate-500 mb-1">Pupil Balances</div>
                   <div className="text-2xl font-bold text-[#071739]">£{totalBalances.toFixed(2)}</div>
-                  <div className="text-xs text-slate-400 mt-2">Combined</div>
+                  <div className="text-xs text-slate-400 mt-1">Combined</div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Card Payments Card */}
-          <Card className="border-emerald-200 aspect-square flex flex-col">
+          <Card className="border-emerald-200">
             <CardHeader className="pb-3 border-b border-emerald-100">
               <CardTitle className="text-base font-semibold text-emerald-800 flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-emerald-600" />
                 Card Payments
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 flex-1 flex flex-col justify-center">
+            <CardContent className="pt-4">
               <div className="grid grid-cols-3 divide-x divide-emerald-100">
-                <div className="pr-4 text-center">
-                  <div className="text-xs text-emerald-700 mb-2">Total Received</div>
+                <div className="pr-4">
+                  <div className="text-xs text-emerald-700 mb-1">Total Received</div>
                   <div className="text-2xl font-bold text-emerald-800">£{totalCardPayments.toFixed(2)}</div>
-                  <div className="text-xs text-emerald-500 mt-2">{stripePayments.length} transactions</div>
+                  <div className="text-xs text-emerald-500 mt-1">{stripePayments.length} transactions</div>
                 </div>
-                <div className="px-4 text-center">
-                  <div className="text-xs text-emerald-700 mb-2">Payout Amount</div>
+                <div className="px-4">
+                  <div className="text-xs text-emerald-700 mb-1">Payout Amount</div>
                   <div className="text-2xl font-bold text-emerald-800">£{totalPayoutAmount.toFixed(2)}</div>
-                  <div className="text-xs text-emerald-500 mt-2">After fees</div>
+                  <div className="text-xs text-emerald-500 mt-1">After fees</div>
                 </div>
-                <div className="pl-4 text-center">
-                  <div className="text-xs text-red-500 mb-2">Stripe Charges</div>
+                <div className="pl-4">
+                  <div className="text-xs text-red-500 mb-1">Stripe Charges</div>
                   <div className="text-2xl font-bold text-red-600">£{totalStripeFees.toFixed(2)}</div>
-                  <div className="text-xs text-red-400 mt-2">Processing fees</div>
+                  <div className="text-xs text-red-400 mt-1">Processing fees</div>
                 </div>
               </div>
             </CardContent>
