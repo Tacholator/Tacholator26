@@ -603,6 +603,11 @@ export default function PaymentMethods() {
         </Card>
         )}
 
+        {/* Bank Transfer Details - Only for Instructors */}
+        {user?.role === 'admin' && instructor && (
+          <BankTransferDetailsSection instructor={instructor} queryClient={queryClient} toast={toast} />
+        )}
+
         {/* Stripe Info Modal */}
         <Dialog open={showStripeInfoModal} onOpenChange={setShowStripeInfoModal}>
         <DialogContent className="max-w-2xl">
