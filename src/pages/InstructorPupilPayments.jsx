@@ -26,6 +26,11 @@ import moment from 'moment';
 export default function InstructorPupilPayments() {
   const urlParams = new URLSearchParams(window.location.search);
   const pupilId = urlParams.get('id');
+  const queryClient = useQueryClient();
+
+  const [hourlyRateInput, setHourlyRateInput] = useState('');
+  const [addAmountInput, setAddAmountInput] = useState('');
+  const [addAmountNote, setAddAmountNote] = useState('');
 
   const { data: pupil, isLoading: pupilLoading } = useQuery({
     queryKey: ['pupil', pupilId],
