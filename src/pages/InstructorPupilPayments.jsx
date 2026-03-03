@@ -376,8 +376,8 @@ export default function InstructorPupilPayments() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {ledgerEntries.length === 0 ? (
-              <div className="text-center py-10 text-slate-400">No transactions yet</div>
+            {ledgerEntries.filter(e => e.type === 'charge').length === 0 ? (
+              <div className="text-center py-10 text-slate-400">No completed lesson transactions yet</div>
             ) : (
               <div className="space-y-2">
                 {ledgerEntries.map(entry => (
