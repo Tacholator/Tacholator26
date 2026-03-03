@@ -43,7 +43,8 @@ export default function LearnerPayments() {
     queryFn: async () => {
       if (!pupil?.instructorId) return null;
       const all = await base44.entities.Instructor.list();
-      return all.find(i => i.id === pupil.instructorId) || null;
+      // instructorId on pupil is the instructor's user ID (created_by_id), not the Instructor entity ID
+      return all.find(i => i.id === pupil.instructorId || i.created_by_id === pupil.instructorId) || null;
     },
     enabled: !!pupil?.instructorId
   });
