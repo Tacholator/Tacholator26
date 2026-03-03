@@ -193,99 +193,63 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
           </div>
         )}
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <DollarSign className="w-4 h-4" />
-                Total Revenue
+        {/* Summary Cards - Revenue & Card Payments */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Revenue Card */}
+          <Card className="border-[#071739]/20">
+            <CardHeader className="pb-3 border-b">
+              <CardTitle className="text-base font-semibold text-[#071739] flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-[#F7B602]" />
+                Revenue
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-[#071739]">£{totalRevenue.toFixed(2)}</div>
-              <div className="text-sm text-slate-500 mt-1">All time</div>
+            <CardContent className="pt-4">
+              <div className="grid grid-cols-3 divide-x divide-slate-200">
+                <div className="pr-4">
+                  <div className="text-xs text-slate-500 mb-1">Total Revenue</div>
+                  <div className="text-2xl font-bold text-[#071739]">£{totalRevenue.toFixed(2)}</div>
+                  <div className="text-xs text-slate-400 mt-1">All time</div>
+                </div>
+                <div className="px-4">
+                  <div className="text-xs text-slate-500 mb-1">This Month</div>
+                  <div className="text-2xl font-bold text-[#071739]">£{thisMonthRevenue.toFixed(2)}</div>
+                  <div className="text-xs text-slate-400 mt-1">{moment().format('MMM YYYY')}</div>
+                </div>
+                <div className="pl-4">
+                  <div className="text-xs text-slate-500 mb-1">Pupil Balances</div>
+                  <div className="text-2xl font-bold text-[#071739]">£{totalBalances.toFixed(2)}</div>
+                  <div className="text-xs text-slate-400 mt-1">Combined</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                This Month
+          {/* Card Payments Card */}
+          <Card className="border-emerald-200">
+            <CardHeader className="pb-3 border-b border-emerald-100">
+              <CardTitle className="text-base font-semibold text-emerald-800 flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-emerald-600" />
+                Card Payments
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-[#071739]">£{thisMonthRevenue.toFixed(2)}</div>
-              <div className="text-sm text-slate-500 mt-1">{moment().format('MMMM YYYY')}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <Wallet className="w-4 h-4" />
-                Pupil Balances
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-[#071739]">£{totalBalances.toFixed(2)}</div>
-              <div className="text-sm text-slate-500 mt-1">Combined</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Active Pupils
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-[#071739]">{activePupils.length}</div>
-              <div className="text-sm text-slate-500 mt-1">Active pupils</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Stripe Payment Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-emerald-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-emerald-700 flex items-center gap-2">
-                <DollarSign className="w-4 h-4" />
-                Total Card Payments
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-emerald-700">£{totalCardPayments.toFixed(2)}</div>
-              <div className="text-sm text-emerald-600 mt-1">{stripePayments.length} transactions</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-indigo-700 flex items-center gap-2">
-                <Wallet className="w-4 h-4" />
-                Payout Amount
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-indigo-700">£{totalPayoutAmount.toFixed(2)}</div>
-              <div className="text-sm text-indigo-600 mt-1">After fees</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-rose-50 to-red-50 border-red-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-red-700 flex items-center gap-2">
-                <TrendingDown className="w-4 h-4" />
-                Stripe Charges
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-red-700">£{totalStripeFees.toFixed(2)}</div>
-              <div className="text-sm text-red-600 mt-1">Processing fees</div>
+            <CardContent className="pt-4">
+              <div className="grid grid-cols-3 divide-x divide-emerald-100">
+                <div className="pr-4">
+                  <div className="text-xs text-emerald-700 mb-1">Total Received</div>
+                  <div className="text-2xl font-bold text-emerald-800">£{totalCardPayments.toFixed(2)}</div>
+                  <div className="text-xs text-emerald-500 mt-1">{stripePayments.length} transactions</div>
+                </div>
+                <div className="px-4">
+                  <div className="text-xs text-emerald-700 mb-1">Payout Amount</div>
+                  <div className="text-2xl font-bold text-emerald-800">£{totalPayoutAmount.toFixed(2)}</div>
+                  <div className="text-xs text-emerald-500 mt-1">After fees</div>
+                </div>
+                <div className="pl-4">
+                  <div className="text-xs text-red-500 mb-1">Stripe Charges</div>
+                  <div className="text-2xl font-bold text-red-600">£{totalStripeFees.toFixed(2)}</div>
+                  <div className="text-xs text-red-400 mt-1">Processing fees</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
