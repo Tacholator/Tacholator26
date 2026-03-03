@@ -42,6 +42,15 @@ export default function InstructorPupilPayments() {
     enabled: !!pupilId
   });
 
+  const { data: completedBookingIds = new Set() } = useQuery({
+    queryKey: ['pupilCompletedBookingIds', pupilId],
+    queryFn: async () => {
+      const bookings = await base44.entities.LessonBooking.filter({ pupilId, status: 'completed' });
+      return new Set(bookings.map(b => b.id));
+    },
+    enabled: !!pupilId
+  });
+
   const { data: ledgerEntries = [], isLoading: ledgerLoading } = useQuery({
     queryKey: ['pupilLedger', pupilId],
     queryFn: async () => {
