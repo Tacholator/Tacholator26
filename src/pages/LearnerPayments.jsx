@@ -127,8 +127,9 @@ export default function LearnerPayments() {
   }
 
   const balance = pupil.bulkPaymentBalance || 0;
-  const hourlyRate = pupil.hourlyRate || 50;
-  const availableHours = balance / hourlyRate;
+  const hourlyRate = pupil.hourlyRate || 0;
+  const hoursAvailable = hourlyRate > 0 ? (balance / hourlyRate).toFixed(1) : 0;
+  const isNegative = balance < 0;
 
   // Calculate upcoming costs
   const upcomingCost = upcomingBookings.reduce((sum, b) => sum + (b.totalPriceGbp || 0), 0);
