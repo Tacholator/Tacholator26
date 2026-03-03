@@ -272,6 +272,19 @@ export default function InstructorPupilPayments() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* PAYG */}
+            <div className="flex items-center gap-3 p-3 rounded-lg border bg-slate-50">
+              <Checkbox
+                id="payg"
+                checked={!!pupil.payAsYouGo}
+                onCheckedChange={(checked) => updatePayAsYouGoMutation.mutate(checked)}
+              />
+              <div>
+                <Label htmlFor="payg" className="font-medium text-slate-800 cursor-pointer">Pay As You Go (PAYG)</Label>
+                <p className="text-xs text-slate-500">Pupil pays per lesson rather than topping up in bulk</p>
+              </div>
+            </div>
+
             {/* Hourly Rate */}
             <div>
               <Label className="text-sm font-medium text-slate-700 mb-2 block">Hourly Rate</Label>
