@@ -40,6 +40,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { loadStripe } from '@stripe/stripe-js';
 import { useToast } from '@/components/ui/use-toast';
+import BankTransferDetailsSection from '@/components/payments/BankTransferDetailsSection';
 
 export default function PaymentMethods() {
   const [cardElement, setCardElement] = useState(null);
