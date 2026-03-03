@@ -257,6 +257,83 @@ export default function InstructorPupilPayments() {
           </Card>
         )}
 
+        {/* Manage Payments */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <PoundSterling className="w-4 h-4 text-[#F7B602]" />
+              Manage Payments
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Hourly Rate */}
+            <div>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">Hourly Rate</Label>
+              <div className="flex items-center gap-3">
+                <div className="relative flex-1 max-w-[180px]">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">£</span>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.50"
+                    placeholder={pupil.hourlyRate > 0 ? pupil.hourlyRate.toString() : '0.00'}
+                    value={hourlyRateInput}
+                    onChange={(e) => setHourlyRateInput(e.target.value)}
+                    className="pl-7"
+                  />
+                </div>
+                <span className="text-sm text-slate-400">per hour</span>
+                <Button
+                  size="sm"
+                  onClick={() => updateHourlyRateMutation.mutate(parseFloat(hourlyRateInput))}
+                  disabled={!hourlyRateInput || isNaN(parseFloat(hourlyRateInput)) || updateHourlyRateMutation.isPending}
+                  className="bg-[#071739] hover:bg-[#071739]/90 text-white"
+                >
+                  <Save className="w-4 h-4 mr-1" />
+                  Save
+                </Button>
+              </div>
+              {pupil.hourlyRate > 0 && (
+                <p className="text-xs text-slate-400 mt-1">Current rate: £{pupil.hourlyRate}/hr</p>
+              )}
+            </div>
+
+            {/* Add Money */}
+            <div>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">Add Money to Balance</Label>
+              <div className="flex items-center gap-3">
+                <div className="relative flex-1 max-w-[180px]">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">£</span>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={addAmountInput}
+                    onChange={(e) => setAddAmountInput(e.target.value)}
+                    className="pl-7"
+                  />
+                </div>
+                <Input
+                  placeholder="Note (optional)"
+                  value={addAmountNote}
+                  onChange={(e) => setAddAmountNote(e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  size="sm"
+                  onClick={() => addBalanceMutation.mutate({ amount: parseFloat(addAmountInput), note: addAmountNote })}
+                  disabled={!addAmountInput || isNaN(parseFloat(addAmountInput)) || parseFloat(addAmountInput) <= 0 || addBalanceMutation.isPending}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Transaction History */}
         <Card>
           <CardHeader>
