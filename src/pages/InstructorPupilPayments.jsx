@@ -201,68 +201,6 @@ export default function InstructorPupilPayments() {
           </Card>
         </div>
 
-        {/* Audit Hours */}
-        {((pupil.auditNoShowHours || 0) > 0 || (pupil.auditLateCancellationHours || 0) > 0) && (
-          <Card className="border-amber-200 bg-amber-50/50">
-            <CardHeader>
-              <CardTitle className="text-sm text-amber-900 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4" />
-                Audit Hours
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-6">
-                {(pupil.auditNoShowHours || 0) > 0 && (
-                  <div>
-                    <div className="text-xs text-amber-600">No-Show</div>
-                    <div className="text-xl font-bold text-amber-900">{pupil.auditNoShowHours.toFixed(1)}h</div>
-                  </div>
-                )}
-                {(pupil.auditLateCancellationHours || 0) > 0 && (
-                  <div>
-                    <div className="text-xs text-amber-600">Late Cancellation</div>
-                    <div className="text-xl font-bold text-amber-900">{pupil.auditLateCancellationHours.toFixed(1)}h</div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Upcoming Booked Lessons */}
-        {upcomingBookings.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Calendar className="w-4 h-4 text-[#F7B602]" />
-                Upcoming Booked Lessons
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {upcomingBookings.map(booking => {
-                  const start = moment(booking.startAtUtc).local();
-                  const cost = booking.escrowAmountGbp || (booking.durationHours * (pupil.hourlyRate || 0));
-                  return (
-                    <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg border bg-slate-50">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                        <div>
-                          <div className="font-medium text-sm text-slate-800">{start.format('ddd, D MMM YYYY')}</div>
-                          <div className="text-xs text-slate-500">{start.format('HH:mm')} · {booking.durationHours}h</div>
-                        </div>
-                      </div>
-                      {cost > 0 && (
-                        <div className="text-sm font-semibold text-amber-700">£{cost.toFixed(2)} held</div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Manage Payments */}
         <Card>
           <CardHeader>
@@ -352,6 +290,68 @@ export default function InstructorPupilPayments() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Audit Hours */}
+        {((pupil.auditNoShowHours || 0) > 0 || (pupil.auditLateCancellationHours || 0) > 0) && (
+          <Card className="border-amber-200 bg-amber-50/50">
+            <CardHeader>
+              <CardTitle className="text-sm text-amber-900 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                Audit Hours
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-6">
+                {(pupil.auditNoShowHours || 0) > 0 && (
+                  <div>
+                    <div className="text-xs text-amber-600">No-Show</div>
+                    <div className="text-xl font-bold text-amber-900">{pupil.auditNoShowHours.toFixed(1)}h</div>
+                  </div>
+                )}
+                {(pupil.auditLateCancellationHours || 0) > 0 && (
+                  <div>
+                    <div className="text-xs text-amber-600">Late Cancellation</div>
+                    <div className="text-xl font-bold text-amber-900">{pupil.auditLateCancellationHours.toFixed(1)}h</div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Upcoming Booked Lessons */}
+        {upcomingBookings.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Calendar className="w-4 h-4 text-[#F7B602]" />
+                Upcoming Booked Lessons
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {upcomingBookings.map(booking => {
+                  const start = moment(booking.startAtUtc).local();
+                  const cost = booking.escrowAmountGbp || (booking.durationHours * (pupil.hourlyRate || 0));
+                  return (
+                    <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg border bg-slate-50">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        <div>
+                          <div className="font-medium text-sm text-slate-800">{start.format('ddd, D MMM YYYY')}</div>
+                          <div className="text-xs text-slate-500">{start.format('HH:mm')} · {booking.durationHours}h</div>
+                        </div>
+                      </div>
+                      {cost > 0 && (
+                        <div className="text-sm font-semibold text-amber-700">£{cost.toFixed(2)} held</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Transaction History */}
         <Card>
