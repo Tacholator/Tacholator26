@@ -171,6 +171,43 @@ export default function LearnerPayments() {
           </Link>
         </div>
 
+        {/* Balance Card */}
+        {(() => {
+          let bgGradient = 'from-slate-400 to-slate-500';
+          if (balance > 0) bgGradient = 'from-emerald-500 to-emerald-600';
+          else if (isNegative) bgGradient = 'from-rose-500 to-rose-600';
+
+          return (
+            <Card className={`border-0 shadow-sm bg-gradient-to-br ${bgGradient} text-white`}>
+              <CardHeader>
+                <CardTitle className="text-lg text-white/90">My Balance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                      <Wallet className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-3xl font-bold">£{Math.abs(balance).toFixed(2)}</p>
+                      <p className="text-white/80 text-sm">{isNegative ? 'Amount owed' : 'Credit balance'}</p>
+                    </div>
+                  </div>
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm text-white/80">Hours available</span>
+                      <span className="text-lg font-semibold">{hoursAvailable}h</span>
+                    </div>
+                    {hourlyRate > 0 && (
+                      <p className="text-xs text-white/70">Based on £{hourlyRate.toFixed(2)}/hour</p>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })()}
+
         {/* Top Up Section */}
         <Card>
           <CardHeader>
