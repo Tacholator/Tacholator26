@@ -115,9 +115,13 @@ export default function InstructorPupilPayments() {
 
   const now = moment();
   const upcomingBookings = confirmedBookings.filter(b => moment(b.startAtUtc).isAfter(now));
-  const totalEscrow = upcomingBookings.reduce((sum, b) => sum + (b.escrowAmountGbp || 0), 0);
+  const totalEscrow = upcomingBookings.reduce((sum, b) => {
+    const cost = b.escrowAmountGbp || (b.durationHours * (pupil.hourlyRate || 0));
+    return sum + cost;
+  }, 0);
   const availableBalance = pupil.bulkPaymentBalance || 0;
   const totalBalance = availableBalance + totalEscrow;
+  const shortfall = totalEscrow > availableBalance ? totalEscrow - availableBalance : 0;
 
   const totalPaid = ledgerEntries.filter(e => e.type === 'credit').reduce((sum, e) => sum + (e.amountGbp || 0), 0);
   const totalCharged = ledgerEntries.filter(e => e.type === 'charge').reduce((sum, e) => sum + (e.amountGbp || 0), 0);
