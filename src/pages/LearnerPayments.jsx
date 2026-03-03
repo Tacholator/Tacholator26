@@ -38,6 +38,16 @@ export default function LearnerPayments() {
     enabled: !!pupil?.id
   });
 
+  const { data: instructor } = useQuery({
+    queryKey: ['learnerInstructor', pupil?.instructorId],
+    queryFn: async () => {
+      if (!pupil?.instructorId) return null;
+      const instructors = await base44.entities.Instructor.filter({ id: pupil.instructorId });
+      return instructors[0] || null;
+    },
+    enabled: !!pupil?.instructorId
+  });
+
   const { data: upcomingBookings = [] } = useQuery({
     queryKey: ['myUpcomingBookings', pupil?.id],
     queryFn: async () => {
