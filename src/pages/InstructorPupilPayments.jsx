@@ -385,11 +385,11 @@ export default function InstructorPupilPayments() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {ledgerEntries.filter(e => e.type === 'charge').length === 0 ? (
+            {ledgerEntries.filter(e => e.type === 'charge' && (!e.bookingId || completedBookingIds.has(e.bookingId))).length === 0 ? (
               <div className="text-center py-10 text-slate-400">No completed lesson transactions yet</div>
             ) : (
               <div className="space-y-2">
-                {ledgerEntries.filter(e => e.type === 'charge').map(entry => (
+                {ledgerEntries.filter(e => e.type === 'charge' && (!e.bookingId || completedBookingIds.has(e.bookingId))).map(entry => (
                   <div key={entry.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-slate-50 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-full ${entry.type === 'charge' ? 'bg-green-100' : entry.type === 'credit' ? 'bg-blue-100' : 'bg-slate-100'}`}>
