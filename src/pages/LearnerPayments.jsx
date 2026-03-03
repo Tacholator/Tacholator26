@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { CreditCard, TrendingUp, TrendingDown, Wallet, Calendar, Clock, AlertCircle, DollarSign, FileText, PoundSterling } from 'lucide-react';
+import MakePaymentSection from '@/components/payments/MakePaymentSection';
 import moment from 'moment';
 
 export default function LearnerPayments() {
