@@ -12,16 +12,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   TrendingUp, 
   TrendingDown, 
-  Users, 
   Calendar,
   Clock,
   Search,
   DollarSign,
   Wallet,
-  Settings,
   CheckCircle2,
-  AlertCircle,
-  ExternalLink
+  AlertCircle
 } from 'lucide-react';
 import moment from 'moment';
 
