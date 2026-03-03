@@ -192,14 +192,24 @@ export default function InstructorPupilPayments() {
             </CardContent>
           </Card>
 
-          <Card className="border-amber-300 bg-amber-50">
+          <Card className={`${shortfall > 0 ? 'border-rose-300 bg-rose-50' : 'border-amber-300 bg-amber-50'}`}>
             <CardHeader className="pb-2">
               <CardTitle className="text-xs text-slate-500 font-medium">Held in Escrow</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-700">£{totalEscrow.toFixed(2)}</div>
+              <div className={`text-2xl font-bold ${shortfall > 0 ? 'text-rose-700' : 'text-amber-700'}`}>
+                £{totalEscrow.toFixed(2)}
+              </div>
               {upcomingBookings.length > 0 && (
-                <div className="text-xs text-amber-600">{upcomingBookings.length} lesson{upcomingBookings.length !== 1 ? 's' : ''}</div>
+                <div className={`text-xs ${shortfall > 0 ? 'text-rose-500' : 'text-amber-600'}`}>
+                  {upcomingBookings.length} lesson{upcomingBookings.length !== 1 ? 's' : ''}
+                </div>
+              )}
+              {shortfall > 0 && (
+                <div className="mt-2 text-xs font-semibold text-rose-700 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  £{shortfall.toFixed(2)} still needed
+                </div>
               )}
             </CardContent>
           </Card>
