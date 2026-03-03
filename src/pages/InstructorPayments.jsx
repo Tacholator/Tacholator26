@@ -346,7 +346,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                         return (
                           <Link 
                             key={pupil.id}
-                            to={createPageUrl('PupilProfile') + `?id=${pupil.id}`}
+                            to={createPageUrl('InstructorPupilPayments') + `?id=${pupil.id}`}
                           >
                             <Card className={`hover:shadow-lg transition-all cursor-pointer h-full aspect-square flex flex-col ${
                               balance > 0 
