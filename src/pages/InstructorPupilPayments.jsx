@@ -51,6 +51,11 @@ export default function InstructorPupilPayments() {
     enabled: !!pupil
   });
 
+  const updatePayAsYouGoMutation = useMutation({
+    mutationFn: (checked) => base44.entities.Pupil.update(pupilId, { payAsYouGo: checked }),
+    onSuccess: () => queryClient.invalidateQueries(['pupil', pupilId])
+  });
+
   const updateHourlyRateMutation = useMutation({
     mutationFn: (rate) => base44.entities.Pupil.update(pupilId, { hourlyRate: rate }),
     onSuccess: () => {
