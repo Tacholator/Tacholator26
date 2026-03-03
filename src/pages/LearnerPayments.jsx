@@ -42,8 +42,8 @@ export default function LearnerPayments() {
     queryKey: ['learnerInstructor', pupil?.instructorId],
     queryFn: async () => {
       if (!pupil?.instructorId) return null;
-      const instructors = await base44.entities.Instructor.filter({ id: pupil.instructorId });
-      return instructors[0] || null;
+      const all = await base44.entities.Instructor.list();
+      return all.find(i => i.id === pupil.instructorId) || null;
     },
     enabled: !!pupil?.instructorId
   });
