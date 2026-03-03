@@ -25,48 +25,37 @@ Deno.serve(async (req) => {
     const instructor = instructors[0];
     const connectedAccountId = instructor.stripeAccountId;
 
-    // Fetch payment intents from the platform account - these are the ones created
-    // via Stripe Checkout with transfer_data.destination to the connected account
-    const paymentIntents = await stripe.paymentIntents.list({ limit: 100 });
+    // Fetch charges from the connected account directly — this captures all
+    // payments that landed in this instructor's Stripe account, whether via
+    // checkout/transfer or direct charge.
+    const charges = await stripe.charges.list(
+      { limit: 100 },
+      { stripeAccount: connectedAccountId }
+    );
 
-    const payments = [];
-
-    for (const pi of paymentIntents.data) {
-      // Check if this payment intent is destined for this instructor's connected account
-      const transferDest = pi.transfer_data?.destination;
-      if (transferDest !== connectedAccountId) continue;
-
-      const amount = pi.amount / 100;
-      const appFee = pi.application_fee_amount ? pi.application_fee_amount / 100 : 0;
-      // Strip fee is the remainder of app_fee that goes to Stripe (not platform)
-      // Estimate actual Stripe fee: 1.4% + 0.20 for UK cards
+    const payments = charges.data.map(charge => {
+      const amount = charge.amount / 100;
+      // application_fee_amount is the platform fee taken out
+      const appFee = charge.application_fee_amount ? charge.application_fee_amount / 100 : 0;
+      // Estimate Stripe's processing fee (1.4% + £0.20 for UK cards)
       const estimatedStripeFee = parseFloat((amount * 0.014 + 0.20).toFixed(2));
       const netPayout = parseFloat((amount - appFee - estimatedStripeFee).toFixed(2));
 
-      // Get customer email from charges if available
-      let customerEmail = pi.receipt_email;
-      if (!customerEmail && pi.latest_charge) {
-        try {
-          const charge = await stripe.charges.retrieve(pi.latest_charge);
-          customerEmail = charge.billing_details?.email || charge.receipt_email;
-        } catch (_) { /* ignore */ }
-      }
-
-      payments.push({
-        id: pi.id,
+      return {
+        id: charge.id,
         amount,
-        currency: pi.currency.toUpperCase(),
-        status: pi.status,
-        created: pi.created,
+        currency: charge.currency.toUpperCase(),
+        status: charge.status,
+        created: charge.created,
         stripeFee: estimatedStripeFee,
         appFee,
         netPayout,
-        customerEmail,
-        description: pi.description,
-        paymentMethod: pi.payment_method_types?.[0] || 'card',
-        metadata: pi.metadata
-      });
-    }
+        customerEmail: charge.billing_details?.email || charge.receipt_email,
+        description: charge.description,
+        paymentMethod: charge.payment_method_details?.type || 'card',
+        metadata: charge.metadata
+      };
+    });
 
     payments.sort((a, b) => b.created - a.created);
 
