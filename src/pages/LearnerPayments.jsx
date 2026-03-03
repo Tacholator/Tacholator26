@@ -219,6 +219,9 @@ export default function LearnerPayments() {
           );
         })()}
 
+        {/* Make Payment */}
+        <MakePaymentSection pupil={pupil} instructor={instructor} />
+
         {/* Payment History */}
         <Card>
           <CardHeader>
