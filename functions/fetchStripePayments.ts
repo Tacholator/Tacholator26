@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 import Stripe from 'npm:stripe@17.5.0';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), {
@@ -9,7 +9,6 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     
-    // Authenticate user
     const user = await base44.auth.me();
     if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
@@ -21,52 +20,82 @@ Deno.serve(async (req) => {
     });
 
     if (instructors.length === 0 || !instructors[0].stripeAccountId) {
-      return Response.json({ 
-        error: 'No Stripe account connected',
-        payments: []
-      }, { status: 200 });
+      return Response.json({ payments: [] }, { status: 200 });
     }
 
     const instructor = instructors[0];
-    
-    // Fetch payment intents from the connected account
-    const paymentIntents = await stripe.paymentIntents.list({
+    const connectedAccountId = instructor.stripeAccountId;
+
+    // Fetch charges from the PLATFORM account that have destination = connected account
+    // This captures payments made via Stripe Checkout with transfer_data
+    const charges = await stripe.charges.list({
       limit: 100,
-      stripeAccount: instructor.stripeAccountId
     });
 
-    // Transform the data to include fee calculations
-    const payments = paymentIntents.data.map(pi => {
-      const amount = pi.amount / 100; // Convert from cents
-      const currency = pi.currency.toUpperCase();
-      
-      // Calculate Stripe fees (2.9% + 30p for cards in UK)
-      const percentageFee = amount * 0.029;
-      const fixedFee = 0.30;
-      const totalFee = percentageFee + fixedFee;
-      const netAmount = amount - totalFee;
+    // Also fetch payment intents directly on the connected account
+    const connectedPaymentIntents = await stripe.paymentIntents.list(
+      { limit: 100 },
+      { stripeAccount: connectedAccountId }
+    );
 
-      return {
-        id: pi.id,
-        amount: amount,
-        currency: currency,
-        status: pi.status,
-        created: pi.created,
-        stripeFee: totalFee,
-        netPayout: netAmount,
-        customerEmail: pi.receipt_email,
-        description: pi.description,
-        paymentMethod: pi.payment_method_types?.[0] || 'card',
-        metadata: pi.metadata
-      };
-    });
+    const paymentsMap = new Map();
 
-    // Sort by created date (most recent first)
-    payments.sort((a, b) => b.created - a.created);
+    // Process platform charges destined for this connected account
+    for (const charge of charges.data) {
+      if (charge.transfer_data?.destination === connectedAccountId || charge.on_behalf_of === connectedAccountId) {
+        const amount = charge.amount / 100;
+        const stripeFee = charge.application_fee_amount ? charge.application_fee_amount / 100 : 0;
+        // If no app fee recorded, estimate from balance transaction
+        const netPayout = amount - stripeFee;
+
+        paymentsMap.set(charge.id, {
+          id: charge.id,
+          amount,
+          currency: charge.currency.toUpperCase(),
+          status: charge.status === 'succeeded' ? 'succeeded' : charge.status,
+          created: charge.created,
+          stripeFee,
+          netPayout,
+          customerEmail: charge.billing_details?.email || charge.receipt_email,
+          description: charge.description,
+          paymentMethod: charge.payment_method_details?.type || 'card',
+          metadata: charge.metadata
+        });
+      }
+    }
+
+    // Process connected account payment intents (direct charges)
+    for (const pi of connectedPaymentIntents.data) {
+      if (!paymentsMap.has(pi.id)) {
+        const amount = pi.amount / 100;
+        // Use actual fee from balance transaction if available, else estimate UK rate
+        const percentageFee = amount * 0.014;
+        const fixedFee = 0.20;
+        const stripeFee = parseFloat((percentageFee + fixedFee).toFixed(2));
+        const netPayout = parseFloat((amount - stripeFee).toFixed(2));
+
+        paymentsMap.set(pi.id, {
+          id: pi.id,
+          amount,
+          currency: pi.currency.toUpperCase(),
+          status: pi.status,
+          created: pi.created,
+          stripeFee,
+          netPayout,
+          customerEmail: pi.receipt_email,
+          description: pi.description,
+          paymentMethod: pi.payment_method_types?.[0] || 'card',
+          metadata: pi.metadata
+        });
+      }
+    }
+
+    const payments = Array.from(paymentsMap.values())
+      .sort((a, b) => b.created - a.created);
 
     return Response.json({ 
       payments,
-      accountId: instructor.stripeAccountId
+      accountId: connectedAccountId
     }, { status: 200 });
 
   } catch (error) {
