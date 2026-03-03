@@ -229,6 +229,7 @@ export default function Layout({ children, currentPageName }) {
                                     <Link
                                       key={child.name}
                                       to={createPageUrl(child.page)}
+                                      onClick={() => setExpandedMenus({})}
                                       className={`group flex gap-x-3 rounded-xl p-3 text-sm transition-all duration-200 block ${
                                         isChildActive
                                           ? 'bg-[#F7B602] text-[#071739]'
