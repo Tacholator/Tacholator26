@@ -153,7 +153,7 @@ export default function LearnerPayments() {
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
                   <Wallet className="w-6 h-6 text-[#F7B602]" />
-                  <h3 className="text-lg font-semibold text-[#071739]">Payment Methods</h3>
+                  <h3 className="text-lg font-semibold text-[#071739]">Manage Cards</h3>
                 </div>
               </CardContent>
             </Card>
