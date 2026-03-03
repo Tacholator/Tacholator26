@@ -14,15 +14,25 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const instructors = await base44.entities.Instructor.filter({ 
-      created_by: user.email 
-    });
+    // Support admin proxy: if instructorId is passed, fetch that instructor's payments
+    let body = {};
+    try { body = await req.json(); } catch (_) {}
+    const proxyInstructorId = body.instructorId || null;
 
-    if (instructors.length === 0 || !instructors[0].stripeAccountId) {
+    let instructor;
+    if (proxyInstructorId && user.role === 'admin') {
+      // Admin viewing another instructor's payments
+      const all = await base44.asServiceRole.entities.Instructor.list();
+      instructor = all.find(i => i.created_by_id === proxyInstructorId || i.id === proxyInstructorId);
+    } else {
+      const instructors = await base44.entities.Instructor.filter({ created_by: user.email });
+      instructor = instructors[0] || null;
+    }
+
+    if (!instructor || !instructor.stripeAccountId) {
       return Response.json({ payments: [] }, { status: 200 });
     }
 
-    const instructor = instructors[0];
     const connectedAccountId = instructor.stripeAccountId;
 
     // Fetch charges from the connected account directly — this captures all
