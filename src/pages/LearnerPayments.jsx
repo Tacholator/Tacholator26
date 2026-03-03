@@ -208,62 +208,6 @@ export default function LearnerPayments() {
           );
         })()}
 
-        {/* Top Up Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5" />
-              Top Up Balance
-            </CardTitle>
-            <CardDescription>
-              Add credits to your account to book lessons
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {quickTopUpAmounts.map(amount => (
-                <Button
-                  key={amount}
-                  variant={topUpAmount === String(amount) ? 'default' : 'outline'}
-                  onClick={() => setTopUpAmount(String(amount))}
-                  className={topUpAmount === String(amount) ? 'bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]' : ''}
-                >
-                  £{amount}
-                </Button>
-              ))}
-            </div>
-
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <Input
-                  type="number"
-                  min="10"
-                  step="5"
-                  value={topUpAmount}
-                  onChange={(e) => setTopUpAmount(e.target.value)}
-                  placeholder="Enter amount"
-                  className="text-lg"
-                />
-                <div className="text-xs text-slate-500 mt-1">
-                  ≈ {(parseFloat(topUpAmount || 0) / hourlyRate).toFixed(1)} hours @ £{hourlyRate}/hr
-                </div>
-              </div>
-              <Button
-                onClick={handleTopUp}
-                disabled={createPaymentMutation.isPending}
-                className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] px-8"
-                size="lg"
-              >
-                {createPaymentMutation.isPending ? 'Processing...' : 'Pay Now'}
-              </Button>
-            </div>
-
-            <div className="text-xs text-slate-500">
-              Secure payment powered by Stripe. Minimum top-up: £10
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Payment History */}
         <Card>
           <CardHeader>
