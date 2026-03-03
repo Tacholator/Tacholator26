@@ -21,7 +21,8 @@ import {
   Settings,
   Receipt,
   BookMarked,
-  Star
+  Star,
+  BarChart2
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
