@@ -50,6 +50,38 @@ export default function InstructorPupilPayments() {
     enabled: !!pupil
   });
 
+  const updateHourlyRateMutation = useMutation({
+    mutationFn: (rate) => base44.entities.Pupil.update(pupilId, { hourlyRate: rate }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['pupil', pupilId]);
+      setHourlyRateInput('');
+    }
+  });
+
+  const addBalanceMutation = useMutation({
+    mutationFn: async ({ amount, note }) => {
+      const newBalance = (pupil.bulkPaymentBalance || 0) + amount;
+      await base44.entities.Pupil.update(pupilId, {
+        bulkPaymentBalance: newBalance,
+        bulkAmountPaid: (pupil.bulkAmountPaid || 0) + amount
+      });
+      await base44.entities.PaymentLedger.create({
+        userId: pupil.linkedUserId || pupilId,
+        type: 'credit',
+        reason: 'bulk_payment_credit',
+        amountGbp: amount,
+        createdByRole: 'instructor',
+        note: note || `Manual top-up: £${amount.toFixed(2)}`
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['pupil', pupilId]);
+      queryClient.invalidateQueries(['pupilLedger', pupilId]);
+      setAddAmountInput('');
+      setAddAmountNote('');
+    }
+  });
+
   const { data: confirmedBookings = [] } = useQuery({
     queryKey: ['pupilConfirmedBookings', pupilId],
     queryFn: async () => {
