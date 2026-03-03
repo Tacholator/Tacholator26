@@ -98,13 +98,15 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
   });
 
   const { data: stripePayments = [], isLoading: stripePaymentsLoading } = useQuery({
-    queryKey: ['stripePayments', instructor?.stripeAccountId],
+    queryKey: ['stripePayments', instructor?.stripeAccountId, adminProxyInstructorId],
     queryFn: async () => {
-      const response = await base44.functions.invoke('fetchStripePayments');
+      const response = await base44.functions.invoke('fetchStripePayments', {
+        instructorId: adminProxyInstructorId || null
+      });
       return response.data.payments || [];
     },
     enabled: !!instructor?.stripeAccountId,
-    refetchInterval: 30000 // Refresh every 30 seconds
+    refetchInterval: 30000
   });
 
   if (pupilsLoading || ledgerLoading || stripePaymentsLoading) {
