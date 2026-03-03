@@ -128,7 +128,7 @@ export default function InstructorPupilPayments() {
         </Card>
 
         {/* Balance Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <Card className={`${availableBalance > 0 ? 'border-emerald-300 bg-emerald-50' : availableBalance < 0 ? 'border-rose-300 bg-rose-50' : ''}`}>
             <CardHeader className="pb-2">
               <CardTitle className="text-xs text-slate-500 font-medium">Available Balance</CardTitle>
@@ -140,33 +140,15 @@ export default function InstructorPupilPayments() {
             </CardContent>
           </Card>
 
-          {totalEscrow > 0 && (
-            <Card className="border-amber-300 bg-amber-50">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs text-slate-500 font-medium">In Escrow</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-amber-700">£{totalEscrow.toFixed(2)}</div>
+          <Card className="border-amber-300 bg-amber-50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs text-slate-500 font-medium">Held in Escrow</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-700">£{totalEscrow.toFixed(2)}</div>
+              {upcomingBookings.length > 0 && (
                 <div className="text-xs text-amber-600">{upcomingBookings.length} lesson{upcomingBookings.length !== 1 ? 's' : ''}</div>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500 font-medium">Total Paid In</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-700">£{totalPaid.toFixed(2)}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500 font-medium">Total Charged</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-700">£{totalCharged.toFixed(2)}</div>
+              )}
             </CardContent>
           </Card>
         </div>

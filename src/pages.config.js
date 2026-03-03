@@ -77,6 +77,7 @@ import InstructorNotifications from './pages/InstructorNotifications';
 import InstructorPayments from './pages/InstructorPayments';
 import InstructorPupilNotes from './pages/InstructorPupilNotes';
 import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
+import InstructorPupilPayments from './pages/InstructorPupilPayments';
 import InstructorQuizPreview from './pages/InstructorQuizPreview';
 import InstructorReports from './pages/InstructorReports';
 import InstructorResources from './pages/InstructorResources';
@@ -123,7 +124,6 @@ import RefundPolicy from './pages/RefundPolicy';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import InstructorPupilPayments from './pages/InstructorPupilPayments';
 import __Layout from './Layout.jsx';
 
 
@@ -158,6 +158,7 @@ export const PAGES = {
     "InstructorPayments": InstructorPayments,
     "InstructorPupilNotes": InstructorPupilNotes,
     "InstructorPupilNotesList": InstructorPupilNotesList,
+    "InstructorPupilPayments": InstructorPupilPayments,
     "InstructorQuizPreview": InstructorQuizPreview,
     "InstructorReports": InstructorReports,
     "InstructorResources": InstructorResources,
@@ -204,7 +205,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "InstructorPupilPayments": InstructorPupilPayments,
 }
 
 export const pagesConfig = {
