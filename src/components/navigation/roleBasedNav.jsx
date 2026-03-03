@@ -90,7 +90,8 @@ export const instructorOnlyLinks = [
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
-  { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' }
+  { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' },
+  { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
 ];
 
 // Learner-only navigation items
