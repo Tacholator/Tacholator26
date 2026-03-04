@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X, ClipboardCheck, Mic, Building2, FileText, MapPin } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X, ClipboardCheck, Mic, Building2, FileText, MapPin, Pencil } from 'lucide-react';
 import {
   Select,
   SelectContent,
