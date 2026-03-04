@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import LearnerDashboard from './LearnerDashboard';
 import InstructorDashboard from './InstructorDashboard';
+import RoleSelection from './RoleSelection';
 import { Loader2 } from 'lucide-react';
 
 export default function Home() {
@@ -20,17 +21,12 @@ export default function Home() {
     queryFn: async () => {
       if (!user?.id || !user?.email) return null;
       const allPupils = await base44.entities.Pupil.list();
-      
-      // First try to match by linkedUserId (most reliable)
       let matchingPupil = allPupils.find(p => p.linkedUserId === user.id);
-      
-      // Fallback to case-insensitive email match if no linkedUserId match
       if (!matchingPupil) {
         matchingPupil = allPupils.find(
           p => p.email && p.email.toLowerCase() === user.email.toLowerCase()
         );
       }
-      
       return matchingPupil || null;
     },
     enabled: !!user?.id && !!user?.email
@@ -44,26 +40,19 @@ export default function Home() {
     );
   }
 
-  // Determine if user is an instructor or learner
   // Priority: If user has a pupil record, they're a learner regardless of role
   const isLearner = !!pupilRecord;
   const isInstructor = !isLearner && user.role === 'admin';
-  
-  // Debug logging
-  console.log('🔍 Home Dashboard Debug:', {
-    userId: user?.id,
-    userEmail: user?.email,
-    userRole: user?.role,
-    hasPupilRecord: !!pupilRecord,
-    pupilRecordId: pupilRecord?.id,
-    pupilRecordEmail: pupilRecord?.email,
-    pupilLinkedUserId: pupilRecord?.linkedUserId,
-    isLearner,
-    isInstructor,
-    renderingDashboard: isInstructor ? 'InstructorDashboard' : 'LearnerDashboard'
-  });
-  
-  if (isInstructor) {
+
+  // New users who haven't selected a role yet (no pupil record, not admin)
+  // Skip role selection for the main admin account
+  const needsRoleSelection = !isLearner && !isInstructor && !user.userType && user.email !== 'fasobah@gmail.com';
+
+  if (needsRoleSelection) {
+    return <RoleSelection />;
+  }
+
+  if (isInstructor || user.userType === 'instructor') {
     return <InstructorDashboard />;
   } else {
     return <LearnerDashboard />;
