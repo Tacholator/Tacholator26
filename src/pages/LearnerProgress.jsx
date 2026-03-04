@@ -59,6 +59,10 @@ export default function LearnerProgress() {
     );
   }
 
+  if (!pupil.instructorId) {
+    return <NotLinkedBanner />;
+  }
+
   // Restrict access for non-active pupils
   if (pupil.status !== 'Active') {
     return <RestrictedAccessMessage pupilStatus={pupil.status} />;
