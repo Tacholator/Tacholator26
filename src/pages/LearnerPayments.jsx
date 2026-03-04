@@ -139,6 +139,10 @@ export default function LearnerPayments() {
     );
   }
 
+  if (!pupil.instructorId) {
+    return <NotLinkedBanner />;
+  }
+
   const balance = pupil.bulkPaymentBalance || 0;
   const hourlyRate = pupil.hourlyRate || 0;
   const hoursAvailable = hourlyRate > 0 ? (balance / hourlyRate).toFixed(1) : 0;
