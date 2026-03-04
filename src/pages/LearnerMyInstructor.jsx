@@ -135,29 +135,7 @@ export default function LearnerMyInstructor() {
           </CardContent>
         </Card>
 
-        {/* Additional Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Lesson Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <div className="text-sm text-slate-500">Hourly Rate</div>
-                <div className="text-2xl font-bold text-[#071739]">
-                  £{pupil.hourlyRate || 0}
-                </div>
-              </div>
-              
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <div className="text-sm text-slate-500">Hours Completed</div>
-                <div className="text-2xl font-bold text-[#071739]">
-                  {pupil.hoursCompleted || 0}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
       </div>
     </div>
   );
