@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Loader2, Car, ExternalLink } from 'lucide-react';
 import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
+import NotLinkedBanner from '@/components/learner/NotLinkedBanner';
 
 export default function LearnerProgress() {
   const navigate = useNavigate();
