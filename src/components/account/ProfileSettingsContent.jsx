@@ -253,133 +253,99 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
           </div>
         </CardHeader>
         <CardContent className="p-6 space-y-6">
-          {/* Profile Photo Upload */}
-          <div className="space-y-2">
-            <Label htmlFor="photo" className="flex items-center gap-2">
-              <User className="w-4 h-4 text-slate-400" />
-              Profile Photo
-            </Label>
-            <div className="flex items-center gap-4">
-              <input
-                type="file"
-                id="photo-upload"
-                accept="image/*"
-                onChange={handlePhotoUpload}
-                className="hidden"
-              />
-              <label htmlFor="photo-upload">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  disabled={isUploading}
-                  onClick={() => document.getElementById('photo-upload')?.click()}
-                  className="gap-2"
-                >
-                  {isUploading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Upload className="w-4 h-4" />
-                  )}
-                  {isUploading ? 'Uploading...' : 'Upload Photo'}
+          {!isPersonalEditing ? (
+            /* Read-only view */
+            <>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <User className="w-4 h-4 text-slate-400 shrink-0" />
+                  <div>
+                    <p className="text-xs text-slate-400">Name</p>
+                    <p className="font-medium text-slate-800">{formData.firstName} {formData.lastName}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+                  <div>
+                    <p className="text-xs text-slate-400">Email</p>
+                    <p className="font-medium text-slate-800">{user?.email || '—'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Phone className="w-4 h-4 text-slate-400 shrink-0" />
+                  <div>
+                    <p className="text-xs text-slate-400">Phone</p>
+                    <p className="font-medium text-slate-800">{formData.phone || '—'}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="pt-4 border-t border-slate-100">
+                <Button variant="outline" onClick={() => setIsPersonalEditing(true)} className="gap-2">
+                  <Pencil className="w-4 h-4" />
+                  Update Details
                 </Button>
-              </label>
-              {formData.profilePhotoUrl && (
-                <p className="text-xs text-emerald-600">Photo uploaded</p>
-              )}
-            </div>
-          </div>
+              </div>
+            </>
+          ) : (
+            /* Edit mode */
+            <>
+              {/* Profile Photo Upload */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-slate-400" />
+                  Profile Photo
+                </Label>
+                <div className="flex items-center gap-4">
+                  <input type="file" id="photo-upload" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                  <Button type="button" variant="outline" disabled={isUploading} onClick={() => document.getElementById('photo-upload')?.click()} className="gap-2">
+                    {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                    {isUploading ? 'Uploading...' : 'Upload Photo'}
+                  </Button>
+                  {formData.profilePhotoUrl && <p className="text-xs text-emerald-600">Photo uploaded</p>}
+                </div>
+              </div>
 
-          {/* Name Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName" className="flex items-center gap-2">
-                <User className="w-4 h-4 text-slate-400" />
-                First Name
-              </Label>
-              <Input
-                id="firstName"
-                value={formData.firstName}
-                onChange={(e) => handleChange('firstName', e.target.value)}
-                placeholder="Enter your first name"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName" className="flex items-center gap-2">
-                <User className="w-4 h-4 text-slate-400" />
-                Last Name
-              </Label>
-              <Input
-                id="lastName"
-                value={formData.lastName}
-                onChange={(e) => handleChange('lastName', e.target.value)}
-                placeholder="Enter your last name"
-              />
-            </div>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName" className="flex items-center gap-2"><User className="w-4 h-4 text-slate-400" />First Name</Label>
+                  <Input id="firstName" value={formData.firstName} onChange={(e) => handleChange('firstName', e.target.value)} placeholder="Enter your first name" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="flex items-center gap-2"><User className="w-4 h-4 text-slate-400" />Last Name</Label>
+                  <Input id="lastName" value={formData.lastName} onChange={(e) => handleChange('lastName', e.target.value)} placeholder="Enter your last name" />
+                </div>
+              </div>
 
-          {/* Email and Role (View Only) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-slate-400" />
-                Email Address
-              </Label>
-              <Input
-                id="email"
-                value={user?.email || ''}
-                disabled
-                className="bg-slate-50"
-              />
-              <p className="text-xs text-slate-400">Email cannot be changed</p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="role" className="flex items-center gap-2">
-                <User className="w-4 h-4 text-slate-400" />
-                Role
-              </Label>
-              <Input
-                id="role"
-                value={isInstructor ? 'Instructor' : 'Learner'}
-                disabled
-                className="bg-slate-50"
-              />
-              <p className="text-xs text-slate-400">Role is fixed</p>
-            </div>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2"><Mail className="w-4 h-4 text-slate-400" />Email Address</Label>
+                  <Input value={user?.email || ''} disabled className="bg-slate-50" />
+                  <p className="text-xs text-slate-400">Email cannot be changed</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2"><User className="w-4 h-4 text-slate-400" />Role</Label>
+                  <Input value={isInstructor ? 'Instructor' : 'Learner'} disabled className="bg-slate-50" />
+                  <p className="text-xs text-slate-400">Role is fixed</p>
+                </div>
+              </div>
 
-          {/* Phone Field */}
-          <div className="space-y-2">
-            <Label htmlFor="phone" className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-slate-400" />
-              Phone Number
-            </Label>
-            <Input
-              id="phone"
-              value={formData.phone}
-              onChange={(e) => handleChange('phone', e.target.value)}
-              placeholder="Enter your phone number"
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="flex items-center gap-2"><Phone className="w-4 h-4 text-slate-400" />Phone Number</Label>
+                <Input id="phone" value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="Enter your phone number" />
+              </div>
 
-          {/* Save Button */}
-          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-            {saveSuccess && (
-              <p className="text-sm text-emerald-600">Changes saved successfully!</p>
-            )}
-            {!saveSuccess && <div />}
-            <Button
-              onClick={handleSave}
-              disabled={isSaving || !hasPersonalChanges}
-              className="bg-teal-600 hover:bg-teal-700 gap-2 disabled:opacity-50"
-            >
-              {isSaving ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              Save Changes
-            </Button>
-          </div>
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setIsPersonalEditing(false)}>Cancel</Button>
+                  <Button onClick={handleSave} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 gap-2">
+                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save Changes
+                  </Button>
+                </div>
+                {saveSuccess && <p className="text-sm text-emerald-600">Saved!</p>}
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 
