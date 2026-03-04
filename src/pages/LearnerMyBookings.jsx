@@ -153,6 +153,10 @@ export default function LearnerMyBookings() {
 
   const isLoading = pupilLoading || bookingsLoading;
 
+  if (!isLoading && pupilProfile && !pupilProfile.instructorId) {
+    return <NotLinkedBanner />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       <div className="max-w-2xl mx-auto">
