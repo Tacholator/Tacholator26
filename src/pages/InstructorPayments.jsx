@@ -201,20 +201,20 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
-              <div className="grid grid-cols-3 divide-x divide-slate-200">
-                <div className="pr-4">
+              <div className="grid grid-cols-3 gap-2 sm:gap-0 sm:divide-x sm:divide-slate-200">
+                <div className="flex flex-col items-center sm:items-start sm:pr-4 text-center sm:text-left">
                   <div className="text-xs text-slate-500 mb-1">Total Revenue</div>
-                  <div className="text-2xl font-bold text-[#071739]">£{totalRevenue.toFixed(2)}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-[#071739] truncate">£{totalRevenue.toFixed(2)}</div>
                   <div className="text-xs text-slate-400 mt-1">All time</div>
                 </div>
-                <div className="px-4">
+                <div className="flex flex-col items-center sm:items-start sm:px-4 text-center sm:text-left border-x sm:border-x-0 border-slate-200">
                   <div className="text-xs text-slate-500 mb-1">This Month</div>
-                  <div className="text-2xl font-bold text-[#071739]">£{thisMonthRevenue.toFixed(2)}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-[#071739] truncate">£{thisMonthRevenue.toFixed(2)}</div>
                   <div className="text-xs text-slate-400 mt-1">{moment().format('MMM YYYY')}</div>
                 </div>
-                <div className="pl-4">
+                <div className="flex flex-col items-center sm:items-start sm:pl-4 text-center sm:text-left">
                   <div className="text-xs text-slate-500 mb-1">Pupil Balances</div>
-                  <div className="text-2xl font-bold text-[#071739]">£{totalBalances.toFixed(2)}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-[#071739] truncate">£{totalBalances.toFixed(2)}</div>
                   <div className="text-xs text-slate-400 mt-1">Combined</div>
                 </div>
               </div>
