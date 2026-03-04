@@ -52,6 +52,8 @@ export default function ProfileSettings() {
   const [businessSaveSuccess, setBusinessSaveSuccess] = useState(false);
   const [hasPersonalChanges, setHasPersonalChanges] = useState(false);
   const [hasBusinessChanges, setHasBusinessChanges] = useState(false);
+  const [isPersonalEditing, setIsPersonalEditing] = useState(false);
+  const [isBusinessEditing, setIsBusinessEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [instructorProfile, setInstructorProfile] = useState(null);
