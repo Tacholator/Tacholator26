@@ -611,6 +611,67 @@ export default function LearnerDashboard() {
           </motion.div>
         </div>
 
+        {/* Test Countdown Card */}
+        {(() => {
+          const hasTheory = pupil.theoryTestDate && !pupil.theoryTestPassed && !pupil.theoryTestNotBooked;
+          const hasPractical = pupil.practicalTestDate && !pupil.practicalTestPassed && !pupil.practicalTestNotBooked;
+          const theoryDays = hasTheory ? moment(pupil.theoryTestDate).startOf('day').diff(moment().startOf('day'), 'days') : null;
+          const practicalDays = hasPractical ? moment(pupil.practicalTestDate).startOf('day').diff(moment().startOf('day'), 'days') : null;
+
+          const tests = [];
+          if (hasTheory && theoryDays >= 0) tests.push({ type: 'Theory Test', date: pupil.theoryTestDate, days: theoryDays, centre: null, time: null });
+          if (hasPractical && practicalDays >= 0) tests.push({ type: 'Practical Test', date: pupil.practicalTestDate, days: practicalDays, centre: pupil.practicalTestCentre, time: pupil.practicalTestTime });
+
+          if (tests.length === 0) return null;
+
+          return tests.map((test) => {
+            const isUrgent = test.days <= 7;
+            const isVeryUrgent = test.days <= 2;
+            const gradientClass = isVeryUrgent
+              ? 'from-rose-500 to-red-600'
+              : isUrgent
+              ? 'from-amber-500 to-orange-500'
+              : 'from-blue-600 to-indigo-700';
+
+            return (
+              <motion.div
+                key={test.type}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.12 }}
+              >
+                <Card className={`border-0 shadow-sm bg-gradient-to-br ${gradientClass} text-white`}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <Badge className="bg-white/20 text-white border-0 text-xs font-semibold tracking-wide uppercase">
+                          {test.type}
+                        </Badge>
+                        <p className="text-3xl font-bold mt-2">
+                          {test.days === 0 ? 'Today!' : test.days === 1 ? 'Tomorrow!' : `${test.days} days to go`}
+                        </p>
+                        <p className="text-white/80 text-sm">
+                          {moment(test.date).format('dddd, D MMMM YYYY')}
+                          {test.time && ` at ${test.time}`}
+                        </p>
+                        {test.centre && (
+                          <p className="text-white/70 text-xs flex items-center gap-1 mt-1">
+                            <MapPin className="w-3 h-3" /> {test.centre}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right flex flex-col items-center justify-center w-20 h-20 rounded-2xl bg-white/20">
+                        <span className="text-4xl font-bold leading-none">{test.days}</span>
+                        <span className="text-xs text-white/80 mt-1">{test.days === 1 ? 'day' : 'days'}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          });
+        })()}
+
         {/* 4. My Balance & Overall Progress */}
         <div className="grid md:grid-cols-2 gap-6">
           <motion.div
