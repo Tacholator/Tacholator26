@@ -129,6 +129,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
       
       setSaveSuccess(true);
       setHasPersonalChanges(false);
+      setIsPersonalEditing(false);
       setTimeout(() => setSaveSuccess(false), 3000);
     } finally {
       setIsSaving(false);
@@ -209,6 +210,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
       }
       setBusinessSaveSuccess(true);
       setHasBusinessChanges(false);
+      setIsBusinessEditing(false);
       setTimeout(() => setBusinessSaveSuccess(false), 3000);
     } catch (error) {
       console.error('Failed to save business info:', error);
