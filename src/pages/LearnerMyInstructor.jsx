@@ -69,6 +69,10 @@ export default function LearnerMyInstructor() {
     );
   }
 
+  if (!instructorLoading && pupil && !pupil.instructorId) {
+    return <NotLinkedBanner />;
+  }
+
   if (!instructor) {
     return (
       <div className="min-h-screen flex items-center justify-center">
