@@ -307,6 +307,10 @@ export default function LearnerCalendar() {
     );
   }
 
+  if (pupil && !pupil.instructorId) {
+    return <NotLinkedBanner />;
+  }
+
   if (!pupil) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6">
