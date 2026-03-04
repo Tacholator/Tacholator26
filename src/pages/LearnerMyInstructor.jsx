@@ -88,6 +88,77 @@ export default function LearnerMyInstructor() {
           <p className="text-slate-600 mt-2">Your driving instructor's information</p>
         </div>
 
+        {/* Business Information Card */}
+        {(instructor.businessName || instructor.businessAddress || instructor.businessEmail || instructor.businessPhone) && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Business Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col md:flex-row gap-6 items-start">
+                {instructor.businessLogoUrl && (
+                  <img
+                    src={instructor.businessLogoUrl}
+                    alt="Business logo"
+                    className="w-20 h-20 object-contain rounded-lg border border-slate-100"
+                  />
+                )}
+                <div className="flex-1 space-y-3">
+                  {instructor.businessName && (
+                    <div className="flex items-center gap-3 text-slate-600">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                        <Building2 className="w-5 h-5 text-[#071739]" />
+                      </div>
+                      <div>
+                        <div className="text-sm text-slate-500">Business Name</div>
+                        <div className="font-medium">{instructor.businessName}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {(instructor.businessAddress || instructor.businessCity || instructor.businessPostcode) && (
+                    <div className="flex items-center gap-3 text-slate-600">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                        <MapPin className="w-5 h-5 text-[#071739]" />
+                      </div>
+                      <div>
+                        <div className="text-sm text-slate-500">Address</div>
+                        <div className="font-medium">
+                          {[instructor.businessAddress, instructor.businessCity, instructor.businessPostcode].filter(Boolean).join(', ')}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {instructor.businessPhone && (
+                    <div className="flex items-center gap-3 text-slate-600">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                        <Phone className="w-5 h-5 text-[#071739]" />
+                      </div>
+                      <div>
+                        <div className="text-sm text-slate-500">Business Phone</div>
+                        <div className="font-medium">{instructor.businessPhone}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {instructor.businessEmail && (
+                    <div className="flex items-center gap-3 text-slate-600">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                        <Mail className="w-5 h-5 text-[#071739]" />
+                      </div>
+                      <div>
+                        <div className="text-sm text-slate-500">Business Email</div>
+                        <div className="font-medium">{instructor.businessEmail}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Instructor Profile Card */}
         <Card>
           <CardHeader>
