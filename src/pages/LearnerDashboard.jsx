@@ -486,11 +486,9 @@ export default function LearnerDashboard() {
                         <p className="text-white/90 text-sm font-medium">
                           {moment(test.date).format('dddd, D MMMM YYYY')}
                         </p>
-                        {test.time && (
-                          <p className="text-white/80 text-sm flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" /> {test.time}
-                          </p>
-                        )}
+                        <p className="text-white/80 text-sm flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5" /> {test.time && test.time.trim() ? test.time : 'Time not set'}
+                        </p>
                         {test.centre && (
                           <p className="text-white/70 text-xs flex items-center gap-1 mt-1">
                             <MapPin className="w-3 h-3" /> {test.centre}
