@@ -23,44 +23,23 @@ export default function LearnerMyInstructor() {
   });
 
   const { data: instructor, isLoading: instructorLoading } = useQuery({
-    queryKey: ['myInstructor', pupil?.instructorEmail],
+    queryKey: ['myInstructor', pupil?.instructorId],
     queryFn: async () => {
-      if (!pupil?.instructorEmail) {
-        console.log('No instructorEmail found:', pupil);
-        return null;
-      }
-      
-      console.log('Fetching instructor for email:', pupil.instructorEmail);
-      
-      // Fetch instructor User by email
-      const users = await base44.entities.User.filter({ email: pupil.instructorEmail });
-      console.log('User lookup result:', users);
-      
-      if (users.length === 0) {
-        console.log('No user found for email:', pupil.instructorEmail);
-        return null;
-      }
-      
-      const instructorUser = users[0];
-      
-      // Fetch Instructor entity by created_by (instructor email) for additional details
+      if (!pupil?.instructorId) return null;
+
+      // Fetch Instructor entity by instructorId — accessible to learners
       const instructors = await base44.entities.Instructor.filter({ created_by: pupil.instructorEmail });
-      console.log('Instructor entity lookup result:', instructors);
-      
       const instructorDetails = instructors[0] || null;
-      
-      const result = {
-        id: instructorUser.id,
-        full_name: instructorUser.full_name || `${instructorUser.data?.firstName || ''} ${instructorUser.data?.lastName || ''}`.trim() || instructorUser.email,
-        email: instructorUser.email,
-        phone: instructorUser.data?.phone || instructorDetails?.phone || null,
-        profilePhotoUrl: instructorUser.data?.profilePhotoUrl || instructorDetails?.profilePhotoUrl || null
+
+      return {
+        id: pupil.instructorId,
+        full_name: instructorDetails?.name || pupil.instructorName || pupil.instructorEmail,
+        email: pupil.instructorEmail,
+        phone: instructorDetails?.phone || instructorDetails?.businessPhone || null,
+        profilePhotoUrl: instructorDetails?.profilePhotoUrl || null
       };
-      
-      console.log('Instructor result:', result);
-      return result;
     },
-    enabled: !!pupil?.instructorEmail
+    enabled: !!pupil?.instructorId
   });
 
   if (pupilLoading || instructorLoading) {
