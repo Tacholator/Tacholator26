@@ -362,200 +362,131 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
             </p>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
-            {/* Business Logo */}
-            <div className="space-y-2">
-              <Label htmlFor="logo" className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-slate-400" />
-                Business Logo
-              </Label>
-              {businessData.businessLogoUrl && (
-                <div className="relative inline-block mb-3">
-                  <img 
-                    src={businessData.businessLogoUrl} 
-                    alt="Business Logo" 
-                    className="h-20 w-auto border rounded-lg"
-                  />
-                  <button
-                    onClick={handleRemoveLogo}
-                    className="absolute -top-2 -right-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
+            {!isBusinessEditing ? (
+              /* Read-only view */
+              <>
+                <div className="space-y-3">
+                  {businessData.businessLogoUrl && (
+                    <img src={businessData.businessLogoUrl} alt="Business Logo" className="h-16 w-auto border rounded-lg mb-2" />
+                  )}
+                  <div className="flex items-center gap-3">
+                    <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
+                    <div>
+                      <p className="text-xs text-slate-400">Business Name</p>
+                      <p className="font-medium text-slate-800">{businessData.businessName || '—'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                    <div>
+                      <p className="text-xs text-slate-400">Address</p>
+                      <p className="font-medium text-slate-800">
+                        {[businessData.businessAddress, businessData.businessCity, businessData.businessPostcode].filter(Boolean).join(', ') || '—'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-4 h-4 text-slate-400 shrink-0" />
+                    <div>
+                      <p className="text-xs text-slate-400">Business Phone</p>
+                      <p className="font-medium text-slate-800">{businessData.businessPhone || '—'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+                    <div>
+                      <p className="text-xs text-slate-400">Business Email</p>
+                      <p className="font-medium text-slate-800">{businessData.businessEmail || '—'}</p>
+                    </div>
+                  </div>
                 </div>
-              )}
-              <div className="flex items-center gap-4">
-                <input
-                  type="file"
-                  id="logo-upload"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  className="hidden"
-                />
-                <label htmlFor="logo-upload">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    disabled={isUploadingLogo}
-                    onClick={() => document.getElementById('logo-upload')?.click()}
-                    className="gap-2"
-                  >
-                    {isUploadingLogo ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Upload className="w-4 h-4" />
-                    )}
-                    {isUploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                <div className="pt-4 border-t border-slate-100">
+                  <Button variant="outline" onClick={() => setIsBusinessEditing(true)} className="gap-2">
+                    <Pencil className="w-4 h-4" />
+                    Update Details
                   </Button>
-                </label>
-                {businessData.businessLogoUrl && (
-                  <p className="text-xs text-emerald-600">Logo uploaded</p>
-                )}
-              </div>
-            </div>
+                </div>
+              </>
+            ) : (
+              /* Edit mode */
+              <>
+                {/* Business Logo */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2"><FileText className="w-4 h-4 text-slate-400" />Business Logo</Label>
+                  {businessData.businessLogoUrl && (
+                    <div className="relative inline-block mb-3">
+                      <img src={businessData.businessLogoUrl} alt="Business Logo" className="h-20 w-auto border rounded-lg" />
+                      <button onClick={handleRemoveLogo} className="absolute -top-2 -right-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-4">
+                    <input type="file" id="logo-upload" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                    <Button type="button" variant="outline" disabled={isUploadingLogo} onClick={() => document.getElementById('logo-upload')?.click()} className="gap-2">
+                      {isUploadingLogo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                      {isUploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                    </Button>
+                    {businessData.businessLogoUrl && <p className="text-xs text-emerald-600">Logo uploaded</p>}
+                  </div>
+                </div>
 
-            {/* Business Name */}
-            <div className="space-y-2">
-              <Label htmlFor="businessName" className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-slate-400" />
-                Business Name
-              </Label>
-              <Input
-                id="businessName"
-                value={businessData.businessName}
-                onChange={(e) => handleBusinessChange('businessName', e.target.value)}
-                placeholder="e.g., ABC Driving School"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="businessName" className="flex items-center gap-2"><Building2 className="w-4 h-4 text-slate-400" />Business Name</Label>
+                  <Input id="businessName" value={businessData.businessName} onChange={(e) => handleBusinessChange('businessName', e.target.value)} placeholder="e.g., ABC Driving School" />
+                </div>
 
-            {/* Business Address */}
-            <div className="space-y-2">
-              <Label htmlFor="businessAddress" className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-slate-400" />
-                Business Address
-              </Label>
-              <Input
-                id="businessAddress"
-                value={businessData.businessAddress}
-                onChange={(e) => handleBusinessChange('businessAddress', e.target.value)}
-                placeholder="Street address"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="businessAddress" className="flex items-center gap-2"><MapPin className="w-4 h-4 text-slate-400" />Business Address</Label>
+                  <Input id="businessAddress" value={businessData.businessAddress} onChange={(e) => handleBusinessChange('businessAddress', e.target.value)} placeholder="Street address" />
+                </div>
 
-            {/* City and Postcode */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="businessCity">City</Label>
-                <Input
-                  id="businessCity"
-                  value={businessData.businessCity}
-                  onChange={(e) => handleBusinessChange('businessCity', e.target.value)}
-                  placeholder="City"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="businessPostcode">Postcode</Label>
-                <Input
-                  id="businessPostcode"
-                  value={businessData.businessPostcode}
-                  onChange={(e) => handleBusinessChange('businessPostcode', e.target.value)}
-                  placeholder="Postcode"
-                />
-              </div>
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="businessCity">City</Label>
+                    <Input id="businessCity" value={businessData.businessCity} onChange={(e) => handleBusinessChange('businessCity', e.target.value)} placeholder="City" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="businessPostcode">Postcode</Label>
+                    <Input id="businessPostcode" value={businessData.businessPostcode} onChange={(e) => handleBusinessChange('businessPostcode', e.target.value)} placeholder="Postcode" />
+                  </div>
+                </div>
 
-            {/* Business Registration (Optional) */}
-            <div className="space-y-2">
-              <Label htmlFor="businessRegistration" className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-slate-400" />
-                Business Registration Number (Optional)
-              </Label>
-              <Input
-                id="businessRegistration"
-                value={businessData.businessRegistration}
-                onChange={(e) => handleBusinessChange('businessRegistration', e.target.value)}
-                placeholder="e.g., 12345678"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="businessRegistration" className="flex items-center gap-2"><FileText className="w-4 h-4 text-slate-400" />Business Registration Number (Optional)</Label>
+                  <Input id="businessRegistration" value={businessData.businessRegistration} onChange={(e) => handleBusinessChange('businessRegistration', e.target.value)} placeholder="e.g., 12345678" />
+                </div>
 
-            {/* Business Phone */}
-            <div className="space-y-3">
-              <Label htmlFor="businessPhone" className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-slate-400" />
-                Business Phone
-              </Label>
-              <div className="flex items-center gap-3 mb-2">
-                <Switch
-                  id="usePersonalPhone"
-                  checked={businessData.usePersonalPhoneForBusiness}
-                  onCheckedChange={(checked) => {
-                    handleBusinessChange('usePersonalPhoneForBusiness', checked);
-                    if (checked) {
-                      handleBusinessChange('businessPhone', formData.phone);
-                    }
-                  }}
-                />
-                <Label htmlFor="usePersonalPhone" className="text-sm font-normal cursor-pointer">
-                  Use personal phone number
-                </Label>
-              </div>
-              <Input
-                id="businessPhone"
-                value={businessData.businessPhone}
-                onChange={(e) => handleBusinessChange('businessPhone', e.target.value)}
-                placeholder="Business phone number"
-                disabled={businessData.usePersonalPhoneForBusiness}
-              />
-            </div>
+                <div className="space-y-3">
+                  <Label className="flex items-center gap-2"><Phone className="w-4 h-4 text-slate-400" />Business Phone</Label>
+                  <div className="flex items-center gap-3 mb-2">
+                    <Switch id="usePersonalPhone" checked={businessData.usePersonalPhoneForBusiness} onCheckedChange={(checked) => { handleBusinessChange('usePersonalPhoneForBusiness', checked); if (checked) handleBusinessChange('businessPhone', formData.phone); }} />
+                    <Label htmlFor="usePersonalPhone" className="text-sm font-normal cursor-pointer">Use personal phone number</Label>
+                  </div>
+                  <Input id="businessPhone" value={businessData.businessPhone} onChange={(e) => handleBusinessChange('businessPhone', e.target.value)} placeholder="Business phone number" disabled={businessData.usePersonalPhoneForBusiness} />
+                </div>
 
-            {/* Business Email */}
-            <div className="space-y-3">
-              <Label htmlFor="businessEmail" className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-slate-400" />
-                Business Email
-              </Label>
-              <div className="flex items-center gap-3 mb-2">
-                <Switch
-                  id="usePersonalEmail"
-                  checked={businessData.usePersonalEmailForBusiness}
-                  onCheckedChange={(checked) => {
-                    handleBusinessChange('usePersonalEmailForBusiness', checked);
-                    if (checked) {
-                      handleBusinessChange('businessEmail', user?.email || '');
-                    }
-                  }}
-                />
-                <Label htmlFor="usePersonalEmail" className="text-sm font-normal cursor-pointer">
-                  Use personal email address
-                </Label>
-              </div>
-              <Input
-                id="businessEmail"
-                value={businessData.businessEmail}
-                onChange={(e) => handleBusinessChange('businessEmail', e.target.value)}
-                placeholder="Business email address"
-                disabled={businessData.usePersonalEmailForBusiness}
-              />
-            </div>
+                <div className="space-y-3">
+                  <Label className="flex items-center gap-2"><Mail className="w-4 h-4 text-slate-400" />Business Email</Label>
+                  <div className="flex items-center gap-3 mb-2">
+                    <Switch id="usePersonalEmail" checked={businessData.usePersonalEmailForBusiness} onCheckedChange={(checked) => { handleBusinessChange('usePersonalEmailForBusiness', checked); if (checked) handleBusinessChange('businessEmail', user?.email || ''); }} />
+                    <Label htmlFor="usePersonalEmail" className="text-sm font-normal cursor-pointer">Use personal email address</Label>
+                  </div>
+                  <Input id="businessEmail" value={businessData.businessEmail} onChange={(e) => handleBusinessChange('businessEmail', e.target.value)} placeholder="Business email address" disabled={businessData.usePersonalEmailForBusiness} />
+                </div>
 
-            {/* Save Business Info Button */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              {businessSaveSuccess && (
-                <p className="text-sm text-emerald-600">Business information saved successfully!</p>
-              )}
-              {!businessSaveSuccess && <div />}
-              <Button
-                onClick={handleSaveBusinessInfo}
-                disabled={isSavingBusiness || !hasBusinessChanges}
-                className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2 disabled:opacity-50"
-              >
-                {isSavingBusiness ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4" />
-                )}
-                Save Business Info
-              </Button>
-            </div>
+                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setIsBusinessEditing(false)}>Cancel</Button>
+                    <Button onClick={handleSaveBusinessInfo} disabled={isSavingBusiness} className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2">
+                      {isSavingBusiness ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Save Business Info
+                    </Button>
+                  </div>
+                  {businessSaveSuccess && <p className="text-sm text-emerald-600">Saved!</p>}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       )}
