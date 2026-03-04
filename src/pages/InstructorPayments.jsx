@@ -237,22 +237,48 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                 Card Payments
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-4">
-              <div className="grid grid-cols-3 gap-2 sm:gap-0 sm:divide-x sm:divide-emerald-100">
-                <div className="flex flex-col items-center sm:items-start sm:pr-4 text-center sm:text-left">
-                  <div className="text-xs text-emerald-700 mb-1">Total Received</div>
-                  <div className="text-xl sm:text-2xl font-bold text-emerald-800 truncate">£{totalCardPayments.toFixed(2)}</div>
-                  <div className="text-xs text-emerald-500 mt-1">{stripePayments.length} txns</div>
+            <CardContent className="pt-4 space-y-4">
+              {/* All time row */}
+              <div>
+                <div className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-3">All Time</div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-0 sm:divide-x sm:divide-emerald-100">
+                  <div className="flex flex-col items-center sm:items-start sm:pr-4 text-center sm:text-left">
+                    <div className="text-xs text-emerald-700 mb-1">Total Received</div>
+                    <div className="text-xl sm:text-2xl font-bold text-emerald-800 truncate">£{totalCardPayments.toFixed(2)}</div>
+                    <div className="text-xs text-emerald-500 mt-1">{stripePayments.length} txns</div>
+                  </div>
+                  <div className="flex flex-col items-center sm:items-start sm:px-4 text-center sm:text-left border-x sm:border-x-0 border-emerald-100">
+                    <div className="text-xs text-emerald-700 mb-1">Payout Amount</div>
+                    <div className="text-xl sm:text-2xl font-bold text-emerald-800 truncate">£{totalPayoutAmount.toFixed(2)}</div>
+                    <div className="text-xs text-emerald-500 mt-1">After fees</div>
+                  </div>
+                  <div className="flex flex-col items-center sm:items-start sm:pl-4 text-center sm:text-left">
+                    <div className="text-xs text-red-500 mb-1">Stripe Charges</div>
+                    <div className="text-xl sm:text-2xl font-bold text-red-600 truncate">£{totalStripeFees.toFixed(2)}</div>
+                    <div className="text-xs text-red-400 mt-1">Processing fees</div>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center sm:items-start sm:px-4 text-center sm:text-left border-x sm:border-x-0 border-emerald-100">
-                  <div className="text-xs text-emerald-700 mb-1">Payout Amount</div>
-                  <div className="text-xl sm:text-2xl font-bold text-emerald-800 truncate">£{totalPayoutAmount.toFixed(2)}</div>
-                  <div className="text-xs text-emerald-500 mt-1">After fees</div>
-                </div>
-                <div className="flex flex-col items-center sm:items-start sm:pl-4 text-center sm:text-left">
-                  <div className="text-xs text-red-500 mb-1">Stripe Charges</div>
-                  <div className="text-xl sm:text-2xl font-bold text-red-600 truncate">£{totalStripeFees.toFixed(2)}</div>
-                  <div className="text-xs text-red-400 mt-1">Processing fees</div>
+              </div>
+
+              {/* This month row */}
+              <div className="border-t border-emerald-100 pt-4">
+                <div className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-3">This Month — {moment().format('MMMM YYYY')}</div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-0 sm:divide-x sm:divide-emerald-100">
+                  <div className="flex flex-col items-center sm:items-start sm:pr-4 text-center sm:text-left">
+                    <div className="text-xs text-emerald-700 mb-1">Total Received</div>
+                    <div className="text-xl sm:text-2xl font-bold text-emerald-800 truncate">£{thisMonthCardTotal.toFixed(2)}</div>
+                    <div className="text-xs text-emerald-500 mt-1">{thisMonthCardPayments.length} txns</div>
+                  </div>
+                  <div className="flex flex-col items-center sm:items-start sm:px-4 text-center sm:text-left border-x sm:border-x-0 border-emerald-100">
+                    <div className="text-xs text-emerald-700 mb-1">Payout Amount</div>
+                    <div className="text-xl sm:text-2xl font-bold text-emerald-800 truncate">£{thisMonthCardPayout.toFixed(2)}</div>
+                    <div className="text-xs text-emerald-500 mt-1">After fees</div>
+                  </div>
+                  <div className="flex flex-col items-center sm:items-start sm:pl-4 text-center sm:text-left">
+                    <div className="text-xs text-red-500 mb-1">Stripe Charges</div>
+                    <div className="text-xl sm:text-2xl font-bold text-red-600 truncate">£{thisMonthCardFees.toFixed(2)}</div>
+                    <div className="text-xs text-red-400 mt-1">Processing fees</div>
+                  </div>
                 </div>
               </div>
             </CardContent>
