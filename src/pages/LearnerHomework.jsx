@@ -18,6 +18,7 @@ import {
 import { ArrowLeft, Loader2, Car, BookOpen, CheckCircle2, Calendar, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip, ChevronRight, ExternalLink } from 'lucide-react';
 import moment from 'moment';
 import HomeworkViewer from '@/components/homework/HomeworkViewer';
+import NotLinkedBanner from '@/components/learner/NotLinkedBanner';
 
 const FORMAT_ICONS = {
   text: FileText,
