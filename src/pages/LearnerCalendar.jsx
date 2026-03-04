@@ -29,6 +29,7 @@ import Calendar24Hour from '@/components/booking/Calendar24Hour';
 import PupilReserveLessonModal from '@/components/booking/PupilReserveLessonModal';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
+import NotLinkedBanner from '@/components/learner/NotLinkedBanner';
 
 const VIEW_MODES = ['day', 'week'];
 
