@@ -8,6 +8,7 @@ import { Calendar, Clock, MapPin, Loader2 } from 'lucide-react';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import NotLinkedBanner from '@/components/learner/NotLinkedBanner';
 
 export default function LearnerScheduledLessons() {
   const navigate = useNavigate();
