@@ -73,6 +73,10 @@ export default function LearnerScheduledLessons() {
     );
   }
 
+  if (pupil && !pupil.instructorId) {
+    return <NotLinkedBanner />;
+  }
+
   const renderBookingCard = (booking) => {
     const startMoment = moment(booking.startAtUtc).local();
     const endMoment = moment(booking.endAtUtc).local();
