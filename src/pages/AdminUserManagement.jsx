@@ -154,7 +154,7 @@ export default function AdminUserManagement() {
               <p className="text-center text-slate-400 py-12">No instructors registered yet</p>
             ) : (
               instructorUsers.map(u => {
-                const instructor = allInstructors.find(i => i.created_by === u.email);
+                const instructor = allInstructors.find(i => i.created_by === u.email || i.instructorEmail === u.email || i.userId === u.id);
                 const pupilCount = allPupils.filter(p => p.instructorId === u.id).length;
                 return (
                   <button
