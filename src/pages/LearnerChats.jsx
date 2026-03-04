@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { MessageCircle } from 'lucide-react';
 import ChatThread from '@/components/chat/ChatThread';
+import NotLinkedBanner from '@/components/learner/NotLinkedBanner';
 
 export default function LearnerChats() {
   const [conversationData, setConversationData] = useState(null);
