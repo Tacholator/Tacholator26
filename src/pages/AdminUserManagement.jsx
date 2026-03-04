@@ -226,7 +226,7 @@ export default function AdminUserManagement() {
         {/* DETAIL VIEW */}
         {view === 'detail' && selectedUser && (() => {
           const isInstructorType = selectedUser.type === 'instructor';
-          const instructor = allInstructors.find(i => i.created_by === selectedUser.email);
+          const instructor = allInstructors.find(i => i.created_by === selectedUser.email || i.instructorEmail === selectedUser.email || i.userId === selectedUser.id);
           const pupil = allPupils.find(p => p.linkedUserId === selectedUser.id || p.email?.toLowerCase() === selectedUser.email?.toLowerCase());
           const pupilCount = isInstructorType ? allPupils.filter(p => p.instructorId === selectedUser.id).length : null;
 
