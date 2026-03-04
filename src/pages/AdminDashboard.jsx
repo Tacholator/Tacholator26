@@ -55,6 +55,13 @@ const adminCards = [
     icon: Gift,
     page: 'AdminSubscriptions',
     color: 'from-pink-500 to-pink-600'
+  },
+  {
+    title: 'User Management',
+    description: 'View and manage instructors and learners',
+    icon: Users,
+    page: 'AdminUserManagement',
+    color: 'from-indigo-500 to-indigo-600'
   }
 ];
 
