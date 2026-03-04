@@ -152,6 +152,14 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
   const totalStripeFees = stripePayments.reduce((sum, p) => sum + p.stripeFee, 0);
   const totalPayoutAmount = stripePayments.reduce((sum, p) => sum + p.netPayout, 0);
 
+  // This month's card payments
+  const thisMonthCardPayments = stripePayments.filter(p =>
+    moment.unix(p.created).isSame(moment(), 'month')
+  );
+  const thisMonthCardTotal = thisMonthCardPayments.reduce((sum, p) => sum + p.amount, 0);
+  const thisMonthCardPayout = thisMonthCardPayments.reduce((sum, p) => sum + p.netPayout, 0);
+  const thisMonthCardFees = thisMonthCardPayments.reduce((sum, p) => sum + p.stripeFee, 0);
+
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
