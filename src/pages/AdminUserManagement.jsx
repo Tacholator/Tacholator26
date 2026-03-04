@@ -37,7 +37,8 @@ export default function AdminUserManagement() {
   );
 
   const instructorUsers = allUsers.filter(u =>
-    allInstructors.some(i => i.created_by === u.email)
+    allInstructors.some(i => i.created_by === u.email || i.instructorEmail === u.email || i.userId === u.id) ||
+    allPupils.some(p => p.instructorId === u.id)
   );
 
   const activePupils = allPupils.filter(p => p.status === 'Active').length;
