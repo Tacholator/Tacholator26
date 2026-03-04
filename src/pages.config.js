@@ -58,6 +58,7 @@ import AdminRoleManagement from './pages/AdminRoleManagement';
 import AdminSubscriptions from './pages/AdminSubscriptions';
 import AdminTestRouteConfiguration from './pages/AdminTestRouteConfiguration';
 import AdminTestRouteDetail from './pages/AdminTestRouteDetail';
+import AdminUserManagement from './pages/AdminUserManagement';
 import Calendar from './pages/Calendar';
 import CourseWork from './pages/CourseWork';
 import CourseWorkDetail from './pages/CourseWorkDetail';
@@ -121,11 +122,10 @@ import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
+import RoleSelection from './pages/RoleSelection';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import RoleSelection from './pages/RoleSelection';
-import AdminUserManagement from './pages/AdminUserManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -141,6 +141,7 @@ export const PAGES = {
     "AdminSubscriptions": AdminSubscriptions,
     "AdminTestRouteConfiguration": AdminTestRouteConfiguration,
     "AdminTestRouteDetail": AdminTestRouteDetail,
+    "AdminUserManagement": AdminUserManagement,
     "Calendar": Calendar,
     "CourseWork": CourseWork,
     "CourseWorkDetail": CourseWorkDetail,
@@ -204,11 +205,10 @@ export const PAGES = {
     "PupilList": PupilList,
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
+    "RoleSelection": RoleSelection,
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "RoleSelection": RoleSelection,
-    "AdminUserManagement": AdminUserManagement,
 }
 
 export const pagesConfig = {

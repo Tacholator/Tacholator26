@@ -146,8 +146,8 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
-  // Don't show layout for non-authenticated users
-  if (!isAuthenticated) {
+  // Don't show layout for non-authenticated users or role selection page
+  if (!isAuthenticated || currentPageName === 'RoleSelection') {
     return <>{children}</>;
   }
 
