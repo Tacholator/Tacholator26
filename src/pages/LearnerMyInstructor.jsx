@@ -88,6 +88,60 @@ export default function LearnerMyInstructor() {
           <p className="text-slate-600 mt-2">Your driving instructor's information</p>
         </div>
 
+        {/* Instructor Profile Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Instructor Profile</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              {/* Profile Photo */}
+              <Avatar className="w-32 h-32 border-4 border-[#F7B602]">
+                <AvatarImage src={instructor.profilePhotoUrl} alt={instructor.full_name} />
+                <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-3xl">
+                  {instructor.full_name?.[0]?.toUpperCase() || 'I'}
+                </AvatarFallback>
+              </Avatar>
+
+              {/* Instructor Details */}
+              <div className="flex-1 space-y-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-[#071739]">{instructor.full_name}</h2>
+                  <Badge className="mt-2 bg-[#F7B602] text-[#071739]">
+                    Driving Instructor
+                  </Badge>
+                </div>
+
+                <div className="space-y-3">
+                  {instructor.phone && (
+                    <div className="flex items-center gap-3 text-slate-600">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                        <Phone className="w-5 h-5 text-[#071739]" />
+                      </div>
+                      <div>
+                        <div className="text-sm text-slate-500">Phone</div>
+                        <div className="font-medium">{instructor.phone}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {pupil.instructorEmail && (
+                    <div className="flex items-center gap-3 text-slate-600">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                        <Mail className="w-5 h-5 text-[#071739]" />
+                      </div>
+                      <div>
+                        <div className="text-sm text-slate-500">Email</div>
+                        <div className="font-medium">{pupil.instructorEmail}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Business Information Card */}
         {(instructor.businessName || instructor.businessAddress || instructor.businessEmail || instructor.businessPhone) && (
           <Card>
