@@ -36,7 +36,14 @@ export default function LearnerMyInstructor() {
         full_name: instructorDetails?.name || pupil.instructorName || pupil.instructorEmail,
         email: pupil.instructorEmail,
         phone: instructorDetails?.phone || instructorDetails?.businessPhone || null,
-        profilePhotoUrl: instructorDetails?.profilePhotoUrl || null
+        profilePhotoUrl: instructorDetails?.profilePhotoUrl || null,
+        businessName: instructorDetails?.businessName || null,
+        businessAddress: instructorDetails?.businessAddress || null,
+        businessCity: instructorDetails?.businessCity || null,
+        businessPostcode: instructorDetails?.businessPostcode || null,
+        businessEmail: instructorDetails?.businessEmail || null,
+        businessPhone: instructorDetails?.businessPhone || null,
+        businessLogoUrl: instructorDetails?.businessLogoUrl || null,
       };
     },
     enabled: !!pupil?.instructorId
