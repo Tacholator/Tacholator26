@@ -20,7 +20,20 @@ export default function LearnerNotifications() {
     queryFn: () => base44.auth.me()
   });
 
-  if (isLoading) {
+  const { data: pupil, isLoading: pupilLoading } = useQuery({
+    queryKey: ['myPupilProfile', user?.id, user?.email],
+    queryFn: async () => {
+      if (!user) return null;
+      if (user.id) {
+        const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+        if (byLinkedId.length > 0) return byLinkedId[0];
+      }
+      return null;
+    },
+    enabled: !!user
+  });
+
+  if (isLoading || pupilLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
