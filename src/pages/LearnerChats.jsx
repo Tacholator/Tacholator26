@@ -141,23 +141,16 @@ export default function LearnerChats() {
     });
   };
 
-  if (!pupil) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <MessageCircle className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-          <p className="text-slate-500">Loading your chat...</p>
-        </div>
-      </div>
-    );
+  if (pupil && !pupil.instructorId) {
+    return <NotLinkedBanner />;
   }
 
-  if (!conversationData) {
+  if (!pupil || !conversationData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <MessageCircle className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-          <p className="text-slate-500">Setting up your conversation...</p>
+          <p className="text-slate-500">{!pupil ? 'Loading your chat...' : 'Setting up your conversation...'}</p>
         </div>
       </div>
     );
