@@ -217,17 +217,11 @@ export default function LearnerHomework() {
   }
 
   if (!pupil) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6">
-        <Card className="max-w-md text-center p-8">
-          <Car className="w-16 h-16 mx-auto mb-4 text-slate-300" />
-          <h2 className="text-xl font-semibold text-slate-700 mb-2">Account Not Linked</h2>
-          <p className="text-slate-500">
-            Your account hasn't been linked to a pupil profile yet.
-          </p>
-        </Card>
-      </div>
-    );
+    return <NotLinkedBanner />;
+  }
+
+  if (!pupil.instructorId) {
+    return <NotLinkedBanner />;
   }
 
   return (
