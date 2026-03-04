@@ -104,7 +104,11 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
       await base44.auth.updateMe(formData);
       
       if (isInstructor && instructorProfile) {
-        await base44.entities.Instructor.update(instructorProfile.id, businessData);
+        const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+        await base44.entities.Instructor.update(instructorProfile.id, {
+          ...businessData,
+          ...(fullName ? { name: fullName } : {})
+        });
       }
       
       queryClient.invalidateQueries(['currentUser']);
