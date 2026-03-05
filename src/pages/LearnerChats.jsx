@@ -15,10 +15,15 @@ export default function LearnerChats() {
   });
 
   const { data: pupil } = useQuery({
-    queryKey: ['myPupilProfile', user?.id],
+    queryKey: ['myPupilProfile', user?.id, user?.email],
     queryFn: async () => {
-      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
-      return pupils[0] || null;
+      if (!user?.id) return null;
+      const allPupils = await base44.entities.Pupil.list();
+      let match = allPupils.find(p => p.linkedUserId === user.id);
+      if (!match && user?.email) {
+        match = allPupils.find(p => p.email && p.email.toLowerCase() === user.email.toLowerCase());
+      }
+      return match || null;
     },
     enabled: !!user?.id
   });
