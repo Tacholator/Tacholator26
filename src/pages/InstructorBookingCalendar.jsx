@@ -28,6 +28,7 @@ import moment from 'moment';
 
 export default function InstructorBookingCalendar() {
   const [viewMode, setViewMode] = useState('week');
+  const [availabilityMode, setAvailabilityMode] = useState('published_slots_only');
   const [showWorkingHoursModal, setShowWorkingHoursModal] = useState(false);
   const [showUnavailableModal, setShowUnavailableModal] = useState(false);
   const [showLunchModal, setShowLunchModal] = useState(false);
