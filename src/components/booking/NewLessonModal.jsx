@@ -418,6 +418,18 @@ export default function NewLessonModal({ open, onOpenChange }) {
           </div>
         </div>
 
+        {/* Conflict Error Banner */}
+        {conflictError && (
+          <div className="mx-4 mb-2 rounded-lg bg-rose-50 border border-rose-200 p-3 flex items-start gap-2 text-xs text-rose-700">
+            <XCircle className="w-4 h-4 text-rose-500 mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <p className="font-semibold mb-0.5">Time conflict</p>
+              <p className="leading-relaxed">{conflictError}</p>
+            </div>
+            <button onClick={() => setConflictError(null)} className="text-rose-400 hover:text-rose-600 shrink-0">✕</button>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="flex gap-2 px-4 py-3 border-t bg-slate-50 shrink-0">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)} disabled={bookMutation.isPending}>
