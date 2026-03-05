@@ -103,6 +103,7 @@ const instructorPlans = [
     period: '/month',
     description: 'Everything you need to scale your business',
     badge: 'Most Popular',
+    discount: '30% off annual',
     features: [
       'Unlimited pupils',
       'Advanced calendar & availability',
