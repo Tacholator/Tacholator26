@@ -769,6 +769,11 @@ export default function Calendar() {
         )}
       </div>
 
+      <NewLessonModal
+        open={showNewLessonModal}
+        onOpenChange={setShowNewLessonModal}
+      />
+
       <LessonFormModal
         open={showLessonModal}
         onClose={() => {
