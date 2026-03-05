@@ -619,13 +619,13 @@ export default function Calendar() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
           <div>
             <h1 className="text-3xl font-bold text-slate-800">Calendar</h1>
             <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
           </div>
           
-          <div className="flex items-center justify-between md:justify-end gap-3">
+          <div className="flex items-center gap-3">
             <div className="flex items-center bg-white rounded-lg border shadow-sm p-1">
               {VIEW_MODES.map(mode => (
                 <button
