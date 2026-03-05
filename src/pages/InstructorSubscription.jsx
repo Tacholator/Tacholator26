@@ -106,7 +106,7 @@ export default function InstructorSubscription() {
           {[
             { icon: Zap, title: 'Instant Activation', desc: 'Upgrade and get access immediately — no waiting.' },
             { icon: Shield, title: 'Cancel Anytime', desc: 'No long-term contracts. Cancel with one click.' },
-            { icon: Star, title: 'Dedicated Support', desc: 'Pro and Enterprise plans include priority support.' }
+            { icon: Star, title: 'Dedicated Support', desc: 'Pro plan includes priority support.' }
           ].map(({ icon: Icon, title, desc }) => (
             <Card key={title} className="text-center p-4">
               <div className="flex justify-center mb-2">
