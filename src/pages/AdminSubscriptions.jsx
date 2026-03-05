@@ -228,7 +228,7 @@ export default function AdminSubscriptions() {
               </Card>
             ))}
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );
