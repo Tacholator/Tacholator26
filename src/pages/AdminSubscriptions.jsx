@@ -108,6 +108,8 @@ const instructorPlans = [
     description: 'Everything you need to scale your business',
     badge: 'Most Popular',
     discount: '30% off annual',
+    annualPrice: '£125.92',
+    annualPriceBeforeDiscount: '£179.88',
     features: [
       'Unlimited pupils',
       'Advanced calendar & availability',
