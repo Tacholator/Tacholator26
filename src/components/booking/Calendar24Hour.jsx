@@ -258,22 +258,7 @@ export default function Calendar24Hour({
           <Button onClick={handleToday} variant="outline" size="sm" className="px-2 sm:px-3">
             Today
           </Button>
-          {onViewModeChange && (
-            <div className="flex rounded-md border overflow-hidden">
-              <button
-                onClick={() => onViewModeChange('day')}
-                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${viewMode === 'day' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
-              >
-                Day
-              </button>
-              <button
-                onClick={() => onViewModeChange('week')}
-                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors border-l ${viewMode === 'week' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
-              >
-                Week
-              </button>
-            </div>
-          )}
+
         </div>
         <h3 className="text-xs sm:text-lg font-semibold text-slate-700 text-right whitespace-nowrap">
           {viewMode === 'day' 
