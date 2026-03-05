@@ -87,6 +87,8 @@ const instructorPlans = [
     description: 'Grow your business with advanced tools',
     badge: null,
     discount: '30% off annual',
+    annualPrice: '£83.92',
+    annualPriceBeforeDiscount: '£119.88',
     features: [
       'Up to 20 pupils',
       'Advanced calendar & availability',
