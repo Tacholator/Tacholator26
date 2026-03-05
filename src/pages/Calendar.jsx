@@ -653,12 +653,8 @@ export default function Calendar() {
             </Button>
 
             <Button
-              onClick={() => {
-                setSelectedLesson(null);
-                setSelectedSlot(null);
-                setShowLessonModal(true);
-              }}
-              className="bg-teal-600 hover:bg-teal-700"
+              onClick={() => setShowNewLessonModal(true)}
+              className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
             >
               <Plus className="w-4 h-4 sm:mr-2" />
               <span className="hidden sm:inline">New Lesson</span>
