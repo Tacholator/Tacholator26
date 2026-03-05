@@ -272,7 +272,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6">
-        <div className="space-y-5 py-2">
+          <div className="space-y-5 py-2">
           {/* Date */}
           <div className="space-y-1.5">
             <Label>Date *</Label>
