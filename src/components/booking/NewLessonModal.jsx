@@ -94,6 +94,8 @@ export default function NewLessonModal({ open, onOpenChange }) {
     if (open && user?.id && user?.email) {
       refetchPupils();
       setDate(today);
+      setPendingDate(today);
+      setDateConfirmed(false);
       setStartTime('09:00');
       setDurationHours(1);
       setSelectedPupilId('');
