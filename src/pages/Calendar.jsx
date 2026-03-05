@@ -77,6 +77,7 @@ export default function Calendar() {
   
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [showNewLessonModal, setShowNewLessonModal] = useState(false);
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
