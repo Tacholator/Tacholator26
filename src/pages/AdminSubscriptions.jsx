@@ -68,6 +68,8 @@ const instructorPlans = [
     description: 'Get started with essential features',
     badge: null,
     discount: '30% off annual',
+    annualPrice: '£0',
+    annualPriceBeforeDiscount: '£0',
     features: [
       'Up to 5 pupils',
       'Basic calendar',
