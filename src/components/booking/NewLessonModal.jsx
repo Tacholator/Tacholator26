@@ -267,7 +267,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
     bookMutation.mutate();
   };
 
-  const displayDate = date ? moment(date).format('ddd, D MMM YYYY') : '';
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
