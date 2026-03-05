@@ -262,7 +262,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 gap-0 flex flex-col" style={{ maxHeight: '85vh' }}>
+      <DialogContent className="max-w-md p-0 gap-0 flex flex-col overflow-hidden" style={{ maxHeight: '85vh', top: '50%', transform: 'translate(-50%, -50%)' }}>
         <DialogHeader className="px-4 pt-4 pb-2 shrink-0 border-b">
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-[#F7B602]" />
