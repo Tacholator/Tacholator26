@@ -658,8 +658,8 @@ export default function Calendar() {
               }}
               className="bg-teal-600 hover:bg-teal-700"
             >
-              <Plus className="w-4 h-4 md:mr-2" />
-              <span className="hidden md:inline">New Lesson</span>
+              <Plus className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">New Lesson</span>
             </Button>
           </div>
         </div>
