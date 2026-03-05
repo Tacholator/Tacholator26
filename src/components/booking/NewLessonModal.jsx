@@ -463,7 +463,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
               )}
             </div>
           )}
-        </div>
+          </div>
         </div>{/* end scrollable area */}
 
         {/* Actions */}
