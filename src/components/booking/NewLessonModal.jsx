@@ -263,7 +263,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md h-[80vh] flex flex-col overflow-hidden p-0">
-        <DialogHeader className="px-6 pt-6 pb-2 shrink-0">
+        <DialogHeader className="px-4 pt-4 pb-2 shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-[#F7B602]" />
             New Lesson
