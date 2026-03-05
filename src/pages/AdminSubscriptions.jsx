@@ -60,74 +60,14 @@ const learnerPlans = [
   }
 ];
 
-const instructorPlans = [
-  {
-    name: 'Basic',
-    price: '£0',
-    period: '/month',
-    description: 'Get started with essential features',
-    badge: null,
-    features: [
-      'Up to 5 pupils',
-      'Basic calendar',
-      'Lesson scheduling',
-      'Basic messaging',
-    ],
-    cta: 'Current Plan',
-    disabled: true,
-    variant: 'outline'
-  },
-  {
-    name: 'Standard',
-    price: '£9.99',
-    period: '/month',
-    description: 'Grow your business with advanced tools',
-    badge: null,
-    features: [
-      'Up to 20 pupils',
-      'Advanced calendar & availability',
-      'Automated booking approvals',
-      'Payment management',
-      'Basic homework tools',
-      'Progress tracking',
-    ],
-    cta: 'Upgrade to Standard',
-    disabled: false,
-    variant: 'outline'
-  },
-  {
-    name: 'Pro',
-    price: '£14.99',
-    period: '/month',
-    description: 'Everything you need to scale your business',
-    badge: 'Most Popular',
-    features: [
-      'Unlimited pupils',
-      'Advanced calendar & availability',
-      'Automated booking approvals',
-      'Payment management & invoicing',
-      'Course work & homework tools',
-      'Whiteboard editor',
-      'Progress tracking',
-      'Priority support',
-    ],
-    cta: 'Upgrade to Pro',
-    disabled: false,
-    variant: 'default'
-  },
-];
-
 export default function AdminSubscriptions() {
   const learnerRef = useRef(null);
-  const instructorRef = useRef(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const section = params.get('section');
     if (section === 'learner' && learnerRef.current) {
       learnerRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (section === 'instructor' && instructorRef.current) {
-      instructorRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, []);
 
@@ -189,54 +129,7 @@ export default function AdminSubscriptions() {
           </div>
         </div>
 
-        {/* Instructors Section */}
-        <div ref={instructorRef}>
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-[#071739]">Instructor Plans</h2>
-            <p className="text-slate-600 mt-1">Subscription options available to instructors</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {instructorPlans.map((plan) => (
-              <Card
-                key={`instructor-${plan.name}`}
-                className={`relative flex flex-col ${plan.badge ? 'border-[#F7B602] border-2 shadow-lg' : ''}`}
-              >
-                {plan.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-[#F7B602] text-[#071739] font-semibold px-3 py-1">
-                      {plan.badge}
-                    </Badge>
-                  </div>
-                )}
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl text-[#071739]">{plan.name}</CardTitle>
-                  <div className="flex items-end gap-1 mt-1">
-                    <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
-                    <span className="text-slate-500 mb-1">{plan.period}</span>
-                  </div>
-                  <p className="text-sm text-slate-500">{plan.description}</p>
-                </CardHeader>
-                <CardContent className="flex flex-col flex-1 gap-4">
-                  <ul className="space-y-2 flex-1">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-2 text-sm text-slate-700">
-                        <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    variant={plan.variant}
-                    disabled={plan.disabled}
-                    className={`w-full mt-4 ${plan.badge ? 'bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]' : ''}`}
-                  >
-                    {plan.cta}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+
       </div>
     </div>
   );
