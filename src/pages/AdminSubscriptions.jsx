@@ -179,7 +179,7 @@ export default function AdminSubscriptions() {
               </Card>
             ))}
           </div>
-        </div>
+        </div>}
 
         {/* Instructors Section */}
         {showInstructor && <div>
