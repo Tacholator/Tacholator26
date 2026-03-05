@@ -28,6 +28,7 @@ export default function InstructorDashboard() {
   const [selectedLessonId, setSelectedLessonId] = useState(null);
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
   const [selectedPupilForSummary, setSelectedPupilForSummary] = useState(null);
+  const [newLessonModalOpen, setNewLessonModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const { data: user } = useQuery({
