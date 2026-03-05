@@ -56,6 +56,8 @@ export default function NewLessonModal({ open, onOpenChange }) {
   const today = moment().format('YYYY-MM-DD');
 
   const [date, setDate] = useState(today);
+  const [dateConfirmed, setDateConfirmed] = useState(false);
+  const [pendingDate, setPendingDate] = useState(today);
   const [startTime, setStartTime] = useState('09:00');
   const [durationHours, setDurationHours] = useState(1);
   const [selectedPupilId, setSelectedPupilId] = useState('');
