@@ -100,6 +100,19 @@ const instructorPlans = [
 ];
 
 export default function AdminSubscriptions() {
+  const learnerRef = useRef(null);
+  const instructorRef = useRef(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get('section');
+    if (section === 'learner' && learnerRef.current) {
+      learnerRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else if (section === 'instructor' && instructorRef.current) {
+      instructorRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto">
