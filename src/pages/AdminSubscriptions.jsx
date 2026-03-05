@@ -3,7 +3,6 @@ import { Star, CheckCircle, Zap, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 const learnerPlans = [
   {
@@ -64,8 +63,8 @@ const learnerPlans = [
 const instructorPlans = [
   {
     name: 'Basic',
-    monthlyPrice: '£0',
-    yearlyPrice: '£0',
+    price: '£0',
+    period: '/month',
     description: 'Get started with essential features',
     badge: null,
     features: [
@@ -80,8 +79,8 @@ const instructorPlans = [
   },
   {
     name: 'Standard',
-    monthlyPrice: '£9.99',
-    yearlyPrice: '£83.92',
+    price: '£9.99',
+    period: '/month',
     description: 'Grow your business with advanced tools',
     badge: null,
     features: [
@@ -98,8 +97,8 @@ const instructorPlans = [
   },
   {
     name: 'Pro',
-    monthlyPrice: '£14.99',
-    yearlyPrice: '£125.92',
+    price: '£14.99',
+    period: '/month',
     description: 'Everything you need to scale your business',
     badge: 'Most Popular',
     features: [
@@ -119,7 +118,6 @@ const instructorPlans = [
 ];
 
 export default function AdminSubscriptions() {
-  const [billingPeriod, setBillingPeriod] = React.useState('monthly');
   const learnerRef = useRef(null);
   const instructorRef = useRef(null);
 
@@ -140,14 +138,6 @@ export default function AdminSubscriptions() {
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-[#071739]">Subscription Management</h1>
           <p className="text-slate-600 mt-2">View and manage learner and instructor subscription plans</p>
-        </div>
-
-        {/* Billing Toggle */}
-        <div className="flex justify-center mb-10">
-          <ToggleGroup type="single" value={billingPeriod} onValueChange={setBillingPeriod} className="bg-slate-100 p-1 rounded-lg">
-            <ToggleGroupItem value="monthly" className="rounded px-4">Monthly</ToggleGroupItem>
-            <ToggleGroupItem value="yearly" className="rounded px-4">Yearly (Save 30%)</ToggleGroupItem>
-          </ToggleGroup>
         </div>
 
         {/* Learners Section */}
@@ -172,8 +162,8 @@ export default function AdminSubscriptions() {
                 <CardHeader className="pb-4">
                   <CardTitle className="text-xl text-[#071739]">{plan.name}</CardTitle>
                   <div className="flex items-end gap-1 mt-1">
-                    <span className="text-4xl font-bold text-[#071739]">{billingPeriod === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}</span>
-                    <span className="text-slate-500 mb-1">{billingPeriod === 'monthly' ? '/month' : '/year'}</span>
+                    <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
+                    <span className="text-slate-500 mb-1">{plan.period}</span>
                   </div>
                   <p className="text-sm text-slate-500">{plan.description}</p>
                 </CardHeader>
@@ -221,8 +211,8 @@ export default function AdminSubscriptions() {
                 <CardHeader className="pb-4">
                   <CardTitle className="text-xl text-[#071739]">{plan.name}</CardTitle>
                   <div className="flex items-end gap-1 mt-1">
-                    <span className="text-4xl font-bold text-[#071739]">{billingPeriod === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}</span>
-                    <span className="text-slate-500 mb-1">{billingPeriod === 'monthly' ? '/month' : '/year'}</span>
+                    <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
+                    <span className="text-slate-500 mb-1">{plan.period}</span>
                   </div>
                   <p className="text-sm text-slate-500">{plan.description}</p>
                 </CardHeader>
