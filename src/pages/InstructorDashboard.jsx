@@ -725,6 +725,11 @@ export default function InstructorDashboard() {
         pupil={selectedPupilForSummary}
         lastDiaryEntry={selectedPupilForSummary?.id === nextPupil?.id ? lastDiaryEntry : null}
       />
+
+      <NewLessonModal
+        open={newLessonModalOpen}
+        onOpenChange={setNewLessonModalOpen}
+      />
     </div>
   );
 }
