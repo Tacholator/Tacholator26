@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import LessonFormModal from '@/components/modals/LessonFormModal';
+import NewLessonModal from '@/components/booking/NewLessonModal';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import CalendarDayView from '@/components/calendar/CalendarDayView';
 import LessonDetailsDrawer from '@/components/calendar/LessonDetailsDrawer';
