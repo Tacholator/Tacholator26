@@ -656,10 +656,10 @@ export default function Calendar() {
                 setSelectedSlot(null);
                 setShowLessonModal(true);
               }}
-              className="bg-teal-600 hover:bg-teal-700 whitespace-nowrap"
+              className="bg-teal-600 hover:bg-teal-700"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              New Lesson
+              <Plus className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">New Lesson</span>
             </Button>
           </div>
         </div>
