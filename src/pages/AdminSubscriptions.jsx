@@ -3,6 +3,7 @@ import { Star, CheckCircle, Zap, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 const learnerPlans = [
   {
@@ -63,8 +64,8 @@ const learnerPlans = [
 const instructorPlans = [
   {
     name: 'Basic',
-    price: '£0',
-    period: '/month',
+    monthlyPrice: '£0',
+    yearlyPrice: '£0',
     description: 'Get started with essential features',
     badge: null,
     features: [
@@ -79,8 +80,8 @@ const instructorPlans = [
   },
   {
     name: 'Standard',
-    price: '£9.99',
-    period: '/month',
+    monthlyPrice: '£9.99',
+    yearlyPrice: '£83.92',
     description: 'Grow your business with advanced tools',
     badge: null,
     features: [
@@ -97,8 +98,8 @@ const instructorPlans = [
   },
   {
     name: 'Pro',
-    price: '£14.99',
-    period: '/month',
+    monthlyPrice: '£14.99',
+    yearlyPrice: '£125.92',
     description: 'Everything you need to scale your business',
     badge: 'Most Popular',
     features: [
@@ -118,6 +119,7 @@ const instructorPlans = [
 ];
 
 export default function AdminSubscriptions() {
+  const [billingPeriod, setBillingPeriod] = React.useState('monthly');
   const learnerRef = useRef(null);
   const instructorRef = useRef(null);
 
@@ -138,6 +140,14 @@ export default function AdminSubscriptions() {
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-[#071739]">Subscription Management</h1>
           <p className="text-slate-600 mt-2">View and manage learner and instructor subscription plans</p>
+        </div>
+
+        {/* Billing Toggle */}
+        <div className="flex justify-center mb-10">
+          <ToggleGroup type="single" value={billingPeriod} onValueChange={setBillingPeriod} className="bg-slate-100 p-1 rounded-lg">
+            <ToggleGroupItem value="monthly" className="rounded px-4">Monthly</ToggleGroupItem>
+            <ToggleGroupItem value="yearly" className="rounded px-4">Yearly (Save 30%)</ToggleGroupItem>
+          </ToggleGroup>
         </div>
 
         {/* Learners Section */}
