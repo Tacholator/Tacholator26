@@ -123,7 +123,7 @@ export default function AdminSubscriptions() {
         </div>
 
         {/* Learners Section */}
-        <div className="mb-12">
+        <div className="mb-12" ref={learnerRef}>
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-[#071739]">Learner Plans</h2>
             <p className="text-slate-600 mt-1">Subscription options available to learners</p>
