@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles } from 'lucide-react';
+import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles, Plus } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
