@@ -625,20 +625,6 @@ export default function Calendar() {
             <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
           </div>
           
-          {/* Availability Mode Selector */}
-          <div className="flex items-center gap-3">
-            <Label className="text-sm text-slate-600">Mode:</Label>
-            <Select value={availabilityMode} onValueChange={setAvailabilityMode}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="available_by_default">Available by default</SelectItem>
-                <SelectItem value="published_slots_only">Published slots only</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
           <div className="flex items-center gap-3">
             <div className="flex items-center bg-white rounded-lg border shadow-sm p-1">
               {VIEW_MODES.map(mode => (
