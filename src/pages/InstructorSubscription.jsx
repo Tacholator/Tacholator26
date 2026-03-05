@@ -22,10 +22,28 @@ const plans = [
     variant: 'outline'
   },
   {
-    name: 'Pro',
-    price: '£19',
+    name: 'Standard',
+    price: '£9.99',
     period: '/month',
-    description: 'Everything you need to grow your business',
+    description: 'Grow your business with advanced tools',
+    badge: null,
+    features: [
+      'Up to 20 pupils',
+      'Advanced calendar & availability',
+      'Automated booking approvals',
+      'Payment management',
+      'Basic homework tools',
+      'Progress tracking',
+    ],
+    cta: 'Upgrade to Standard',
+    disabled: false,
+    variant: 'outline'
+  },
+  {
+    name: 'Pro',
+    price: '£14.99',
+    period: '/month',
+    description: 'Everything you need to scale your business',
     badge: 'Most Popular',
     features: [
       'Unlimited pupils',
@@ -59,7 +77,7 @@ export default function InstructorSubscription() {
         </div>
 
         {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 max-w-2xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {plans.map((plan) => (
             <Card
               key={plan.name}
