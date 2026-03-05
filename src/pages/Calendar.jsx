@@ -625,13 +625,13 @@ export default function Calendar() {
             <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between md:justify-end gap-3">
             <div className="flex items-center bg-white rounded-lg border shadow-sm p-1">
               {VIEW_MODES.map(mode => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     viewMode === mode 
                       ? 'bg-teal-100 text-teal-700' 
                       : 'text-slate-600 hover:bg-slate-50'
@@ -644,8 +644,8 @@ export default function Calendar() {
             
             <Button
               variant="outline"
+              size="icon"
               onClick={() => setShowSettingsModal(true)}
-              className="gap-2"
             >
               <Settings className="w-4 h-4" />
             </Button>
@@ -656,7 +656,7 @@ export default function Calendar() {
                 setSelectedSlot(null);
                 setShowLessonModal(true);
               }}
-              className="bg-teal-600 hover:bg-teal-700"
+              className="bg-teal-600 hover:bg-teal-700 whitespace-nowrap"
             >
               <Plus className="w-4 h-4 mr-2" />
               New Lesson
