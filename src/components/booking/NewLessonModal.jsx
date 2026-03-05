@@ -467,7 +467,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
         </div>{/* end scrollable area */}
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 px-4 py-3 border-t shrink-0">
+        <div className="flex justify-end gap-3 px-4 py-3 border-t" style={{ flexShrink: 0 }}>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={bookMutation.isPending}>
             Cancel
           </Button>
