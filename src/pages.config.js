@@ -55,6 +55,7 @@ import AdminInstructorCalendars from './pages/AdminInstructorCalendars';
 import AdminInstructorPayments from './pages/AdminInstructorPayments';
 import AdminPaymentsHub from './pages/AdminPaymentsHub';
 import AdminRoleManagement from './pages/AdminRoleManagement';
+import AdminSubscriptions from './pages/AdminSubscriptions';
 import AdminTestRouteConfiguration from './pages/AdminTestRouteConfiguration';
 import AdminTestRouteDetail from './pages/AdminTestRouteDetail';
 import AdminUserManagement from './pages/AdminUserManagement';
@@ -82,6 +83,7 @@ import InstructorQuizPreview from './pages/InstructorQuizPreview';
 import InstructorReports from './pages/InstructorReports';
 import InstructorResources from './pages/InstructorResources';
 import InstructorStripeConnect from './pages/InstructorStripeConnect';
+import InstructorSubscription from './pages/InstructorSubscription';
 import InstructorTeachingHub from './pages/InstructorTeachingHub';
 import InstructorTestRouteDetail from './pages/InstructorTestRouteDetail';
 import InstructorTestRoutes from './pages/InstructorTestRoutes';
@@ -124,8 +126,6 @@ import RoleSelection from './pages/RoleSelection';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import AdminSubscriptions from './pages/AdminSubscriptions';
-import InstructorSubscription from './pages/InstructorSubscription';
 import __Layout from './Layout.jsx';
 
 
@@ -138,6 +138,7 @@ export const PAGES = {
     "AdminInstructorPayments": AdminInstructorPayments,
     "AdminPaymentsHub": AdminPaymentsHub,
     "AdminRoleManagement": AdminRoleManagement,
+    "AdminSubscriptions": AdminSubscriptions,
     "AdminTestRouteConfiguration": AdminTestRouteConfiguration,
     "AdminTestRouteDetail": AdminTestRouteDetail,
     "AdminUserManagement": AdminUserManagement,
@@ -165,6 +166,7 @@ export const PAGES = {
     "InstructorReports": InstructorReports,
     "InstructorResources": InstructorResources,
     "InstructorStripeConnect": InstructorStripeConnect,
+    "InstructorSubscription": InstructorSubscription,
     "InstructorTeachingHub": InstructorTeachingHub,
     "InstructorTestRouteDetail": InstructorTestRouteDetail,
     "InstructorTestRoutes": InstructorTestRoutes,
@@ -207,8 +209,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "AdminSubscriptions": AdminSubscriptions,
-    "InstructorSubscription": InstructorSubscription,
 }
 
 export const pagesConfig = {
