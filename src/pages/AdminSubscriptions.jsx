@@ -97,24 +97,6 @@ const instructorPlans = [
     disabled: false,
     variant: 'default'
   },
-  {
-    name: 'Enterprise',
-    price: '£49',
-    period: '/month',
-    description: 'For driving schools and larger operations',
-    badge: null,
-    features: [
-      'Everything in Pro',
-      'Multi-instructor support',
-      'Custom branding',
-      'Advanced analytics',
-      'Dedicated account manager',
-      'API access',
-    ],
-    cta: 'Contact Sales',
-    disabled: false,
-    variant: 'outline'
-  }
 ];
 
 export default function AdminSubscriptions() {
