@@ -228,7 +228,12 @@ export default function NewLessonModal({ open, onOpenChange }) {
       onOpenChange(false);
     },
     onError: (err) => {
-      toast({ title: 'Booking failed', description: err.message, variant: 'destructive' });
+      toast({
+        title: 'Cannot book — time conflict',
+        description: err.message,
+        variant: 'destructive',
+        duration: 8000,
+      });
     },
   });
 
