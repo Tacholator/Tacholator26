@@ -34,7 +34,12 @@ for (let h = 0; h < 24; h++) {
 const DURATION_OPTIONS = [
   { label: '30 minutes', value: 0.5 },
   { label: '1 hour', value: 1 },
+  { label: '1 hour 30 minutes', value: 1.5 },
   { label: '2 hours', value: 2 },
+  { label: '2 hours 30 minutes', value: 2.5 },
+  { label: '3 hours', value: 3 },
+  { label: '3 hours 30 minutes', value: 3.5 },
+  { label: '4 hours', value: 4 },
 ];
 
 const RECURRENCE_OPTIONS = [
