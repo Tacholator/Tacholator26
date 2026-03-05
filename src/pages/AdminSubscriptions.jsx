@@ -118,18 +118,10 @@ const instructorPlans = [
 ];
 
 export default function AdminSubscriptions() {
-  const learnerRef = useRef(null);
-  const instructorRef = useRef(null);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const section = params.get('section');
-    if (section === 'learner' && learnerRef.current) {
-      learnerRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (section === 'instructor' && instructorRef.current) {
-      instructorRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
+  const params = new URLSearchParams(window.location.search);
+  const section = params.get('section');
+  const showLearner = !section || section === 'learner';
+  const showInstructor = !section || section === 'instructor';
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
@@ -141,7 +133,7 @@ export default function AdminSubscriptions() {
         </div>
 
         {/* Learners Section */}
-        <div className="mb-12" ref={learnerRef}>
+        {showLearner && <div className="mb-12">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-[#071739]">Learner Plans</h2>
             <p className="text-slate-600 mt-1">Subscription options available to learners</p>
