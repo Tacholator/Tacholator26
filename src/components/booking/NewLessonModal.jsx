@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { Calendar, Clock, Loader2, Search, AlertTriangle, CheckCircle, RefreshCw, Check } from 'lucide-react';
+import { Calendar, Clock, Loader2, Search, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
 import moment from 'moment';
 
 // Generate half-hour time slots for the full day
@@ -56,8 +56,6 @@ export default function NewLessonModal({ open, onOpenChange }) {
   const today = moment().format('YYYY-MM-DD');
 
   const [date, setDate] = useState(today);
-  const [dateConfirmed, setDateConfirmed] = useState(false);
-  const [pendingDate, setPendingDate] = useState(today);
   const [startTime, setStartTime] = useState('09:00');
   const [durationHours, setDurationHours] = useState(1);
   const [selectedPupilId, setSelectedPupilId] = useState('');
@@ -94,8 +92,6 @@ export default function NewLessonModal({ open, onOpenChange }) {
     if (open && user?.id && user?.email) {
       refetchPupils();
       setDate(today);
-      setPendingDate(today);
-      setDateConfirmed(false);
       setStartTime('09:00');
       setDurationHours(1);
       setSelectedPupilId('');
@@ -267,7 +263,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
     bookMutation.mutate();
   };
 
-
+  const displayDate = date ? moment(date).format('ddd, D MMM YYYY') : '';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -285,35 +281,20 @@ export default function NewLessonModal({ open, onOpenChange }) {
           {/* Date */}
           <div className="space-y-1.5">
             <Label>Date *</Label>
-            <div className="flex gap-2">
+            <div className="relative">
               <Input
                 type="date"
-                value={pendingDate}
+                value={date}
                 min={today}
-                onChange={e => { setPendingDate(e.target.value); setDateConfirmed(false); }}
-                className="flex-1"
+                onChange={e => setDate(e.target.value)}
+                className="pr-4"
               />
-              <button
-                type="button"
-                onClick={() => { setDate(pendingDate); setDateConfirmed(true); }}
-                className={`flex items-center justify-center w-10 h-10 rounded-lg border-2 transition-colors shrink-0 ${
-                  dateConfirmed
-                    ? 'bg-emerald-500 border-emerald-500 text-white'
-                    : 'bg-white border-[#F7B602] text-[#F7B602] hover:bg-[#F7B602] hover:text-[#071739]'
-                }`}
-                title="Confirm date"
-              >
-                <Check className="w-4 h-4" />
-              </button>
             </div>
-            {dateConfirmed && date && (
-              <p className="text-sm text-emerald-600 flex items-center gap-1 font-medium">
-                <CheckCircle className="w-3.5 h-3.5" />
-                {moment(date).format('ddd, D MMM YYYY')}
+            {displayDate && (
+              <p className="text-sm text-slate-500 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5" />
+                {displayDate}
               </p>
-            )}
-            {!dateConfirmed && pendingDate && (
-              <p className="text-xs text-amber-600">Press ✓ to confirm this date</p>
             )}
           </div>
 
