@@ -100,9 +100,9 @@ export default function AdminDashboard() {
             const Icon = card.icon;
             return (
               <Card
-                key={card.page}
+                key={card.title}
                 className="cursor-pointer hover:shadow-lg transition-all duration-200 border-t-4 border-[#F7B602] overflow-hidden group"
-                onClick={() => navigate(createPageUrl(card.page))}
+                onClick={() => navigate(createPageUrl(card.page) + (card.section ? `?section=${card.section}` : ''))}
               >
                 <CardHeader className="pb-4">
                   <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${card.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
