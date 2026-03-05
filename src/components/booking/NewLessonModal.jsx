@@ -285,20 +285,35 @@ export default function NewLessonModal({ open, onOpenChange }) {
           {/* Date */}
           <div className="space-y-1.5">
             <Label>Date *</Label>
-            <div className="relative">
+            <div className="flex gap-2">
               <Input
                 type="date"
-                value={date}
+                value={pendingDate}
                 min={today}
-                onChange={e => setDate(e.target.value)}
-                className="pr-4"
+                onChange={e => { setPendingDate(e.target.value); setDateConfirmed(false); }}
+                className="flex-1"
               />
+              <button
+                type="button"
+                onClick={() => { setDate(pendingDate); setDateConfirmed(true); }}
+                className={`flex items-center justify-center w-10 h-10 rounded-lg border-2 transition-colors shrink-0 ${
+                  dateConfirmed
+                    ? 'bg-emerald-500 border-emerald-500 text-white'
+                    : 'bg-white border-[#F7B602] text-[#F7B602] hover:bg-[#F7B602] hover:text-[#071739]'
+                }`}
+                title="Confirm date"
+              >
+                <Check className="w-4 h-4" />
+              </button>
             </div>
-            {displayDate && (
-              <p className="text-sm text-slate-500 flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
-                {displayDate}
+            {dateConfirmed && date && (
+              <p className="text-sm text-emerald-600 flex items-center gap-1 font-medium">
+                <CheckCircle className="w-3.5 h-3.5" />
+                {moment(date).format('ddd, D MMM YYYY')}
               </p>
+            )}
+            {!dateConfirmed && pendingDate && (
+              <p className="text-xs text-amber-600">Press ✓ to confirm this date</p>
             )}
           </div>
 
