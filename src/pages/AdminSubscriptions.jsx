@@ -172,8 +172,8 @@ export default function AdminSubscriptions() {
                 <CardHeader className="pb-4">
                   <CardTitle className="text-xl text-[#071739]">{plan.name}</CardTitle>
                   <div className="flex items-end gap-1 mt-1">
-                    <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
-                    <span className="text-slate-500 mb-1">{plan.period}</span>
+                    <span className="text-4xl font-bold text-[#071739]">{billingPeriod === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}</span>
+                    <span className="text-slate-500 mb-1">{billingPeriod === 'monthly' ? '/month' : '/year'}</span>
                   </div>
                   <p className="text-sm text-slate-500">{plan.description}</p>
                 </CardHeader>
@@ -221,8 +221,8 @@ export default function AdminSubscriptions() {
                 <CardHeader className="pb-4">
                   <CardTitle className="text-xl text-[#071739]">{plan.name}</CardTitle>
                   <div className="flex items-end gap-1 mt-1">
-                    <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
-                    <span className="text-slate-500 mb-1">{plan.period}</span>
+                    <span className="text-4xl font-bold text-[#071739]">{billingPeriod === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}</span>
+                    <span className="text-slate-500 mb-1">{billingPeriod === 'monthly' ? '/month' : '/year'}</span>
                   </div>
                   <p className="text-sm text-slate-500">{plan.description}</p>
                 </CardHeader>
