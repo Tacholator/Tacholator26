@@ -493,7 +493,7 @@ export default function InstructorBookingCalendar() {
               rules={rules}
               bookings={bookings}
               slotInstances={slotInstances}
-              availabilityMode="published_slots_only"
+              availabilityMode={availabilityMode}
               isInstructor={true}
               onSlotClick={handleSlotClick}
               onPendingSlotClick={handlePendingSlotClick}
