@@ -2,7 +2,7 @@ import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Clock, Coffee, CalendarDays, ClipboardCheck } from 'lucide-react';
+import { Clock, Coffee, CalendarDays, ClipboardCheck, Eye } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
@@ -11,7 +11,9 @@ export default function CalendarSettingsDrawer({
   onOpenChange, 
   onOpenWorkingHours,
   onOpenLunch,
-  onOpenUnavailable
+  onOpenUnavailable,
+  availabilityMode,
+  onAvailabilityModeChange
 }) {
   const queryClient = useQueryClient();
 
@@ -88,6 +90,29 @@ export default function CalendarSettingsDrawer({
               <div className="text-xs text-slate-500">Block specific times</div>
             </div>
           </Button>
+
+          {/* Mode Toggle */}
+          {onAvailabilityModeChange && (
+            <div className="flex items-center justify-between px-4 py-4 border rounded-lg bg-slate-50">
+              <div className="flex items-center gap-3">
+                <Eye className="w-5 h-5 text-teal-600 shrink-0" />
+                <div>
+                  <div className="font-medium text-slate-800">Published slots only</div>
+                  <div className="text-xs text-slate-500">
+                    {availabilityMode === 'published_slots_only'
+                      ? 'Showing published bookable slots'
+                      : 'Showing all working hours availability'}
+                  </div>
+                </div>
+              </div>
+              <Switch
+                checked={availabilityMode === 'published_slots_only'}
+                onCheckedChange={(checked) =>
+                  onAvailabilityModeChange(checked ? 'published_slots_only' : 'available_by_default')
+                }
+              />
+            </div>
+          )}
 
           {/* Booking Approval Toggle */}
           <div className="flex items-center justify-between px-4 py-4 border rounded-lg bg-slate-50">

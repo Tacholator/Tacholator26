@@ -877,6 +877,8 @@ export default function Calendar() {
         onOpenWorkingHours={() => setShowWorkingHoursModal(true)}
         onOpenLunch={() => setShowLunchModal(true)}
         onOpenUnavailable={() => setShowUnavailableModal(true)}
+        availabilityMode={availabilityMode}
+        onAvailabilityModeChange={setAvailabilityMode}
       />
 
       <CreateBookableSlotModal
