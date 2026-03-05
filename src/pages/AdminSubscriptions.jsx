@@ -216,7 +216,15 @@ export default function AdminSubscriptions() {
                     <span className="text-slate-500 mb-1">{plan.period}</span>
                   </div>
                   {plan.discount && (
-                    <p className="text-xs text-[#F7B602] font-semibold mt-1">{plan.discount}</p>
+                    <div className="mt-2 pt-2 border-t border-slate-200">
+                      <p className="text-xs text-[#F7B602] font-semibold">{plan.discount}</p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {plan.annualPriceBeforeDiscount}/year
+                      </p>
+                      <p className="text-sm font-bold text-[#071739] mt-1">
+                        {plan.annualPrice}/year
+                      </p>
+                    </div>
                   )}
                   <p className="text-sm text-slate-500">{plan.description}</p>
                 </CardHeader>
