@@ -209,6 +209,9 @@ export default function AdminSubscriptions() {
                     <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
                     <span className="text-slate-500 mb-1">{plan.period}</span>
                   </div>
+                  {plan.discount && (
+                    <p className="text-xs text-[#F7B602] font-semibold mt-1">{plan.discount}</p>
+                  )}
                   <p className="text-sm text-slate-500">{plan.description}</p>
                 </CardHeader>
                 <CardContent className="flex flex-col flex-1 gap-4">
