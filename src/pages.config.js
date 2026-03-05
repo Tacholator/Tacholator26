@@ -68,6 +68,7 @@ import DrivingProgressV2 from './pages/DrivingProgressV2';
 import FutureUpdates from './pages/FutureUpdates';
 import Home from './pages/Home';
 import HomeworkLibrary from './pages/HomeworkLibrary';
+import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
 import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorGpsRouteSetup from './pages/InstructorGpsRouteSetup';
@@ -125,7 +126,6 @@ import RoleSelection from './pages/RoleSelection';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
 import __Layout from './Layout.jsx';
 
 
@@ -151,6 +151,7 @@ export const PAGES = {
     "FutureUpdates": FutureUpdates,
     "Home": Home,
     "HomeworkLibrary": HomeworkLibrary,
+    "InstructorBookingCalendar": InstructorBookingCalendar,
     "InstructorChats": InstructorChats,
     "InstructorDashboard": InstructorDashboard,
     "InstructorGpsRouteSetup": InstructorGpsRouteSetup,
@@ -208,7 +209,6 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "InstructorBookingCalendar": InstructorBookingCalendar,
 }
 
 export const pagesConfig = {
