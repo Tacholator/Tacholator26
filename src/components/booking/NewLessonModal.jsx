@@ -60,6 +60,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
   const [recurrenceEndDate, setRecurrenceEndDate] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [overrideBalance, setOverrideBalance] = useState(false);
+  const [conflictError, setConflictError] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
