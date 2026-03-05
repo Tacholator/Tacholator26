@@ -337,13 +337,25 @@ export default function InstructorDashboard() {
           {/* 1. Greeting Card */}
           <Card className={`${warmPalette.card_greeting} border-0 shadow-sm overflow-hidden`}>
             <CardContent className="p-6">
-              <h2 className="text-2xl font-bold text-slate-800 mb-2 truncate">
-                Good {getTimeOfDay()}, {firstName}
-              </h2>
-              <p className="text-slate-600 break-words">
-                You have {nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length} upcoming lesson{(nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length) !== 1 ? 's' : ''} today
-                {nextRelevantBooking && ` • Next at ${moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')}`}
-              </p>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-2 truncate">
+                    Good {getTimeOfDay()}, {firstName}
+                  </h2>
+                  <p className="text-slate-600 break-words">
+                    You have {nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length} upcoming lesson{(nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length) !== 1 ? 's' : ''} today
+                    {nextRelevantBooking && ` • Next at ${moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')}`}
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setNewLessonModalOpen(true)}
+                  className="bg-[#071739] hover:bg-[#0e2a5a] text-white shrink-0"
+                  size="sm"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  New Lesson
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
