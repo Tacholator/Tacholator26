@@ -419,6 +419,27 @@ export default function InstructorBookingCalendar() {
                   <Coffee className="w-4 h-4" />
                   Add Lunch Break
                 </Button>
+                {/* Mode toggle */}
+                <div className="flex items-center justify-between px-4 py-4 border rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-3">
+                    <Eye className="w-5 h-5 text-teal-600 shrink-0" />
+                    <div>
+                      <div className="font-medium text-slate-800">Published slots only</div>
+                      <div className="text-xs text-slate-500">
+                        {availabilityMode === 'published_slots_only'
+                          ? 'Showing published bookable slots'
+                          : 'Showing all working hours availability'}
+                      </div>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={availabilityMode === 'published_slots_only'}
+                    onCheckedChange={(checked) =>
+                      setAvailabilityMode(checked ? 'published_slots_only' : 'working_hours')
+                    }
+                  />
+                </div>
+
                 <div className="border-t pt-4 mt-2">
                   <p className="text-sm font-semibold text-slate-700 mb-3">Colour Key</p>
                   <div className="flex flex-col gap-2 text-sm">
