@@ -50,11 +50,20 @@ const adminCards = [
     color: 'from-emerald-500 to-emerald-600'
   },
   {
-    title: 'Subscriptions',
-    description: 'Manage learner and instructor plans',
+    title: 'Learner Subscriptions',
+    description: 'Manage learner subscription plans',
     icon: Gift,
     page: 'AdminSubscriptions',
-    color: 'from-pink-500 to-pink-600'
+    color: 'from-pink-500 to-pink-600',
+    section: 'learner'
+  },
+  {
+    title: 'Instructor Subscriptions',
+    description: 'Manage instructor subscription plans',
+    icon: Gift,
+    page: 'AdminSubscriptions',
+    color: 'from-violet-500 to-violet-600',
+    section: 'instructor'
   },
   {
     title: 'User Management',
