@@ -11,6 +11,7 @@ import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
+import NewLessonModal from '@/components/booking/NewLessonModal';
 
 // Warm color palette - stable per section
 const warmPalette = {
