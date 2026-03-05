@@ -6,12 +6,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -20,10 +17,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { Calendar, Clock, Loader2, Search, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
+import { Calendar, Clock, Loader2, Search, AlertTriangle, CheckCircle, RefreshCw, MapPin, Repeat } from 'lucide-react';
 import moment from 'moment';
 
-// Generate half-hour time slots for the full day
 const TIME_SLOTS = [];
 for (let h = 0; h < 24; h++) {
   for (let m = 0; m < 60; m += 30) {
@@ -32,20 +28,20 @@ for (let h = 0; h < 24; h++) {
 }
 
 const DURATION_OPTIONS = [
-  { label: '30 minutes', value: 0.5 },
-  { label: '1 hour', value: 1 },
-  { label: '1 hour 30 minutes', value: 1.5 },
-  { label: '2 hours', value: 2 },
-  { label: '2 hours 30 minutes', value: 2.5 },
-  { label: '3 hours', value: 3 },
-  { label: '3 hours 30 minutes', value: 3.5 },
-  { label: '4 hours', value: 4 },
+  { label: '30 min', value: 0.5 },
+  { label: '1 hr', value: 1 },
+  { label: '1 hr 30', value: 1.5 },
+  { label: '2 hrs', value: 2 },
+  { label: '2 hrs 30', value: 2.5 },
+  { label: '3 hrs', value: 3 },
+  { label: '3 hrs 30', value: 3.5 },
+  { label: '4 hrs', value: 4 },
 ];
 
 const RECURRENCE_OPTIONS = [
-  { label: 'Once (no recurrence)', value: 'once' },
+  { label: 'No repeat', value: 'once' },
   { label: 'Weekly', value: 'weekly' },
-  { label: 'Bi-weekly (every 2 weeks)', value: 'biweekly' },
+  { label: 'Bi-weekly', value: 'biweekly' },
   { label: 'Monthly', value: 'monthly' },
 ];
 
@@ -114,25 +110,24 @@ export default function NewLessonModal({ open, onOpenChange }) {
 
   const selectedPupil = useMemo(() => pupils.find(p => p.id === selectedPupilId), [pupils, selectedPupilId]);
 
-  // Balance check
   const lessonCost = (selectedPupil?.hourlyRate || 0) * durationHours;
   const currentBalance = selectedPupil?.bulkPaymentBalance || 0;
   const hasInsufficientBalance = selectedPupil && !selectedPupil.payAsYouGo && currentBalance < lessonCost;
 
-  // Build list of booking dates based on recurrence
+  const endTime = date && startTime
+    ? moment(`${date} ${startTime}`, 'YYYY-MM-DD HH:mm').add(durationHours * 60, 'minutes').format('HH:mm')
+    : null;
+
   const bookingDates = useMemo(() => {
     if (!date) return [];
     const dates = [date];
     if (recurrence === 'once') return dates;
-
     const end = recurrenceEndDate ? moment(recurrenceEndDate) : moment(date).add(3, 'months');
     let current = moment(date);
-
     while (true) {
       if (recurrence === 'weekly') current = current.clone().add(1, 'week');
       else if (recurrence === 'biweekly') current = current.clone().add(2, 'weeks');
       else if (recurrence === 'monthly') current = current.clone().add(1, 'month');
-
       if (current.isAfter(end)) break;
       dates.push(current.format('YYYY-MM-DD'));
     }
@@ -142,19 +137,13 @@ export default function NewLessonModal({ open, onOpenChange }) {
   const bookMutation = useMutation({
     mutationFn: async () => {
       if (!selectedPupil) throw new Error('No pupil selected');
-
       const hourlyRate = selectedPupil.hourlyRate || 0;
       const totalPriceEach = hourlyRate * durationHours;
-
       const created = [];
       for (const bookingDate of bookingDates) {
         const startAtUtc = moment(`${bookingDate} ${startTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
-        const endAtUtc = moment(`${bookingDate} ${startTime}`, 'YYYY-MM-DD HH:mm')
-          .add(durationHours * 60, 'minutes')
-          .utc()
-          .toISOString();
+        const endAtUtc = moment(`${bookingDate} ${startTime}`, 'YYYY-MM-DD HH:mm').add(durationHours * 60, 'minutes').utc().toISOString();
 
-        // Check for conflict: any non-cancelled booking that overlaps this time slot
         const existingBookings = await base44.entities.LessonBooking.filter({ instructorId: user.id });
         const hasConflict = existingBookings.some(b => {
           if (['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor', 'deleted'].includes(b.status)) return false;
@@ -167,7 +156,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
         });
 
         if (hasConflict) {
-          throw new Error(`A booking already exists on ${moment(bookingDate).format('ddd D MMM')} at ${startTime}. Please choose a different time.`);
+          throw new Error(`A booking already exists on ${moment(bookingDate).format('ddd D MMM')} at ${startTime}.`);
         }
 
         const booking = await base44.entities.LessonBooking.create({
@@ -184,7 +173,6 @@ export default function NewLessonModal({ open, onOpenChange }) {
           notesFromPupil: `Pickup: ${pickupLocation}`,
         });
 
-        // Deduct from balance
         if (totalPriceEach > 0) {
           await base44.entities.PaymentLedger.create({
             userId: selectedPupilId,
@@ -196,15 +184,10 @@ export default function NewLessonModal({ open, onOpenChange }) {
             createdByRole: 'instructor',
             note: 'Charge applied on instructor booking',
           });
-
-          // Update pupil balance
           const newBalance = (selectedPupil.bulkPaymentBalance || 0) - totalPriceEach;
-          await base44.entities.Pupil.update(selectedPupilId, {
-            bulkPaymentBalance: newBalance,
-          });
+          await base44.entities.Pupil.update(selectedPupilId, { bulkPaymentBalance: newBalance });
         }
 
-        // Notify pupil
         if (selectedPupil.linkedUserId) {
           await base44.entities.Notification.create({
             userId: selectedPupil.linkedUserId,
@@ -214,7 +197,6 @@ export default function NewLessonModal({ open, onOpenChange }) {
             linkTarget: 'LearnerCalendar',
           });
         }
-
         created.push(booking);
       }
       return created;
@@ -226,10 +208,9 @@ export default function NewLessonModal({ open, onOpenChange }) {
       queryClient.invalidateQueries({ queryKey: ['pupils'] });
       toast({
         title: `${created.length} Lesson${created.length > 1 ? 's' : ''} Booked ✓`,
-        description:
-          created.length > 1
-            ? `${created.length} recurring lessons have been scheduled.`
-            : `Lesson on ${moment(date).format('ddd D MMM')} at ${startTime} confirmed.`,
+        description: created.length > 1
+          ? `${created.length} recurring lessons scheduled.`
+          : `${moment(date).format('ddd D MMM')} at ${startTime} confirmed.`,
         duration: 4000,
       });
       onOpenChange(false);
@@ -240,251 +221,204 @@ export default function NewLessonModal({ open, onOpenChange }) {
   });
 
   const handleBook = () => {
-    if (!selectedPupilId) {
-      toast({ title: 'Missing info', description: 'Please select a pupil', variant: 'destructive' });
-      return;
-    }
-    if (!date) {
-      toast({ title: 'Missing info', description: 'Please select a date', variant: 'destructive' });
-      return;
-    }
-    if (!pickupLocation.trim()) {
-      toast({ title: 'Missing info', description: 'Please enter a pickup location', variant: 'destructive' });
-      return;
-    }
+    if (!selectedPupilId) return toast({ title: 'Select a pupil', variant: 'destructive' });
+    if (!date) return toast({ title: 'Select a date', variant: 'destructive' });
+    if (!pickupLocation.trim()) return toast({ title: 'Enter a pickup location', variant: 'destructive' });
     if (moment(`${date} ${startTime}`, 'YYYY-MM-DD HH:mm').isBefore(moment())) {
-      toast({ title: 'Invalid date', description: 'Please select a future date and time', variant: 'destructive' });
-      return;
+      return toast({ title: 'Select a future date & time', variant: 'destructive' });
     }
     if (hasInsufficientBalance && !overrideBalance) {
-      toast({ title: 'Insufficient balance', description: 'Check the balance warning below and use override if you want to proceed.', variant: 'destructive' });
-      return;
+      return toast({ title: 'Insufficient balance', description: 'Use the override option to proceed anyway.', variant: 'destructive' });
     }
     bookMutation.mutate();
   };
 
-  const displayDate = date ? moment(date).format('ddd, D MMM YYYY') : '';
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 gap-0 flex flex-col overflow-hidden top-[45%]" style={{ maxHeight: '85vh' }}>
-        <DialogHeader className="px-4 pt-4 pb-2 shrink-0 border-b">
-          <DialogTitle className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-[#F7B602]" />
+      <DialogContent className="max-w-sm p-0 gap-0 flex flex-col overflow-hidden top-[45%]" style={{ maxHeight: '90vh' }}>
+        
+        {/* Header */}
+        <DialogHeader className="px-4 pt-4 pb-3 shrink-0 border-b bg-[#071739]">
+          <DialogTitle className="flex items-center gap-2 text-white">
+            <Calendar className="w-4 h-4 text-[#F7B602]" />
             New Lesson
           </DialogTitle>
-          <DialogDescription>Book a confirmed lesson directly into your calendar</DialogDescription>
         </DialogHeader>
 
-        <div className="overflow-y-auto px-4" style={{ flex: '1 1 auto', minHeight: 0 }}>
-          <div className="space-y-3 py-3">
-          {/* Date */}
-          <div className="space-y-1.5">
-            <Label>Date *</Label>
-            <div className="relative">
+        <div className="overflow-y-auto" style={{ flex: '1 1 auto', minHeight: 0 }}>
+          <div className="p-4 space-y-4">
+
+            {/* Date, Time, Duration — compact row */}
+            <div className="space-y-2">
               <Input
                 type="date"
                 value={date}
                 min={today}
                 onChange={e => setDate(e.target.value)}
-                className="pr-4"
+                className="text-sm"
               />
+              <div className="grid grid-cols-2 gap-2">
+                <Select value={startTime} onValueChange={setStartTime}>
+                  <SelectTrigger className="text-sm">
+                    <Clock className="w-3.5 h-3.5 text-slate-400 mr-1.5 shrink-0" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-56">
+                    {TIME_SLOTS.map(t => (
+                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={String(durationHours)} onValueChange={v => setDurationHours(Number(v))}>
+                  <SelectTrigger className="text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DURATION_OPTIONS.map(d => (
+                      <SelectItem key={d.value} value={String(d.value)}>{d.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {endTime && (
+                <p className="text-xs text-slate-400 flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {date ? moment(date).format('ddd D MMM') : ''} · {startTime} – {endTime}
+                </p>
+              )}
             </div>
-            {displayDate && (
-              <p className="text-sm text-slate-500 flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
-                {displayDate}
-              </p>
-            )}
-          </div>
 
-          {/* Time + Duration row */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label>Start Time *</Label>
-              <Select value={startTime} onValueChange={setStartTime}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="max-h-56">
-                  {TIME_SLOTS.map(t => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Duration *</Label>
-              <Select value={String(durationHours)} onValueChange={v => setDurationHours(Number(v))}>
-                <SelectTrigger>
-                  <SelectValue />
+            {/* Divider */}
+            <div className="border-t" />
+
+            {/* Pupil */}
+            <div className="space-y-2">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Search pupil..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="pr-8 text-sm"
+                />
+                <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+              </div>
+              <Select value={selectedPupilId} onValueChange={v => { setSelectedPupilId(v); setOverrideBalance(false); }}>
+                <SelectTrigger className="text-sm">
+                  <SelectValue placeholder="Select pupil..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {DURATION_OPTIONS.map(d => (
-                    <SelectItem key={d.value} value={String(d.value)}>
-                      {d.label}
-                    </SelectItem>
-                  ))}
+                  <div className="max-h-48 overflow-y-auto">
+                    {filteredPupils.length === 0 ? (
+                      <div className="p-3 text-sm text-slate-500 text-center">No pupils found</div>
+                    ) : (
+                      filteredPupils.map(p => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.firstName} {p.lastName}
+                          {p.email && <span className="text-xs text-slate-400 ml-1">· {p.email}</span>}
+                        </SelectItem>
+                      ))
+                    )}
+                  </div>
                 </SelectContent>
               </Select>
-            </div>
-          </div>
 
-          {/* End time preview */}
-          {date && startTime && (
-            <p className="text-sm text-slate-500 flex items-center gap-1 -mt-2">
-              <Clock className="w-3.5 h-3.5" />
-              {startTime} – {moment(`${date} ${startTime}`, 'YYYY-MM-DD HH:mm').add(durationHours * 60, 'minutes').format('HH:mm')}
-            </p>
-          )}
-
-          {/* Pupil */}
-          <div className="space-y-1.5">
-            <Label>Pupil *</Label>
-            <div className="relative mb-1.5">
-              <Input
-                type="text"
-                placeholder="Search by name, email or phone..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="pr-9"
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            </div>
-            <Select value={selectedPupilId} onValueChange={v => { setSelectedPupilId(v); setOverrideBalance(false); }}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a pupil..." />
-              </SelectTrigger>
-              <SelectContent>
-                <div className="max-h-64 overflow-y-auto">
-                  {filteredPupils.length === 0 ? (
-                    <div className="p-3 text-sm text-slate-500 text-center">No pupils found</div>
-                  ) : (
-                    filteredPupils.map(p => (
-                      <SelectItem key={p.id} value={p.id}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{p.firstName} {p.lastName}</span>
-                          {p.email && <span className="text-xs text-slate-500">{p.email}</span>}
-                        </div>
-                      </SelectItem>
-                    ))
-                  )}
-                </div>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Balance check */}
-          {selectedPupil && (
-            <div className={`rounded-lg border p-3 text-sm ${hasInsufficientBalance ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-200'}`}>
-              <div className="flex items-start gap-2">
-                {hasInsufficientBalance ? (
-                  <AlertTriangle className="w-4 h-4 text-rose-500 mt-0.5 shrink-0" />
-                ) : (
-                  <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                )}
-                <div className="flex-1">
-                  <p className={`font-medium ${hasInsufficientBalance ? 'text-rose-700' : 'text-emerald-700'}`}>
-                    {hasInsufficientBalance ? 'Insufficient balance' : 'Balance OK'}
-                  </p>
-                  <p className="text-slate-600 mt-0.5">
-                    Balance: <strong>£{currentBalance.toFixed(2)}</strong> · Lesson cost: <strong>£{lessonCost.toFixed(2)}</strong>
-                    {recurrence !== 'once' && bookingDates.length > 1 && (
-                      <span> · Total: <strong>£{(lessonCost * bookingDates.length).toFixed(2)}</strong> for {bookingDates.length} lessons</span>
+              {/* Balance pill */}
+              {selectedPupil && (
+                <div className={`rounded-lg px-3 py-2 text-xs flex items-start gap-2 ${hasInsufficientBalance ? 'bg-rose-50 border border-rose-200' : 'bg-emerald-50 border border-emerald-200'}`}>
+                  {hasInsufficientBalance
+                    ? <AlertTriangle className="w-3.5 h-3.5 text-rose-500 mt-0.5 shrink-0" />
+                    : <CheckCircle className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
+                  }
+                  <div className="flex-1">
+                    <span className={hasInsufficientBalance ? 'text-rose-700 font-medium' : 'text-emerald-700 font-medium'}>
+                      {hasInsufficientBalance ? 'Low balance' : 'Balance OK'}
+                    </span>
+                    <span className="text-slate-500 ml-1.5">
+                      £{currentBalance.toFixed(2)} / £{lessonCost.toFixed(2)} needed
+                    </span>
+                    {hasInsufficientBalance && (
+                      <button
+                        type="button"
+                        onClick={() => setOverrideBalance(v => !v)}
+                        className={`mt-1.5 flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded border transition-colors ${overrideBalance ? 'bg-amber-100 border-amber-300 text-amber-700' : 'bg-white border-rose-300 text-rose-600 hover:bg-rose-50'}`}
+                      >
+                        <RefreshCw className="w-2.5 h-2.5" />
+                        {overrideBalance ? 'Override active' : 'Override & book anyway'}
+                      </button>
                     )}
-                  </p>
-                  {hasInsufficientBalance && (
-                    <button
-                      type="button"
-                      onClick={() => setOverrideBalance(v => !v)}
-                      className={`mt-2 flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md border transition-colors ${overrideBalance ? 'bg-amber-100 border-amber-300 text-amber-700' : 'bg-white border-rose-300 text-rose-700 hover:bg-rose-50'}`}
-                    >
-                      <RefreshCw className="w-3 h-3" />
-                      {overrideBalance ? 'Override active — will book anyway' : 'Override & book anyway'}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Pickup Location */}
-          <div className="space-y-1.5">
-            <Label>Pickup Location *</Label>
-            <Input
-              value={pickupLocation}
-              onChange={e => setPickupLocation(e.target.value)}
-              placeholder="Enter pickup address..."
-            />
-          </div>
-
-          {/* Recurrence */}
-          <div className="space-y-1.5">
-            <Label>Recurrence</Label>
-            <Select value={recurrence} onValueChange={v => { setRecurrence(v); setRecurrenceEndDate(''); }}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {RECURRENCE_OPTIONS.map(r => (
-                  <SelectItem key={r.value} value={r.value}>
-                    {r.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {recurrence !== 'once' && (
-            <div className="space-y-1.5">
-              <Label>Repeat Until (optional)</Label>
-              <Input
-                type="date"
-                value={recurrenceEndDate}
-                min={date}
-                onChange={e => setRecurrenceEndDate(e.target.value)}
-              />
-              <p className="text-xs text-slate-500">
-                Leave blank to default to 3 months from the first lesson.
-              </p>
-              {bookingDates.length > 1 && (
-                <div className="bg-slate-50 rounded-lg p-3 border">
-                  <p className="text-xs font-medium text-slate-600 mb-1.5">
-                    {bookingDates.length} lessons will be booked:
-                  </p>
-                  <div className="max-h-28 overflow-y-auto space-y-1">
-                    {bookingDates.map(d => (
-                      <div key={d} className="flex items-center gap-1.5">
-                        <Badge variant="outline" className="text-xs">
-                          {moment(d).format('ddd D MMM YYYY')}
-                        </Badge>
-                        <span className="text-xs text-slate-500">{startTime}</span>
-                      </div>
-                    ))}
                   </div>
                 </div>
               )}
             </div>
-          )}
-          </div>
-        </div>{/* end scrollable area */}
 
-        {/* Actions */}
-        <div className="flex justify-end gap-3 px-4 py-3 border-t" style={{ flexShrink: 0 }}>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={bookMutation.isPending}>
+            {/* Divider */}
+            <div className="border-t" />
+
+            {/* Pickup + Recurrence */}
+            <div className="space-y-2">
+              <div className="relative">
+                <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                <Input
+                  value={pickupLocation}
+                  onChange={e => setPickupLocation(e.target.value)}
+                  placeholder="Pickup address..."
+                  className="pl-8 text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <Select value={recurrence} onValueChange={v => { setRecurrence(v); setRecurrenceEndDate(''); }}>
+                  <SelectTrigger className="text-sm">
+                    <Repeat className="w-3.5 h-3.5 text-slate-400 mr-1.5 shrink-0" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RECURRENCE_OPTIONS.map(r => (
+                      <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {recurrence !== 'once' ? (
+                  <Input
+                    type="date"
+                    value={recurrenceEndDate}
+                    min={date}
+                    onChange={e => setRecurrenceEndDate(e.target.value)}
+                    className="text-sm"
+                    placeholder="Until..."
+                  />
+                ) : (
+                  <div /> 
+                )}
+              </div>
+
+              {recurrence !== 'once' && bookingDates.length > 1 && (
+                <div className="bg-slate-50 rounded-lg p-2.5 border text-xs text-slate-500">
+                  <span className="font-medium text-slate-700">{bookingDates.length} lessons</span> — {moment(bookingDates[0]).format('D MMM')} to {moment(bookingDates[bookingDates.length - 1]).format('D MMM YYYY')}
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex gap-2 px-4 py-3 border-t bg-slate-50 shrink-0">
+          <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)} disabled={bookMutation.isPending}>
             Cancel
           </Button>
           <Button
+            className="flex-1 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold"
             onClick={handleBook}
             disabled={bookMutation.isPending}
-            className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold"
           >
-            {bookMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            {bookMutation.isPending ? 'Booking...' : `Book ${bookingDates.length > 1 ? `${bookingDates.length} Lessons` : 'Lesson'}`}
+            {bookMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+            {bookMutation.isPending ? 'Booking...' : `Book${bookingDates.length > 1 ? ` (${bookingDates.length})` : ''}`}
           </Button>
         </div>
+
       </DialogContent>
     </Dialog>
   );
