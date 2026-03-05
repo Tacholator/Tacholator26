@@ -664,19 +664,6 @@ export default function Calendar() {
           </div>
         </div>
 
-        {/* Navigation */}
-        <div className="flex items-center justify-between mb-6">
-          <Button variant="outline" onClick={() => navigate(-1)}>
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" onClick={() => setCurrentDate(moment())}>
-            Today
-          </Button>
-          <Button variant="outline" onClick={() => navigate(1)}>
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
-
         {/* Pending Bookings */}
         {pendingBookings.length > 0 && (
           <div className="mb-6">
