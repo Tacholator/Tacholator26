@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { Calendar, Clock, Loader2, Search, AlertTriangle, CheckCircle, RefreshCw, MapPin, Repeat } from 'lucide-react';
+import { Calendar, Clock, Loader2, Search, AlertTriangle, CheckCircle, RefreshCw, MapPin, Repeat, XCircle } from 'lucide-react';
 import moment from 'moment';
 
 const TIME_SLOTS = [];
