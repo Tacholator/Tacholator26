@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { Calendar, Clock, Loader2, Search, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
+import { Calendar, Clock, Loader2, Search, AlertTriangle, CheckCircle, RefreshCw, Check } from 'lucide-react';
 import moment from 'moment';
 
 // Generate half-hour time slots for the full day
