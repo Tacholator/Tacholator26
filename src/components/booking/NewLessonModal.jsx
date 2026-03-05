@@ -144,19 +144,29 @@ export default function NewLessonModal({ open, onOpenChange }) {
         const startAtUtc = moment(`${bookingDate} ${startTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
         const endAtUtc = moment(`${bookingDate} ${startTime}`, 'YYYY-MM-DD HH:mm').add(durationHours * 60, 'minutes').utc().toISOString();
 
-        const existingBookings = await base44.entities.LessonBooking.filter({ instructorId: user.id });
-        const hasConflict = existingBookings.some(b => {
+        const [existingBookings, existingSlots] = await Promise.all([
+          base44.entities.LessonBooking.filter({ instructorId: user.id }),
+          base44.entities.BookableSlotInstance.filter({ instructorId: user.id }),
+        ]);
+
+        const newStart = moment(startAtUtc);
+        const newEnd = moment(endAtUtc);
+
+        const overlapsBooking = existingBookings.some(b => {
           if (['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor', 'deleted'].includes(b.status)) return false;
           if (b.isDeleted) return false;
-          const bStart = moment(b.startAtUtc);
-          const bEnd = moment(b.endAtUtc);
-          const newStart = moment(startAtUtc);
-          const newEnd = moment(endAtUtc);
-          return newStart.isBefore(bEnd) && newEnd.isAfter(bStart);
+          return newStart.isBefore(moment(b.endAtUtc)) && newEnd.isAfter(moment(b.startAtUtc));
         });
 
-        if (hasConflict) {
-          throw new Error(`A booking already exists on ${moment(bookingDate).format('ddd D MMM')} at ${startTime}.`);
+        const overlapsSlot = existingSlots.some(s => {
+          // Ignore blocked slots only — available/reserved/confirmed all count as occupied time
+          if (s.status === 'blocked') return false;
+          return newStart.isBefore(moment(s.endAtUtc)) && newEnd.isAfter(moment(s.startAtUtc));
+        });
+
+        if (overlapsBooking || overlapsSlot) {
+          const reason = overlapsSlot ? 'a calendar slot' : 'a booking';
+          throw new Error(`There is already ${reason} on ${moment(bookingDate).format('ddd D MMM')} that overlaps ${startTime}. Please choose a different time.`);
         }
 
         const booking = await base44.entities.LessonBooking.create({
