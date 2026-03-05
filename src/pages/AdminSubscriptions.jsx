@@ -67,6 +67,7 @@ const instructorPlans = [
     period: '/month',
     description: 'Get started with essential features',
     badge: null,
+    discount: '30% off annual',
     features: [
       'Up to 5 pupils',
       'Basic calendar',
