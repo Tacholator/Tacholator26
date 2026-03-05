@@ -13,7 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Clock, CalendarDays, Coffee, Loader2, Settings } from 'lucide-react';
+import { Clock, CalendarDays, Coffee, Loader2, Settings, Eye } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
 import WorkingHoursModal from '@/components/booking/WorkingHoursModal';
