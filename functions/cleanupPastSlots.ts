@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 Deno.serve(async (req) => {
   try {
@@ -6,18 +6,12 @@ Deno.serve(async (req) => {
 
     const now = new Date().toISOString();
     
-    // Get all bookable slot instances that have passed
-    const allSlots = await base44.asServiceRole.entities.BookableSlotInstance.list();
+    // Get all bookable slot instances that are available
+    const allSlots = await base44.asServiceRole.entities.BookableSlotInstance.filter({ status: 'available' });
     
     const pastSlots = allSlots.filter(slot => {
-      // Only delete slots with status 'available'
-      if (slot.status !== 'available') return false;
-      
-      // Check if slot end time has passed
       const slotEnd = new Date(slot.endAtUtc);
-      const currentTime = new Date(now);
-      
-      return slotEnd < currentTime;
+      return slotEnd < new Date(now);
     });
 
     // Delete past available slots
