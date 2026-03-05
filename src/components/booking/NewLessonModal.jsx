@@ -464,7 +464,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
             </div>
           )}
         </div>
-        </div>
+        </div>{/* end scrollable area */}
 
         {/* Actions */}
         <div className="flex justify-end gap-3 px-6 py-4 border-t shrink-0">
