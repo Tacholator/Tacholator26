@@ -165,8 +165,10 @@ export default function NewLessonModal({ open, onOpenChange }) {
         });
 
         if (overlapsBooking || overlapsSlot) {
-          const reason = overlapsSlot ? 'a calendar slot' : 'a booking';
-          throw new Error(`There is already ${reason} on ${moment(bookingDate).format('ddd D MMM')} that overlaps ${startTime}. Please choose a different time.`);
+          const reason = overlapsSlot
+            ? 'an available slot (bookable by pupils)'
+            : 'an existing booking';
+          throw new Error(`Overlap on ${moment(bookingDate).format('ddd D MMM')} at ${startTime} — there is already ${reason} during this time. To fix this: go to your Calendar, remove or adjust the conflicting slot/booking, then try again.`);
         }
 
         const booking = await base44.entities.LessonBooking.create({
