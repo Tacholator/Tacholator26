@@ -83,7 +83,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
     refetchOnMount: 'always',
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (open && user?.id && user?.email) {
       refetchPupils();
       setDate(today);
