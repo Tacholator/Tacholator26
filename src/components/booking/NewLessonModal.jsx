@@ -97,6 +97,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
       setRecurrenceEndDate('');
       setSearchQuery('');
       setOverrideBalance(false);
+      setConflictError(null);
     }
   }, [open]);
 
