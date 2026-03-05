@@ -182,7 +182,7 @@ export default function AdminSubscriptions() {
         </div>
 
         {/* Instructors Section */}
-        <div ref={instructorRef}>
+        {showInstructor && <div>
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-[#071739]">Instructor Plans</h2>
             <p className="text-slate-600 mt-1">Subscription options available to instructors</p>
