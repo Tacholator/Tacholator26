@@ -672,22 +672,22 @@ export default function PupilProfile() {
               <Card className="border-0 shadow-sm">
                 <CardHeader>
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                  <CardTitle className="flex items-center gap-2">
-                    DVLA Licence Verification
-                    {pupil.dvlaCheckCode ? (
-                      (() => {
-                        const now = new Date();
-                        const expiry = pupil.dvlaExpiryDate ? new Date(pupil.dvlaExpiryDate) : null;
-                        const isExpired = expiry && expiry < now;
-                        const daysRemaining = expiry ? Math.ceil((expiry - now) / (1000 * 60 * 60 * 24)) : null;
-                        if (isExpired) return <Badge className="bg-rose-100 text-rose-700">Expired</Badge>;
-                        if (daysRemaining !== null && daysRemaining <= 7) return <Badge className="bg-amber-100 text-amber-700">Expiring Soon</Badge>;
-                        return <Badge className="bg-blue-100 text-blue-700">Submitted</Badge>;
-                      })()
-                    ) : (
-                      <Badge className="bg-slate-100 text-slate-500">Not Submitted</Badge>
-                    )}
-                  </CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      DVLA Licence Verification
+                      {pupil.dvlaCheckCode ? (
+                        (() => {
+                          const now = new Date();
+                          const expiry = pupil.dvlaExpiryDate ? new Date(pupil.dvlaExpiryDate) : null;
+                          const isExpired = expiry && expiry < now;
+                          const daysRemaining = expiry ? Math.ceil((expiry - now) / (1000 * 60 * 60 * 24)) : null;
+                          if (isExpired) return <Badge className="bg-rose-100 text-rose-700">Expired</Badge>;
+                          if (daysRemaining !== null && daysRemaining <= 7) return <Badge className="bg-amber-100 text-amber-700">Expiring Soon</Badge>;
+                          return <Badge className="bg-blue-100 text-blue-700">Submitted</Badge>;
+                        })()
+                      ) : (
+                        <Badge className="bg-slate-100 text-slate-500">Not Submitted</Badge>
+                      )}
+                    </CardTitle>
                     <a
                       href="https://www.gov.uk/view-driving-licence"
                       target="_blank"
