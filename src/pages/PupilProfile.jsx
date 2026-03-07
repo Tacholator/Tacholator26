@@ -688,6 +688,16 @@ export default function PupilProfile() {
                       <Badge className="bg-slate-100 text-slate-500">Not Submitted</Badge>
                     )}
                   </CardTitle>
+                    <a
+                      href="https://www.gov.uk/view-driving-licence"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#071739] text-white text-xs font-medium hover:bg-[#0a2142] transition-colors shrink-0"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      Check on DVLA
+                    </a>
+                  </div>
                   <p className="text-sm text-slate-600">Details submitted by the learner from their DVLA account</p>
                 </CardHeader>
                 <CardContent className="space-y-4">
