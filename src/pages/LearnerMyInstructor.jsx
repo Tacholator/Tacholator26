@@ -61,6 +61,43 @@ export default function LearnerMyInstructor() {
     enabled: !!pupil?.instructorId
   });
 
+  const submitDvlaMutation = useMutation({
+    mutationFn: (data) => base44.entities.Pupil.update(pupil.id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['myPupilProfile']);
+      setFormError('');
+    }
+  });
+
+  const handleDvlaSubmit = () => {
+    if (!dvlaForm.dvlaCheckCode || dvlaForm.dvlaCheckCode.length !== 8) {
+      setFormError('Check code must be exactly 8 characters.');
+      return;
+    }
+    const submissionDate = new Date().toISOString();
+    const expiryDate = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString();
+    submitDvlaMutation.mutate({
+      dvlaCheckCode: dvlaForm.dvlaCheckCode.toUpperCase(),
+      licenceSuffix: dvlaForm.licenceSuffix.toUpperCase(),
+      dvlaSubmissionDate: submissionDate,
+      dvlaExpiryDate: expiryDate,
+      instructorDvlaVerified: false,
+      instructorDvlaVerifiedDate: null
+    });
+  };
+
+  const handleClearDvla = () => {
+    submitDvlaMutation.mutate({
+      dvlaCheckCode: null,
+      licenceSuffix: null,
+      dvlaSubmissionDate: null,
+      dvlaExpiryDate: null,
+      instructorDvlaVerified: false,
+      instructorDvlaVerifiedDate: null
+    });
+    setDvlaForm({ dvlaCheckCode: '', licenceSuffix: '' });
+  };
+
   if (pupilLoading || instructorLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
