@@ -420,6 +420,38 @@ export default function LearnerDashboard() {
           <ArrivalBanner notification={arrivalNotification} lesson={arrivalLesson} />
         )}
 
+        {/* Licence Reminder Banner - show if they have an upcoming first booking and haven't submitted DVLA details */}
+        {(() => {
+          const hasCompletedLesson = lessons.some(l => l.status === 'Completed');
+          const hasUpcomingBooking = bookings.some(b => b.status === 'confirmed' && moment(b.startAtUtc).isAfter(now));
+          const hasSubmittedDvla = !!pupil.dvlaCheckCode;
+          if (!hasCompletedLesson && hasUpcomingBooking && !hasSubmittedDvla) {
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200"
+              >
+                <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-lg">📋</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-amber-900 text-sm">Remember to bring your provisional licence!</p>
+                  <p className="text-amber-700 text-xs mt-0.5">
+                    Your instructor will need to check it at your first lesson. You can also share your DVLA check code with them in advance.
+                  </p>
+                  <Link to={createPageUrl('LearnerMyInstructor')}>
+                    <button className="mt-2 text-xs font-medium text-amber-800 underline underline-offset-2 hover:text-amber-900">
+                      Share licence details →
+                    </button>
+                  </Link>
+                </div>
+              </motion.div>
+            );
+          }
+          return null;
+        })()}
+
         {/* 2. Quiz of the Day */}
         {quizVisibility.visible && (
           <motion.div
