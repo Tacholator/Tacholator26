@@ -74,7 +74,8 @@ export default function PupilProfile() {
     licenseCheckNotes: '',
     eyeTestChecked: false,
     eyeTestCheckDate: '',
-    eyeTestCheckNotes: ''
+    eyeTestCheckNotes: '',
+    instructorDvlaVerified: false
   });
   const [originalChecksData, setOriginalChecksData] = useState(null);
   const [checksModified, setChecksModified] = useState(false);
@@ -277,7 +278,14 @@ export default function PupilProfile() {
   });
 
   const handleSaveChecks = async () => {
-    await saveChecksMutation.mutateAsync(checksData);
+    const dataToSave = { ...checksData };
+    // Auto-set instructor DVLA verified date when first verified
+    if (checksData.instructorDvlaVerified && !pupil.instructorDvlaVerifiedDate) {
+      dataToSave.instructorDvlaVerifiedDate = new Date().toISOString();
+    } else if (!checksData.instructorDvlaVerified) {
+      dataToSave.instructorDvlaVerifiedDate = null;
+    }
+    await saveChecksMutation.mutateAsync(dataToSave);
   };
 
   React.useEffect(() => {
@@ -288,7 +296,8 @@ export default function PupilProfile() {
         licenseCheckNotes: pupil.licenseCheckNotes || '',
         eyeTestChecked: pupil.eyeTestChecked || false,
         eyeTestCheckDate: pupil.eyeTestCheckDate || '',
-        eyeTestCheckNotes: pupil.eyeTestCheckNotes || ''
+        eyeTestCheckNotes: pupil.eyeTestCheckNotes || '',
+        instructorDvlaVerified: pupil.instructorDvlaVerified || false
       };
       setChecksData(savedData);
       setOriginalChecksData(savedData);
@@ -658,108 +667,207 @@ export default function PupilProfile() {
           </TabsContent>
 
           <TabsContent value="checks">
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle>First Lesson Checks</CardTitle>
-                <p className="text-sm text-slate-600">Record license and eye test checks from the first lesson</p>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* License Check */}
-                <div className="p-4 border rounded-lg space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        checked={checksData.licenseChecked}
-                        onCheckedChange={(checked) => setChecksData({ ...checksData, licenseChecked: checked })}
-                      />
-                      <div>
-                        <label className="font-medium text-slate-800">Provisional License Checked</label>
-                        <p className="text-xs text-slate-500">Verify and record license details</p>
-                      </div>
-                    </div>
-                    {checksData.licenseChecked && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-                  </div>
-                  
-                  {checksData.licenseChecked && (
-                    <>
-                      <div>
-                        <label className="text-sm font-medium text-slate-700 mb-2 block">Check Date</label>
-                        <Input
-                          type="date"
-                          value={checksData.licenseCheckDate}
-                          onChange={(e) => setChecksData({ ...checksData, licenseCheckDate: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-slate-700 mb-2 block">Notes</label>
-                        <Textarea
-                          value={checksData.licenseCheckNotes}
-                          onChange={(e) => setChecksData({ ...checksData, licenseCheckNotes: e.target.value })}
-                          placeholder="Add any notes about the license check..."
-                          rows={3}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Eye Test Check */}
-                <div className="p-4 border rounded-lg space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        checked={checksData.eyeTestChecked}
-                        onCheckedChange={(checked) => setChecksData({ ...checksData, eyeTestChecked: checked })}
-                      />
-                      <div>
-                        <label className="font-medium text-slate-800">Eye Test Passed</label>
-                        <p className="text-xs text-slate-500">Verify pupil can read a number plate</p>
-                      </div>
-                    </div>
-                    {checksData.eyeTestChecked && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-                  </div>
-                  
-                  {checksData.eyeTestChecked && (
-                    <>
-                      <div>
-                        <label className="text-sm font-medium text-slate-700 mb-2 block">Check Date</label>
-                        <Input
-                          type="date"
-                          value={checksData.eyeTestCheckDate}
-                          onChange={(e) => setChecksData({ ...checksData, eyeTestCheckDate: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-slate-700 mb-2 block">Notes</label>
-                        <Textarea
-                          value={checksData.eyeTestCheckNotes}
-                          onChange={(e) => setChecksData({ ...checksData, eyeTestCheckNotes: e.target.value })}
-                          placeholder="Add any notes about the eye test..."
-                          rows={3}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <div className="flex justify-end">
-                  <Button
-                    onClick={handleSaveChecks}
-                    disabled={saveChecksMutation.isPending || !checksModified}
-                    className="bg-teal-600 hover:bg-teal-700"
-                  >
-                    {saveChecksMutation.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Saving...
-                      </>
+            <div className="space-y-6">
+              {/* DVLA Licence Verification - Read Only (submitted by learner) */}
+              <Card className="border-0 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    DVLA Licence Verification
+                    {pupil.dvlaCheckCode ? (
+                      (() => {
+                        const now = new Date();
+                        const expiry = pupil.dvlaExpiryDate ? new Date(pupil.dvlaExpiryDate) : null;
+                        const isExpired = expiry && expiry < now;
+                        const daysRemaining = expiry ? Math.ceil((expiry - now) / (1000 * 60 * 60 * 24)) : null;
+                        if (isExpired) return <Badge className="bg-rose-100 text-rose-700">Expired</Badge>;
+                        if (daysRemaining !== null && daysRemaining <= 7) return <Badge className="bg-amber-100 text-amber-700">Expiring Soon</Badge>;
+                        return <Badge className="bg-blue-100 text-blue-700">Submitted</Badge>;
+                      })()
                     ) : (
-                      'Save Checks'
+                      <Badge className="bg-slate-100 text-slate-500">Not Submitted</Badge>
                     )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  </CardTitle>
+                  <p className="text-sm text-slate-600">Details submitted by the learner from their DVLA account</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {pupil.dvlaCheckCode ? (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-3 bg-slate-50 rounded-lg border">
+                          <p className="text-xs font-medium text-slate-500 mb-1">DVLA Check Code</p>
+                          <p className="font-mono font-semibold text-slate-800 text-lg tracking-wider">{pupil.dvlaCheckCode}</p>
+                        </div>
+                        <div className="p-3 bg-slate-50 rounded-lg border">
+                          <p className="text-xs font-medium text-slate-500 mb-1">Licence Number (Last 8 chars)</p>
+                          <p className="font-mono font-semibold text-slate-800 text-lg tracking-wider">{pupil.licenceSuffix || '—'}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-500">
+                        {pupil.dvlaSubmissionDate && (
+                          <p>Submitted: {moment(pupil.dvlaSubmissionDate).format('D MMM YYYY, h:mm a')}</p>
+                        )}
+                        {pupil.dvlaExpiryDate && (
+                          <p className={new Date(pupil.dvlaExpiryDate) < new Date() ? 'text-rose-500 font-medium' : ''}>
+                            Valid until: {moment(pupil.dvlaExpiryDate).format('D MMM YYYY, h:mm a')}
+                            {(() => {
+                              const days = Math.ceil((new Date(pupil.dvlaExpiryDate) - new Date()) / (1000 * 60 * 60 * 24));
+                              if (days < 0) return ' (Expired)';
+                              if (days <= 7) return ` (${days} day${days !== 1 ? 's' : ''} left)`;
+                              return '';
+                            })()}
+                          </p>
+                        )}
+                      </div>
+                      <a
+                        href="https://www.gov.uk/view-driving-licence"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Verify on GOV.UK DVLA
+                      </a>
+
+                      {/* Instructor verification */}
+                      <div className="pt-3 border-t">
+                        <div className="flex items-center justify-between p-3 rounded-lg border bg-white">
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              checked={checksData.instructorDvlaVerified || false}
+                              onCheckedChange={(checked) => {
+                                setChecksData({ ...checksData, instructorDvlaVerified: checked });
+                              }}
+                            />
+                            <div>
+                              <label className="font-medium text-slate-800">I have verified these details online</label>
+                              <p className="text-xs text-slate-500">Confirm you've checked this via the DVLA website</p>
+                            </div>
+                          </div>
+                          {(checksData.instructorDvlaVerified) && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+                        </div>
+                        {pupil.instructorDvlaVerifiedDate && (
+                          <p className="text-xs text-emerald-600 mt-2 ml-1">
+                            Verified on {moment(pupil.instructorDvlaVerifiedDate).format('D MMM YYYY, h:mm a')}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-8 text-slate-400">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                        <CircleDashed className="w-6 h-6" />
+                      </div>
+                      <p className="text-sm font-medium text-slate-500">Learner hasn't submitted their DVLA details yet</p>
+                      <p className="text-xs text-slate-400 mt-1">They can do this from their dashboard</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Existing First Lesson Checks */}
+              <Card className="border-0 shadow-sm">
+                <CardHeader>
+                  <CardTitle>First Lesson Checks</CardTitle>
+                  <p className="text-sm text-slate-600">Record license and eye test checks from the first lesson</p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* License Check */}
+                  <div className="p-4 border rounded-lg space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={checksData.licenseChecked}
+                          onCheckedChange={(checked) => setChecksData({ ...checksData, licenseChecked: checked })}
+                        />
+                        <div>
+                          <label className="font-medium text-slate-800">Provisional License Checked</label>
+                          <p className="text-xs text-slate-500">Verify and record license details</p>
+                        </div>
+                      </div>
+                      {checksData.licenseChecked && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+                    </div>
+                    
+                    {checksData.licenseChecked && (
+                      <>
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 mb-2 block">Check Date</label>
+                          <Input
+                            type="date"
+                            value={checksData.licenseCheckDate}
+                            onChange={(e) => setChecksData({ ...checksData, licenseCheckDate: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 mb-2 block">Notes</label>
+                          <Textarea
+                            value={checksData.licenseCheckNotes}
+                            onChange={(e) => setChecksData({ ...checksData, licenseCheckNotes: e.target.value })}
+                            placeholder="Add any notes about the license check..."
+                            rows={3}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Eye Test Check */}
+                  <div className="p-4 border rounded-lg space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={checksData.eyeTestChecked}
+                          onCheckedChange={(checked) => setChecksData({ ...checksData, eyeTestChecked: checked })}
+                        />
+                        <div>
+                          <label className="font-medium text-slate-800">Eye Test Passed</label>
+                          <p className="text-xs text-slate-500">Verify pupil can read a number plate</p>
+                        </div>
+                      </div>
+                      {checksData.eyeTestChecked && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+                    </div>
+                    
+                    {checksData.eyeTestChecked && (
+                      <>
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 mb-2 block">Check Date</label>
+                          <Input
+                            type="date"
+                            value={checksData.eyeTestCheckDate}
+                            onChange={(e) => setChecksData({ ...checksData, eyeTestCheckDate: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 mb-2 block">Notes</label>
+                          <Textarea
+                            value={checksData.eyeTestCheckNotes}
+                            onChange={(e) => setChecksData({ ...checksData, eyeTestCheckNotes: e.target.value })}
+                            placeholder="Add any notes about the eye test..."
+                            rows={3}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={handleSaveChecks}
+                      disabled={saveChecksMutation.isPending || !checksModified}
+                      className="bg-teal-600 hover:bg-teal-700"
+                    >
+                      {saveChecksMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save Checks'
+                      )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="diary">
