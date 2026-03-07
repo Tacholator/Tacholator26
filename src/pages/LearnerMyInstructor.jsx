@@ -11,6 +11,10 @@ import { Mail, Phone, User, Loader2, MapPin, Building2, ExternalLink, CheckCircl
 import moment from 'moment';
 
 export default function LearnerMyInstructor() {
+  const queryClient = useQueryClient();
+  const [dvlaForm, setDvlaForm] = useState({ dvlaCheckCode: '', licenceSuffix: '' });
+  const [formError, setFormError] = useState('');
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
