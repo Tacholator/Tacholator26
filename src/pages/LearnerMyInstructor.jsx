@@ -195,6 +195,122 @@ export default function LearnerMyInstructor() {
           </CardContent>
         </Card>
 
+        {/* DVLA Licence Verification Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-[#071739]" />
+              DVLA Licence Verification
+              {pupil.dvlaCheckCode && (
+                (() => {
+                  const expiry = pupil.dvlaExpiryDate ? new Date(pupil.dvlaExpiryDate) : null;
+                  const isExpired = expiry && expiry < new Date();
+                  const daysLeft = expiry ? Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24)) : null;
+                  if (isExpired) return <Badge className="bg-rose-100 text-rose-700 ml-2">Expired</Badge>;
+                  if (daysLeft !== null && daysLeft <= 7) return <Badge className="bg-amber-100 text-amber-700 ml-2">Expiring in {daysLeft}d</Badge>;
+                  if (pupil.instructorDvlaVerified) return <Badge className="bg-emerald-100 text-emerald-700 ml-2">Verified ✓</Badge>;
+                  return <Badge className="bg-blue-100 text-blue-700 ml-2">Submitted</Badge>;
+                })()
+              )}
+            </CardTitle>
+            <p className="text-sm text-slate-600">Share your DVLA check code with your instructor so they can verify your licence online before your lesson.</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <p className="text-xs text-amber-800">
+                <strong>Remember:</strong> Always bring your physical provisional licence to your first lesson. Your instructor must see the original document.
+              </p>
+            </div>
+
+            {pupil.dvlaCheckCode ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="p-3 bg-slate-50 rounded-lg border">
+                    <p className="text-xs text-slate-500 mb-1">Check Code</p>
+                    <p className="font-mono font-bold text-slate-800 text-lg tracking-widest">{pupil.dvlaCheckCode}</p>
+                  </div>
+                  {pupil.licenceSuffix && (
+                    <div className="p-3 bg-slate-50 rounded-lg border">
+                      <p className="text-xs text-slate-500 mb-1">Licence (Last 8 chars)</p>
+                      <p className="font-mono font-bold text-slate-800 text-lg tracking-widest">{pupil.licenceSuffix}</p>
+                    </div>
+                  )}
+                </div>
+                <div className="text-xs text-slate-500 space-y-1">
+                  {pupil.dvlaSubmissionDate && <p>Submitted: {moment(pupil.dvlaSubmissionDate).format('D MMM YYYY, h:mm a')}</p>}
+                  {pupil.dvlaExpiryDate && (
+                    <p className={new Date(pupil.dvlaExpiryDate) < new Date() ? 'text-rose-500 font-medium' : ''}>
+                      Valid until: {moment(pupil.dvlaExpiryDate).format('D MMM YYYY, h:mm a')}
+                    </p>
+                  )}
+                  {pupil.instructorDvlaVerified && (
+                    <p className="text-emerald-600 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Your instructor has verified your licence details
+                    </p>
+                  )}
+                </div>
+                <Button variant="outline" size="sm" onClick={handleClearDvla} disabled={submitDvlaMutation.isPending} className="text-slate-600">
+                  Update Details
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-slate-700">How to get your check code:</p>
+                  <ol className="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+                    <li>Visit the DVLA website and sign in with your driving licence details</li>
+                    <li>Select "Share your licence information"</li>
+                    <li>Generate a one-time check code (valid for 21 days)</li>
+                    <li>Enter it below</li>
+                  </ol>
+                  <a
+                    href="https://www.gov.uk/view-driving-licence"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium mt-1"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Go to DVLA website
+                  </a>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 mb-1 block">Check Code <span className="text-rose-500">*</span></label>
+                    <Input
+                      value={dvlaForm.dvlaCheckCode}
+                      onChange={(e) => { setDvlaForm({ ...dvlaForm, dvlaCheckCode: e.target.value.toUpperCase() }); setFormError(''); }}
+                      placeholder="8 characters"
+                      maxLength={8}
+                      className="font-mono tracking-widest uppercase"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 mb-1 block">Last 8 chars of Licence No.</label>
+                    <Input
+                      value={dvlaForm.licenceSuffix}
+                      onChange={(e) => setDvlaForm({ ...dvlaForm, licenceSuffix: e.target.value.toUpperCase() })}
+                      placeholder="Optional"
+                      maxLength={8}
+                      className="font-mono tracking-widest uppercase"
+                    />
+                  </div>
+                </div>
+                {formError && <p className="text-xs text-rose-500">{formError}</p>}
+                <Button
+                  onClick={handleDvlaSubmit}
+                  disabled={submitDvlaMutation.isPending || !dvlaForm.dvlaCheckCode}
+                  className="bg-[#071739] hover:bg-[#0a2142] text-white"
+                >
+                  {submitDvlaMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                  Share with Instructor
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Business Information Card */}
         {(instructor.businessName || instructor.businessAddress || instructor.businessEmail || instructor.businessPhone) && (
           <Card>
