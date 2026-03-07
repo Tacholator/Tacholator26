@@ -671,6 +671,7 @@ export default function PupilProfile() {
               {/* DVLA Licence Verification - Read Only (submitted by learner) */}
               <Card className="border-0 shadow-sm">
                 <CardHeader>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                   <CardTitle className="flex items-center gap-2">
                     DVLA Licence Verification
                     {pupil.dvlaCheckCode ? (
