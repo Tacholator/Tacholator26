@@ -689,7 +689,7 @@ export default function PupilProfile() {
                       )}
                     </CardTitle>
                     <a
-                      href="https://www.gov.uk/view-driving-licence"
+                      href="https://www.gov.uk/check-driving-information"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#071739] text-white text-xs font-medium hover:bg-[#0a2142] transition-colors shrink-0"
@@ -730,7 +730,7 @@ export default function PupilProfile() {
                         )}
                       </div>
                       <a
-                        href="https://www.gov.uk/view-driving-licence"
+                        href="https://www.gov.uk/check-driving-information"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
