@@ -1,11 +1,14 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import NotLinkedBanner from '@/components/learner/NotLinkedBanner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Mail, Phone, User, Loader2, MapPin, Building2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Mail, Phone, User, Loader2, MapPin, Building2, ExternalLink, CheckCircle2, Shield, AlertTriangle } from 'lucide-react';
+import moment from 'moment';
 
 export default function LearnerMyInstructor() {
   const { data: user } = useQuery({
