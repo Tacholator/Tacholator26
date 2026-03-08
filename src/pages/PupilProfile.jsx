@@ -748,19 +748,38 @@ export default function PupilProfile() {
                               onCheckedChange={(checked) => {
                                 setChecksData({ ...checksData, instructorDvlaVerified: checked });
                               }}
+                              disabled={!!pupil.instructorDvlaVerified}
                             />
                             <div>
                               <label className="font-medium text-slate-800">I have verified these details online</label>
                               <p className="text-xs text-slate-500">Confirm you've checked this via the DVLA website</p>
                             </div>
                           </div>
-                          {(checksData.instructorDvlaVerified) && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+                          {pupil.instructorDvlaVerified && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
                         </div>
-                        {pupil.instructorDvlaVerifiedDate && (
+                        {pupil.instructorDvlaVerifiedDate ? (
                           <p className="text-xs text-emerald-600 mt-2 ml-1">
                             Verified on {moment(pupil.instructorDvlaVerifiedDate).format('D MMM YYYY, h:mm a')}
                           </p>
-                        )}
+                        ) : checksData.instructorDvlaVerified ? (
+                          <div className="mt-3">
+                            <Button
+                              onClick={() => saveChecksMutation.mutate({
+                                instructorDvlaVerified: true,
+                                instructorDvlaVerifiedDate: new Date().toISOString()
+                              })}
+                              disabled={saveChecksMutation.isPending}
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                            >
+                              {saveChecksMutation.isPending ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <CheckCircle2 className="w-4 h-4" />
+                              )}
+                              Confirm Verification
+                            </Button>
+                          </div>
+                        ) : null}
                       </div>
                     </>
                   ) : (
