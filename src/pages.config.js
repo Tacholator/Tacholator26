@@ -126,6 +126,7 @@ import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PupilProfile from './pages/PupilProfile';
+import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
@@ -209,6 +210,7 @@ export const PAGES = {
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
     "PupilProfile": PupilProfile,
+    "Settings": Settings,
 }
 
 export const pagesConfig = {
