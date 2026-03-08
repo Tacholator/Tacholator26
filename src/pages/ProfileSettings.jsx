@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Volume2, Upload, X, ClipboardCheck, Mic, Building2, FileText, MapPin, Pencil, Shield, AlertTriangle, CheckCircle2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Upload, X, ClipboardCheck, Building2, FileText, MapPin, Pencil, Shield, AlertTriangle, CheckCircle2, ExternalLink } from 'lucide-react';
 import moment from 'moment';
 import {
   Select,
