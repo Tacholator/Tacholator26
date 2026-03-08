@@ -682,6 +682,7 @@ export default function PupilProfile() {
                           const daysRemaining = expiry ? Math.ceil((expiry - now) / (1000 * 60 * 60 * 24)) : null;
                           if (isExpired) return <Badge className="bg-rose-100 text-rose-700">Expired</Badge>;
                           if (daysRemaining !== null && daysRemaining <= 7) return <Badge className="bg-amber-100 text-amber-700">Expiring Soon</Badge>;
+                          if (pupil.instructorDvlaVerified) return <Badge className="bg-emerald-100 text-emerald-700">Verified ✓</Badge>;
                           return <Badge className="bg-blue-100 text-blue-700">Submitted</Badge>;
                         })()
                       ) : (
