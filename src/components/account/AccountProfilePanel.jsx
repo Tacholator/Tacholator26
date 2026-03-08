@@ -21,7 +21,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
   const [selectedItem, setSelectedItem] = useState(null);
 
   const menuItems = [
-    { icon: Settings, label: 'My Account', page: 'ProfileSettings', component: 'profile' },
+    { icon: UserCircle, label: 'My Account', page: 'ProfileSettings', component: 'profile' },
     { icon: Settings, label: 'Settings', page: 'Settings' },
     { icon: FileText, label: 'Lesson T&Cs', page: 'LessonTermsAndConditions' },
     { icon: Receipt, label: 'Refund Policy', page: 'RefundPolicy' },
