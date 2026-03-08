@@ -821,6 +821,28 @@ export default function PupilProfile() {
                     )}
                   </div>
 
+                  {/* DVLA Online Check */}
+                  <div className="p-4 border rounded-lg space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={checksData.instructorDvlaVerified || false}
+                          onCheckedChange={(checked) => setChecksData({ ...checksData, instructorDvlaVerified: checked })}
+                        />
+                        <div>
+                          <label className="font-medium text-slate-800">DVLA Online Licence Verified</label>
+                          <p className="text-xs text-slate-500">Checked DVLA licence details online with the pupil</p>
+                        </div>
+                      </div>
+                      {checksData.instructorDvlaVerified && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+                    </div>
+                    {checksData.instructorDvlaVerified && pupil.instructorDvlaVerifiedDate && (
+                      <p className="text-xs text-emerald-600 ml-1">
+                        Verified on {moment(pupil.instructorDvlaVerifiedDate).format('D MMM YYYY, h:mm a')}
+                      </p>
+                    )}
+                  </div>
+
                   {/* Eye Test Check */}
                   <div className="p-4 border rounded-lg space-y-4">
                     <div className="flex items-center justify-between">
