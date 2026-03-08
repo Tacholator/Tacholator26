@@ -649,12 +649,14 @@ export default function ProfileSettings() {
                 <p className="text-sm text-slate-500 mt-1">Share your DVLA check code with your instructor so they can verify your licence online before your lesson.</p>
               </CardHeader>
               <CardContent className="p-6 space-y-4">
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                  <p className="text-xs text-amber-800">
-                    <strong>Remember:</strong> Always bring your physical provisional licence to your first lesson. Your instructor must see the original document.
-                  </p>
-                </div>
+                {(!pupil.licenseChecked || !pupil.eyeTestChecked) && (
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-800">
+                      <strong>Remember:</strong> Always bring your physical provisional licence to your first lesson. Your instructor must see the original document.
+                    </p>
+                  </div>
+                )}
 
                 {pupil.dvlaCheckCode ? (
                   <div className="space-y-3">
