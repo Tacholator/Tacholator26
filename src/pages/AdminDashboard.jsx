@@ -71,6 +71,13 @@ const adminCards = [
     icon: Users,
     page: 'AdminUserManagement',
     color: 'from-indigo-500 to-indigo-600'
+  },
+  {
+    title: 'Quizzes',
+    description: 'Manage daily quiz questions and schedule',
+    icon: ClipboardCheck,
+    page: 'AdminDailyQuizzes',
+    color: 'from-purple-500 to-purple-600'
   }
 ];
 
