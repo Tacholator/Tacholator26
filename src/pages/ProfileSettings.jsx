@@ -729,7 +729,7 @@ export default function ProfileSettings() {
                     {dvlaFormError && <p className="text-xs text-rose-500">{dvlaFormError}</p>}
                     <Button
                       onClick={handleDvlaSubmit}
-                      disabled={submitDvlaMutation.isPending || !dvlaForm.dvlaCheckCode}
+                      disabled={submitDvlaMutation.isPending || !dvlaForm.dvlaCheckCode || !dvlaForm.licenceSuffix}
                       className="bg-[#071739] hover:bg-[#0a2142] text-white"
                     >
                       {submitDvlaMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
