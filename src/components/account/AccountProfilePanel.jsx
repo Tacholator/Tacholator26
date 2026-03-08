@@ -54,6 +54,34 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
     );
   }
 
+  if (selectedItem?.component === 'settings') {
+    return (
+      <div className="flex flex-col h-full">
+        <button
+          onClick={() => setSelectedItem(null)}
+          className="flex items-center gap-2 p-4 text-slate-600 hover:text-slate-900"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-sm font-medium">Back</span>
+        </button>
+        <div className="px-4">
+          <h2 className="text-lg font-semibold text-[#071739] mb-4">Settings</h2>
+          <Tabs defaultValue="audio">
+            <TabsList className="w-full">
+              <TabsTrigger value="audio" className="flex-1 flex items-center gap-2">
+                <Volume2 className="w-4 h-4" />
+                Audio
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="audio">
+              <AudioSettingsContent />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full">
       {/* Profile Card */}
