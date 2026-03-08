@@ -24,6 +24,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
 
   const menuItems = [
     { icon: Settings, label: 'Profile Settings', page: 'ProfileSettings', component: 'profile' },
+    { icon: Settings, label: 'Settings', component: 'settings' },
     { icon: FileText, label: 'Lesson T&Cs', page: 'LessonTermsAndConditions' },
     { icon: Receipt, label: 'Refund Policy', page: 'RefundPolicy' },
     { icon: FileText, label: 'Terms & Conditions', page: 'TermsAndConditions' },
