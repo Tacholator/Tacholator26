@@ -748,61 +748,6 @@ export default function ProfileSettings() {
           </motion.div>
         )}
 
-        {/* Accessibility Settings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          className="mt-6"
-        >
-          <Card className="border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Volume2 className="w-5 h-5" />
-                Accessibility Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <Label htmlFor="audio-reading" className="text-base font-medium">
-                    Enable audio reading
-                  </Label>
-                  <p className="text-sm text-slate-500 mt-1">
-                    Allow the app to read study content and course sections aloud
-                  </p>
-                </div>
-                <Switch
-                  id="audio-reading"
-                  checked={audioEnabled}
-                  onCheckedChange={handleAudioToggle}
-                />
-              </div>
-
-              {audioEnabled && (
-                <div className="space-y-2 pl-4 border-l-2 border-slate-200">
-                  <Label htmlFor="voice-select" className="flex items-center gap-2">
-                    <Mic className="w-4 h-4 text-slate-400" />
-                    Study Material Voice
-                  </Label>
-                  <Select value={audioVoice} onValueChange={handleVoiceChange}>
-                    <SelectTrigger id="voice-select">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="neutral_female">Female (UK)</SelectItem>
-                      <SelectItem value="neutral_male">Male (UK)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-slate-500">
-                    Choose the voice used when listening to study material
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-
         {/* Delete Account Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
