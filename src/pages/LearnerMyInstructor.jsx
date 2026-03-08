@@ -270,7 +270,7 @@ export default function LearnerMyInstructor() {
                     <li>Enter it below</li>
                   </ol>
                   <a
-                    href="https://www.gov.uk/check-driving-information"
+                    href="https://www.gov.uk/view-driving-licence"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium mt-1"
