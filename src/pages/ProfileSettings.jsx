@@ -200,19 +200,6 @@ export default function ProfileSettings() {
     }
   };
 
-  const handleAudioToggle = (checked) => {
-    setAudioEnabled(checked);
-    localStorage.setItem('enable_audio_reading', checked.toString());
-    if (!checked) {
-      window.speechSynthesis.cancel();
-    }
-  };
-
-  const handleVoiceChange = (voice) => {
-    setAudioVoice(voice);
-    localStorage.setItem('study_material_voice', voice);
-  };
-
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
