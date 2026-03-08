@@ -68,6 +68,61 @@ export default function ProfileSettings() {
 
   const isInstructor = user?.role === 'admin';
 
+  // Learner: fetch pupil profile for DVLA section
+  const { data: pupil } = useQuery({
+    queryKey: ['myPupilProfile', user?.id, user?.email],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const allPupils = await base44.entities.Pupil.list();
+      let match = allPupils.find(p => p.linkedUserId === user.id);
+      if (!match && user?.email) {
+        match = allPupils.find(p => p.email && p.email.toLowerCase() === user.email.toLowerCase());
+      }
+      return match || null;
+    },
+    enabled: !!user?.id && !isInstructor
+  });
+
+  const [dvlaForm, setDvlaForm] = useState({ dvlaCheckCode: '', licenceSuffix: '' });
+  const [dvlaFormError, setDvlaFormError] = useState('');
+
+  const submitDvlaMutation = useMutation({
+    mutationFn: (data) => base44.entities.Pupil.update(pupil.id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['myPupilProfile']);
+      setDvlaFormError('');
+    }
+  });
+
+  const handleDvlaSubmit = () => {
+    if (!dvlaForm.dvlaCheckCode || dvlaForm.dvlaCheckCode.length !== 8) {
+      setDvlaFormError('Check code must be exactly 8 characters.');
+      return;
+    }
+    const submissionDate = new Date().toISOString();
+    const expiryDate = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString();
+    submitDvlaMutation.mutate({
+      dvlaCheckCode: dvlaForm.dvlaCheckCode.toUpperCase(),
+      licenceSuffix: dvlaForm.licenceSuffix.toUpperCase(),
+      dvlaSubmissionDate: submissionDate,
+      dvlaExpiryDate: expiryDate,
+      instructorDvlaVerified: false,
+      instructorDvlaVerifiedDate: null
+    });
+  };
+
+  const handleClearDvla = () => {
+    submitDvlaMutation.mutate({
+      dvlaCheckCode: null,
+      licenceSuffix: null,
+      dvlaSubmissionDate: null,
+      dvlaExpiryDate: null,
+      instructorDvlaVerified: false,
+      instructorDvlaVerifiedDate: null
+    });
+    setDvlaForm({ dvlaCheckCode: '', licenceSuffix: '' });
+  };
+
   useEffect(() => {
     if (user) {
       setFormData({
