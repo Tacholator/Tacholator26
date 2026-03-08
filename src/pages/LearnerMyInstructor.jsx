@@ -291,13 +291,13 @@ export default function LearnerMyInstructor() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-700 mb-1 block">Last 8 chars of Licence No.</label>
+                    <label className="text-sm font-medium text-slate-700 mb-1 block">Last 8 chars of Licence No. <span className="text-rose-500">*</span></label>
                     <Input
-                      value={dvlaForm.licenceSuffix}
-                      onChange={(e) => setDvlaForm({ ...dvlaForm, licenceSuffix: e.target.value.toUpperCase() })}
-                      placeholder="Optional"
-                      maxLength={8}
-                      className="font-mono tracking-widest uppercase"
+                     value={dvlaForm.licenceSuffix}
+                     onChange={(e) => { setDvlaForm({ ...dvlaForm, licenceSuffix: e.target.value.toUpperCase() }); setFormError(''); }}
+                     placeholder="8 characters"
+                     maxLength={8}
+                     className="font-mono tracking-widest uppercase"
                     />
                   </div>
                 </div>
