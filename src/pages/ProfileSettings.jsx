@@ -59,12 +59,7 @@ export default function ProfileSettings() {
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [instructorProfile, setInstructorProfile] = useState(null);
-  const [audioEnabled, setAudioEnabled] = useState(() => {
-    return localStorage.getItem('enable_audio_reading') !== 'false';
-  });
-  const [audioVoice, setAudioVoice] = useState(() => {
-    return localStorage.getItem('study_material_voice') || 'neutral_female';
-  });
+
 
   const isInstructor = user?.role === 'admin';
 
