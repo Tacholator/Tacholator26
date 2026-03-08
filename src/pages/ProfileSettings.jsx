@@ -575,34 +575,7 @@ export default function ProfileSettings() {
           </motion.div>
         )}
 
-        {/* Admin: Daily Quizzes */}
-        {isInstructor && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-6"
-          >
-            <Link to={createPageUrl('AdminDailyQuizzes')}>
-              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                        <ClipboardCheck className="w-5 h-5 text-purple-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-slate-800">Daily Quizzes</h3>
-                        <p className="text-sm text-slate-500">Manage quiz questions and schedule</p>
-                      </div>
-                    </div>
-                    <ArrowLeft className="w-5 h-5 text-slate-400 rotate-180" />
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          </motion.div>
-        )}
+
 
         {/* DVLA Licence Verification - Learners Only */}
         {!isInstructor && pupil && (
