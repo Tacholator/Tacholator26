@@ -286,6 +286,8 @@ export default function PupilProfile() {
       dataToSave.instructorDvlaVerifiedDate = null;
     }
     await saveChecksMutation.mutateAsync(dataToSave);
+    // Invalidate to ensure DVLA card badge updates immediately
+    queryClient.invalidateQueries(['pupil', pupilId]);
   };
 
   React.useEffect(() => {
