@@ -74,6 +74,10 @@ export default function LearnerMyInstructor() {
       setFormError('Check code must be exactly 8 characters.');
       return;
     }
+    if (!dvlaForm.licenceSuffix || dvlaForm.licenceSuffix.length !== 8) {
+      setFormError('Last 8 characters of licence number is required and must be exactly 8 characters.');
+      return;
+    }
     const submissionDate = new Date().toISOString();
     const expiryDate = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString();
     submitDvlaMutation.mutate({
