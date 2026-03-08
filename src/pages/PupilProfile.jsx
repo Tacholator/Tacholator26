@@ -685,6 +685,8 @@ export default function PupilProfile() {
                           if (pupil.instructorDvlaVerified) return <Badge className="bg-emerald-100 text-emerald-700">Verified ✓</Badge>;
                           return <Badge className="bg-blue-100 text-blue-700">Submitted</Badge>;
                         })()
+                      ) : pupil.instructorDvlaVerified ? (
+                        <Badge className="bg-emerald-100 text-emerald-700">Verified ✓</Badge>
                       ) : (
                         <Badge className="bg-slate-100 text-slate-500">Not Submitted</Badge>
                       )}
