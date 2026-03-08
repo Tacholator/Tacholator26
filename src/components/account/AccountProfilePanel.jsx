@@ -15,9 +15,7 @@ import {
   ArrowLeft,
   Volume2
 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProfileSettingsContent from './ProfileSettingsContent.jsx';
-import AudioSettingsContent from './AudioSettingsContent.jsx';
 
 export default function AccountProfilePanel({ user, isInstructor, onLogout, onDelete, onClose }) {
   const [selectedItem, setSelectedItem] = useState(null);
