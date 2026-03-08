@@ -440,7 +440,7 @@ export default function LearnerDashboard() {
                   <p className="text-amber-700 text-xs mt-0.5">
                     Your instructor will need to check it at your first lesson. You can also share your DVLA check code with them in advance.
                   </p>
-                  <Link to={createPageUrl('LearnerMyInstructor')}>
+                  <Link to={createPageUrl('ProfileSettings')}>
                     <button className="mt-2 text-xs font-medium text-amber-800 underline underline-offset-2 hover:text-amber-900">
                       Share licence details →
                     </button>
