@@ -104,14 +104,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
           <LogOut className="w-4 h-4" />
           Sign out
         </Button>
-        <Button
-          onClick={onDelete}
-          variant="outline"
-          className="w-full justify-start gap-3 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
-        >
-          <Trash2 className="w-4 h-4" />
-          Delete Account
-        </Button>
+
       </div>
     </div>
   );
