@@ -12,8 +12,7 @@ import {
   LogOut,
   Trash2,
   ChevronRight,
-  ArrowLeft,
-  Volume2
+  ArrowLeft
 } from 'lucide-react';
 import ProfileSettingsContent from './ProfileSettingsContent.jsx';
 
