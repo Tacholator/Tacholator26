@@ -101,7 +101,6 @@ import LearnerInvoices from './pages/LearnerInvoices';
 import LearnerLearningHub from './pages/LearnerLearningHub';
 import LearnerLessons from './pages/LearnerLessons';
 import LearnerMyBookings from './pages/LearnerMyBookings';
-import LearnerMyInstructor from './pages/LearnerMyInstructor';
 import LearnerMyLearning from './pages/LearnerMyLearning';
 import LearnerNotes from './pages/LearnerNotes';
 import LearnerNotifications from './pages/LearnerNotifications';
@@ -118,7 +117,6 @@ import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
 import LiveRouteViewer from './pages/LiveRouteViewer';
 import PaymentMethods from './pages/PaymentMethods';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
 import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
@@ -126,6 +124,8 @@ import RoleSelection from './pages/RoleSelection';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
+import LearnerMyInstructor from './pages/LearnerMyInstructor';
+import ProfileSettings from './pages/ProfileSettings';
 import __Layout from './Layout.jsx';
 
 
@@ -184,7 +184,6 @@ export const PAGES = {
     "LearnerLearningHub": LearnerLearningHub,
     "LearnerLessons": LearnerLessons,
     "LearnerMyBookings": LearnerMyBookings,
-    "LearnerMyInstructor": LearnerMyInstructor,
     "LearnerMyLearning": LearnerMyLearning,
     "LearnerNotes": LearnerNotes,
     "LearnerNotifications": LearnerNotifications,
@@ -201,7 +200,6 @@ export const PAGES = {
     "LiveRouteViewer": LiveRouteViewer,
     "PaymentMethods": PaymentMethods,
     "PrivacyPolicy": PrivacyPolicy,
-    "ProfileSettings": ProfileSettings,
     "PupilList": PupilList,
     "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
@@ -209,6 +207,8 @@ export const PAGES = {
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
+    "LearnerMyInstructor": LearnerMyInstructor,
+    "ProfileSettings": ProfileSettings,
 }
 
 export const pagesConfig = {
