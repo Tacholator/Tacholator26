@@ -420,12 +420,30 @@ export default function LearnerDashboard() {
           <ArrivalBanner notification={arrivalNotification} lesson={arrivalLesson} />
         )}
 
+        {/* First Lesson Checks Complete Banner */}
+        {pupil.licenseChecked && pupil.eyeTestChecked && pupil.instructorDvlaVerified && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200"
+          >
+            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+              <span className="text-lg">✅</span>
+            </div>
+            <div>
+              <p className="font-semibold text-emerald-900 text-sm">First lesson checks complete</p>
+              <p className="text-emerald-700 text-xs mt-0.5">Your licence, eye test and DVLA details have been verified by your instructor.</p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Licence Reminder Banner - show if they have an upcoming first booking and haven't submitted DVLA details */}
         {(() => {
           const hasCompletedLesson = lessons.some(l => l.status === 'Completed');
           const hasUpcomingBooking = bookings.some(b => b.status === 'confirmed' && moment(b.startAtUtc).isAfter(now));
           const hasSubmittedDvla = !!pupil.dvlaCheckCode;
-          if (!hasCompletedLesson && hasUpcomingBooking && !hasSubmittedDvla) {
+          const allChecksComplete = pupil.licenseChecked && pupil.eyeTestChecked && pupil.instructorDvlaVerified;
+          if (!hasCompletedLesson && hasUpcomingBooking && !hasSubmittedDvla && !allChecksComplete) {
             return (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
