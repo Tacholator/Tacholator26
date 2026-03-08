@@ -855,7 +855,7 @@ export default function PupilProfile() {
                       </div>
                       {checksData.instructorDvlaVerified && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
                     </div>
-                    {checksData.instructorDvlaVerified && pupil.instructorDvlaVerifiedDate && (
+                    {pupil.instructorDvlaVerifiedDate && (
                       <p className="text-xs text-emerald-600 ml-1">
                         Verified on {moment(pupil.instructorDvlaVerifiedDate).format('D MMM YYYY, h:mm a')}
                       </p>
