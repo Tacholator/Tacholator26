@@ -127,13 +127,21 @@ export default function AdminTestRouteVideos() {
                       <CardContent className="p-4">
                         <div className="flex items-start gap-4">
                           {/* Thumbnail or placeholder */}
-                          <div className="w-28 h-16 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
+                          <div
+                            className={`w-28 h-16 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden ${route.youtubeVideoId ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                            onClick={() => route.youtubeVideoId && setExpandedRouteId(expandedRouteId === route.id ? null : route.id)}
+                          >
                             {route.youtubeVideoId ? (
-                              <img
-                                src={`https://img.youtube.com/vi/${route.youtubeVideoId}/mqdefault.jpg`}
-                                alt="thumbnail"
-                                className="w-full h-full object-cover"
-                              />
+                              <div className="relative w-full h-full">
+                                <img
+                                  src={`https://img.youtube.com/vi/${route.youtubeVideoId}/mqdefault.jpg`}
+                                  alt="thumbnail"
+                                  className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                  <PlayCircle className="w-7 h-7 text-white drop-shadow" />
+                                </div>
+                              </div>
                             ) : (
                               <Youtube className="w-6 h-6 text-slate-300" />
                             )}
@@ -150,14 +158,15 @@ export default function AdminTestRouteVideos() {
                                 )}
                               </div>
                               {route.youtubeVideoId && (
-                                <a
-                                  href={route.youtubeUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-xs text-blue-600 gap-1 h-7 px-2"
+                                  onClick={() => setExpandedRouteId(expandedRouteId === route.id ? null : route.id)}
                                 >
-                                  <PlayCircle className="w-3.5 h-3.5" /> Watch
-                                </a>
+                                  <PlayCircle className="w-3.5 h-3.5" />
+                                  {expandedRouteId === route.id ? 'Hide' : 'Watch'}
+                                </Button>
                               )}
                             </div>
 
