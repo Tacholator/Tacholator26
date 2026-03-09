@@ -134,7 +134,10 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
     }))
     .filter(link => link.page !== null); // Filter out items with null pages
 
-  let roleSpecific = isInstructor ? instructorOnlyLinks : learnerOnlyLinks;
+  let roleSpecific = isInstructor ? instructorOnlyLinks : [
+    ...learnerOnlyLinks,
+    ...(testRoutesAccessEnabled ? [{ name: 'Test Routes', icon: MapPin, page: 'LearnerTestRoutes' }] : [])
+  ];
   
   // Filter out admin-only links for non-admin instructors
   if (isInstructor && !isMainAdmin) {
