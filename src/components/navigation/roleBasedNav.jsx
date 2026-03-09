@@ -163,8 +163,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
   // Combine: Home first, then role-specific items, then shared items (excluding Home), then admin items at the end
   const adminDashboard = isInstructor && isMainAdmin 
     ? [
-        { name: 'Admin Dashboard', icon: Settings, page: 'AdminDashboard' },
-        { name: 'Test Route Videos', icon: MapPin, page: 'AdminTestRouteVideos' }
+        { name: 'Admin Dashboard', icon: Settings, page: 'AdminDashboard' }
       ] 
     : [];
   

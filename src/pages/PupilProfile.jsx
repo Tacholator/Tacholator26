@@ -28,6 +28,7 @@ import {
   CheckCircle2,
   CircleDashed,
   WalletMinimal,
+  Youtube,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import ProgressRing from '@/components/ui/ProgressRing';
@@ -482,6 +483,21 @@ export default function PupilProfile() {
                     );
                   }
                 })()}
+
+                {/* Test Routes Access Toggle */}
+                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <div className="flex items-center gap-2 min-w-0 flex-1 mr-3">
+                    <Youtube className="w-4 h-4 shrink-0 text-rose-500" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-slate-700">Enable test route videos</p>
+                      <p className="text-xs text-slate-400">Pupil can view your test route videos</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={!!pupil.testRoutesAccessEnabled}
+                    onCheckedChange={(checked) => updatePupilMutation.mutate({ testRoutesAccessEnabled: checked })}
+                  />
+                </div>
 
                 {/* Balance Override Toggle */}
                 <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 border border-slate-200">
