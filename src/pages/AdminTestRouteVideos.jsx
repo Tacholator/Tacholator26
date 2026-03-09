@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/use-toast';
 export default function AdminTestRouteVideos() {
   const [editingRouteId, setEditingRouteId] = useState(null);
   const [editUrl, setEditUrl] = useState('');
+  const [expandedRouteId, setExpandedRouteId] = useState(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
