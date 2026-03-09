@@ -120,13 +120,14 @@ import PaymentMethods from './pages/PaymentMethods';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProfileSettings from './pages/ProfileSettings';
 import PupilList from './pages/PupilList';
+import PupilProfile from './pages/PupilProfile';
 import RefundPolicy from './pages/RefundPolicy';
 import RoleSelection from './pages/RoleSelection';
+import Settings from './pages/Settings';
 import SkillBasedProgress from './pages/SkillBasedProgress';
 import SkillDetail from './pages/SkillDetail';
 import TermsAndConditions from './pages/TermsAndConditions';
-import PupilProfile from './pages/PupilProfile';
-import Settings from './pages/Settings';
+import AdminTestRouteVideos from './pages/AdminTestRouteVideos';
 import __Layout from './Layout.jsx';
 
 
@@ -204,13 +205,14 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "ProfileSettings": ProfileSettings,
     "PupilList": PupilList,
+    "PupilProfile": PupilProfile,
     "RefundPolicy": RefundPolicy,
     "RoleSelection": RoleSelection,
+    "Settings": Settings,
     "SkillBasedProgress": SkillBasedProgress,
     "SkillDetail": SkillDetail,
     "TermsAndConditions": TermsAndConditions,
-    "PupilProfile": PupilProfile,
-    "Settings": Settings,
+    "AdminTestRouteVideos": AdminTestRouteVideos,
 }
 
 export const pagesConfig = {
