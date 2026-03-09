@@ -213,6 +213,18 @@ export default function AdminTestRouteVideos() {
                             )}
                           </div>
                         </div>
+
+                          {expandedRouteId === route.id && route.youtubeVideoId && (
+                            <div className="mt-3 rounded-lg overflow-hidden aspect-video w-full">
+                              <iframe
+                                src={`https://www.youtube.com/embed/${route.youtubeVideoId}?autoplay=1`}
+                                title={route.routeName || `Route ${route.routeNumber}`}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="w-full h-full"
+                              />
+                            </div>
+                          )}
                       </CardContent>
                     </Card>
                   ))}
