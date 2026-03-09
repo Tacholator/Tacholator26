@@ -53,8 +53,8 @@ export default function LearnerTestRouteDetail() {
   const { data: centre, isLoading } = useQuery({
     queryKey: ['testRouteCentre', centreId],
     queryFn: async () => {
-      const centres = await base44.entities.TestRouteCentre.filter({ id: centreId });
-      return centres[0] || null;
+      const allCentres = await base44.entities.TestRouteCentre.list();
+      return allCentres.find(c => c.id === centreId) || null;
     },
     enabled: !!centreId
   });

@@ -71,13 +71,13 @@ export default function InstructorTestRouteDetail() {
     queryFn: () => base44.auth.me()
   });
 
-  const isMainAdmin = user?.email === 'fasobah@gmail.com';
+  const isMainAdmin = true; // All instructors can edit their own routes
 
   const { data: centre, isLoading } = useQuery({
     queryKey: ['testRouteCentre', centreId],
     queryFn: async () => {
-      const centres = await base44.entities.TestRouteCentre.filter({ id: centreId });
-      return centres[0] || null;
+      const allCentres = await base44.entities.TestRouteCentre.list();
+      return allCentres.find(c => c.id === centreId) || null;
     },
     enabled: !!centreId
   });
