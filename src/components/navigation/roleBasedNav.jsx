@@ -90,7 +90,7 @@ export const instructorOnlyLinks = [
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
-  { name: 'Test Routes', icon: MapPin, page: 'InstructorTestRoutes' },
+  { name: 'Test Route Videos', icon: MapPin, page: 'InstructorTestRoutes' },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
 ];
 
@@ -136,7 +136,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
 
   let roleSpecific = isInstructor ? instructorOnlyLinks : [
     ...learnerOnlyLinks,
-    ...(testRoutesAccessEnabled ? [{ name: 'Test Routes', icon: MapPin, page: 'LearnerTestRoutes' }] : [])
+    ...(testRoutesAccessEnabled ? [{ name: 'Test Route Videos', icon: MapPin, page: 'LearnerTestRoutes' }] : [])
   ];
   
   // Filter out admin-only links for non-admin instructors
