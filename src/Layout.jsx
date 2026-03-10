@@ -126,7 +126,8 @@ export default function Layout({ children, currentPageName }) {
   
   // Build navigation dynamically based on role and pupil status
   const pupilStatus = pupilProfile?.status || 'Active';
-  const baseNavItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus);
+  const testRoutesAccessEnabled = pupilProfile?.testRoutesAccessEnabled || false;
+  const baseNavItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus, testRoutesAccessEnabled);
   
   // baseNavItems already includes admin-only items filtered by isMainAdmin
   const navItems = baseNavItems;
