@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { createPageUrl } from '@/utils';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MapPin, Plus, Youtube, Trash2, X } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Youtube, Plus, Trash2, Users, Video, ExternalLink } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
   AlertDialog,
@@ -20,120 +20,159 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+function extractYouTubeId(url) {
+  if (!url) return '';
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/,
+    /youtube\.com\/embed\/([^&?/]+)/
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) return match[1];
+  }
+  return '';
+}
+
 export default function InstructorTestRoutes() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newRoute, setNewRoute] = useState({ routeName: '', youtubeUrl: '' });
   const [deleteTargetId, setDeleteTargetId] = useState(null);
-  const [formData, setFormData] = useState({ centreName: '', subLocation: '' });
+  const [editingUrl, setEditingUrl] = useState({});
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
 
-  const { data: centres = [], isLoading } = useQuery({
-    queryKey: ['myTestRouteCentres', user?.id],
-    queryFn: () => base44.entities.TestRouteCentre.filter({ createdByInstructorId: user.id }),
+  const { data: routes = [], isLoading: routesLoading } = useQuery({
+    queryKey: ['myTestRoutes', user?.id],
+    queryFn: () => base44.entities.TestRoute.filter({ instructorId: user.id }),
     enabled: !!user?.id
   });
 
-  const createCentreMutation = useMutation({
-    mutationFn: (data) => base44.entities.TestRouteCentre.create({
+  const { data: pupils = [] } = useQuery({
+    queryKey: ['myPupils', user?.id],
+    queryFn: () => base44.entities.Pupil.filter({ instructorId: user.id }),
+    enabled: !!user?.id
+  });
+
+  const activePupils = pupils.filter(p => p.status === 'Active' || p.status === 'OnHold');
+
+  const addRouteMutation = useMutation({
+    mutationFn: (data) => base44.entities.TestRoute.create({
       ...data,
-      createdByInstructorId: user.id,
-      published: true
+      instructorId: user.id,
+      youtubeVideoId: extractYouTubeId(data.youtubeUrl)
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['myTestRouteCentres', user?.id]);
-      setShowCreateForm(false);
-      setFormData({ centreName: '', subLocation: '' });
-      toast({ title: 'Test centre created' });
+      queryClient.invalidateQueries(['myTestRoutes', user?.id]);
+      setShowAddForm(false);
+      setNewRoute({ routeName: '', youtubeUrl: '' });
+      toast({ title: 'Route video added' });
     }
   });
 
-  const deleteCentreMutation = useMutation({
-    mutationFn: async (centreId) => {
-      const routes = await base44.entities.TestRoute.filter({ centreId });
-      await Promise.all(routes.map(r => base44.entities.TestRoute.delete(r.id)));
-      return base44.entities.TestRouteCentre.delete(centreId);
-    },
+  const updateRouteMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.TestRoute.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['myTestRouteCentres', user?.id]);
-      setDeleteTargetId(null);
-      toast({ title: 'Test centre deleted' });
+      queryClient.invalidateQueries(['myTestRoutes', user?.id]);
+      toast({ title: 'Route updated' });
     }
   });
 
-  const handleCreate = (e) => {
-    e.preventDefault();
-    if (!formData.centreName.trim() || !formData.subLocation.trim()) return;
-    createCentreMutation.mutate(formData);
+  const deleteRouteMutation = useMutation({
+    mutationFn: (id) => base44.entities.TestRoute.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['myTestRoutes', user?.id]);
+      setDeleteTargetId(null);
+      toast({ title: 'Route deleted' });
+    }
+  });
+
+  const togglePupilAccessMutation = useMutation({
+    mutationFn: ({ pupilId, enabled }) => base44.entities.Pupil.update(pupilId, { testRoutesAccessEnabled: enabled }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['myPupils', user?.id]);
+    }
+  });
+
+  const handleSaveUrl = (routeId) => {
+    const url = editingUrl[routeId] ?? '';
+    updateRouteMutation.mutate({
+      id: routeId,
+      data: { youtubeUrl: url, youtubeVideoId: extractYouTubeId(url) }
+    });
+    setEditingUrl(prev => {
+      const updated = { ...prev };
+      delete updated[routeId];
+      return updated;
+    });
   };
 
-  if (isLoading) {
-    return <div className="p-6 text-center py-12 text-slate-500">Loading test routes...</div>;
-  }
+  const handleAddRoute = (e) => {
+    e.preventDefault();
+    if (!newRoute.routeName.trim()) return;
+    addRouteMutation.mutate(newRoute);
+  };
+
+  const enabledCount = activePupils.filter(p => p.testRoutesAccessEnabled).length;
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+
+        {/* Header */}
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-[#071739] mb-1">Test Routes</h1>
-            <p className="text-slate-600">Manage your test centres and route videos for pupils</p>
+            <h1 className="text-3xl font-bold text-[#071739] mb-1">Test Route Videos</h1>
+            <p className="text-slate-600">Add YouTube videos for your test routes and control which pupils can see them</p>
           </div>
           <Button
-            onClick={() => setShowCreateForm(true)}
+            onClick={() => setShowAddForm(true)}
             className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Test Centre
+            Add Route
           </Button>
         </div>
 
-        {showCreateForm && (
-          <Card className="mb-6 border-[#F7B602] border-2">
+        {/* Add Route Form */}
+        {showAddForm && (
+          <Card className="border-[#F7B602] border-2">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>New Test Centre</CardTitle>
-                <Button variant="ghost" size="icon" onClick={() => setShowCreateForm(false)}>
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
+              <CardTitle className="text-base">Add New Route Video</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleCreate} className="space-y-4">
+              <form onSubmit={handleAddRoute} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Label>Test Centre Name</Label>
+                    <Label>Route Name</Label>
                     <Input
-                      placeholder="e.g. Birmingham Test Centre"
-                      value={formData.centreName}
-                      onChange={(e) => setFormData({ ...formData, centreName: e.target.value })}
+                      placeholder="e.g. Birmingham Route 1"
+                      value={newRoute.routeName}
+                      onChange={(e) => setNewRoute({ ...newRoute, routeName: e.target.value })}
                       required
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label>Area / Sub-location</Label>
+                    <Label>YouTube URL</Label>
                     <Input
-                      placeholder="e.g. Kingstanding"
-                      value={formData.subLocation}
-                      onChange={(e) => setFormData({ ...formData, subLocation: e.target.value })}
-                      required
+                      placeholder="https://youtube.com/watch?v=..."
+                      value={newRoute.youtubeUrl}
+                      onChange={(e) => setNewRoute({ ...newRoute, youtubeUrl: e.target.value })}
                     />
                   </div>
                 </div>
                 <div className="flex gap-3 justify-end">
-                  <Button type="button" variant="outline" onClick={() => setShowCreateForm(false)}>
-                    Cancel
-                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
                   <Button
                     type="submit"
-                    disabled={createCentreMutation.isPending}
+                    disabled={addRouteMutation.isPending}
                     className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
                   >
-                    {createCentreMutation.isPending ? 'Creating...' : 'Create Centre'}
+                    {addRouteMutation.isPending ? 'Adding...' : 'Add Route'}
                   </Button>
                 </div>
               </form>
@@ -141,74 +180,171 @@ export default function InstructorTestRoutes() {
           </Card>
         )}
 
-        {centres.length === 0 ? (
-          <Card>
-            <CardContent className="py-16 text-center">
-              <MapPin className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">No test centres yet</h3>
-              <p className="text-slate-500 mb-6 max-w-md mx-auto">
-                Create a test centre and add YouTube videos for each route so your pupils can watch and prepare
-              </p>
-              <Button
-                onClick={() => setShowCreateForm(true)}
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add First Test Centre
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {centres.map(centre => (
-              <Card key={centre.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="flex items-start gap-2 text-base">
-                      <MapPin className="w-5 h-5 text-[#F7B602] mt-0.5 flex-shrink-0" />
-                      <span>{centre.centreName}</span>
-                    </CardTitle>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="shrink-0 text-slate-400 hover:text-rose-500 h-8 w-8"
-                      onClick={() => setDeleteTargetId(centre.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <CardDescription>{centre.subLocation}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Link to={createPageUrl(`InstructorTestRouteDetail?centreId=${centre.id}`)}>
-                    <Button className="w-full bg-[#071739] hover:bg-[#0a2142] text-white" size="sm">
-                      <Youtube className="w-4 h-4 mr-2" />
-                      Manage Routes & Videos
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        {/* Routes Section */}
+        <div>
+          <h2 className="text-lg font-semibold text-[#071739] mb-4 flex items-center gap-2">
+            <Video className="w-5 h-5 text-[#F7B602]" />
+            Route Videos ({routes.length})
+          </h2>
+
+          {routesLoading ? (
+            <div className="text-center py-8 text-slate-500">Loading...</div>
+          ) : routes.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <Youtube className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500 font-medium">No route videos yet</p>
+                <p className="text-sm text-slate-400 mt-1">Click "Add Route" to add your first test route video</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {routes.map(route => {
+                const isEditingThis = editingUrl[route.id] !== undefined;
+                const currentUrl = isEditingThis ? editingUrl[route.id] : (route.youtubeUrl || '');
+                const videoId = extractYouTubeId(currentUrl) || route.youtubeVideoId;
+
+                return (
+                  <Card key={route.id} className="overflow-hidden">
+                    <CardContent className="p-4">
+                      <div className="flex flex-col md:flex-row gap-4">
+                        {/* Thumbnail */}
+                        <div className="w-full md:w-40 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center">
+                          {videoId ? (
+                            <img
+                              src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+                              alt={route.routeName}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Youtube className="w-8 h-8 text-slate-300" />
+                          )}
+                        </div>
+
+                        {/* Details */}
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <h3 className="font-semibold text-[#071739]">{route.routeName}</h3>
+                            <div className="flex items-center gap-2">
+                              {videoId && (
+                                <a
+                                  href={route.youtubeUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-slate-400 hover:text-[#071739]"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </a>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-slate-400 hover:text-rose-500"
+                                onClick={() => setDeleteTargetId(route.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2 items-end">
+                            <div className="flex-1 space-y-1">
+                              <Label className="text-xs text-slate-500">YouTube URL</Label>
+                              <Input
+                                placeholder="https://youtube.com/watch?v=..."
+                                value={currentUrl}
+                                onChange={(e) => setEditingUrl(prev => ({ ...prev, [route.id]: e.target.value }))}
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                            {isEditingThis && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleSaveUrl(route.id)}
+                                disabled={updateRouteMutation.isPending}
+                                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] h-8"
+                              >
+                                Save
+                              </Button>
+                            )}
+                          </div>
+
+                          {!videoId && (
+                            <p className="text-xs text-amber-600">No video URL set yet</p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Pupil Access Section */}
+        <div>
+          <h2 className="text-lg font-semibold text-[#071739] mb-1 flex items-center gap-2">
+            <Users className="w-5 h-5 text-[#F7B602]" />
+            Pupil Access
+          </h2>
+          <p className="text-sm text-slate-500 mb-4">
+            {enabledCount} of {activePupils.length} pupils have access · Toggle to grant or revoke access to your route videos
+          </p>
+
+          {activePupils.length === 0 ? (
+            <Card>
+              <CardContent className="py-8 text-center text-slate-400 text-sm">
+                No active pupils found
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="p-0">
+                <div className="divide-y">
+                  {activePupils.map(pupil => (
+                    <div key={pupil.id} className="flex items-center justify-between px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-sm font-bold">
+                          {pupil.firstName?.[0]}{pupil.lastName?.[0]}
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-800 text-sm">{pupil.firstName} {pupil.lastName}</p>
+                          <p className="text-xs text-slate-400">{pupil.email || 'No email'}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {pupil.testRoutesAccessEnabled && (
+                          <Badge className="bg-emerald-100 text-emerald-700 text-xs">Access granted</Badge>
+                        )}
+                        <Switch
+                          checked={!!pupil.testRoutesAccessEnabled}
+                          onCheckedChange={(checked) => togglePupilAccessMutation.mutate({ pupilId: pupil.id, enabled: checked })}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
 
       <AlertDialog open={!!deleteTargetId} onOpenChange={(open) => !open && setDeleteTargetId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Test Centre?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete this test centre and all its routes. This cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogTitle>Delete Route?</AlertDialogTitle>
+            <AlertDialogDescription>This route video will be permanently deleted.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteCentreMutation.mutate(deleteTargetId)}
+              onClick={() => deleteRouteMutation.mutate(deleteTargetId)}
               className="bg-rose-600 hover:bg-rose-700"
-              disabled={deleteCentreMutation.isPending}
+              disabled={deleteRouteMutation.isPending}
             >
-              {deleteCentreMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deleteRouteMutation.isPending ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
