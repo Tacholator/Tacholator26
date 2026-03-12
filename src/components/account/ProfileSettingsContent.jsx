@@ -302,14 +302,35 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                   <User className="w-4 h-4 text-slate-400" />
                   Profile Photo
                 </Label>
-                <div className="flex items-center gap-4">
-                  <input type="file" id="photo-upload" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-                  <Button type="button" variant="outline" disabled={isUploading} onClick={() => document.getElementById('photo-upload')?.click()} className="gap-2">
-                    {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                    {isUploading ? 'Uploading...' : 'Upload Photo'}
-                  </Button>
-                  {formData.profilePhotoUrl && <p className="text-xs text-emerald-600">Photo uploaded</p>}
-                </div>
+                {/* Hidden inputs for each source */}
+                <input type="file" id="photo-upload-library" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                <input type="file" id="photo-upload-camera" accept="image/*" capture="user" onChange={handlePhotoUpload} className="hidden" />
+                <input type="file" id="photo-upload-file" accept="image/*,.heic,.heif" onChange={handlePhotoUpload} className="hidden" />
+
+                {isUploading ? (
+                  <div className="flex items-center gap-2 text-sm text-slate-500">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Uploading & saving photo...
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-library')?.click()} className="gap-2">
+                      <Upload className="w-4 h-4" />
+                      Photo Library
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-camera')?.click()} className="gap-2">
+                      <User className="w-4 h-4" />
+                      Take Photo
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-file')?.click()} className="gap-2">
+                      <FileText className="w-4 h-4" />
+                      Choose File
+                    </Button>
+                  </div>
+                )}
+                {formData.profilePhotoUrl && !isUploading && (
+                  <p className="text-xs text-emerald-600">✓ Photo saved</p>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
