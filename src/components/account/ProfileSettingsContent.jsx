@@ -153,56 +153,37 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
     localStorage.setItem('study_material_voice', voice);
   };
 
-  const handlePhotoUpload = async (e) => {
+  const handlePhotoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // Reset input so same file can be re-selected
     e.target.value = '';
-    
-    setIsUploading(true);
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      // Auto-save the photo immediately
-      const updatedFormData = { ...formData, profilePhotoUrl: file_url };
-      setFormData(updatedFormData);
-      await base44.auth.updateMe(updatedFormData);
-      queryClient.invalidateQueries(['currentUser']);
-      setSaveSuccess(true);
-      setHasPersonalChanges(false);
-      setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (error) {
-      console.error('Failed to upload photo:', error);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleRemovePhoto = () => {
-    setFormData(prev => ({ ...prev, profilePhotoUrl: '' }));
-    setSaveSuccess(false);
+    const previewUrl = URL.createObjectURL(file);
+    setPendingPhotoFile(file);
+    setPendingPhotoPreview(previewUrl);
     setHasPersonalChanges(true);
   };
 
-  const handleLogoUpload = async (e) => {
+  const handleRemovePhoto = () => {
+    setPendingPhotoFile(null);
+    setPendingPhotoPreview(null);
+    setFormData(prev => ({ ...prev, profilePhotoUrl: '' }));
+    setHasPersonalChanges(true);
+  };
+
+  const handleLogoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    setIsUploadingLogo(true);
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setBusinessData(prev => ({ ...prev, businessLogoUrl: file_url }));
-      setSaveSuccess(false);
-      setHasBusinessChanges(true);
-    } catch (error) {
-      console.error('Failed to upload logo:', error);
-    } finally {
-      setIsUploadingLogo(false);
-    }
+    e.target.value = '';
+    const previewUrl = URL.createObjectURL(file);
+    setPendingLogoFile(file);
+    setPendingLogoPreview(previewUrl);
+    setHasBusinessChanges(true);
   };
 
   const handleRemoveLogo = () => {
+    setPendingLogoFile(null);
+    setPendingLogoPreview(null);
     setBusinessData(prev => ({ ...prev, businessLogoUrl: '' }));
-    setSaveSuccess(false);
     setHasBusinessChanges(true);
   };
 
