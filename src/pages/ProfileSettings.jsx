@@ -215,44 +215,32 @@ export default function ProfileSettings() {
     }
   };
 
-  const handlePhotoUpload = async (e) => {
+  const handlePhotoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    setIsUploading(true);
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setFormData(prev => ({ ...prev, profilePhotoUrl: file_url }));
-      setSaveSuccess(false);
-      setHasPersonalChanges(true);
-    } catch (error) {
-      console.error('Failed to upload photo:', error);
-    } finally {
-      setIsUploading(false);
-    }
+    e.target.value = '';
+    const previewUrl = URL.createObjectURL(file);
+    setPendingPhotoFile(file);
+    setPendingPhotoPreview(previewUrl);
+    setHasPersonalChanges(true);
   };
 
   const handleRemovePhoto = () => {
+    setPendingPhotoFile(null);
+    setPendingPhotoPreview(null);
     setFormData(prev => ({ ...prev, profilePhotoUrl: '' }));
     setSaveSuccess(false);
     setHasPersonalChanges(true);
   };
 
-  const handleLogoUpload = async (e) => {
+  const handleLogoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    setIsUploadingLogo(true);
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setBusinessData(prev => ({ ...prev, businessLogoUrl: file_url }));
-      setSaveSuccess(false);
-      setHasBusinessChanges(true);
-    } catch (error) {
-      console.error('Failed to upload logo:', error);
-    } finally {
-      setIsUploadingLogo(false);
-    }
+    e.target.value = '';
+    const previewUrl = URL.createObjectURL(file);
+    setPendingLogoFile(file);
+    setPendingLogoPreview(previewUrl);
+    setHasBusinessChanges(true);
   };
 
   const handleRemoveLogo = () => {
