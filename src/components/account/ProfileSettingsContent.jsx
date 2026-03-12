@@ -107,7 +107,17 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await base44.auth.updateMe(formData);
+      let updatedFormData = { ...formData };
+      if (pendingPhotoFile) {
+        setIsUploading(true);
+        const { file_url } = await base44.integrations.Core.UploadFile({ file: pendingPhotoFile });
+        updatedFormData = { ...updatedFormData, profilePhotoUrl: file_url };
+        setFormData(updatedFormData);
+        setPendingPhotoFile(null);
+        setPendingPhotoPreview(null);
+        setIsUploading(false);
+      }
+      await base44.auth.updateMe(updatedFormData);
       
       if (isInstructor && instructorProfile) {
         const fullName = `${formData.firstName} ${formData.lastName}`.trim();
