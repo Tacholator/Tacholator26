@@ -241,15 +241,20 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
           <div className="flex items-center gap-4">
             <div className="relative">
               <Avatar className="h-16 w-16">
-                {formData.profilePhotoUrl ? (
-                  <img src={formData.profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
+                {(pendingPhotoPreview || formData.profilePhotoUrl) ? (
+                  <img src={pendingPhotoPreview || formData.profilePhotoUrl} alt="Profile" className="w-full h-full object-cover rounded-full" />
                 ) : (
                   <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-xl">
                     {displayName[0]?.toUpperCase()}
                   </AvatarFallback>
                 )}
               </Avatar>
-              {formData.profilePhotoUrl && (
+              {pendingPhotoPreview && (
+                <div className="absolute -bottom-1 -right-1 bg-amber-500 text-white rounded-full p-1 shadow-md" title="Unsaved">
+                  <Save className="w-3 h-3" />
+                </div>
+              )}
+              {!pendingPhotoPreview && formData.profilePhotoUrl && isPersonalEditing && (
                 <button
                   onClick={handleRemovePhoto}
                   className="absolute -top-1 -right-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors"
