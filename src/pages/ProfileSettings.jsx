@@ -515,24 +515,33 @@ export default function ProfileSettings() {
                   </>
                 ) : (
                   <>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label className="flex items-center gap-2"><FileText className="w-4 h-4 text-slate-400" />Business Logo</Label>
-                      {businessData.businessLogoUrl && (
-                        <div className="relative inline-block mb-3">
+                      <input type="file" id="logo-upload" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                      {pendingLogoPreview && (
+                        <div className="flex items-center gap-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                          <img src={pendingLogoPreview} alt="New business logo" className="h-16 w-auto border rounded-lg object-contain" />
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-amber-800">New logo selected</p>
+                            <p className="text-xs text-amber-600">Click "Save Business Info" to apply</p>
+                          </div>
+                          <button onClick={handleRemoveLogo} className="text-rose-500 hover:text-rose-700">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                      {!pendingLogoPreview && businessData.businessLogoUrl && (
+                        <div className="relative inline-block">
                           <img src={businessData.businessLogoUrl} alt="Business Logo" className="h-20 w-auto border rounded-lg" />
                           <button onClick={handleRemoveLogo} className="absolute -top-2 -right-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors">
                             <X className="w-3 h-3" />
                           </button>
                         </div>
                       )}
-                      <div className="flex items-center gap-4">
-                        <input type="file" id="logo-upload" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                        <Button type="button" variant="outline" disabled={isUploadingLogo} onClick={() => document.getElementById('logo-upload')?.click()} className="gap-2">
-                          {isUploadingLogo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                          {isUploadingLogo ? 'Uploading...' : 'Upload Logo'}
-                        </Button>
-                        {businessData.businessLogoUrl && <p className="text-xs text-emerald-600">Logo uploaded</p>}
-                      </div>
+                      <Button type="button" variant="outline" onClick={() => document.getElementById('logo-upload')?.click()} className="gap-2">
+                        <Upload className="w-4 h-4" />
+                        {businessData.businessLogoUrl || pendingLogoPreview ? 'Replace Logo' : 'Upload Logo'}
+                      </Button>
                     </div>
 
                     <div className="space-y-2">
