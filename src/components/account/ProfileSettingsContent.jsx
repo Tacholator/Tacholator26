@@ -534,9 +534,9 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={() => setIsBusinessEditing(false)}>Cancel</Button>
-                    <Button onClick={handleSaveBusinessInfo} disabled={isSavingBusiness} className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2">
-                      {isSavingBusiness ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                      Save Business Info
+                    <Button onClick={handleSaveBusinessInfo} disabled={isSavingBusiness || isUploadingLogo} className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2">
+                      {(isSavingBusiness || isUploadingLogo) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      {isUploadingLogo ? 'Uploading...' : 'Save Business Info'}
                     </Button>
                   </div>
                   {businessSaveSuccess && <p className="text-sm text-emerald-600">Saved!</p>}
