@@ -384,16 +384,25 @@ export default function ProfileSettings() {
                 </>
               ) : (
                 <>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label className="flex items-center gap-2"><User className="w-4 h-4 text-slate-400" />Profile Photo</Label>
-                    <div className="flex items-center gap-4">
-                      <input type="file" id="photo-upload" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-                      <Button type="button" variant="outline" disabled={isUploading} onClick={() => document.getElementById('photo-upload')?.click()} className="gap-2">
-                        {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                        {isUploading ? 'Uploading...' : 'Upload Photo'}
-                      </Button>
-                      {formData.profilePhotoUrl && <p className="text-xs text-emerald-600">Photo uploaded</p>}
-                    </div>
+                    <input type="file" id="photo-upload" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                    {pendingPhotoPreview && (
+                      <div className="flex items-center gap-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                        <img src={pendingPhotoPreview} alt="New profile photo" className="h-16 w-16 rounded-full object-cover border-2 border-amber-300" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-amber-800">New photo selected</p>
+                          <p className="text-xs text-amber-600">Click "Save Changes" to apply</p>
+                        </div>
+                        <button onClick={handleRemovePhoto} className="text-rose-500 hover:text-rose-700">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                    <Button type="button" variant="outline" onClick={() => document.getElementById('photo-upload')?.click()} className="gap-2">
+                      <Upload className="w-4 h-4" />
+                      {formData.profilePhotoUrl || pendingPhotoPreview ? 'Replace Photo' : 'Upload Photo'}
+                    </Button>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
