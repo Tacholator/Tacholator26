@@ -307,7 +307,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
             /* Edit mode */
             <>
               {/* Profile Photo Upload */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label className="flex items-center gap-2">
                   <User className="w-4 h-4 text-slate-400" />
                   Profile Photo
@@ -317,30 +317,34 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                 <input type="file" id="photo-upload-camera" accept="image/*" capture="user" onChange={handlePhotoUpload} className="hidden" />
                 <input type="file" id="photo-upload-file" accept="image/*,.heic,.heif" onChange={handlePhotoUpload} className="hidden" />
 
-                {isUploading ? (
-                  <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Uploading & saving photo...
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-library')?.click()} className="gap-2">
-                      <Upload className="w-4 h-4" />
-                      Photo Library
-                    </Button>
-                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-camera')?.click()} className="gap-2">
-                      <Camera className="w-4 h-4" />
-                      Take Photo
-                    </Button>
-                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-file')?.click()} className="gap-2">
-                      <FileText className="w-4 h-4" />
-                      Choose File
-                    </Button>
+                {/* Preview */}
+                {pendingPhotoPreview && (
+                  <div className="flex items-center gap-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <img src={pendingPhotoPreview} alt="New profile photo" className="h-16 w-16 rounded-full object-cover border-2 border-amber-300" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-amber-800">New photo selected</p>
+                      <p className="text-xs text-amber-600">Click "Save Changes" to apply</p>
+                    </div>
+                    <button onClick={handleRemovePhoto} className="text-rose-500 hover:text-rose-700">
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
                 )}
-                {formData.profilePhotoUrl && !isUploading && (
-                  <p className="text-xs text-emerald-600">✓ Photo saved</p>
-                )}
+
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-library')?.click()} className="gap-2">
+                    <Upload className="w-4 h-4" />
+                    Photo Library
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-camera')?.click()} className="gap-2">
+                    <Camera className="w-4 h-4" />
+                    Take Photo
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-file')?.click()} className="gap-2">
+                    <FileText className="w-4 h-4" />
+                    Choose File
+                  </Button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
