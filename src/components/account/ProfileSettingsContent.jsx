@@ -319,7 +319,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                       Photo Library
                     </Button>
                     <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-camera')?.click()} className="gap-2">
-                      <User className="w-4 h-4" />
+                      <Camera className="w-4 h-4" />
                       Take Photo
                     </Button>
                     <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-file')?.click()} className="gap-2">
