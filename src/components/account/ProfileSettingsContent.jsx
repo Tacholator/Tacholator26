@@ -379,9 +379,9 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
               <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setIsPersonalEditing(false)}>Cancel</Button>
-                  <Button onClick={handleSave} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 gap-2">
-                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    Save Changes
+                  <Button onClick={handleSave} disabled={isSaving || isUploading} className="bg-teal-600 hover:bg-teal-700 gap-2">
+                    {(isSaving || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    {isUploading ? 'Uploading...' : 'Save Changes'}
                   </Button>
                 </div>
                 {saveSuccess && <p className="text-sm text-emerald-600">Saved!</p>}
