@@ -61,6 +61,11 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/RoleSelection" element={
+        <LayoutWrapper currentPageName="RoleSelection">
+          <RoleSelection />
+        </LayoutWrapper>
+      } />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
