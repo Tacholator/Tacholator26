@@ -152,13 +152,20 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Reset input so same file can be re-selected
+    e.target.value = '';
     
     setIsUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setFormData(prev => ({ ...prev, profilePhotoUrl: file_url }));
-      setSaveSuccess(false);
-      setHasPersonalChanges(true);
+      // Auto-save the photo immediately
+      const updatedFormData = { ...formData, profilePhotoUrl: file_url };
+      setFormData(updatedFormData);
+      await base44.auth.updateMe(updatedFormData);
+      queryClient.invalidateQueries(['currentUser']);
+      setSaveSuccess(true);
+      setHasPersonalChanges(false);
+      setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error) {
       console.error('Failed to upload photo:', error);
     } finally {
