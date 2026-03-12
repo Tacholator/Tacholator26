@@ -59,6 +59,10 @@ export default function ProfileSettings() {
   const [isBusinessEditing, setIsBusinessEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [pendingPhotoFile, setPendingPhotoFile] = useState(null);
+  const [pendingPhotoPreview, setPendingPhotoPreview] = useState(null);
+  const [pendingLogoFile, setPendingLogoFile] = useState(null);
+  const [pendingLogoPreview, setPendingLogoPreview] = useState(null);
   const [instructorProfile, setInstructorProfile] = useState(null);
 
 
