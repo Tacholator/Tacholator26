@@ -207,8 +207,18 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
   const handleSaveBusinessInfo = async () => {
     setIsSavingBusiness(true);
     try {
+      let updatedBusinessData = { ...businessData };
+      if (pendingLogoFile) {
+        setIsUploadingLogo(true);
+        const { file_url } = await base44.integrations.Core.UploadFile({ file: pendingLogoFile });
+        updatedBusinessData = { ...updatedBusinessData, businessLogoUrl: file_url };
+        setBusinessData(updatedBusinessData);
+        setPendingLogoFile(null);
+        setPendingLogoPreview(null);
+        setIsUploadingLogo(false);
+      }
       if (instructorProfile) {
-        await base44.entities.Instructor.update(instructorProfile.id, businessData);
+        await base44.entities.Instructor.update(instructorProfile.id, updatedBusinessData);
       }
       setBusinessSaveSuccess(true);
       setHasBusinessChanges(false);
