@@ -46,6 +46,8 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Toaster } from '@/components/ui/toaster';
 
 export default function Layout({ children, currentPageName }) {
+  const location = useLocation();
+  const isRoleSelection = location.pathname === '/RoleSelection' || currentPageName === 'RoleSelection';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
