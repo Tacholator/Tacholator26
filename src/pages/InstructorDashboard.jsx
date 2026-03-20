@@ -36,15 +36,15 @@ export default function InstructorDashboard() {
     queryFn: () => base44.auth.me()
   });
 
-  // Guard: check if this user is actually a learner (has a pupil record)
+  // Guard: reuse the same query key as layout so it hits the cache (no extra network call)
   const { data: pupilCheck, isLoading: isPupilCheckLoading } = useQuery({
-    queryKey: ['instructorDashboardGuard', user?.id, user?.email],
+    queryKey: ['learnerPupilProfile', user?.id, user?.email],
     queryFn: async () => {
       if (!user?.id || !user?.email) return null;
-      const allPupils = await base44.entities.Pupil.list();
-      const match = allPupils.find(p => p.linkedUserId === user.id) ||
-        allPupils.find(p => p.email && p.email.toLowerCase() === user.email.toLowerCase());
-      return match || null;
+      const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (byLinkedId.length > 0) return byLinkedId[0];
+      const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+      return byEmail.length > 0 ? byEmail[0] : null;
     },
     enabled: !!user?.id && !!user?.email
   });
@@ -152,45 +152,42 @@ export default function InstructorDashboard() {
     queryKey: ['pupilActivities', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
+      // Run all 3 queries in parallel
+      const [recentHomework, recentMcqAttempts, recentDiaries] = await Promise.all([
+        base44.entities.HomeworkItem.filter({ instructorId: user.id, status: 'Completed' }, '-updated_date', 10),
+        base44.entities.McqAttempt.filter({ instructorId: user.id }, '-submittedAt', 10),
+        base44.entities.DiaryEntry.filter({ instructorId: user.id }, '-created_date', 10)
+      ]);
       const activities = [];
-      const recentHomework = await base44.entities.HomeworkItem.filter({ instructorId: user.id }, '-updated_date', 10);
-      recentHomework.filter(hw => hw.status === 'Completed').forEach(hw => {
+      recentHomework.forEach(hw => {
         const pupil = pupils.find(p => p.id === hw.pupilId);
-        if (pupil) {
-          activities.push({
-            type: 'homework',
-            pupilName: `${pupil.firstName} ${pupil.lastName}`,
-            message: `Completed homework: ${hw.title}`,
-            timestamp: hw.updated_date,
-            icon: CheckCircle
-          });
-        }
+        if (pupil) activities.push({
+          type: 'homework',
+          pupilName: `${pupil.firstName} ${pupil.lastName}`,
+          message: `Completed homework: ${hw.title}`,
+          timestamp: hw.updated_date,
+          icon: CheckCircle
+        });
       });
-      const recentMcqAttempts = await base44.entities.McqAttempt.filter({ instructorId: user.id }, '-submittedAt', 10);
       recentMcqAttempts.forEach(attempt => {
         const pupil = pupils.find(p => p.id === attempt.pupilId);
-        if (pupil) {
-          activities.push({
-            type: 'mcq',
-            pupilName: `${pupil.firstName} ${pupil.lastName}`,
-            message: `${attempt.passed ? 'Passed' : 'Attempted'} MCQ: ${attempt.topicId.replace(/_/g, ' ')} (${attempt.score}/${attempt.totalQuestions})`,
-            timestamp: attempt.submittedAt,
-            icon: MessageCircle
-          });
-        }
+        if (pupil) activities.push({
+          type: 'mcq',
+          pupilName: `${pupil.firstName} ${pupil.lastName}`,
+          message: `${attempt.passed ? 'Passed' : 'Attempted'} MCQ: ${attempt.topicId.replace(/_/g, ' ')} (${attempt.score}/${attempt.totalQuestions})`,
+          timestamp: attempt.submittedAt,
+          icon: MessageCircle
+        });
       });
-      const recentDiaries = await base44.entities.DiaryEntry.filter({ instructorId: user.id }, '-created_date', 10);
       recentDiaries.forEach(diary => {
         const pupil = pupils.find(p => p.id === diary.pupilId);
-        if (pupil) {
-          activities.push({
-            type: 'diary',
-            pupilName: `${pupil.firstName} ${pupil.lastName}`,
-            message: `New lesson diary entry`,
-            timestamp: diary.created_date,
-            icon: Calendar
-          });
-        }
+        if (pupil) activities.push({
+          type: 'diary',
+          pupilName: `${pupil.firstName} ${pupil.lastName}`,
+          message: `New lesson diary entry`,
+          timestamp: diary.created_date,
+          icon: Calendar
+        });
       });
       return activities.sort((a, b) => moment(b.timestamp).diff(moment(a.timestamp))).slice(0, 10);
     },
@@ -201,12 +198,13 @@ export default function InstructorDashboard() {
     queryKey: ['availableSlotsToday', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
+      const slots = await base44.entities.BookableSlotInstance.filter({
+        instructorId: user.id,
+        status: 'available'
+      });
       const startOfDay = moment().startOf('day').toISOString();
       const endOfDay = moment().endOf('day').toISOString();
-      const slots = await base44.entities.BookableSlotInstance.list();
       return slots.filter(slot =>
-        slot.instructorId === user.id &&
-        slot.status === 'available' &&
         moment(slot.startAtUtc).isBetween(startOfDay, endOfDay, null, '[]')
       );
     },

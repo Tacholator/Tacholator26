@@ -72,19 +72,12 @@ export default function Layout({ children, currentPageName }) {
     queryKey: ['learnerPupilProfile', user?.id, user?.email],
     queryFn: async () => {
       if (!user?.id || !user?.email) return null;
-      const allPupils = await base44.entities.Pupil.list();
-      
-      // First try to match by linkedUserId (most reliable)
-      let matchingPupil = allPupils.find(p => p.linkedUserId === user.id);
-      
-      // Fallback to case-insensitive email match if no linkedUserId match
-      if (!matchingPupil) {
-        matchingPupil = allPupils.find(
-          p => p.email && p.email.toLowerCase() === user.email.toLowerCase()
-        );
-      }
-      
-      return matchingPupil || null;
+      // Filter server-side by linkedUserId first (fast, indexed)
+      const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (byLinkedId.length > 0) return byLinkedId[0];
+      // Fallback: filter by email server-side
+      const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+      return byEmail.length > 0 ? byEmail[0] : null;
     },
     enabled: !!user?.id && !!user?.email
   });
@@ -95,35 +88,34 @@ export default function Layout({ children, currentPageName }) {
   const isInstructor = !isLearner && user?.role === 'admin';
   const isMainAdmin = isInstructor && user?.email === 'fasobah@gmail.com';
 
-  // Fetch unread messages count
-  const { data: unreadMessagesCount = 0 } = useQuery({
-    queryKey: ['unreadMessagesCount', user?.id, isInstructor],
+  // Fetch unread messages count - filter server-side, use real-time subscription
+  const { data: unreadMessagesCount = 0, refetch: refetchMessages } = useQuery({
+    queryKey: ['unreadMessagesCount', user?.id, isInstructor, pupilProfile?.id],
     queryFn: async () => {
       if (!user?.id) return 0;
-      const messages = await base44.entities.Message.filter({ readAt: null });
-      const unreadForUser = messages.filter(msg => {
-        if (isInstructor) {
-          return msg.senderRole === 'pupil' && msg.instructorId === user.id;
-        } else {
-          return msg.senderRole === 'instructor' && msg.pupilId === pupilProfile?.id;
-        }
-      });
-      return unreadForUser.length;
+      if (isInstructor) {
+        const messages = await base44.entities.Message.filter({ instructorId: user.id, senderRole: 'pupil', readAt: null });
+        return messages.length;
+      } else if (pupilProfile?.id) {
+        const messages = await base44.entities.Message.filter({ pupilId: pupilProfile.id, senderRole: 'instructor', readAt: null });
+        return messages.length;
+      }
+      return 0;
     },
     enabled: !!user?.id && (isInstructor || !!pupilProfile?.id),
-    refetchInterval: 10000
+    refetchInterval: 30000
   });
 
-  // Fetch unread notifications count
+  // Fetch unread notifications count - filter server-side
   const { data: unreadNotificationsCount = 0 } = useQuery({
     queryKey: ['unreadNotificationsCount', user?.id],
     queryFn: async () => {
       if (!user?.id) return 0;
-      const notifications = await base44.entities.Notification.filter({ userId: user.id });
-      return notifications.filter(n => !n.readAt).length;
+      const notifications = await base44.entities.Notification.filter({ userId: user.id, readAt: null });
+      return notifications.length;
     },
     enabled: !!user?.id,
-    refetchInterval: 15000
+    refetchInterval: 30000
   });
   
   // Build navigation dynamically based on role and pupil status
