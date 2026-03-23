@@ -104,18 +104,35 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
     setHasPersonalChanges(true);
   };
 
+  const resizeImageToBase64 = (file, maxSize = 300) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
       let updatedFormData = { ...formData };
       if (pendingPhotoFile) {
-        setIsUploading(true);
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: pendingPhotoFile });
-        updatedFormData = { ...updatedFormData, profilePhotoUrl: file_url };
+        const base64Url = await resizeImageToBase64(pendingPhotoFile);
+        updatedFormData = { ...updatedFormData, profilePhotoUrl: base64Url };
         setFormData(updatedFormData);
         setPendingPhotoFile(null);
         setPendingPhotoPreview(null);
-        setIsUploading(false);
       }
       await base44.auth.updateMe(updatedFormData);
       
@@ -147,7 +164,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
       setTimeout(() => setSaveSuccess(false), 3000);
     } finally {
       setIsSaving(false);
-      setIsUploading(false);
     }
   };
 
@@ -380,9 +396,9 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
               <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setIsPersonalEditing(false)}>Cancel</Button>
-                  <Button onClick={handleSave} disabled={isSaving || isUploading} className="bg-teal-600 hover:bg-teal-700 gap-2">
-                    {(isSaving || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    {isUploading ? 'Uploading...' : 'Save Changes'}
+                  <Button onClick={handleSave} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 gap-2">
+                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    {isSaving ? 'Saving...' : 'Save Changes'}
                   </Button>
                 </div>
                 {saveSuccess && <p className="text-sm text-emerald-600">Saved!</p>}
