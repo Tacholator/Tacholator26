@@ -226,13 +226,11 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
     try {
       let updatedBusinessData = { ...businessData };
       if (pendingLogoFile) {
-        setIsUploadingLogo(true);
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: pendingLogoFile });
-        updatedBusinessData = { ...updatedBusinessData, businessLogoUrl: file_url };
+        const base64Url = await resizeImageToBase64(pendingLogoFile, 400);
+        updatedBusinessData = { ...updatedBusinessData, businessLogoUrl: base64Url };
         setBusinessData(updatedBusinessData);
         setPendingLogoFile(null);
         setPendingLogoPreview(null);
-        setIsUploadingLogo(false);
       }
       if (instructorProfile) {
         await base44.entities.Instructor.update(instructorProfile.id, updatedBusinessData);
@@ -241,8 +239,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
       setHasBusinessChanges(false);
       setIsBusinessEditing(false);
       setTimeout(() => setBusinessSaveSuccess(false), 3000);
-    } catch (error) {
-      console.error('Failed to save business info:', error);
     } finally {
       setIsSavingBusiness(false);
     }
