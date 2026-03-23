@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import {
@@ -59,7 +59,6 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
       <div className="p-4 border-b border-slate-200">
         <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg">
           <Avatar className="h-12 w-12 shrink-0">
-            <AvatarImage src={user?.profilePhotoUrl} />
             <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] font-semibold">
               {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
             </AvatarFallback>
