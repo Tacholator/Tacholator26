@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Upload, X, Building2, FileText, MapPin, Pencil, Shield, AlertTriangle, CheckCircle2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Building2, FileText, MapPin, Pencil, Shield, AlertTriangle, CheckCircle2, ExternalLink } from 'lucide-react';
 import moment from 'moment';
 import {
   Select,
@@ -33,8 +33,7 @@ export default function ProfileSettings() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    phone: '',
-    profilePhotoUrl: ''
+    phone: ''
   });
 
   const [businessData, setBusinessData] = useState({
@@ -42,7 +41,6 @@ export default function ProfileSettings() {
     businessAddress: '',
     businessCity: '',
     businessPostcode: '',
-    businessLogoUrl: '',
     businessRegistration: '',
     businessPhone: '',
     businessEmail: '',
@@ -57,12 +55,7 @@ export default function ProfileSettings() {
   const [hasBusinessChanges, setHasBusinessChanges] = useState(false);
   const [isPersonalEditing, setIsPersonalEditing] = useState(false);
   const [isBusinessEditing, setIsBusinessEditing] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const [pendingPhotoFile, setPendingPhotoFile] = useState(null);
-  const [pendingPhotoPreview, setPendingPhotoPreview] = useState(null);
-  const [pendingLogoFile, setPendingLogoFile] = useState(null);
-  const [pendingLogoPreview, setPendingLogoPreview] = useState(null);
+
   const [instructorProfile, setInstructorProfile] = useState(null);
 
 
@@ -132,8 +125,7 @@ export default function ProfileSettings() {
       setFormData({
         firstName: user.firstName || user.full_name?.split(' ')[0] || '',
         lastName: user.lastName || user.full_name?.split(' ').slice(1).join(' ') || '',
-        phone: user.phone || '',
-        profilePhotoUrl: user.profilePhotoUrl || ''
+        phone: user.phone || ''
       });
     }
   }, [user]);
@@ -150,7 +142,6 @@ export default function ProfileSettings() {
             businessAddress: profile.businessAddress || '',
             businessCity: profile.businessCity || '',
             businessPostcode: profile.businessPostcode || '',
-            businessLogoUrl: profile.businessLogoUrl || '',
             businessRegistration: profile.businessRegistration || '',
             businessPhone: profile.businessPhone || '',
             businessEmail: profile.businessEmail || '',
@@ -193,15 +184,7 @@ export default function ProfileSettings() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      let updatedFormData = { ...formData };
-      if (pendingPhotoFile) {
-        const base64Url = await resizeImageToBase64(pendingPhotoFile);
-        updatedFormData = { ...updatedFormData, profilePhotoUrl: base64Url };
-        setFormData(updatedFormData);
-        setPendingPhotoFile(null);
-        setPendingPhotoPreview(null);
-      }
-      await base44.auth.updateMe(updatedFormData);
+      await base44.auth.updateMe(formData);
       
       if (isInstructor && instructorProfile) {
         await base44.entities.Instructor.update(instructorProfile.id, businessData);
@@ -230,39 +213,7 @@ export default function ProfileSettings() {
     }
   };
 
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = '';
-    const previewUrl = URL.createObjectURL(file);
-    setPendingPhotoFile(file);
-    setPendingPhotoPreview(previewUrl);
-    setHasPersonalChanges(true);
-  };
 
-  const handleRemovePhoto = () => {
-    setPendingPhotoFile(null);
-    setPendingPhotoPreview(null);
-    setFormData(prev => ({ ...prev, profilePhotoUrl: '' }));
-    setSaveSuccess(false);
-    setHasPersonalChanges(true);
-  };
-
-  const handleLogoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = '';
-    const previewUrl = URL.createObjectURL(file);
-    setPendingLogoFile(file);
-    setPendingLogoPreview(previewUrl);
-    setHasBusinessChanges(true);
-  };
-
-  const handleRemoveLogo = () => {
-    setBusinessData(prev => ({ ...prev, businessLogoUrl: '' }));
-    setSaveSuccess(false);
-    setHasBusinessChanges(true);
-  };
 
   const handleBusinessChange = (field, value) => {
     setBusinessData(prev => ({ ...prev, [field]: value }));
@@ -274,16 +225,8 @@ export default function ProfileSettings() {
   const handleSaveBusinessInfo = async () => {
     setIsSavingBusiness(true);
     try {
-      let updatedBusinessData = { ...businessData };
-      if (pendingLogoFile) {
-        const base64Url = await resizeImageToBase64(pendingLogoFile, 400);
-        updatedBusinessData = { ...updatedBusinessData, businessLogoUrl: base64Url };
-        setBusinessData(updatedBusinessData);
-        setPendingLogoFile(null);
-        setPendingLogoPreview(null);
-      }
       if (instructorProfile) {
-        await base44.entities.Instructor.update(instructorProfile.id, updatedBusinessData);
+        await base44.entities.Instructor.update(instructorProfile.id, businessData);
       }
       setBusinessSaveSuccess(true);
       setHasBusinessChanges(false);
@@ -337,22 +280,10 @@ export default function ProfileSettings() {
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <Avatar className="h-16 w-16">
-                    {(pendingPhotoPreview || formData.profilePhotoUrl) ? (
-                      <img src={pendingPhotoPreview || formData.profilePhotoUrl} alt="Profile" className="w-full h-full object-cover rounded-full" />
-                    ) : (
-                      <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-xl">
-                        {displayName[0]?.toUpperCase()}
-                      </AvatarFallback>
-                    )}
+                    <AvatarFallback className={`text-white text-xl font-semibold ${isInstructor ? 'bg-gradient-to-br from-[#071739] to-[#1a3a6b]' : 'bg-gradient-to-br from-teal-400 to-teal-600'}`}>
+                      {displayName[0]?.toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
-                  {!pendingPhotoPreview && formData.profilePhotoUrl && (
-                    <button
-                      onClick={handleRemovePhoto}
-                      className="absolute -top-1 -right-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
                 </div>
                 <div className="flex-1">
                   <CardTitle className="text-xl">{displayName}</CardTitle>
@@ -488,9 +419,6 @@ export default function ProfileSettings() {
                 {!isBusinessEditing ? (
                   <>
                     <div className="space-y-3">
-                      {businessData.businessLogoUrl && (
-                        <img src={businessData.businessLogoUrl} alt="Business Logo" className="h-16 w-auto border rounded-lg mb-2" />
-                      )}
                       <div className="flex items-center gap-3">
                         <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
                         <div>
@@ -531,35 +459,6 @@ export default function ProfileSettings() {
                   </>
                 ) : (
                   <>
-                    <div className="space-y-3">
-                      <Label className="flex items-center gap-2"><FileText className="w-4 h-4 text-slate-400" />Business Logo</Label>
-                      <input type="file" id="logo-upload" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                      {pendingLogoPreview && (
-                        <div className="flex items-center gap-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                          <img src={pendingLogoPreview} alt="New business logo" className="h-16 w-auto border rounded-lg object-contain" />
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-amber-800">New logo selected</p>
-                            <p className="text-xs text-amber-600">Click "Save Business Info" to apply</p>
-                          </div>
-                          <button onClick={handleRemoveLogo} className="text-rose-500 hover:text-rose-700">
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
-                      {!pendingLogoPreview && businessData.businessLogoUrl && (
-                        <div className="relative inline-block">
-                          <img src={businessData.businessLogoUrl} alt="Business Logo" className="h-20 w-auto border rounded-lg" />
-                          <button onClick={handleRemoveLogo} className="absolute -top-2 -right-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors">
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      )}
-                      <Button type="button" variant="outline" onClick={() => document.getElementById('logo-upload')?.click()} className="gap-2">
-                        <Upload className="w-4 h-4" />
-                        {businessData.businessLogoUrl || pendingLogoPreview ? 'Replace Logo' : 'Upload Logo'}
-                      </Button>
-                    </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="businessName" className="flex items-center gap-2"><Building2 className="w-4 h-4 text-slate-400" />Business Name</Label>
                       <Input id="businessName" value={businessData.businessName} onChange={(e) => handleBusinessChange('businessName', e.target.value)} placeholder="e.g., ABC Driving School" />
