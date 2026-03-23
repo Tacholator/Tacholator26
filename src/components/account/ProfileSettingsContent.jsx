@@ -325,10 +325,10 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                   <User className="w-4 h-4 text-slate-400" />
                   Profile Photo
                 </Label>
-                {/* Hidden inputs for each source */}
-                <input type="file" id="photo-upload-library" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-                <input type="file" id="photo-upload-camera" accept="image/*" capture="user" onChange={handlePhotoUpload} className="hidden" />
-                <input type="file" id="photo-upload-file" accept="image/*,.heic,.heif" onChange={handlePhotoUpload} className="hidden" />
+                {/* Hidden inputs for each source - must NOT use display:none for capture to work on iOS */}
+                <input type="file" id="photo-upload-library" accept="image/*" onChange={handlePhotoUpload} className="absolute opacity-0 w-0 h-0 overflow-hidden" />
+                <input type="file" id="photo-upload-camera" accept="image/*" capture="user" onChange={handlePhotoUpload} className="absolute opacity-0 w-0 h-0 overflow-hidden" />
+                <input type="file" id="photo-upload-file" accept="image/*,.heic,.heif" onChange={handlePhotoUpload} className="absolute opacity-0 w-0 h-0 overflow-hidden" />
 
                 {/* Preview */}
                 {pendingPhotoPreview && (
