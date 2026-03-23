@@ -336,13 +336,18 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
 
                 {/* Preview */}
                 {pendingPhotoPreview && (
-                  <div className="flex items-center gap-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                    <img src={pendingPhotoPreview} alt="New profile photo" className="h-16 w-16 rounded-full object-cover border-2 border-amber-300" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-amber-800">New photo selected</p>
-                      <p className="text-xs text-amber-600">Click "Save Changes" to apply</p>
+                  <div className="flex items-center gap-4 p-3 bg-emerald-50 border border-emerald-300 rounded-lg">
+                    <div className="relative">
+                      <img src={pendingPhotoPreview} alt="New profile photo" className="h-16 w-16 rounded-full object-cover border-2 border-emerald-400" />
+                      <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                      </div>
                     </div>
-                    <button onClick={handleRemovePhoto} className="text-rose-500 hover:text-rose-700">
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-emerald-800">✓ Photo uploaded successfully</p>
+                      <p className="text-xs text-emerald-600 mt-0.5">Click "Save Changes" to apply it to your profile</p>
+                    </div>
+                    <button onClick={handleRemovePhoto} className="text-slate-400 hover:text-rose-500 transition-colors">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
