@@ -147,6 +147,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
       setTimeout(() => setSaveSuccess(false), 3000);
     } finally {
       setIsSaving(false);
+      setIsUploading(false);
     }
   };
 
