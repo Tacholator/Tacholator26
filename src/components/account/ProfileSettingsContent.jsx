@@ -180,26 +180,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
     localStorage.setItem('study_material_voice', voice);
   };
 
-  const openFilePicker = (options = {}) => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = options.accept || 'image/*';
-    if (options.capture) input.setAttribute('capture', options.capture);
-    input.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0;';
-    document.body.appendChild(input);
-    input.onchange = (e) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const previewUrl = URL.createObjectURL(file);
-        setPendingPhotoFile(file);
-        setPendingPhotoPreview(previewUrl);
-        setHasPersonalChanges(true);
-      }
-      document.body.removeChild(input);
-    };
-    input.click();
-  };
-
   const handlePhotoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -366,19 +346,23 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                   </div>
                 )}
 
+                {/* Use label+input for native file picking — required for WKWebView/TestFlight */}
+                <input type="file" id="photo-upload-library" accept="image/*" onChange={handlePhotoUpload} className="sr-only" />
+                <input type="file" id="photo-upload-camera" accept="image/*" capture="user" onChange={handlePhotoUpload} className="sr-only" />
+                <input type="file" id="photo-upload-file" accept="image/*,.heic,.heif" onChange={handlePhotoUpload} className="sr-only" />
                 <div className="flex flex-wrap gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => openFilePicker({ accept: 'image/*' })} className="gap-2">
+                  <label htmlFor="photo-upload-library" className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-slate-200 rounded-md bg-white hover:bg-slate-50 cursor-pointer transition-colors">
                     <Upload className="w-4 h-4" />
                     Photo Library
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => openFilePicker({ accept: 'image/*', capture: 'user' })} className="gap-2">
+                  </label>
+                  <label htmlFor="photo-upload-camera" className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-slate-200 rounded-md bg-white hover:bg-slate-50 cursor-pointer transition-colors">
                     <Camera className="w-4 h-4" />
                     Take Photo
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => openFilePicker({ accept: 'image/*,.heic,.heif' })} className="gap-2">
+                  </label>
+                  <label htmlFor="photo-upload-file" className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-slate-200 rounded-md bg-white hover:bg-slate-50 cursor-pointer transition-colors">
                     <FileText className="w-4 h-4" />
                     Choose File
-                  </Button>
+                  </label>
                 </div>
               </div>
 
@@ -490,7 +474,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                 {/* Business Logo */}
                 <div className="space-y-3">
                   <Label className="flex items-center gap-2"><FileText className="w-4 h-4 text-slate-400" />Business Logo</Label>
-                  <input type="file" id="logo-upload" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                  <input type="file" id="logo-upload" accept="image/*" onChange={handleLogoUpload} className="sr-only" />
 
                   {/* Pending preview */}
                   {pendingLogoPreview && (
@@ -516,10 +500,10 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                     </div>
                   )}
 
-                  <Button type="button" variant="outline" onClick={() => document.getElementById('logo-upload')?.click()} className="gap-2">
+                  <label htmlFor="logo-upload" className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-slate-200 rounded-md bg-white hover:bg-slate-50 cursor-pointer transition-colors">
                     <Upload className="w-4 h-4" />
                     {businessData.businessLogoUrl || pendingLogoPreview ? 'Replace Logo' : 'Upload Logo'}
-                  </Button>
+                  </label>
                 </div>
 
                 <div className="space-y-2">
