@@ -11,7 +11,7 @@ export default function PrivacyPolicy() {
             <Shield className="w-8 h-8 text-[#071739]" />
             <h1 className="text-3xl font-bold text-[#071739]">Tacholator – Privacy Policy</h1>
           </div>
-          <p className="text-slate-600">Last updated: December 2025</p>
+          <p className="text-slate-600">Last updated: March 2026</p>
         </div>
 
         <Card className="border-0 shadow-sm">
@@ -44,7 +44,23 @@ export default function PrivacyPolicy() {
                   <li>Phone number (if provided)</li>
                   <li>Provisional licence number (if provided)</li>
                   <li>Profile information provided during registration</li>
+                  <li>Profile photo (if provided via your social account or uploaded manually)</li>
                 </ul>
+
+                <h3 className="text-xl font-semibold text-[#071739] mb-3 mt-5">2.2 Social Sign-In Data (Google & Apple)</h3>
+                <p className="text-slate-700 leading-relaxed mb-3">
+                  You may choose to sign in to Tacholator using your Google or Apple account. When you do, we receive limited profile information from those providers to create or access your account. Specifically:
+                </p>
+                <ul className="list-disc ml-6 space-y-2 text-slate-700 mb-3">
+                  <li><strong>Google Sign-In:</strong> We receive your name, email address, and profile photo URL from your Google account.</li>
+                  <li><strong>Sign in with Apple:</strong> We receive your name and email address. Apple may provide you with the option to hide your real email using a relay address — we respect and support this option.</li>
+                </ul>
+                <p className="text-slate-700 leading-relaxed mb-2">
+                  We do not receive or store your social account passwords. The sign-in process is handled securely by the respective provider (Google or Apple) using industry-standard OAuth 2.0 authentication.
+                </p>
+                <p className="text-slate-700 leading-relaxed">
+                  The information received from Google or Apple is used solely to identify you within Tacholator and personalise your experience. It is not used for advertising or shared with third parties beyond what is described in this Policy.
+                </p>
 
                 <h3 className="text-xl font-semibold text-[#071739] mb-3 mt-5">2.2 Learning & Training Data</h3>
                 <p className="text-slate-700 leading-relaxed mb-2">To support driving tuition, Tacholator may store:</p>
