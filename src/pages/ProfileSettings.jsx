@@ -171,29 +171,44 @@ export default function ProfileSettings() {
     setHasPersonalChanges(true);
   };
 
+  const resizeImageToBase64 = (file, maxSize = 300) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
       let updatedFormData = { ...formData };
       if (pendingPhotoFile) {
-        setIsUploading(true);
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: pendingPhotoFile });
-        updatedFormData = { ...updatedFormData, profilePhotoUrl: file_url };
+        const base64Url = await resizeImageToBase64(pendingPhotoFile);
+        updatedFormData = { ...updatedFormData, profilePhotoUrl: base64Url };
         setFormData(updatedFormData);
         setPendingPhotoFile(null);
         setPendingPhotoPreview(null);
-        setIsUploading(false);
       }
       await base44.auth.updateMe(updatedFormData);
       
-      // Save instructor business info if instructor
       if (isInstructor && instructorProfile) {
         await base44.entities.Instructor.update(instructorProfile.id, businessData);
       }
       
       queryClient.invalidateQueries(['currentUser']);
       
-      // If instructor and name changed, update all pupil records
       if (isInstructor && (formData.firstName || formData.lastName)) {
         const fullName = `${formData.firstName} ${formData.lastName}`.trim();
         if (fullName) {
@@ -261,13 +276,11 @@ export default function ProfileSettings() {
     try {
       let updatedBusinessData = { ...businessData };
       if (pendingLogoFile) {
-        setIsUploadingLogo(true);
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: pendingLogoFile });
-        updatedBusinessData = { ...updatedBusinessData, businessLogoUrl: file_url };
+        const base64Url = await resizeImageToBase64(pendingLogoFile, 400);
+        updatedBusinessData = { ...updatedBusinessData, businessLogoUrl: base64Url };
         setBusinessData(updatedBusinessData);
         setPendingLogoFile(null);
         setPendingLogoPreview(null);
-        setIsUploadingLogo(false);
       }
       if (instructorProfile) {
         await base44.entities.Instructor.update(instructorProfile.id, updatedBusinessData);
@@ -276,8 +289,6 @@ export default function ProfileSettings() {
       setHasBusinessChanges(false);
       setIsBusinessEditing(false);
       setTimeout(() => setBusinessSaveSuccess(false), 3000);
-    } catch (error) {
-      console.error('Failed to save business info:', error);
     } finally {
       setIsSavingBusiness(false);
     }
@@ -442,9 +453,9 @@ export default function ProfileSettings() {
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                     <div className="flex gap-2">
                       <Button variant="outline" onClick={() => setIsPersonalEditing(false)}>Cancel</Button>
-                      <Button onClick={handleSave} disabled={isSaving || isUploading} className="bg-teal-600 hover:bg-teal-700 gap-2">
-                        {(isSaving || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        {isUploading ? 'Uploading...' : 'Save Changes'}
+                      <Button onClick={handleSave} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 gap-2">
+                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        {isSaving ? 'Saving...' : 'Save Changes'}
                       </Button>
                     </div>
                     {saveSuccess && <p className="text-sm text-emerald-600">Saved!</p>}
@@ -596,9 +607,9 @@ export default function ProfileSettings() {
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                       <div className="flex gap-2">
                         <Button variant="outline" onClick={() => setIsBusinessEditing(false)}>Cancel</Button>
-                        <Button onClick={handleSaveBusinessInfo} disabled={isSavingBusiness || isUploadingLogo} className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2">
-                          {(isSavingBusiness || isUploadingLogo) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                          {isUploadingLogo ? 'Uploading...' : 'Save Business Info'}
+                        <Button onClick={handleSaveBusinessInfo} disabled={isSavingBusiness} className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2">
+                          {isSavingBusiness ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                          {isSavingBusiness ? 'Saving...' : 'Save Business Info'}
                         </Button>
                       </div>
                       {businessSaveSuccess && <p className="text-sm text-emerald-600">Saved!</p>}
