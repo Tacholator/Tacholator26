@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Save, Loader2, User, Mail, Phone, Upload, X, Volume2, Mic, Building2, FileText, MapPin, Pencil, Camera } from 'lucide-react';
+import { Save, Loader2, User, Mail, Phone, Volume2, Mic, Building2, FileText, MapPin, Pencil } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -22,8 +22,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    phone: '',
-    profilePhotoUrl: ''
+    phone: ''
   });
 
   const [businessData, setBusinessData] = useState({
@@ -31,7 +30,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
     businessAddress: '',
     businessCity: '',
     businessPostcode: '',
-    businessLogoUrl: '',
     businessRegistration: '',
     businessPhone: '',
     businessEmail: '',
@@ -46,12 +44,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
   const [hasBusinessChanges, setHasBusinessChanges] = useState(false);
   const [isPersonalEditing, setIsPersonalEditing] = useState(false);
   const [isBusinessEditing, setIsBusinessEditing] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const [pendingPhotoFile, setPendingPhotoFile] = useState(null);
-  const [pendingPhotoPreview, setPendingPhotoPreview] = useState(null);
-  const [pendingLogoFile, setPendingLogoFile] = useState(null);
-  const [pendingLogoPreview, setPendingLogoPreview] = useState(null);
   const [instructorProfile, setInstructorProfile] = useState(null);
   const [audioEnabled, setAudioEnabled] = useState(() => {
     return localStorage.getItem('enable_audio_reading') !== 'false';
@@ -65,8 +58,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
       setFormData({
         firstName: user.firstName || user.full_name?.split(' ')[0] || '',
         lastName: user.lastName || user.full_name?.split(' ').slice(1).join(' ') || '',
-        phone: user.phone || '',
-        profilePhotoUrl: user.profilePhotoUrl || ''
+        phone: user.phone || ''
       });
     }
   }, [user]);
@@ -83,7 +75,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
             businessAddress: profile.businessAddress || '',
             businessCity: profile.businessCity || '',
             businessPostcode: profile.businessPostcode || '',
-            businessLogoUrl: profile.businessLogoUrl || '',
             businessRegistration: profile.businessRegistration || '',
             businessPhone: profile.businessPhone || '',
             businessEmail: profile.businessEmail || '',
@@ -126,15 +117,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      let updatedFormData = { ...formData };
-      if (pendingPhotoFile) {
-        const base64Url = await resizeImageToBase64(pendingPhotoFile);
-        updatedFormData = { ...updatedFormData, profilePhotoUrl: base64Url };
-        setFormData(updatedFormData);
-        setPendingPhotoFile(null);
-        setPendingPhotoPreview(null);
-      }
-      await base44.auth.updateMe(updatedFormData);
+      await base44.auth.updateMe(formData);
       
       if (isInstructor && instructorProfile) {
         const fullName = `${formData.firstName} ${formData.lastName}`.trim();
@@ -180,40 +163,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
     localStorage.setItem('study_material_voice', voice);
   };
 
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = '';
-    const previewUrl = URL.createObjectURL(file);
-    setPendingPhotoFile(file);
-    setPendingPhotoPreview(previewUrl);
-    setHasPersonalChanges(true);
-  };
-
-  const handleRemovePhoto = () => {
-    setPendingPhotoFile(null);
-    setPendingPhotoPreview(null);
-    setFormData(prev => ({ ...prev, profilePhotoUrl: '' }));
-    setHasPersonalChanges(true);
-  };
-
-  const handleLogoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = '';
-    const previewUrl = URL.createObjectURL(file);
-    setPendingLogoFile(file);
-    setPendingLogoPreview(previewUrl);
-    setHasBusinessChanges(true);
-  };
-
-  const handleRemoveLogo = () => {
-    setPendingLogoFile(null);
-    setPendingLogoPreview(null);
-    setBusinessData(prev => ({ ...prev, businessLogoUrl: '' }));
-    setHasBusinessChanges(true);
-  };
-
   const handleBusinessChange = (field, value) => {
     setBusinessData(prev => ({ ...prev, [field]: value }));
     setSaveSuccess(false);
@@ -224,16 +173,8 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
   const handleSaveBusinessInfo = async () => {
     setIsSavingBusiness(true);
     try {
-      let updatedBusinessData = { ...businessData };
-      if (pendingLogoFile) {
-        const base64Url = await resizeImageToBase64(pendingLogoFile, 400);
-        updatedBusinessData = { ...updatedBusinessData, businessLogoUrl: base64Url };
-        setBusinessData(updatedBusinessData);
-        setPendingLogoFile(null);
-        setPendingLogoPreview(null);
-      }
       if (instructorProfile) {
-        await base44.entities.Instructor.update(instructorProfile.id, updatedBusinessData);
+        await base44.entities.Instructor.update(instructorProfile.id, businessData);
       }
       setBusinessSaveSuccess(true);
       setHasBusinessChanges(false);
@@ -254,27 +195,10 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
           <div className="flex items-center gap-4">
             <div className="relative">
               <Avatar className="h-16 w-16">
-                {(pendingPhotoPreview || formData.profilePhotoUrl) ? (
-                  <img src={pendingPhotoPreview || formData.profilePhotoUrl} alt="Profile" className="w-full h-full object-cover rounded-full" />
-                ) : (
-                  <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white text-xl">
-                    {displayName[0]?.toUpperCase()}
-                  </AvatarFallback>
-                )}
+                <AvatarFallback className={`text-white text-xl font-semibold ${isInstructor ? 'bg-gradient-to-br from-[#071739] to-[#1a3a6b]' : 'bg-gradient-to-br from-teal-400 to-teal-600'}`}>
+                  {displayName[0]?.toUpperCase()}
+                </AvatarFallback>
               </Avatar>
-              {pendingPhotoPreview && (
-                <div className="absolute -bottom-1 -right-1 bg-amber-500 text-white rounded-full p-1 shadow-md" title="Unsaved">
-                  <Save className="w-3 h-3" />
-                </div>
-              )}
-              {!pendingPhotoPreview && formData.profilePhotoUrl && isPersonalEditing && (
-                <button
-                  onClick={handleRemovePhoto}
-                  className="absolute -top-1 -right-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              )}
             </div>
             <div className="flex-1">
               <CardTitle className="text-xl">{displayName}</CardTitle>
@@ -319,53 +243,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
           ) : (
             /* Edit mode */
             <>
-              {/* Profile Photo Upload */}
-              <div className="space-y-3">
-                <Label className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-slate-400" />
-                  Profile Photo
-                </Label>
-
-
-                {/* Preview */}
-                {pendingPhotoPreview && (
-                  <div className="flex items-center gap-4 p-3 bg-emerald-50 border border-emerald-300 rounded-lg">
-                    <div className="relative">
-                      <img src={pendingPhotoPreview} alt="New profile photo" className="h-16 w-16 rounded-full object-cover border-2 border-emerald-400" />
-                      <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-emerald-800">✓ Photo uploaded successfully</p>
-                      <p className="text-xs text-emerald-600 mt-0.5">Click "Save Changes" to apply it to your profile</p>
-                    </div>
-                    <button onClick={handleRemovePhoto} className="text-slate-400 hover:text-rose-500 transition-colors">
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-
-                {/* Use label+input for native file picking — required for WKWebView/TestFlight */}
-                <input type="file" id="photo-upload-library" accept="image/*" onChange={handlePhotoUpload} className="sr-only" />
-                <input type="file" id="photo-upload-camera" accept="image/*" capture="user" onChange={handlePhotoUpload} className="sr-only" />
-                <input type="file" id="photo-upload-file" accept="image/*,.heic,.heif" onChange={handlePhotoUpload} className="sr-only" />
-                <div className="flex flex-wrap gap-2">
-                  <label htmlFor="photo-upload-library" className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-slate-200 rounded-md bg-white hover:bg-slate-50 cursor-pointer transition-colors">
-                    <Upload className="w-4 h-4" />
-                    Photo Library
-                  </label>
-                  <label htmlFor="photo-upload-camera" className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-slate-200 rounded-md bg-white hover:bg-slate-50 cursor-pointer transition-colors">
-                    <Camera className="w-4 h-4" />
-                    Take Photo
-                  </label>
-                  <label htmlFor="photo-upload-file" className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-slate-200 rounded-md bg-white hover:bg-slate-50 cursor-pointer transition-colors">
-                    <FileText className="w-4 h-4" />
-                    Choose File
-                  </label>
-                </div>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="flex items-center gap-2"><User className="w-4 h-4 text-slate-400" />First Name</Label>
@@ -427,9 +304,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
               /* Read-only view */
               <>
                 <div className="space-y-3">
-                  {businessData.businessLogoUrl && (
-                    <img src={businessData.businessLogoUrl} alt="Business Logo" className="h-16 w-auto border rounded-lg mb-2" />
-                  )}
                   <div className="flex items-center gap-3">
                     <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
                     <div>
@@ -471,41 +345,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
             ) : (
               /* Edit mode */
               <>
-                {/* Business Logo */}
-                <div className="space-y-3">
-                  <Label className="flex items-center gap-2"><FileText className="w-4 h-4 text-slate-400" />Business Logo</Label>
-                  <input type="file" id="logo-upload" accept="image/*" onChange={handleLogoUpload} className="sr-only" />
-
-                  {/* Pending preview */}
-                  {pendingLogoPreview && (
-                    <div className="flex items-center gap-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                      <img src={pendingLogoPreview} alt="New business logo" className="h-16 w-auto border rounded-lg object-contain" />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-amber-800">New logo selected</p>
-                        <p className="text-xs text-amber-600">Click "Save Business Info" to apply</p>
-                      </div>
-                      <button onClick={handleRemoveLogo} className="text-rose-500 hover:text-rose-700">
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Current logo (no pending) */}
-                  {!pendingLogoPreview && businessData.businessLogoUrl && (
-                    <div className="relative inline-block">
-                      <img src={businessData.businessLogoUrl} alt="Business Logo" className="h-20 w-auto border rounded-lg" />
-                      <button onClick={handleRemoveLogo} className="absolute -top-2 -right-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 shadow-md transition-colors">
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  )}
-
-                  <label htmlFor="logo-upload" className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-slate-200 rounded-md bg-white hover:bg-slate-50 cursor-pointer transition-colors">
-                    <Upload className="w-4 h-4" />
-                    {businessData.businessLogoUrl || pendingLogoPreview ? 'Replace Logo' : 'Upload Logo'}
-                  </label>
-                </div>
-
                 <div className="space-y-2">
                   <Label htmlFor="businessName" className="flex items-center gap-2"><Building2 className="w-4 h-4 text-slate-400" />Business Name</Label>
                   <Input id="businessName" value={businessData.businessName} onChange={(e) => handleBusinessChange('businessName', e.target.value)} placeholder="e.g., ABC Driving School" />
@@ -553,9 +392,9 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={() => setIsBusinessEditing(false)}>Cancel</Button>
-                    <Button onClick={handleSaveBusinessInfo} disabled={isSavingBusiness || isUploadingLogo} className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2">
-                      {(isSavingBusiness || isUploadingLogo) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                      {isUploadingLogo ? 'Uploading...' : 'Save Business Info'}
+                    <Button onClick={handleSaveBusinessInfo} disabled={isSavingBusiness} className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2">
+                      {isSavingBusiness ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      {isSavingBusiness ? 'Saving...' : 'Save Business Info'}
                     </Button>
                   </div>
                   {businessSaveSuccess && <p className="text-sm text-emerald-600">Saved!</p>}
