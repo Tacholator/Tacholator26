@@ -180,6 +180,26 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
     localStorage.setItem('study_material_voice', voice);
   };
 
+  const openFilePicker = (options = {}) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = options.accept || 'image/*';
+    if (options.capture) input.setAttribute('capture', options.capture);
+    input.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0;';
+    document.body.appendChild(input);
+    input.onchange = (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const previewUrl = URL.createObjectURL(file);
+        setPendingPhotoFile(file);
+        setPendingPhotoPreview(previewUrl);
+        setHasPersonalChanges(true);
+      }
+      document.body.removeChild(input);
+    };
+    input.click();
+  };
+
   const handlePhotoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -325,10 +345,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                   <User className="w-4 h-4 text-slate-400" />
                   Profile Photo
                 </Label>
-                {/* Hidden inputs for each source - must NOT use display:none for capture to work on iOS */}
-                <input type="file" id="photo-upload-library" accept="image/*" onChange={handlePhotoUpload} className="absolute opacity-0 w-0 h-0 overflow-hidden" />
-                <input type="file" id="photo-upload-camera" accept="image/*" capture="user" onChange={handlePhotoUpload} className="absolute opacity-0 w-0 h-0 overflow-hidden" />
-                <input type="file" id="photo-upload-file" accept="image/*,.heic,.heif" onChange={handlePhotoUpload} className="absolute opacity-0 w-0 h-0 overflow-hidden" />
+
 
                 {/* Preview */}
                 {pendingPhotoPreview && (
@@ -350,15 +367,15 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
                 )}
 
                 <div className="flex flex-wrap gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-library')?.click()} className="gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => openFilePicker({ accept: 'image/*' })} className="gap-2">
                     <Upload className="w-4 h-4" />
                     Photo Library
                   </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-camera')?.click()} className="gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => openFilePicker({ accept: 'image/*', capture: 'user' })} className="gap-2">
                     <Camera className="w-4 h-4" />
                     Take Photo
                   </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo-upload-file')?.click()} className="gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => openFilePicker({ accept: 'image/*,.heic,.heif' })} className="gap-2">
                     <FileText className="w-4 h-4" />
                     Choose File
                   </Button>
