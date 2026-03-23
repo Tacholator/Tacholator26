@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -281,7 +281,6 @@ export default function Layout({ children, currentPageName }) {
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-[#071739]/80 transition-colors">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src={user?.profilePhotoUrl} />
                     <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739]">
                       {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                     </AvatarFallback>
@@ -337,7 +336,6 @@ export default function Layout({ children, currentPageName }) {
                         className="focus:outline-none"
                       >
                         <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
-                          <AvatarImage src={user?.profilePhotoUrl} />
                           <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-sm">
                             {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                           </AvatarFallback>
