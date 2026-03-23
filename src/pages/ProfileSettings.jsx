@@ -326,32 +326,6 @@ export default function ProfileSettings() {
                 </>
               ) : (
                 <>
-                  <div className="space-y-3">
-                    <Label className="flex items-center gap-2"><User className="w-4 h-4 text-slate-400" />Profile Photo</Label>
-                    <input type="file" id="photo-upload" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-                    {pendingPhotoPreview && (
-                      <div className="flex items-center gap-4 p-3 bg-emerald-50 border border-emerald-300 rounded-lg">
-                        <div className="relative">
-                          <img src={pendingPhotoPreview} alt="New profile photo" className="h-16 w-16 rounded-full object-cover border-2 border-emerald-400" />
-                          <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5">
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-semibold text-emerald-800">✓ Photo ready to save</p>
-                          <p className="text-xs text-emerald-600 mt-0.5">Click "Save Changes" to apply it to your profile</p>
-                        </div>
-                        <button onClick={handleRemovePhoto} className="text-slate-400 hover:text-rose-500 transition-colors">
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                    <Button type="button" variant="outline" onClick={() => document.getElementById('photo-upload')?.click()} className="gap-2">
-                      <Upload className="w-4 h-4" />
-                      {formData.profilePhotoUrl || pendingPhotoPreview ? 'Replace Photo' : 'Upload Photo'}
-                    </Button>
-                  </div>
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="firstName" className="flex items-center gap-2"><User className="w-4 h-4 text-slate-400" />First Name</Label>
