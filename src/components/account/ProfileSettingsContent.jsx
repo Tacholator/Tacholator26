@@ -44,7 +44,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
   const [hasBusinessChanges, setHasBusinessChanges] = useState(false);
   const [isPersonalEditing, setIsPersonalEditing] = useState(false);
   const [isBusinessEditing, setIsBusinessEditing] = useState(false);
-  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [instructorProfile, setInstructorProfile] = useState(null);
   const [audioEnabled, setAudioEnabled] = useState(() => {
     return localStorage.getItem('enable_audio_reading') !== 'false';
@@ -94,25 +93,6 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
     setSaveSuccess(false);
     setHasPersonalChanges(true);
   };
-
-  const resizeImageToBase64 = (file, maxSize = 300) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.8));
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 
   const handleSave = async () => {
     setIsSaving(true);

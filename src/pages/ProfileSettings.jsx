@@ -10,13 +10,6 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Save, Loader2, User, Mail, Phone, Trash2, Building2, FileText, MapPin, Pencil, Shield, AlertTriangle, CheckCircle2, ExternalLink } from 'lucide-react';
 import moment from 'moment';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 
 import { Link } from 'react-router-dom';
@@ -51,8 +44,6 @@ export default function ProfileSettings() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSavingBusiness, setIsSavingBusiness] = useState(false);
   const [businessSaveSuccess, setBusinessSaveSuccess] = useState(false);
-  const [hasPersonalChanges, setHasPersonalChanges] = useState(false);
-  const [hasBusinessChanges, setHasBusinessChanges] = useState(false);
   const [isPersonalEditing, setIsPersonalEditing] = useState(false);
   const [isBusinessEditing, setIsBusinessEditing] = useState(false);
 
@@ -159,27 +150,7 @@ export default function ProfileSettings() {
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setSaveSuccess(false);
-    setHasPersonalChanges(true);
-  };
-
-  const resizeImageToBase64 = (file, maxSize = 300) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.8));
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
     };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -219,7 +190,6 @@ export default function ProfileSettings() {
     setBusinessData(prev => ({ ...prev, [field]: value }));
     setSaveSuccess(false);
     setBusinessSaveSuccess(false);
-    setHasBusinessChanges(true);
   };
 
   const handleSaveBusinessInfo = async () => {

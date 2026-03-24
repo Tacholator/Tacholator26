@@ -42,7 +42,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
           onClick={() => setSelectedItem(null)}
           className="flex items-center gap-2 p-4 text-slate-600 hover:text-slate-900"
         >
-          <ArrowLeft className="w-4 h-4 rotate-180" />
+          <ArrowLeft className="w-4 h-4" />
           <span className="text-sm font-medium">Back</span>
         </button>
         <div className="flex-1 overflow-y-auto">
