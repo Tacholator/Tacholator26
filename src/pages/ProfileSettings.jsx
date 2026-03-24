@@ -176,7 +176,6 @@ export default function ProfileSettings() {
       }
       
       setSaveSuccess(true);
-      setHasPersonalChanges(false);
       setIsPersonalEditing(false);
       setTimeout(() => setSaveSuccess(false), 3000);
     } finally {
@@ -199,7 +198,6 @@ export default function ProfileSettings() {
         await base44.entities.Instructor.update(instructorProfile.id, businessData);
       }
       setBusinessSaveSuccess(true);
-      setHasBusinessChanges(false);
       setIsBusinessEditing(false);
       setTimeout(() => setBusinessSaveSuccess(false), 3000);
     } finally {
