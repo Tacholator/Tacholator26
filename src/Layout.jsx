@@ -315,7 +315,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden sticky top-0 z-40 flex h-16 items-center gap-x-4 bg-[#071739] border-b border-[#071739] px-4 shadow-sm">
+      <div className="lg:hidden sticky top-0 z-40 flex h-16 items-center gap-x-4 bg-[#071739] border-b border-[#071739] px-4 shadow-sm" style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(4rem + env(safe-area-inset-top))' }}>
         <button
           onClick={() => setMobileMenuOpen(true)}
           className="p-2 -m-2 text-white"
@@ -481,7 +481,7 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="lg:pl-64 pb-20 lg:pb-0">
+      <main className="lg:pl-64" style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}>
         {children}
       </main>
 

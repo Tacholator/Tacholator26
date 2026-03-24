@@ -115,11 +115,10 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
   const unreadMessagesCount = unreadMessages.length;
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#071739] border-t border-slate-700 shadow-lg safe-area-bottom">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#071739] border-t border-slate-700 shadow-lg">
       <div className="flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          // Check if current page matches OR if it's the Home page (default)
           const isActive = currentPageName === item.page || (item.id === 'home' && currentPageName === 'Home');
 
           return (
@@ -149,6 +148,8 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
           );
         })}
       </div>
+      {/* Safe area spacer for Android 15+ gesture navigation */}
+      <div style={{ height: 'env(safe-area-inset-bottom)' }} className="bg-[#071739]" />
     </div>
   );
 }
