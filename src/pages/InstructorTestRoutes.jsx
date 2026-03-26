@@ -259,27 +259,17 @@ export default function InstructorTestRoutes() {
                             )}
                             <div className="flex items-center gap-2 flex-shrink-0">
                               {videoId && (
-                                <a
-                                  href={route.youtubeUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-slate-400 hover:text-[#071739]"
-                                >
+                                <a href={route.youtubeUrl} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#071739]">
                                   <ExternalLink className="w-4 h-4" />
                                 </a>
                               )}
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-slate-400 hover:text-rose-500"
-                                onClick={() => setDeleteTargetId(route.id)}
-                              >
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-rose-500" onClick={() => setDeleteTargetId(route.id)}>
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
-                            </div>
+                          </div>
 
-                            <div className="flex gap-2 items-end">
+                          <div className="flex gap-2 items-end">
                             <div className="flex-1 space-y-1">
                               <Label className="text-xs text-slate-500">YouTube URL</Label>
                               <Input
@@ -290,12 +280,7 @@ export default function InstructorTestRoutes() {
                               />
                             </div>
                             {isEditingThis && (
-                              <Button
-                                size="sm"
-                                onClick={() => handleSaveUrl(route.id)}
-                                disabled={updateRouteMutation.isPending}
-                                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] h-8"
-                              >
+                              <Button size="sm" onClick={() => handleSaveUrl(route.id)} disabled={updateRouteMutation.isPending} className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] h-8">
                                 Save
                               </Button>
                             )}
