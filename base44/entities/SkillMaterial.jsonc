@@ -1,0 +1,49 @@
+{
+  "name": "SkillMaterial",
+  "type": "object",
+  "properties": {
+    "skillId": {
+      "type": "string",
+      "description": "DVSA skill identifier"
+    },
+    "instructorId": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "Custom skill topic name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the skill"
+    },
+    "content": {
+      "type": "string",
+      "description": "Rich text HTML content"
+    },
+    "lastSavedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "isVisibleToPupils": {
+      "type": "boolean",
+      "default": false
+    },
+    "visibleFromDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "youtubeUrl": {
+      "type": "string",
+      "description": "YouTube URL for the video tutorial"
+    },
+    "youtubeVideoId": {
+      "type": "string",
+      "description": "Extracted YouTube video ID"
+    }
+  },
+  "required": [
+    "skillId",
+    "content"
+  ]
+}

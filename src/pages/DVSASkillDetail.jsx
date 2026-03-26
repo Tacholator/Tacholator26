@@ -23,7 +23,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote, UserX } from 'lucide-react';
+import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote, UserX, Video, Plus, Trash2, Pencil } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { getSkillById, DVSA_SKILLS_DATA } from '@/components/dvsa/dvsaSkillsData';
 import StudyMaterial from '@/components/dvsa/StudyMaterial';
 import McqQuiz from '@/components/dvsa/McqQuiz';
@@ -41,6 +42,14 @@ export default function DVSASkillDetail() {
   const [assignComponents, setAssignComponents] = useState('both');
   const [materialProgress, setMaterialProgress] = useState({ scrollDepth: 0, timeSpent: 0 });
   const [instructorNotes, setInstructorNotes] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [isEditingVideo, setIsEditingVideo] = useState(false);
+  const [videoInput, setVideoInput] = useState('');
+
+  const extractYoutubeId = (url) => {
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
+    return match ? match[1] : null;
+  };
 
   const queryClient = useQueryClient();
   const skill = getSkillById(skillId);
@@ -99,6 +108,30 @@ export default function DVSASkillDetail() {
       return notes[0] || null;
     },
     enabled: !!skillId && !!user
+  });
+
+  const saveVideoMutation = useMutation({
+    mutationFn: async (url) => {
+      const videoId = extractYoutubeId(url);
+      const data = { youtubeUrl: url, youtubeVideoId: videoId };
+      if (customMaterial) {
+        return base44.entities.SkillMaterial.update(customMaterial.id, data);
+      }
+      return base44.entities.SkillMaterial.create({ skillId, content: '', ...data });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['skillMaterial', skillId]);
+      setIsEditingVideo(false);
+    }
+  });
+
+  const deleteVideoMutation = useMutation({
+    mutationFn: async () => {
+      if (customMaterial) {
+        return base44.entities.SkillMaterial.update(customMaterial.id, { youtubeUrl: '', youtubeVideoId: '' });
+      }
+    },
+    onSuccess: () => queryClient.invalidateQueries(['skillMaterial', skillId])
   });
 
   const selectedPupil = pupils.find(p => p.id === pupilIdParam);
@@ -494,6 +527,78 @@ export default function DVSASkillDetail() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {user?.role === 'admin' && (
+          <Card className="border-0 shadow-sm mt-6">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Video className="w-5 h-5 text-[#071739]" />
+                  Video Tutorial
+                </CardTitle>
+                {!isEditingVideo && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => { setVideoInput(customMaterial?.youtubeUrl || ''); setIsEditingVideo(true); }}
+                    className="gap-2"
+                  >
+                    {customMaterial?.youtubeVideoId ? <Pencil className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                    {customMaterial?.youtubeVideoId ? 'Edit Video' : 'Add Video'}
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isEditingVideo ? (
+                <div className="space-y-3">
+                  <Input
+                    value={videoInput}
+                    onChange={(e) => setVideoInput(e.target.value)}
+                    placeholder="Paste YouTube URL (e.g. https://youtube.com/watch?v=...)" 
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => saveVideoMutation.mutate(videoInput)}
+                      disabled={!videoInput || saveVideoMutation.isPending}
+                      className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+                    >
+                      {saveVideoMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setIsEditingVideo(false)}>Cancel</Button>
+                  </div>
+                </div>
+              ) : customMaterial?.youtubeVideoId ? (
+                <div className="space-y-3">
+                  <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${customMaterial.youtubeVideoId}`}
+                      title="Video Tutorial"
+                      className="w-full h-full"
+                      allowFullScreen
+                    />
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => deleteVideoMutation.mutate()}
+                    disabled={deleteVideoMutation.isPending}
+                    className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Remove Video
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-center py-10 text-slate-400">
+                  <Video className="w-10 h-10 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm">No video tutorial added yet</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <p className="text-center text-sm text-slate-500 mt-6">
           © {new Date().getFullYear()} Mobrage Driving Academy. All rights reserved.
