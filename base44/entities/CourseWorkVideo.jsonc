@@ -1,0 +1,25 @@
+{
+  "name": "CourseWorkVideo",
+  "type": "object",
+  "properties": {
+    "topicId": {
+      "type": "number",
+      "description": "The courseWork itemId (1-28)"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Instructor who added the video"
+    },
+    "youtubeUrl": {
+      "type": "string",
+      "description": "YouTube URL"
+    },
+    "youtubeVideoId": {
+      "type": "string",
+      "description": "Extracted YouTube video ID"
+    }
+  },
+  "required": [
+    "topicId"
+  ]
+}

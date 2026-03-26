@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import SectionAudioPlayer from '@/components/learning/SectionAudioPlayer';
+import CourseWorkSubcardSelect from '@/components/coursework/CourseWorkSubcardSelect';
 import GoogleTTSAudioPlayer from '@/components/learning/GoogleTTSAudioPlayer';
 import McqQuizPaginated from '@/components/coursework/McqQuizPaginated';
 import { questionPacks } from '@/components/coursework/questionPacks';
@@ -4393,86 +4394,13 @@ export default function CourseWorkDetail() {
   // Handle sub-card selection screen (for all cards except excluded ones)
   if (shouldHaveSubcards && !subcard && content) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
-        <div className="max-w-4xl mx-auto">
-          <Link to={createPageUrl('CourseWork')}>
-            <Button variant="ghost" className="gap-2 text-slate-600 hover:text-slate-800 mb-6">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Course Work
-            </Button>
-          </Link>
-          
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <FileText className="w-8 h-8 text-[#071739]" />
-              <h1 className="text-3xl font-bold text-[#071739]">{content.title}</h1>
-            </div>
-            <p className="text-slate-500 text-sm">Choose a section below</p>
-          </div>
-          
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card 
-              onClick={() => handleSubcardClick('study')}
-              className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 relative ${!hasStudyAccess ? 'opacity-75' : ''}`}
-            >
-              {!hasStudyAccess && !isInstructor && (
-                <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow-sm">
-                  <Lock className="w-5 h-5 text-amber-600" />
-                </div>
-              )}
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-orange-200 rounded-lg">
-                    <FileText className="w-6 h-6 text-orange-700" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-[#071739] mb-2">Study Material</h3>
-                    <p className="text-slate-600">
-                      Learn the key concepts, techniques and knowledge for {content.title.toLowerCase()}
-                    </p>
-                    {!hasStudyAccess && !isInstructor && (
-                      <p className="text-sm text-amber-600 mt-2 font-medium">
-                        🔒 Ask your instructor for access
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card 
-              onClick={() => handleSubcardClick('practice')}
-              className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50 relative ${!hasMcqAccess ? 'opacity-75' : ''}`}
-            >
-              {!hasMcqAccess && !isInstructor && (
-                <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow-sm">
-                  <Lock className="w-5 h-5 text-amber-600" />
-                </div>
-              )}
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-rose-200 rounded-lg">
-                    <CheckCircle className="w-6 h-6 text-rose-700" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-[#071739] mb-2">Practice Questions</h3>
-                    <p className="text-slate-600">
-                      Test your knowledge with practice questions and assessments
-                    </p>
-                    {!hasMcqAccess && !isInstructor && (
-                      <p className="text-sm text-amber-600 mt-2 font-medium">
-                        🔒 Ask your instructor for access
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <LockedContentDialog open={showLockedDialog} onOpenChange={setShowLockedDialog} />
-        </div>
-      </div>
+      <CourseWorkSubcardSelect
+        itemId={itemId}
+        content={content}
+        isInstructor={isInstructor}
+        hasStudyAccess={hasStudyAccess}
+        hasMcqAccess={hasMcqAccess}
+      />
     );
   }
 
