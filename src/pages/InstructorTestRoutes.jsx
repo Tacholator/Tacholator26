@@ -40,6 +40,7 @@ export default function InstructorTestRoutes() {
   const [newRoute, setNewRoute] = useState({ routeName: '', youtubeUrl: '' });
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [editingUrl, setEditingUrl] = useState({});
+  const [editingName, setEditingName] = useState({});
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -105,6 +106,17 @@ export default function InstructorTestRoutes() {
       data: { youtubeUrl: url, youtubeVideoId: extractYouTubeId(url) }
     });
     setEditingUrl(prev => {
+      const updated = { ...prev };
+      delete updated[routeId];
+      return updated;
+    });
+  };
+
+  const handleSaveName = (routeId) => {
+    const name = editingName[routeId]?.trim();
+    if (!name) return;
+    updateRouteMutation.mutate({ id: routeId, data: { routeName: name } });
+    setEditingName(prev => {
       const updated = { ...prev };
       delete updated[routeId];
       return updated;
@@ -224,8 +236,28 @@ export default function InstructorTestRoutes() {
                         {/* Details */}
                         <div className="flex-1 space-y-2">
                           <div className="flex items-center justify-between gap-2">
-                            <h3 className="font-semibold text-[#071739]">{route.routeName}</h3>
-                            <div className="flex items-center gap-2">
+                            {editingName[route.id] !== undefined ? (
+                              <div className="flex items-center gap-2 flex-1">
+                                <Input
+                                  value={editingName[route.id]}
+                                  onChange={(e) => setEditingName(prev => ({ ...prev, [route.id]: e.target.value }))}
+                                  className="h-8 text-sm font-semibold"
+                                  autoFocus
+                                  onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName(route.id); if (e.key === 'Escape') setEditingName(prev => { const u = {...prev}; delete u[route.id]; return u; }); }}
+                                />
+                                <Button size="sm" onClick={() => handleSaveName(route.id)} disabled={updateRouteMutation.isPending} className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] h-8">Save</Button>
+                                <Button size="sm" variant="ghost" onClick={() => setEditingName(prev => { const u = {...prev}; delete u[route.id]; return u; })} className="h-8">Cancel</Button>
+                              </div>
+                            ) : (
+                              <h3
+                                className="font-semibold text-[#071739] cursor-pointer hover:text-[#F7B602] transition-colors"
+                                title="Click to edit title"
+                                onClick={() => setEditingName(prev => ({ ...prev, [route.id]: route.routeName }))}
+                              >
+                                {route.routeName} ✏️
+                              </h3>
+                            )}
+                            <div className="flex items-center gap-2 flex-shrink-0">
                               {videoId && (
                                 <a
                                   href={route.youtubeUrl}
@@ -245,9 +277,9 @@ export default function InstructorTestRoutes() {
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
-                          </div>
+                            </div>
 
-                          <div className="flex gap-2 items-end">
+                            <div className="flex gap-2 items-end">
                             <div className="flex-1 space-y-1">
                               <Label className="text-xs text-slate-500">YouTube URL</Label>
                               <Input
