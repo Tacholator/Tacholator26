@@ -63,7 +63,11 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
 
   const { data: videos = [], isLoading: videosLoading } = useQuery({
     queryKey: ['courseWorkVideos', itemId, videoInstructorId],
-    queryFn: () => base44.entities.CourseWorkVideo.filter({ topicId: itemId, instructorId: videoInstructorId }),
+    queryFn: async () => {
+      const results = await base44.entities.CourseWorkVideo.filter({ topicId: itemId, instructorId: videoInstructorId });
+      // Client-side safety: only show videos that exactly match this instructor
+      return results.filter(v => v.instructorId === videoInstructorId);
+    },
     enabled: !!itemId && !!videoInstructorId
   });
 
