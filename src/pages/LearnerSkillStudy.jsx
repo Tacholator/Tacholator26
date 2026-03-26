@@ -49,14 +49,15 @@ export default function LearnerSkillStudy() {
   });
 
   const { data: customMaterial } = useQuery({
-    queryKey: ['skillMaterial', skillId],
+    queryKey: ['skillMaterial', skillId, pupil?.instructorId],
     queryFn: async () => {
-      const materials = await base44.entities.SkillMaterial.filter({ skillId });
+      if (!pupil?.instructorId) return null;
+      const materials = await base44.entities.SkillMaterial.filter({ skillId, instructorId: pupil.instructorId });
       const mat = materials[0] || null;
       // Only return if visible to pupils
       return mat?.isVisibleToPupils ? mat : null;
     },
-    enabled: !!skillId
+    enabled: !!skillId && !!pupil?.instructorId
   });
 
   const updateAssignmentMutation = useMutation({

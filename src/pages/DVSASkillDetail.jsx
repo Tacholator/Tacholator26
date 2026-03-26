@@ -92,12 +92,12 @@ export default function DVSASkillDetail() {
   });
 
   const { data: customMaterial } = useQuery({
-    queryKey: ['skillMaterial', skillId],
+    queryKey: ['skillMaterial', skillId, user?.id],
     queryFn: async () => {
-      const materials = await base44.entities.SkillMaterial.filter({ skillId });
+      const materials = await base44.entities.SkillMaterial.filter({ skillId, instructorId: user.id });
       return materials[0] || null;
     },
-    enabled: !!skillId
+    enabled: !!skillId && !!user?.id
   });
 
   const { data: skillNotes } = useQuery({
