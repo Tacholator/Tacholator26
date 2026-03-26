@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Youtube, Plus, Trash2, Users, Video, ExternalLink } from 'lucide-react';
+import { Youtube, Plus, Trash2, Users, Video, ExternalLink, Pencil } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
   AlertDialog,
@@ -249,12 +249,8 @@ export default function InstructorTestRoutes() {
                                 <Button size="sm" variant="ghost" onClick={() => setEditingName(prev => { const u = {...prev}; delete u[route.id]; return u; })} className="h-8">Cancel</Button>
                               </div>
                             ) : (
-                              <h3
-                                className="font-semibold text-[#071739] cursor-pointer hover:text-[#F7B602] transition-colors"
-                                title="Click to edit title"
-                                onClick={() => setEditingName(prev => ({ ...prev, [route.id]: route.routeName }))}
-                              >
-                                {route.routeName} ✏️
+                              <h3 className="font-semibold text-[#071739]">
+                                {route.routeName}
                               </h3>
                             )}
                             <div className="flex items-center gap-2 flex-shrink-0">
@@ -263,6 +259,9 @@ export default function InstructorTestRoutes() {
                                   <ExternalLink className="w-4 h-4" />
                                 </a>
                               )}
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-[#F7B602]" onClick={() => setEditingName(prev => ({ ...prev, [route.id]: route.routeName }))}>
+                                <Pencil className="w-4 h-4" />
+                              </Button>
                               <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-rose-500" onClick={() => setDeleteTargetId(route.id)}>
                                 <Trash2 className="w-4 h-4" />
                               </Button>
