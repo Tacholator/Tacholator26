@@ -48,10 +48,23 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
     queryFn: () => base44.auth.me()
   });
 
+  // For learners, get their pupil record to find instructorId
+  const { data: pupilProfile } = useQuery({
+    queryKey: ['subCardPupilProfile', user?.id],
+    queryFn: async () => {
+      const results = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      return results[0] || null;
+    },
+    enabled: !!user?.id && !isInstructor
+  });
+
+  // instructorId to filter videos by
+  const videoInstructorId = isInstructor ? user?.id : pupilProfile?.instructorId;
+
   const { data: videos = [], isLoading: videosLoading } = useQuery({
-    queryKey: ['courseWorkVideos', itemId],
-    queryFn: () => base44.entities.CourseWorkVideo.filter({ topicId: itemId }),
-    enabled: !!itemId
+    queryKey: ['courseWorkVideos', itemId, videoInstructorId],
+    queryFn: () => base44.entities.CourseWorkVideo.filter({ topicId: itemId, instructorId: videoInstructorId }),
+    enabled: !!itemId && !!videoInstructorId
   });
 
   const addVideoMutation = useMutation({
@@ -62,7 +75,7 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
       youtubeVideoId: extractYouTubeId(data.youtubeUrl)
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['courseWorkVideos', itemId]);
+      queryClient.invalidateQueries(['courseWorkVideos', itemId, videoInstructorId]);
       setShowAddForm(false);
       setNewVideo({ videoName: '', youtubeUrl: '' });
     }
@@ -70,13 +83,13 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
 
   const updateVideoMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.CourseWorkVideo.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries(['courseWorkVideos', itemId])
+    onSuccess: () => queryClient.invalidateQueries(['courseWorkVideos', itemId, videoInstructorId])
   });
 
   const deleteVideoMutation = useMutation({
     mutationFn: (id) => base44.entities.CourseWorkVideo.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['courseWorkVideos', itemId]);
+      queryClient.invalidateQueries(['courseWorkVideos', itemId, videoInstructorId]);
       setDeleteTargetId(null);
     }
   });
