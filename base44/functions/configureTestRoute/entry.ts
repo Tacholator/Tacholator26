@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     }
 
     // Convert to GeoJSON LineString format
-    const coordinates = gpsData.points.map(point => [point.lon, point.lat]);
+    const coordinates = gpsData.points.map(point => [point.lng ?? point.lon, point.lat]);
 
     const geoJson = {
       type: "Feature",
@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
               : "Continue following the route",
           location: {
             latitude: point.lat,
-            longitude: point.lon
+            longitude: point.lng ?? point.lon
           },
           distance: `${Math.round((gpsData.route?.distanceMeters || 0) / 1000 * (i / gpsData.points.length))}km`
         });
