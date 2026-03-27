@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, FileText, CheckCircle, Lock, Video, Plus, Trash2, Youtube, ExternalLink, Pencil } from 'lucide-react';
+import { ArrowLeft, FileText, CheckCircle, Lock, Video, Plus, Trash2, Youtube, ExternalLink, Pencil, Play } from 'lucide-react';
 import LockedContentDialog from '@/components/coursework/LockedContentDialog';
+import VideoPlayerModal from '@/components/coursework/VideoPlayerModal';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,6 +43,7 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [editingUrl, setEditingUrl] = useState({});
   const [editingName, setEditingName] = useState({});
+  const [activeVideo, setActiveVideo] = useState(null); // { videoId, videoName }
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -277,7 +279,7 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                 </Card>
               )
             ) : (
-              <div className="space-y-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {videos.map(video => {
                   const isEditingThisUrl = editingUrl[video.id] !== undefined;
                   const currentUrl = isEditingThisUrl ? editingUrl[video.id] : (video.youtubeUrl || '');
@@ -285,10 +287,14 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
 
                   return (
                     <Card key={video.id} className="overflow-hidden">
-                      <CardContent className="p-4">
-                        <div className="flex flex-col md:flex-row gap-4">
-                          {/* Thumbnail */}
-                          <div className="w-full md:w-40 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center">
+                      <CardContent className="p-0">
+                        {/* Square thumbnail — pupil clicks to play in-app */}
+                        <div
+                          className="relative group cursor-pointer"
+                          style={{ paddingBottom: '100%' }}
+                          onClick={() => !isInstructor && videoId && setActiveVideo({ videoId, videoName: video.videoName })}
+                        >
+                          <div className="absolute inset-0 bg-slate-100 flex items-center justify-center">
                             {videoId ? (
                               <img
                                 src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
@@ -296,73 +302,58 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <Youtube className="w-8 h-8 text-slate-300" />
+                              <Youtube className="w-10 h-10 text-slate-300" />
                             )}
                           </div>
-
-                          {/* Details */}
-                          <div className="flex-1 space-y-2">
-                            <div className="flex items-center justify-between gap-2">
-                              {isInstructor && editingName[video.id] !== undefined ? (
-                                <div className="flex items-center gap-2 flex-1">
-                                  <Input
-                                    value={editingName[video.id]}
-                                    onChange={(e) => setEditingName(prev => ({ ...prev, [video.id]: e.target.value }))}
-                                    className="h-8 text-sm font-semibold"
-                                    autoFocus
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') handleSaveName(video.id);
-                                      if (e.key === 'Escape') setEditingName(prev => { const u = { ...prev }; delete u[video.id]; return u; });
-                                    }}
-                                  />
-                                  <Button size="sm" onClick={() => handleSaveName(video.id)} disabled={updateVideoMutation.isPending} className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] h-8">Save</Button>
-                                  <Button size="sm" variant="ghost" onClick={() => setEditingName(prev => { const u = { ...prev }; delete u[video.id]; return u; })} className="h-8">Cancel</Button>
-                                </div>
-                              ) : (
-                                <h3 className="font-semibold text-[#071739]">{video.videoName || 'Untitled Video'}</h3>
-                              )}
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                {videoId && (
-                                  <a href={video.youtubeUrl} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#071739]">
-                                    <ExternalLink className="w-4 h-4" />
-                                  </a>
-                                )}
-                                {isInstructor && (
-                                  <>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-[#F7B602]" onClick={() => setEditingName(prev => ({ ...prev, [video.id]: video.videoName || '' }))}>
-                                      <Pencil className="w-4 h-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-rose-500" onClick={() => setDeleteTargetId(video.id)}>
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                  </>
-                                )}
+                          {!isInstructor && videoId && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="bg-white rounded-full p-3 shadow-lg">
+                                <Play className="w-6 h-6 text-[#071739]" />
                               </div>
                             </div>
+                          )}
+                        </div>
 
-                            {isInstructor && (
-                              <div className="flex gap-2 items-end">
-                                <div className="flex-1 space-y-1">
-                                  <Label className="text-xs text-slate-500">YouTube URL</Label>
-                                  <Input
-                                    placeholder="https://youtube.com/watch?v=..."
-                                    value={currentUrl}
-                                    onChange={(e) => setEditingUrl(prev => ({ ...prev, [video.id]: e.target.value }))}
-                                    className="h-8 text-sm"
-                                  />
-                                </div>
+                        <div className="p-3 space-y-2">
+                          {isInstructor && editingName[video.id] !== undefined ? (
+                            <div className="flex items-center gap-1">
+                              <Input
+                                value={editingName[video.id]}
+                                onChange={(e) => setEditingName(prev => ({ ...prev, [video.id]: e.target.value }))}
+                                className="h-7 text-xs font-semibold"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleSaveName(video.id);
+                                  if (e.key === 'Escape') setEditingName(prev => { const u = { ...prev }; delete u[video.id]; return u; });
+                                }}
+                              />
+                              <Button size="sm" onClick={() => handleSaveName(video.id)} disabled={updateVideoMutation.isPending} className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] h-7 text-xs px-2">Save</Button>
+                            </div>
+                          ) : (
+                            <p className="font-semibold text-[#071739] text-sm line-clamp-2">{video.videoName || 'Untitled Video'}</p>
+                          )}
+
+                          {isInstructor && (
+                            <div className="space-y-1">
+                              <Input
+                                placeholder="https://youtube.com/watch?v=..."
+                                value={currentUrl}
+                                onChange={(e) => setEditingUrl(prev => ({ ...prev, [video.id]: e.target.value }))}
+                                className="h-7 text-xs"
+                              />
+                              <div className="flex gap-1 justify-end">
                                 {isEditingThisUrl && (
-                                  <Button size="sm" onClick={() => handleSaveUrl(video.id)} disabled={updateVideoMutation.isPending} className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] h-8">
-                                    Save
-                                  </Button>
+                                  <Button size="sm" onClick={() => handleSaveUrl(video.id)} disabled={updateVideoMutation.isPending} className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] h-7 text-xs px-2">Save URL</Button>
                                 )}
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-[#F7B602]" onClick={() => setEditingName(prev => ({ ...prev, [video.id]: video.videoName || '' }))}>
+                                  <Pencil className="w-3 h-3" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-rose-500" onClick={() => setDeleteTargetId(video.id)}>
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
                               </div>
-                            )}
-
-                            {!videoId && isInstructor && (
-                              <p className="text-xs text-amber-600">No video URL set yet</p>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -374,6 +365,14 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
         )}
 
         <LockedContentDialog open={showLockedDialog} onOpenChange={setShowLockedDialog} />
+
+        {activeVideo && (
+          <VideoPlayerModal
+            videoId={activeVideo.videoId}
+            videoName={activeVideo.videoName}
+            onClose={() => setActiveVideo(null)}
+          />
+        )}
 
         <AlertDialog open={!!deleteTargetId} onOpenChange={(open) => !open && setDeleteTargetId(null)}>
           <AlertDialogContent>
