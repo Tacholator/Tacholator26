@@ -58,8 +58,8 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
     enabled: !!user?.id && !isInstructor
   });
 
-  // instructorId to filter videos by
-  const videoInstructorId = isInstructor ? user?.id : pupilProfile?.instructorId;
+  // instructorId to filter videos by — fall back to created_by if instructorId not set
+  const videoInstructorId = isInstructor ? user?.id : (pupilProfile?.instructorId || pupilProfile?.created_by);
 
   const { data: videos = [], isLoading: videosLoading } = useQuery({
     queryKey: ['courseWorkVideos', itemId, videoInstructorId],
