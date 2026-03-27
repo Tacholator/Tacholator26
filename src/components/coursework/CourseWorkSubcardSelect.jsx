@@ -50,10 +50,13 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
 
   // For learners, get their pupil record to find instructorId
   const { data: pupilProfile } = useQuery({
-    queryKey: ['subCardPupilProfile', user?.id],
+    queryKey: ['subCardPupilProfile', user?.id, user?.email],
     queryFn: async () => {
-      const results = await base44.entities.Pupil.filter({ linkedUserId: user.id });
-      return results[0] || null;
+      const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (byLinkedId.length > 0) return byLinkedId[0];
+      // Fallback: match by email in case linkedUserId is stale
+      const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+      return byEmail[0] || null;
     },
     enabled: !!user?.id && !isInstructor
   });
