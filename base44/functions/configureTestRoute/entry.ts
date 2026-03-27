@@ -30,17 +30,42 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    const gpsData = await gpsResponse.json();
+    const rawText = await gpsResponse.text();
 
-    // Validate data structure
-    if (!gpsData.points || !Array.isArray(gpsData.points)) {
-      return Response.json({ 
-        error: 'Invalid GPS data format: missing points array' 
-      }, { status: 400 });
+    let coordinates = [];
+    let routeName = 'Route';
+
+    // Detect GPX (XML) vs JSON
+    if (rawText.trim().startsWith('<')) {
+      // Parse GPX XML - extract trkpt lat/lon attributes
+      const trkptRegex = /<trkpt\s+lat="([\d.\-]+)"\s+lon="([\d.\-]+)"/g;
+      let match;
+      while ((match = trkptRegex.exec(rawText)) !== null) {
+        coordinates.push([parseFloat(match[2]), parseFloat(match[1])]);
+      }
+      // Also try lon before lat ordering
+      if (coordinates.length === 0) {
+        const altRegex = /<trkpt\s+lon="([\d.\-]+)"\s+lat="([\d.\-]+)"/g;
+        while ((match = altRegex.exec(rawText)) !== null) {
+          coordinates.push([parseFloat(match[1]), parseFloat(match[2])]);
+        }
+      }
+      const nameMatch = rawText.match(/<name>([^<]+)<\/name>/);
+      if (nameMatch) routeName = nameMatch[1].trim();
+    } else {
+      const gpsData = JSON.parse(rawText);
+      if (!gpsData.points || !Array.isArray(gpsData.points)) {
+        return Response.json({ error: 'Invalid GPS data format: missing points array' }, { status: 400 });
+      }
+      coordinates = gpsData.points.map(p => [p.lng ?? p.lon, p.lat]);
+      routeName = gpsData.route?.name || 'Route';
     }
 
-    // Convert to GeoJSON LineString format
-    const coordinates = gpsData.points.map(point => [point.lng ?? point.lon, point.lat]);
+    if (coordinates.length === 0) {
+      return Response.json({ error: 'No GPS points found in file' }, { status: 400 });
+    }
+
+    const pointsCount = coordinates.length;
 
     const geoJson = {
       type: "Feature",
@@ -49,31 +74,24 @@ Deno.serve(async (req) => {
         coordinates: coordinates
       },
       properties: {
-        name: gpsData.route?.name || "Route",
-        distance: gpsData.route?.distanceMeters,
-        duration: gpsData.route?.durationSec,
-        pointsCount: gpsData.points.length
+        name: routeName,
+        pointsCount
       }
     };
 
-    // Generate basic turn-by-turn steps (simplified)
+    // Generate basic turn-by-turn steps (~10 evenly spaced)
     const steps = [];
-    const stepInterval = Math.floor(gpsData.points.length / 10); // ~10 steps
-    
-    for (let i = 0; i < gpsData.points.length; i += stepInterval) {
-      const point = gpsData.points[i];
-      if (point) {
+    const stepInterval = Math.floor(pointsCount / 10);
+    for (let i = 0; i < pointsCount; i += stepInterval) {
+      const coord = coordinates[i];
+      if (coord) {
         steps.push({
-          instructionText: i === 0 
-            ? "Start your journey" 
-            : i >= gpsData.points.length - stepInterval 
+          instructionText: i === 0
+            ? "Start your journey"
+            : i >= pointsCount - stepInterval
               ? "You are approaching your destination"
               : "Continue following the route",
-          location: {
-            latitude: point.lat,
-            longitude: point.lng ?? point.lon
-          },
-          distance: `${Math.round((gpsData.route?.distanceMeters || 0) / 1000 * (i / gpsData.points.length))}km`
+          location: { latitude: coord[1], longitude: coord[0] }
         });
       }
     }
@@ -88,7 +106,7 @@ Deno.serve(async (req) => {
     return Response.json({ 
       success: true, 
       message: 'Route configured successfully',
-      pointsProcessed: gpsData.points.length,
+      pointsProcessed: pointsCount,
       stepsGenerated: steps.length,
       route: updated
     });

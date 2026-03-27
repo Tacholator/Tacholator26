@@ -16,14 +16,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function ConfigureRouteButton({ routeId, onSuccess }) {
   const [open, setOpen] = useState(false);
-  const [gpsDataUrl, setGpsDataUrl] = useState('');
+  const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
   const handleConfigure = async () => {
-    if (!gpsDataUrl) {
-      setError('Please enter a GPS data file URL');
+    if (!file) {
+      setError('Please select a GPX file');
       return;
     }
 
@@ -32,9 +32,12 @@ export default function ConfigureRouteButton({ routeId, onSuccess }) {
     setResult(null);
 
     try {
+      // Upload the GPX file to get a public URL
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
       const response = await base44.functions.invoke('configureTestRoute', {
         routeId,
-        gpsDataUrl
+        gpsDataUrl: file_url
       });
 
       setResult(response.data);
@@ -70,16 +73,16 @@ export default function ConfigureRouteButton({ routeId, onSuccess }) {
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="gpsUrl">GPS Data File URL</Label>
+            <Label htmlFor="gpxFile">GPX File</Label>
             <Input
-              id="gpsUrl"
-              placeholder="https://example.com/route-data.json"
-              value={gpsDataUrl}
-              onChange={(e) => setGpsDataUrl(e.target.value)}
+              id="gpxFile"
+              type="file"
+              accept=".gpx"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
               disabled={loading}
             />
             <p className="text-xs text-slate-500">
-              Paste the URL of your GPS data JSON file
+              Select a .gpx file exported from your GPS device or app
             </p>
           </div>
 
@@ -106,7 +109,7 @@ export default function ConfigureRouteButton({ routeId, onSuccess }) {
 
           <Button
             onClick={handleConfigure}
-            disabled={loading || !gpsDataUrl}
+            disabled={loading || !file}
             className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
           >
             {loading ? (
