@@ -279,7 +279,7 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                 </Card>
               )
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid gap-4 md:grid-cols-2">
                 {videos.map(video => {
                   const isEditingThisUrl = editingUrl[video.id] !== undefined;
                   const currentUrl = isEditingThisUrl ? editingUrl[video.id] : (video.youtubeUrl || '');
@@ -288,27 +288,25 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                   return (
                     <Card key={video.id} className="overflow-hidden">
                       <CardContent className="p-0">
-                        {/* Square thumbnail — pupil clicks to play in-app */}
                         <div
                           className="relative group cursor-pointer"
-                          style={{ paddingBottom: '100%' }}
                           onClick={() => !isInstructor && videoId && setActiveVideo({ videoId, videoName: video.videoName })}
                         >
-                          <div className="absolute inset-0 bg-slate-100 flex items-center justify-center">
-                            {videoId ? (
-                              <img
-                                src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
-                                alt={video.videoName}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
+                          {videoId ? (
+                            <img
+                              src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+                              alt={video.videoName}
+                              className="w-full h-44 object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-44 bg-slate-100 flex items-center justify-center">
                               <Youtube className="w-10 h-10 text-slate-300" />
-                            )}
-                          </div>
+                            </div>
+                          )}
                           {!isInstructor && videoId && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <div className="bg-white rounded-full p-3 shadow-lg">
-                                <Play className="w-6 h-6 text-[#071739]" />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+                              <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                                <Play className="w-6 h-6 text-[#071739] ml-1" />
                               </div>
                             </div>
                           )}
