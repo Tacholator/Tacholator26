@@ -1,0 +1,139 @@
+{
+  "name": "Instructor",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full name of the instructor"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Contact phone number"
+    },
+    "profilePhotoUrl": {
+      "type": "string",
+      "description": "URL to profile photo"
+    },
+    "calendarDefaultView": {
+      "type": "string",
+      "enum": [
+        "day",
+        "week",
+        "month"
+      ],
+      "default": "week"
+    },
+    "lessonDurationDefaultMinutes": {
+      "type": "number",
+      "default": 60
+    },
+    "timeZone": {
+      "type": "string",
+      "default": "Europe/London"
+    },
+    "requireBookingApproval": {
+      "type": "boolean",
+      "default": true,
+      "description": "Global setting: all pupil bookings require manual instructor approval. When false, bookings are auto-confirmed if pupil has sufficient balance."
+    },
+    "stripeAccountId": {
+      "type": "string",
+      "description": "Stripe Connect account ID for receiving payments"
+    },
+    "stripeAccountStatus": {
+      "type": "string",
+      "enum": [
+        "not_connected",
+        "pending",
+        "active",
+        "restricted"
+      ],
+      "default": "not_connected",
+      "description": "Status of Stripe Connect account"
+    },
+    "stripeOnboardingCompletedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When Stripe onboarding was completed"
+    },
+    "businessName": {
+      "type": "string",
+      "description": "Business/trading name"
+    },
+    "businessAddress": {
+      "type": "string",
+      "description": "Full business address"
+    },
+    "businessCity": {
+      "type": "string",
+      "description": "Business city"
+    },
+    "businessPostcode": {
+      "type": "string",
+      "description": "Business postcode"
+    },
+    "businessLogoUrl": {
+      "type": "string",
+      "description": "URL to business logo for invoices"
+    },
+    "businessRegistration": {
+      "type": "string",
+      "description": "Business registration number (optional)"
+    },
+    "businessPhone": {
+      "type": "string",
+      "description": "Business contact phone"
+    },
+    "businessEmail": {
+      "type": "string",
+      "description": "Business contact email"
+    },
+    "usePersonalPhoneForBusiness": {
+      "type": "boolean",
+      "default": false,
+      "description": "Use personal phone as business phone"
+    },
+    "usePersonalEmailForBusiness": {
+      "type": "boolean",
+      "default": false,
+      "description": "Use personal email as business email"
+    },
+    "bankTransferEnabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether instructor has set up bank transfer details for pupils"
+    },
+    "bankName": {
+      "type": "string",
+      "description": "Bank name for bank transfers"
+    },
+    "bankAccountName": {
+      "type": "string",
+      "description": "Account holder name for bank transfers"
+    },
+    "bankSortCode": {
+      "type": "string",
+      "description": "Sort code for bank transfers (e.g. 12-34-56)"
+    },
+    "bankAccountNumber": {
+      "type": "string",
+      "description": "Account number for bank transfers"
+    },
+    "bankPaymentReference": {
+      "type": "string",
+      "description": "Payment reference pupils should use (e.g. their name)"
+    },
+    "bankTransferNote": {
+      "type": "string",
+      "description": "Additional note for pupils making bank transfers"
+    },
+    "gpsRoutesAccessEnabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this instructor has been granted access to the GPS Routes section by admin"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

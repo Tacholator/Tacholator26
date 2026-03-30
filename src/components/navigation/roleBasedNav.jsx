@@ -91,6 +91,7 @@ export const instructorOnlyLinks = [
     ]
   },
   { name: 'Test Route Videos', icon: MapPin, page: 'InstructorTestRoutes' },
+  { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRouteSetup', requiresGpsAccess: true },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
 ];
 
@@ -122,7 +123,7 @@ export const getPageForRole = (linkId, isInstructor) => {
 };
 
 // Build complete navigation array for a role
-export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active', testRoutesAccessEnabled = false) => {
+export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active', testRoutesAccessEnabled = false, gpsRoutesAccessEnabled = false) => {
   const shared = sharedNavLinks
     .map(link => ({
       name: link.name,
@@ -134,7 +135,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
     }))
     .filter(link => link.page !== null); // Filter out items with null pages
 
-  let roleSpecific = isInstructor ? instructorOnlyLinks : [
+  let roleSpecific = isInstructor ? instructorOnlyLinks.filter(link => !link.requiresGpsAccess || gpsRoutesAccessEnabled) : [
     ...learnerOnlyLinks,
     ...(testRoutesAccessEnabled ? [{ name: 'Test Route Videos', icon: MapPin, page: 'LearnerTestRoutes' }] : [])
   ];
@@ -143,6 +144,8 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
   if (isInstructor && !isMainAdmin) {
     roleSpecific = roleSpecific.filter(link => !link.adminOnly);
   }
+
+
 
   // For non-active pupils, only show: Home, Book a Lesson, Payments, Notifications, Chats
   if (!isInstructor && pupilStatus !== 'Active') {
@@ -166,7 +169,8 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
   // Combine: Home first, then role-specific items, then shared items (excluding Home), then admin items at the end
   const adminDashboard = isInstructor && isMainAdmin 
     ? [
-        { name: 'Admin Dashboard', icon: Settings, page: 'AdminDashboard' }
+        { name: 'Admin Dashboard', icon: Settings, page: 'AdminDashboard' },
+        { name: 'GPS Route Access', icon: MapPin, page: 'AdminGpsRouteAccess' }
       ] 
     : [];
   

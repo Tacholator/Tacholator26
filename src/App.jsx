@@ -10,6 +10,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import RoleSelection from './pages/RoleSelection';
+import AdminGpsRouteAccess from './pages/AdminGpsRouteAccess';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -61,6 +62,11 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/AdminGpsRouteAccess" element={
+        <LayoutWrapper currentPageName="AdminGpsRouteAccess">
+          <AdminGpsRouteAccess />
+        </LayoutWrapper>
+      } />
       <Route path="/RoleSelection" element={
         <LayoutWrapper currentPageName="RoleSelection">
           <RoleSelection />

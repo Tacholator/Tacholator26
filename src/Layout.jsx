@@ -118,13 +118,22 @@ export default function Layout({ children, currentPageName }) {
     refetchInterval: 30000
   });
   
+  // Fetch instructor profile to get GPS routes access flag
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: user.id });
+      return results[0] || null;
+    },
+    enabled: !!user?.id && isInstructor
+  });
+
   // Build navigation dynamically based on role and pupil status
   const pupilStatus = pupilProfile?.status || 'Active';
   const testRoutesAccessEnabled = pupilProfile?.testRoutesAccessEnabled || false;
-  const baseNavItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus, testRoutesAccessEnabled);
-  
-  // baseNavItems already includes admin-only items filtered by isMainAdmin
-  const navItems = baseNavItems;
+  const gpsRoutesAccessEnabled = isMainAdmin || (instructorProfile?.gpsRoutesAccessEnabled || false);
+  const navItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus, testRoutesAccessEnabled, gpsRoutesAccessEnabled);
 
   const handleLogout = () => {
     base44.auth.logout();
