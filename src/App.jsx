@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import RoleSelection from './pages/RoleSelection';
 import AdminGpsRouteAccess from './pages/AdminGpsRouteAccess';
+import AdminGpsRoutes from './pages/AdminGpsRoutes';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -62,6 +63,11 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/AdminGpsRoutes" element={
+        <LayoutWrapper currentPageName="AdminGpsRoutes">
+          <AdminGpsRoutes />
+        </LayoutWrapper>
+      } />
       <Route path="/AdminGpsRouteAccess" element={
         <LayoutWrapper currentPageName="AdminGpsRouteAccess">
           <AdminGpsRouteAccess />

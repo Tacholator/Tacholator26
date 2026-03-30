@@ -1,22 +1,12 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, ChevronDown, ChevronUp, Users, Globe } from 'lucide-react';
+import { Users } from 'lucide-react';
 
 export default function AdminGpsRouteAccess() {
-  const [expandedCentre, setExpandedCentre] = useState(null);
   const queryClient = useQueryClient();
-
-  const { data: centres = [] } = useQuery({
-    queryKey: ['publishedCentres'],
-    queryFn: async () => {
-      const all = await base44.entities.TestRouteCentre.list();
-      return all.filter(c => c.published);
-    }
-  });
 
   const { data: instructors = [] } = useQuery({
     queryKey: ['allInstructors'],
@@ -46,44 +36,14 @@ export default function AdminGpsRouteAccess() {
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 bg-[#F7B602]/10 rounded-xl">
-          <MapPin className="w-6 h-6 text-[#F7B602]" />
+          <Users className="w-6 h-6 text-[#F7B602]" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#071739]">GPS Routes</h1>
-          <p className="text-sm text-slate-500">Published routes and instructor access control</p>
+          <h1 className="text-2xl font-bold text-[#071739]">GPS Route Access</h1>
+          <p className="text-sm text-slate-500">Manage instructor access to GPS Routes</p>
         </div>
       </div>
 
-      {/* Published Routes */}
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Published Routes</h2>
-      {centres.length === 0 ? (
-        <Card className="mb-6">
-          <CardContent className="py-8 text-center text-slate-400 text-sm">
-            No published routes yet. Publish routes in Test Route Configuration.
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-3 mb-8">
-          {centres.map(centre => (
-            <Card key={centre.id} className="overflow-hidden">
-              <CardHeader className="py-3 px-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-green-500" />
-                    <CardTitle className="text-base font-semibold text-[#071739]">{centre.centreName}</CardTitle>
-                    {centre.subLocation && (
-                      <span className="text-xs text-slate-400">— {centre.subLocation}</span>
-                    )}
-                  </div>
-                  <Badge className="bg-green-100 text-green-700 border-0 text-xs">Published</Badge>
-                </div>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Instructor Access */}
       <div className="flex items-center gap-2 mb-3">
         <Users className="w-4 h-4 text-slate-400" />
         <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Instructor Access</h2>

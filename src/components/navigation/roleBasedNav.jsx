@@ -170,6 +170,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
   const adminDashboard = isInstructor && isMainAdmin 
     ? [
         { name: 'Admin Dashboard', icon: Settings, page: 'AdminDashboard' },
+        { name: 'GPS Routes', icon: MapPin, page: 'AdminGpsRoutes' },
         { name: 'GPS Route Access', icon: MapPin, page: 'AdminGpsRouteAccess' }
       ] 
     : [];
