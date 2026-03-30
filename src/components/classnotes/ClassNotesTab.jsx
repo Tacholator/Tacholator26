@@ -181,7 +181,9 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
       : base44.entities.WhiteboardScribble.create(data),
     onSuccess: (saved) => {
       queryClient.invalidateQueries(['whiteboardScribbles', pupilId]);
-      setSelectedNote(saved);
+      setSelectedNote(null);
+      setStrokes([]);
+      setTopic('');
       setIsCreating(false);
     }
   });
