@@ -91,7 +91,7 @@ export const instructorOnlyLinks = [
     ]
   },
   { name: 'Test Route Videos', icon: MapPin, page: 'InstructorTestRoutes' },
-  { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRouteSetup', requiresGpsAccess: true },
+  { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
 ];
 

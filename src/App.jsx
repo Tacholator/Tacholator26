@@ -12,6 +12,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import RoleSelection from './pages/RoleSelection';
 import AdminGpsRouteAccess from './pages/AdminGpsRouteAccess';
 import AdminGpsRoutes from './pages/AdminGpsRoutes';
+import InstructorGpsRoutes from './pages/InstructorGpsRoutes';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -63,6 +64,11 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/InstructorGpsRoutes" element={
+        <LayoutWrapper currentPageName="InstructorGpsRoutes">
+          <InstructorGpsRoutes />
+        </LayoutWrapper>
+      } />
       <Route path="/AdminGpsRoutes" element={
         <LayoutWrapper currentPageName="AdminGpsRoutes">
           <AdminGpsRoutes />
