@@ -155,43 +155,58 @@ export default function NewLessonModal({ open, onOpenChange }) {
       const hourlyRate = selectedPupil.hourlyRate || 0;
       const totalPriceEach = hourlyRate * durationHours;
       const created = [];
-      for (const bookingDate of bookingDates) {
-        const startAtUtc = moment(`${bookingDate} ${startTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
-        const endAtUtc = moment(`${bookingDate} ${startTime}`, 'YYYY-MM-DD HH:mm').add(durationHours * 60, 'minutes').utc().toISOString();
 
-        const [existingBookings, existingSlots] = await Promise.all([
-          base44.entities.LessonBooking.filter({ instructorId: user.id }),
-          base44.entities.BookableSlotInstance.filter({ instructorId: user.id }),
-        ]);
+      // If booking via a selected slot, only book the first date (no recurrence)
+      const datesToBook = selectedSlotId ? [bookingDates[0]] : bookingDates;
+      // Get the selected slot object if applicable
+      const selectedSlot = selectedSlotId ? availableSlots.find(s => s.id === selectedSlotId) : null;
 
-        const newStart = moment(startAtUtc);
-        const newEnd = moment(endAtUtc);
+      for (const bookingDate of datesToBook) {
+        const startAtUtc = selectedSlot
+          ? selectedSlot.startAtUtc
+          : moment(`${bookingDate} ${startTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
+        const endAtUtc = selectedSlot
+          ? selectedSlot.endAtUtc
+          : moment(`${bookingDate} ${startTime}`, 'YYYY-MM-DD HH:mm').add(durationHours * 60, 'minutes').utc().toISOString();
 
-        const overlapsBooking = existingBookings.some(b => {
-          if (['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor', 'deleted'].includes(b.status)) return false;
-          if (b.isDeleted) return false;
-          return newStart.isBefore(moment(b.endAtUtc)) && newEnd.isAfter(moment(b.startAtUtc));
-        });
+        if (!selectedSlot) {
+          // Only run overlap check when NOT using a pre-defined slot
+          const [existingBookings, existingSlots] = await Promise.all([
+            base44.entities.LessonBooking.filter({ instructorId: user.id }),
+            base44.entities.BookableSlotInstance.filter({ instructorId: user.id }),
+          ]);
 
-        const overlapsSlot = existingSlots.some(s => {
-          // Ignore blocked slots only — available/reserved/confirmed all count as occupied time
-          if (s.status === 'blocked') return false;
-          return newStart.isBefore(moment(s.endAtUtc)) && newEnd.isAfter(moment(s.startAtUtc));
-        });
+          const newStart = moment(startAtUtc);
+          const newEnd = moment(endAtUtc);
 
-        if (overlapsBooking || overlapsSlot) {
-          const reason = overlapsSlot
-            ? 'an available slot (bookable by pupils)'
-            : 'an existing booking';
-          throw new Error(`Overlap on ${moment(bookingDate).format('ddd D MMM')} at ${startTime} — there is already ${reason} during this time. To fix this: go to your Calendar, remove or adjust the conflicting slot/booking, then try again.`);
+          const overlapsBooking = existingBookings.some(b => {
+            if (['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor', 'deleted'].includes(b.status)) return false;
+            if (b.isDeleted) return false;
+            return newStart.isBefore(moment(b.endAtUtc)) && newEnd.isAfter(moment(b.startAtUtc));
+          });
+
+          const overlapsSlot = existingSlots.some(s => {
+            if (s.status === 'blocked') return false;
+            return newStart.isBefore(moment(s.endAtUtc)) && newEnd.isAfter(moment(s.startAtUtc));
+          });
+
+          if (overlapsBooking || overlapsSlot) {
+            const reason = overlapsSlot ? 'an available slot (bookable by pupils)' : 'an existing booking';
+            throw new Error(`Overlap on ${moment(bookingDate).format('ddd D MMM')} at ${startTime} — there is already ${reason} during this time. To fix this: go to your Calendar, remove or adjust the conflicting slot/booking, then try again.`);
+          }
         }
+
+        const slotDuration = selectedSlot
+          ? moment(selectedSlot.endAtUtc).diff(moment(selectedSlot.startAtUtc), 'minutes') / 60
+          : durationHours;
+        const totalPriceEach = hourlyRate * slotDuration;
 
         const booking = await base44.entities.LessonBooking.create({
           instructorId: user.id,
           pupilId: selectedPupilId,
           startAtUtc,
           endAtUtc,
-          durationHours,
+          durationHours: slotDuration,
           status: 'confirmed',
           confirmedAt: new Date().toISOString(),
           pickupLocation,
@@ -200,6 +215,15 @@ export default function NewLessonModal({ open, onOpenChange }) {
           notesFromPupil: `Pickup: ${pickupLocation}`,
         });
 
+        // If booked from a slot, mark it as confirmed and link it
+        if (selectedSlot) {
+          await base44.entities.BookableSlotInstance.update(selectedSlot.id, {
+            status: 'confirmed',
+            bookingId: booking.id,
+            reservedByPupilId: selectedPupilId,
+          });
+        }
+
         if (totalPriceEach > 0) {
           await base44.entities.PaymentLedger.create({
             userId: selectedPupilId,
@@ -207,7 +231,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
             type: 'charge',
             reason: 'lesson_confirmed_charge',
             amountGbp: totalPriceEach,
-            hours: durationHours,
+            hours: slotDuration,
             createdByRole: 'instructor',
             note: 'Charge applied on instructor booking',
           });
@@ -219,7 +243,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
           await base44.entities.Notification.create({
             userId: selectedPupil.linkedUserId,
             title: 'Lesson Booked',
-            message: `Your instructor has booked a lesson for ${moment(bookingDate).format('ddd D MMM')} at ${startTime}.`,
+            message: `Your instructor has booked a lesson for ${moment(bookingDate).format('ddd D MMM')} at ${moment(startAtUtc).local().format('HH:mm')}.`,
             type: 'booking',
             linkTarget: 'LearnerCalendar',
           });
@@ -233,6 +257,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
       queryClient.invalidateQueries({ queryKey: ['instructorBookings'] });
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['pupils'] });
+      queryClient.invalidateQueries({ queryKey: ['newLessonModalSlots'] });
       toast({
         title: `${created.length} Lesson${created.length > 1 ? 's' : ''} Booked ✓`,
         description: created.length > 1
