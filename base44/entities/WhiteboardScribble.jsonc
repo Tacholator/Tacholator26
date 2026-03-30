@@ -1,0 +1,33 @@
+{
+  "name": "WhiteboardScribble",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor who created the scribble"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Topic or title for this class note"
+    },
+    "scribbleData": {
+      "type": "object",
+      "description": "JSON representation of the whiteboard strokes and objects"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the scribble was created/last saved"
+    }
+  },
+  "required": [
+    "pupilId",
+    "instructorId",
+    "scribbleData",
+    "timestamp"
+  ]
+}

@@ -1,0 +1,126 @@
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { BookOpen } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import moment from 'moment';
+
+function ReadOnlyCanvas({ strokes }) {
+  const canvasRef = useRef(null);
+
+  const redraw = useCallback((strokesToDraw) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    strokesToDraw.forEach(stroke => {
+      if (stroke.points.length < 2) return;
+      ctx.strokeStyle = stroke.color;
+      ctx.lineWidth = stroke.width;
+      ctx.globalAlpha = stroke.opacity || 1;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+      for (let i = 1; i < stroke.points.length; i++) {
+        ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+      }
+      ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight || 300;
+      redraw(strokes);
+    };
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas.parentElement);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => { redraw(strokes); }, [strokes, redraw]);
+
+  return (
+    <div className="relative rounded-lg border-2 border-slate-100 bg-white" style={{ height: 300 }}>
+      <canvas ref={canvasRef} className="w-full h-full" />
+      {strokes.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <p className="text-slate-300 text-sm">No drawing</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function PupilClassNotes({ pupilId }) {
+  const [selectedNote, setSelectedNote] = useState(null);
+
+  const { data: notes = [], isLoading } = useQuery({
+    queryKey: ['whiteboardScribbles', pupilId],
+    queryFn: async () => {
+      const items = await base44.entities.WhiteboardScribble.filter({ pupilId });
+      return items.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    },
+    enabled: !!pupilId
+  });
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-12">
+      <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-600 rounded-full animate-spin" />
+    </div>
+  );
+
+  if (notes.length === 0) return (
+    <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+      <BookOpen className="w-12 h-12 mb-3 opacity-30" />
+      <p className="font-medium text-slate-500">No class notes yet</p>
+      <p className="text-sm mt-1">Your instructor will add whiteboard notes here during lessons</p>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-4">
+      {/* Notes list */}
+      <div className="lg:w-64 shrink-0 space-y-2">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide px-1">Notes</p>
+        {notes.map(note => (
+          <button key={note.id} onClick={() => setSelectedNote(note)}
+            className={`w-full text-left p-3 rounded-xl border transition-colors ${selectedNote?.id === note.id ? 'bg-[#071739] text-white border-[#071739]' : 'bg-white hover:bg-slate-50 border-slate-200'}`}>
+            <p className={`text-sm font-medium truncate ${selectedNote?.id === note.id ? 'text-white' : 'text-slate-800'}`}>
+              {note.topic || 'Untitled note'}
+            </p>
+            <p className={`text-xs mt-0.5 ${selectedNote?.id === note.id ? 'text-slate-300' : 'text-slate-400'}`}>
+              {moment(note.timestamp).format('D MMM YYYY, HH:mm')}
+            </p>
+          </button>
+        ))}
+      </div>
+
+      {/* Preview */}
+      <div className="flex-1">
+        {selectedNote ? (
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg">{selectedNote.topic || 'Untitled note'}</CardTitle>
+              <p className="text-sm text-slate-400">{moment(selectedNote.timestamp).format('dddd, D MMMM YYYY [at] HH:mm')}</p>
+            </CardHeader>
+            <CardContent>
+              <ReadOnlyCanvas strokes={selectedNote.scribbleData?.strokes || []} />
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+            <BookOpen className="w-12 h-12 mb-3 opacity-30" />
+            <p className="text-sm">Select a note to view it</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

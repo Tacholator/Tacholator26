@@ -1,8 +1,28 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import PupilClassNotes from '@/components/classnotes/PupilClassNotes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpen, Award, TrendingUp, Clock } from 'lucide-react';
 
 export default function LearnerMyLearning() {
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const { data: pupilProfile } = useQuery({
+    queryKey: ['learnerPupilProfile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (byLinkedId.length > 0) return byLinkedId[0];
+      const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+      return byEmail.length > 0 ? byEmail[0] : null;
+    },
+    enabled: !!user?.id
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-4xl mx-auto">
@@ -67,6 +87,27 @@ export default function LearnerMyLearning() {
               </p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Class Notes Section */}
+        <div className="mt-8">
+          <div className="mb-4">
+            <h2 className="text-xl font-bold text-[#071739] flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-teal-600" />
+              Class Notes
+            </h2>
+            <p className="text-slate-500 text-sm mt-1">Whiteboard notes saved by your instructor during lessons</p>
+          </div>
+          {pupilProfile ? (
+            <PupilClassNotes pupilId={pupilProfile.id} />
+          ) : (
+            <Card className="border-0 shadow-sm">
+              <CardContent className="py-10 text-center text-slate-400">
+                <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                <p className="text-sm">No class notes yet — your instructor will add them during lessons</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

@@ -39,6 +39,7 @@ import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
+import ClassNotesTab from '@/components/classnotes/ClassNotesTab';
 import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
@@ -632,6 +633,12 @@ export default function PupilProfile() {
               >
                 Homework
               </TabsTrigger>
+              <TabsTrigger 
+                value="classnotes"
+                className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-teal-500 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all text-xs sm:text-sm"
+              >
+                Class Notes
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -1079,6 +1086,12 @@ export default function PupilProfile() {
                             pupilId={pupilId}
                             instructorId={currentUser?.id}
                             homework={homework}
+                          />
+                        </TabsContent>
+                        <TabsContent value="classnotes">
+                          <ClassNotesTab
+                            pupilId={pupilId}
+                            instructorId={currentUser?.id}
                           />
                         </TabsContent>
                       </Tabs>
