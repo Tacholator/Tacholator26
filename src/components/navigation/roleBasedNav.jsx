@@ -107,7 +107,8 @@ export const learnerOnlyLinks = [
       { name: 'My Notes', icon: StickyNote, page: 'LearnerNotes' },
       { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress' },
       { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
-      { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework' }
+      { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework' },
+      { name: 'Class Notes', icon: Notebook, page: 'LearnerClassNotes' }
     ]
   },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },

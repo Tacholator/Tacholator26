@@ -13,6 +13,7 @@ import RoleSelection from './pages/RoleSelection';
 import AdminGpsRouteAccess from './pages/AdminGpsRouteAccess';
 import AdminGpsRoutes from './pages/AdminGpsRoutes';
 import InstructorGpsRoutes from './pages/InstructorGpsRoutes';
+import LearnerClassNotes from './pages/LearnerClassNotes';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -77,6 +78,11 @@ const AuthenticatedApp = () => {
       <Route path="/AdminGpsRouteAccess" element={
         <LayoutWrapper currentPageName="AdminGpsRouteAccess">
           <AdminGpsRouteAccess />
+        </LayoutWrapper>
+      } />
+      <Route path="/LearnerClassNotes" element={
+        <LayoutWrapper currentPageName="LearnerClassNotes">
+          <LearnerClassNotes />
         </LayoutWrapper>
       } />
       <Route path="/RoleSelection" element={
