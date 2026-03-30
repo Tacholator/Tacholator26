@@ -122,11 +122,11 @@ export default function Layout({ children, currentPageName }) {
   const { data: instructorProfile } = useQuery({
     queryKey: ['instructorProfile', user?.id],
     queryFn: async () => {
-      if (!user?.id) return null;
-      const results = await base44.entities.Instructor.filter({ created_by: user.id });
+      if (!user?.email) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: user.email });
       return results[0] || null;
     },
-    enabled: !!user?.id && isInstructor
+    enabled: !!user?.email && isInstructor
   });
 
   // Build navigation dynamically based on role and pupil status
