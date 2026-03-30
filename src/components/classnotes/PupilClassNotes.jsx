@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { BookOpen } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BookOpen, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import moment from 'moment';
 
 function ReadOnlyCanvas({ strokes }) {
@@ -47,7 +47,7 @@ function ReadOnlyCanvas({ strokes }) {
   useEffect(() => { redraw(strokes); }, [strokes, redraw]);
 
   return (
-    <div className="relative rounded-lg border-2 border-slate-100 bg-white" style={{ height: 300 }}>
+    <div className="relative rounded-lg border-2 border-slate-100 bg-white" style={{ height: '100%', minHeight: 400 }}>
       <canvas ref={canvasRef} className="w-full h-full" />
       {strokes.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -84,43 +84,50 @@ export default function PupilClassNotes({ pupilId }) {
     </div>
   );
 
-  return (
-    <div className="flex flex-col lg:flex-row gap-4">
-      {/* Notes list */}
-      <div className="lg:w-64 shrink-0 space-y-2">
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide px-1">Notes</p>
-        {notes.map(note => (
-          <button key={note.id} onClick={() => setSelectedNote(note)}
-            className={`w-full text-left p-3 rounded-xl border transition-colors ${selectedNote?.id === note.id ? 'bg-[#071739] text-white border-[#071739]' : 'bg-white hover:bg-slate-50 border-slate-200'}`}>
-            <p className={`text-sm font-medium truncate ${selectedNote?.id === note.id ? 'text-white' : 'text-slate-800'}`}>
-              {note.topic || 'Untitled note'}
-            </p>
-            <p className={`text-xs mt-0.5 ${selectedNote?.id === note.id ? 'text-slate-300' : 'text-slate-400'}`}>
-              {moment(note.timestamp).format('D MMM YYYY, HH:mm')}
-            </p>
-          </button>
-        ))}
-      </div>
-
-      {/* Preview */}
-      <div className="flex-1">
-        {selectedNote ? (
-          <Card className="border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg">{selectedNote.topic || 'Untitled note'}</CardTitle>
-              <p className="text-sm text-slate-400">{moment(selectedNote.timestamp).format('dddd, D MMMM YYYY [at] HH:mm')}</p>
-            </CardHeader>
-            <CardContent>
-              <ReadOnlyCanvas strokes={selectedNote.scribbleData?.strokes || []} />
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-slate-400">
-            <BookOpen className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm">Select a note to view it</p>
+  // Full-screen note view
+  if (selectedNote) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex items-center gap-3 mb-4">
+          <Button variant="outline" size="sm" onClick={() => setSelectedNote(null)} className="gap-2">
+            <ArrowLeft className="w-4 h-4" /> Back to Notes
+          </Button>
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold text-[#071739]">{selectedNote.topic || 'Untitled note'}</h2>
+            <p className="text-xs text-slate-400">{moment(selectedNote.timestamp).format('dddd, D MMMM YYYY [at] HH:mm')}</p>
           </div>
-        )}
+        </div>
+        <div className="flex-1 rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm" style={{ minHeight: 500 }}>
+          <ReadOnlyCanvas strokes={selectedNote.scribbleData?.strokes || []} />
+        </div>
       </div>
+    );
+  }
+
+  // Notes list
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {notes.map(note => (
+        <button key={note.id} onClick={() => setSelectedNote(note)}
+          className="text-left p-4 rounded-xl border border-slate-200 bg-white hover:border-[#071739] hover:shadow-md transition-all group">
+          <div className="flex items-start gap-3 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center shrink-0">
+              <BookOpen className="w-4 h-4 text-teal-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-800 truncate group-hover:text-[#071739]">
+                {note.topic || 'Untitled note'}
+              </p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {moment(note.timestamp).format('D MMM YYYY, HH:mm')}
+              </p>
+            </div>
+          </div>
+          <div className="rounded-lg border border-slate-100 bg-slate-50 overflow-hidden" style={{ height: 120, pointerEvents: 'none' }}>
+            <ReadOnlyCanvas strokes={note.scribbleData?.strokes || []} />
+          </div>
+        </button>
+      ))}
     </div>
   );
 }
