@@ -61,10 +61,22 @@ export default function NewLessonModal({ open, onOpenChange }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [overrideBalance, setOverrideBalance] = useState(false);
   const [conflictError, setConflictError] = useState(null);
+  const [selectedSlotId, setSelectedSlotId] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+  });
+
+  const { data: availableSlots = [], isLoading: slotsLoading } = useQuery({
+    queryKey: ['newLessonModalSlots', user?.id, date],
+    queryFn: async () => {
+      if (!user?.id || !date) return [];
+      const allSlots = await base44.entities.BookableSlotInstance.filter({ instructorId: user.id, status: 'available' });
+      return allSlots.filter(s => moment(s.startAtUtc).local().format('YYYY-MM-DD') === date)
+        .sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
+    },
+    enabled: !!user?.id && !!date && open,
   });
 
   const { data: pupils = [], refetch: refetchPupils } = useQuery({
@@ -98,6 +110,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
       setSearchQuery('');
       setOverrideBalance(false);
       setConflictError(null);
+      setSelectedSlotId(null);
     }
   }, [open]);
 
@@ -268,9 +281,47 @@ export default function NewLessonModal({ open, onOpenChange }) {
                 type="date"
                 value={date}
                 min={today}
-                onChange={e => setDate(e.target.value)}
+                onChange={e => { setDate(e.target.value); setSelectedSlotId(null); }}
                 className="text-sm"
               />
+
+              {/* Available slots for selected date */}
+              {date && (slotsLoading ? (
+                <div className="text-xs text-slate-400 flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin" /> Checking availability...
+                </div>
+              ) : availableSlots.length > 0 ? (
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium text-slate-500">Your available slots on this day — tap to use:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {availableSlots.map(slot => {
+                      const slotStart = moment(slot.startAtUtc).local().format('HH:mm');
+                      const slotEnd = moment(slot.endAtUtc).local().format('HH:mm');
+                      const slotDuration = moment(slot.endAtUtc).diff(moment(slot.startAtUtc), 'minutes') / 60;
+                      const isSelected = selectedSlotId === slot.id;
+                      return (
+                        <button
+                          key={slot.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedSlotId(slot.id);
+                            setStartTime(slotStart);
+                            setDurationHours(slotDuration);
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                            isSelected
+                              ? 'bg-[#071739] text-white border-[#071739]'
+                              : 'bg-white text-slate-700 border-slate-200 hover:border-[#071739] hover:bg-slate-50'
+                          }`}
+                        >
+                          {slotStart} – {slotEnd}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null)}
+
               <div className="grid grid-cols-2 gap-2">
                 <Select value={startTime} onValueChange={setStartTime}>
                   <SelectTrigger className="text-sm">
