@@ -165,6 +165,7 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
   const [topic, setTopic] = useState('');
   const [strokes, setStrokes] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const { data: notes = [], isLoading } = useQuery({
     queryKey: ['whiteboardScribbles', pupilId],
@@ -185,6 +186,7 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
       setStrokes([]);
       setTopic('');
       setIsCreating(false);
+      setIsEditing(false);
     }
   });
 
@@ -204,6 +206,7 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
     setStrokes([]);
     setTopic('');
     setIsCreating(true);
+    setIsEditing(true);
   };
 
   const handleSelectNote = (note) => {
@@ -211,6 +214,7 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
     setTopic(note.topic || '');
     setStrokes(note.scribbleData?.strokes || []);
     setIsCreating(false);
+    setIsEditing(false);
   };
 
   const handleSave = () => {
@@ -225,6 +229,7 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
 
   const handleClear = () => setStrokes([]);
 
+  const isReadOnly = !!selectedNote && !isEditing;
   const showEditor = isCreating || selectedNote;
 
   return (
@@ -260,26 +265,43 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
-                <Input
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  placeholder="Note title (e.g. Cockpit Drill)"
-                  className="text-base font-semibold flex-1"
-                />
+                {isReadOnly ? (
+                  <h2 className="text-base font-semibold text-slate-800 flex-1">{selectedNote.topic || 'Untitled note'}</h2>
+                ) : (
+                  <Input
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    placeholder="Note title (e.g. Cockpit Drill)"
+                    className="text-base font-semibold flex-1"
+                  />
+                )}
                 <div className="flex gap-2 shrink-0">
-                  <Button variant="outline" size="sm" onClick={handleClear} className="gap-1 text-slate-600">
-                    <RotateCcw className="w-3.5 h-3.5" /> Clear
-                  </Button>
-                  {selectedNote && (
-                    <Button variant="outline" size="sm" onClick={() => deleteMutation.mutate(selectedNote.id)}
-                      disabled={deleteMutation.isPending} className="gap-1 text-rose-600 hover:bg-rose-50 border-rose-200">
-                      <Trash2 className="w-3.5 h-3.5" /> Delete
-                    </Button>
+                  {isReadOnly ? (
+                    <>
+                      <Button variant="outline" size="sm" onClick={() => setIsEditing(true)} className="gap-1 text-slate-600">
+                        <Pen className="w-3.5 h-3.5" /> Edit
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => deleteMutation.mutate(selectedNote.id)}
+                        disabled={deleteMutation.isPending} className="gap-1 text-rose-600 hover:bg-rose-50 border-rose-200">
+                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      {!isCreating && (
+                        <Button variant="outline" size="sm" onClick={() => { setIsEditing(false); setTopic(selectedNote?.topic || ''); setStrokes(selectedNote?.scribbleData?.strokes || []); }} className="gap-1 text-slate-600">
+                          Cancel
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" onClick={handleClear} className="gap-1 text-slate-600">
+                        <RotateCcw className="w-3.5 h-3.5" /> Clear
+                      </Button>
+                      <Button size="sm" onClick={handleSave} disabled={saveMutation.isPending}
+                        className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold gap-1">
+                        <Save className="w-3.5 h-3.5" /> Save
+                      </Button>
+                    </>
                   )}
-                  <Button size="sm" onClick={handleSave} disabled={saveMutation.isPending}
-                    className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold gap-1">
-                    <Save className="w-3.5 h-3.5" /> Save
-                  </Button>
                 </div>
               </div>
               {selectedNote && (
@@ -287,7 +309,7 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
               )}
             </CardHeader>
             <CardContent>
-              <WhiteboardCanvas strokes={strokes} onStrokesChange={setStrokes} />
+              <WhiteboardCanvas strokes={strokes} onStrokesChange={setStrokes} readOnly={isReadOnly} />
             </CardContent>
           </Card>
         ) : (
