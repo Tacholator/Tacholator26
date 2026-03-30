@@ -37,84 +37,103 @@ export default function InstructorReports() {
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['reportPupils', user?.email],
     queryFn: () => base44.entities.Pupil.filter({ instructorEmail: user.email }),
     enabled: !!user?.email,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: bookings = [], isLoading: bookingsLoading } = useQuery({
     queryKey: ['reportBookings', user?.id],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: user.id }),
     enabled: !!user?.id,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: ledger = [] } = useQuery({
     queryKey: ['reportLedger', user?.id],
     queryFn: () => base44.entities.PaymentLedger.filter({ instructorId: user.id }),
     enabled: !!user?.id,
+    staleTime: 2 * 60 * 1000,
   });
 
-  const getStart = () => {
+  // Memoised range start — recomputed only when range changes
+  const rangeStart = useMemo(() => {
     if (range === 'week') return moment().startOf('isoWeek');
     if (range === 'month') return moment().startOf('month');
     if (range === 'year') return moment().startOf('year');
     return null;
-  };
+  }, [range]);
 
-  const filtered = useMemo(() => {
-    const start = getStart();
-    return bookings.filter(b => {
-      if (b.isDeleted) return false;
-      if (!start) return true;
-      return moment(b.startAtUtc).isSameOrAfter(start);
-    });
-  }, [bookings, range]);
+  // Single pass over bookings to derive all derived arrays
+  const { completed, cancelled, noShows, totalHours } = useMemo(() => {
+    const completed = [], cancelled = [], noShows = [];
+    let totalHours = 0;
+    for (const b of bookings) {
+      if (b.isDeleted) continue;
+      if (rangeStart && moment(b.startAtUtc).isBefore(rangeStart)) continue;
+      if (b.status === 'completed') {
+        completed.push(b);
+        totalHours += moment(b.endAtUtc).diff(moment(b.startAtUtc), 'minutes') / 60;
+      } else if (['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil'].includes(b.status)) {
+        cancelled.push(b);
+      } else if (b.status === 'no_show') {
+        noShows.push(b);
+      }
+    }
+    return { completed, cancelled, noShows, totalHours };
+  }, [bookings, rangeStart]);
 
-  const completed = filtered.filter(b => b.status === 'completed');
-  const cancelled = filtered.filter(b => b.status === 'cancelled' || b.status === 'cancelled_by_pupil' || b.status === 'cancelled_late_by_pupil');
-  const noShows = filtered.filter(b => b.status === 'no_show');
-  const totalHours = completed.reduce((sum, b) => {
-    const mins = moment(b.endAtUtc).diff(moment(b.startAtUtc), 'minutes');
-    return sum + mins / 60;
-  }, 0);
+  // Financial — use amountGbp and type=payment
+  const totalEarned = useMemo(() => {
+    return ledger
+      .filter(l => l.type === 'payment' && (!rangeStart || moment(l.created_date).isSameOrAfter(rangeStart)))
+      .reduce((sum, l) => sum + (l.amountGbp || 0), 0);
+  }, [ledger, rangeStart]);
 
-  // Financial: sum of ledger entries in range
-  const filteredLedger = useMemo(() => {
-    const start = getStart();
-    return ledger.filter(l => {
-      if (!start) return true;
-      return moment(l.created_date).isSameOrAfter(start);
-    });
-  }, [ledger, range]);
+  // Pupil counts — single pass
+  const { activeCount, passedCount, onHoldCount, stoppedCount } = useMemo(() => {
+    let activeCount = 0, passedCount = 0, onHoldCount = 0, stoppedCount = 0;
+    for (const p of pupils) {
+      if (p.status === 'Active') activeCount++;
+      else if (p.status === 'Passed') passedCount++;
+      else if (p.status === 'OnHold') onHoldCount++;
+      else if (p.status === 'Stopped') stoppedCount++;
+    }
+    return { activeCount, passedCount, onHoldCount, stoppedCount };
+  }, [pupils]);
 
-  const totalEarned = filteredLedger
-    .filter(l => l.type === 'credit' || l.amount > 0)
-    .reduce((sum, l) => sum + (l.amount || 0), 0);
+  const upcomingTests = useMemo(() => pupils
+    .filter(p =>
+      p.practicalTestDate && !p.practicalTestPassed &&
+      moment(p.practicalTestDate).isAfter(moment()) &&
+      moment(p.practicalTestDate).diff(moment(), 'days') <= 60
+    )
+    .sort((a, b) => moment(a.practicalTestDate).diff(moment(b.practicalTestDate))),
+  [pupils]);
 
-  const activeCount = pupils.filter(p => p.status === 'Active').length;
-  const passedCount = pupils.filter(p => p.status === 'Passed').length;
-  const onHoldCount = pupils.filter(p => p.status === 'OnHold').length;
-
-  // Lessons per week/month bar chart
   const barData = useMemo(() => {
     if (range === 'week') {
-      const days = Array.from({ length: 7 }, (_, i) => moment().startOf('isoWeek').add(i, 'days'));
-      return days.map(d => ({
-        label: d.format('ddd'),
-        Completed: completed.filter(b => moment(b.startAtUtc).isSame(d, 'day')).length,
-        Cancelled: cancelled.filter(b => moment(b.startAtUtc).isSame(d, 'day')).length,
-      }));
+      return Array.from({ length: 7 }, (_, i) => {
+        const d = moment().startOf('isoWeek').add(i, 'days');
+        return {
+          label: d.format('ddd'),
+          Completed: completed.filter(b => moment(b.startAtUtc).isSame(d, 'day')).length,
+          Cancelled: cancelled.filter(b => moment(b.startAtUtc).isSame(d, 'day')).length,
+        };
+      });
     }
     if (range === 'month') {
       const weeks = [];
       const start = moment().startOf('month');
       for (let w = 0; w < 5; w++) {
         const ws = start.clone().add(w * 7, 'days');
-        const we = ws.clone().add(6, 'days');
         if (ws.month() !== moment().month()) break;
+        const we = ws.clone().add(6, 'days');
         weeks.push({
           label: `W${w + 1}`,
           Completed: completed.filter(b => moment(b.startAtUtc).isBetween(ws, we, 'day', '[]')).length,
@@ -123,7 +142,6 @@ export default function InstructorReports() {
       }
       return weeks;
     }
-    // year / all: months
     const months = range === 'year'
       ? Array.from({ length: 12 }, (_, i) => moment().startOf('year').add(i, 'months'))
       : Array.from({ length: 12 }, (_, i) => moment().subtract(11 - i, 'months').startOf('month'));
@@ -134,24 +152,18 @@ export default function InstructorReports() {
     }));
   }, [completed, cancelled, range]);
 
-  const pieData = [
+  const pieData = useMemo(() => [
     { name: 'Completed', value: completed.length, color: '#22c55e' },
     { name: 'Cancelled', value: cancelled.length, color: '#f97316' },
     { name: 'No Show', value: noShows.length, color: '#ef4444' },
-  ].filter(d => d.value > 0);
+  ].filter(d => d.value > 0), [completed, cancelled, noShows]);
 
-  const pupilPieData = [
+  const pupilPieData = useMemo(() => [
     { name: 'Active', value: activeCount, color: '#3b82f6' },
     { name: 'Passed', value: passedCount, color: '#22c55e' },
     { name: 'On Hold', value: onHoldCount, color: '#f59e0b' },
-    { name: 'Stopped', value: pupils.filter(p => p.status === 'Stopped').length, color: '#94a3b8' },
-  ].filter(d => d.value > 0);
-
-  const upcomingTests = pupils.filter(p =>
-    p.practicalTestDate && !p.practicalTestPassed &&
-    moment(p.practicalTestDate).isAfter(moment()) &&
-    moment(p.practicalTestDate).diff(moment(), 'days') <= 60
-  ).sort((a, b) => moment(a.practicalTestDate).diff(moment(b.practicalTestDate)));
+    { name: 'Stopped', value: stoppedCount, color: '#94a3b8' },
+  ].filter(d => d.value > 0), [activeCount, passedCount, onHoldCount, stoppedCount]);
 
   if (bookingsLoading) {
     return (
@@ -204,7 +216,6 @@ export default function InstructorReports() {
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Bar chart */}
           <Card className="border-0 shadow-sm lg:col-span-2">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold text-slate-700">Lessons Over Time</CardTitle>
@@ -222,7 +233,6 @@ export default function InstructorReports() {
             </CardContent>
           </Card>
 
-          {/* Pie chart */}
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold text-slate-700">Lesson Outcomes</CardTitle>
@@ -258,7 +268,6 @@ export default function InstructorReports() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Pupil status pie */}
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold text-slate-700">Pupil Status</CardTitle>
@@ -282,7 +291,6 @@ export default function InstructorReports() {
             </CardContent>
           </Card>
 
-          {/* Upcoming tests */}
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold text-slate-700 flex items-center gap-2">
