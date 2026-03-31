@@ -34,7 +34,7 @@
     "requireBookingApproval": {
       "type": "boolean",
       "default": true,
-      "description": "Global setting: all pupil bookings require manual instructor approval. When false, bookings are auto-confirmed if pupil has sufficient balance."
+      "description": "Global setting: all pupil bookings require manual instructor approval."
     },
     "stripeAccountId": {
       "type": "string",
@@ -131,6 +131,11 @@
       "type": "boolean",
       "default": false,
       "description": "Whether this instructor has been granted access to the GPS Routes section by admin"
+    },
+    "allPupilsResourcesAccess": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, all linked pupils can see the Resources tab and all resources shared with any of their pupils"
     }
   },
   "required": [

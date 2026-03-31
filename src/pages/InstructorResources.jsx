@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import {
   Plus,
   FileText,
@@ -127,6 +128,21 @@ export default function InstructorResources() {
     );
   };
 
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['myInstructorProfile', user?.email],
+    queryFn: async () => {
+      const profiles = await base44.entities.Instructor.filter({ created_by: user.email });
+      return profiles[0] || null;
+    },
+    enabled: !!user?.email
+  });
+
+  const toggleAllPupilsAccess = async (checked) => {
+    if (!instructorProfile) return;
+    await base44.entities.Instructor.update(instructorProfile.id, { allPupilsResourcesAccess: checked });
+    queryClient.invalidateQueries(['myInstructorProfile']);
+  };
+
   const myResources = resources.filter(r => r.instructorId === user?.id || r.created_by === user?.email);
 
   return (
@@ -141,7 +157,7 @@ export default function InstructorResources() {
         >
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </Button>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-bold text-slate-800">Resources</h1>
             <p className="text-slate-500 mt-1">Upload and share learning materials with your pupils</p>
@@ -150,6 +166,19 @@ export default function InstructorResources() {
             <Plus className="w-4 h-4 mr-2" />
             Add Resource
           </Button>
+        </div>
+
+        {/* Global Access Toggle */}
+        <div className="flex items-center justify-between bg-white border rounded-xl px-4 py-3 mb-6 shadow-sm">
+          <div>
+            <p className="font-medium text-slate-800 text-sm">Allow all pupils to access Resources tab</p>
+            <p className="text-xs text-slate-500 mt-0.5">When enabled, all your linked pupils can see the Resources section in their app</p>
+          </div>
+          <Switch
+            checked={!!instructorProfile?.allPupilsResourcesAccess}
+            onCheckedChange={toggleAllPupilsAccess}
+            disabled={!instructorProfile}
+          />
         </div>
 
         {/* Resources Grid */}

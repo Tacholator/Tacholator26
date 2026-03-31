@@ -54,16 +54,26 @@ export default function LearnerResources() {
     enabled: !!user
   });
 
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['learnerInstructorProfile', pupil?.instructorEmail],
+    queryFn: async () => {
+      const profiles = await base44.entities.Instructor.filter({ created_by: pupil.instructorEmail });
+      return profiles[0] || null;
+    },
+    enabled: !!pupil?.instructorEmail
+  });
+
   const { data: allResources = [], isLoading: resourcesLoading } = useQuery({
     queryKey: ['allResources'],
     queryFn: () => base44.entities.Resource.list(),
     enabled: !!pupil?.id
   });
 
-  // Filter resources shared with this pupil
-  const myResources = allResources.filter(r => 
-    r.sharedWith?.includes(pupil?.id)
-  );
+  // If instructor enabled global access, show all their resources; otherwise only explicitly shared ones
+  const instructorResources = allResources.filter(r => r.instructorId === pupil?.instructorId);
+  const myResources = instructorProfile?.allPupilsResourcesAccess
+    ? instructorResources
+    : allResources.filter(r => r.sharedWith?.includes(pupil?.id));
 
   if (pupilLoading || resourcesLoading) {
     return (
