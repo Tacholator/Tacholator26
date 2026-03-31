@@ -26,7 +26,7 @@ export default function PupilReserveLessonModal({
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(true);
   const [dropoffLocation, setDropoffLocation] = useState('');
-  const [notes, setNotes] = useState('');
+
   const [drivingExperience, setDrivingExperience] = useState('');
   const [transmissionType, setTransmissionType] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
@@ -91,11 +91,7 @@ export default function PupilReserveLessonModal({
     onReserve({
       pickupLocation,
       dropoffLocation: dropoffFinal,
-      notesFromPupil: notes,
-      firstTimeData: isFirstBooking ? {
-        drivingExperience,
-        transmissionType
-      } : null
+      notesFromPupil: null,
     });
   };
 
@@ -232,16 +228,7 @@ export default function PupilReserveLessonModal({
               </div>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes for instructor (optional)</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Any helpful details? (e.g., nervous driver, returning after a break, what you want to focus on)"
-                rows={3}
-              />
-            </div>
+
           </div>
 
           {/* First-time Booking Questions */}
