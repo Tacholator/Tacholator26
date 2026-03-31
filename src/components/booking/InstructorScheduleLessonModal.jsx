@@ -229,7 +229,7 @@ export default function InstructorScheduleLessonModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Schedule Lesson</DialogTitle>
           <DialogDescription>
@@ -237,11 +237,11 @@ export default function InstructorScheduleLessonModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 py-4">
+        <div className="space-y-3 py-2">
           {/* Slot Summary */}
-          <div className="bg-slate-50 rounded-lg p-4 border">
-            <h4 className="text-sm font-semibold text-slate-700 mb-3">Selected Slot</h4>
-            <div className="space-y-2">
+          <div className="bg-slate-50 rounded-lg p-3 border">
+            <h4 className="text-sm font-semibold text-slate-700 mb-2">Selected Slot</h4>
+            <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="w-4 h-4 text-slate-400" />
                 <span className="font-medium">{startMoment.format('dddd, D MMMM YYYY')}</span>
@@ -343,7 +343,7 @@ export default function InstructorScheduleLessonModal({
 
 
           {/* Practical Test Toggle */}
-          <div className={`rounded-lg border p-4 transition-colors ${isPracticalTest ? 'border-amber-700 bg-amber-50' : 'bg-slate-50'}`}>
+          <div className={`rounded-lg border p-3 transition-colors ${isPracticalTest ? 'border-amber-700 bg-amber-50' : 'bg-slate-50'}`}>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3 flex-1">
                 <GraduationCap className={`w-5 h-5 ${isPracticalTest ? 'text-amber-700' : 'text-slate-500'}`} />
@@ -382,7 +382,7 @@ export default function InstructorScheduleLessonModal({
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 pt-4 border-t">
+        <div className="flex justify-end gap-3 pt-3 border-t">
           <Button variant="outline" onClick={handleClose} disabled={scheduleLessonMutation.isPending}>
             Cancel
           </Button>
