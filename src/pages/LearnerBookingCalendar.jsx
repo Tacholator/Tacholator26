@@ -150,7 +150,9 @@ export default function LearnerBookingCalendar() {
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
         totalPriceGbp: totalPrice,
         escrowAmountGbp: requiresApproval ? 0 : totalPrice,
-        notesFromPupil: `Pickup: ${pickupLocation} | Dropoff: ${dropoffLocation}${notesFromPupil ? ' | ' + notesFromPupil : ''}${firstTimeData ? ` | First booking - Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''}`,
+        pickupLocation,
+        dropoffLocation,
+        notesFromPupil: [notesFromPupil, firstTimeData ? `First booking — Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''].filter(Boolean).join(' | ') || null,
         requestedAt: new Date().toISOString(),
         slotInstanceId: selectedSlotInstance?.id || null
       });

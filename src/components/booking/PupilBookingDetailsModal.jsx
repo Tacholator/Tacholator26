@@ -67,6 +67,30 @@ export default function PupilBookingDetailsModal({
             <div className="text-2xl font-bold text-slate-800">£{booking.totalPriceGbp.toFixed(2)}</div>
           </div>
 
+          {/* Locations */}
+          {(booking.pickupLocation || booking.dropoffLocation) && (
+            <div className="space-y-2 bg-slate-50 rounded-lg p-3">
+              {booking.pickupLocation && (
+                <div className="flex items-start gap-2 text-sm">
+                  <MapPin className="w-4 h-4 text-slate-500 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-slate-500">Pickup: </span>
+                    <span className="font-medium text-slate-700">{booking.pickupLocation}</span>
+                  </div>
+                </div>
+              )}
+              {booking.dropoffLocation && booking.dropoffLocation !== booking.pickupLocation && (
+                <div className="flex items-start gap-2 text-sm">
+                  <MapPin className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-slate-500">Drop-off: </span>
+                    <span className="font-medium text-slate-700">{booking.dropoffLocation}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Notes */}
           {booking.notesFromPupil && (
             <div className="space-y-1">

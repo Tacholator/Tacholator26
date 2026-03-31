@@ -56,6 +56,8 @@ export default function NewLessonModal({ open, onOpenChange }) {
   const [durationHours, setDurationHours] = useState(1);
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
+  const [dropoffLocation, setDropoffLocation] = useState('');
+  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(true);
   const [recurrence, setRecurrence] = useState('once');
   const [recurrenceEndDate, setRecurrenceEndDate] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -105,6 +107,8 @@ export default function NewLessonModal({ open, onOpenChange }) {
       setDurationHours(1);
       setSelectedPupilId('');
       setPickupLocation('');
+      setDropoffLocation('');
+      setDropoffSameAsPickup(true);
       setRecurrence('once');
       setRecurrenceEndDate('');
       setSearchQuery('');
@@ -210,9 +214,9 @@ export default function NewLessonModal({ open, onOpenChange }) {
           status: 'confirmed',
           confirmedAt: new Date().toISOString(),
           pickupLocation,
+          dropoffLocation: dropoffSameAsPickup ? pickupLocation : dropoffLocation,
           hourlyRateAtBookingGbp: hourlyRate,
           totalPriceGbp: totalPriceEach,
-          notesFromPupil: `Pickup: ${pickupLocation}`,
         });
 
         // If booked from a slot, mark it as confirmed and link it
@@ -445,7 +449,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
             {/* Divider */}
             <div className="border-t" />
 
-            {/* Pickup + Recurrence */}
+            {/* Pickup + Dropoff + Recurrence */}
             <div className="space-y-2">
               <div className="relative">
                 <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
@@ -456,6 +460,31 @@ export default function NewLessonModal({ open, onOpenChange }) {
                   className="pl-8 text-sm"
                 />
               </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="dropoff-same"
+                  checked={dropoffSameAsPickup}
+                  onChange={e => setDropoffSameAsPickup(e.target.checked)}
+                  className="rounded"
+                />
+                <label htmlFor="dropoff-same" className="text-xs text-slate-600 cursor-pointer">
+                  Drop-off same as pickup
+                </label>
+              </div>
+
+              {!dropoffSameAsPickup && (
+                <div className="relative">
+                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                  <Input
+                    value={dropoffLocation}
+                    onChange={e => setDropoffLocation(e.target.value)}
+                    placeholder="Drop-off address..."
+                    className="pl-8 text-sm"
+                  />
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-2">
                 <Select value={recurrence} onValueChange={v => { setRecurrence(v); setRecurrenceEndDate(''); }}>

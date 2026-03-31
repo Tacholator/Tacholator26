@@ -1,0 +1,219 @@
+{
+  "name": "LessonBooking",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor user ID"
+    },
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to pupil user ID"
+    },
+    "startAtUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Lesson start time in UTC"
+    },
+    "endAtUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Lesson end time in UTC"
+    },
+    "durationHours": {
+      "type": "number",
+      "description": "Lesson duration in hours"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "reserved_pending_instructor",
+        "pending",
+        "confirmed",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "cancelled_by_pupil",
+        "cancelled_late_by_pupil",
+        "declined_by_instructor",
+        "no_show",
+        "deleted"
+      ],
+      "default": "pending",
+      "description": "Booking status"
+    },
+    "isPracticalTest": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this booking is for a practical driving test"
+    },
+    "practicalTestTime": {
+      "type": "string",
+      "description": "Test time in HH:mm format (e.g. 14:30)"
+    },
+    "completionOutcome": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "description": "Final outcome of the lesson"
+    },
+    "mainTopic": {
+      "type": "string",
+      "description": "Main topic covered in the lesson"
+    },
+    "completionNote": {
+      "type": "string",
+      "description": "Notes about lesson outcome"
+    },
+    "chargesApplied": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether charges were applied for this lesson"
+    },
+    "chargesDecisionReason": {
+      "type": "string",
+      "description": "Reason for charge decision (for cancelled/no show)"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the lesson was marked complete/cancelled"
+    },
+    "requestedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the booking was requested"
+    },
+    "confirmedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the booking was confirmed"
+    },
+    "cancelledAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the booking was cancelled"
+    },
+    "cancelledByRole": {
+      "type": "string",
+      "enum": [
+        "pupil",
+        "instructor",
+        "system"
+      ],
+      "description": "Who cancelled the booking"
+    },
+    "cancellationReason": {
+      "type": "string",
+      "description": "Reason for cancellation"
+    },
+    "lateCancellation": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether cancellation was within 48 hours"
+    },
+    "hourlyRateAtBookingGbp": {
+      "type": "number",
+      "description": "Hourly rate at time of booking"
+    },
+    "totalPriceGbp": {
+      "type": "number",
+      "description": "Total price for this booking"
+    },
+    "escrowAmountGbp": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount held in escrow (deducted from balance but not yet released to instructor). Set on confirmation, cleared on completion or cancellation."
+    },
+    "escrowReleasedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the escrow was released (on lesson completion)"
+    },
+    "penaltyAmountGbp": {
+      "type": "number",
+      "default": 0,
+      "description": "Penalty amount for late cancellation"
+    },
+    "penaltyHours": {
+      "type": "number",
+      "default": 0,
+      "description": "Penalty hours for late cancellation"
+    },
+    "pickupLocation": {
+      "type": "string",
+      "description": "Pickup location for the lesson"
+    },
+    "dropoffLocation": {
+      "type": "string",
+      "description": "Drop-off location for the lesson"
+    },
+    "notesFromPupil": {
+      "type": "string",
+      "description": "Optional notes from pupil"
+    },
+    "slotInstanceId": {
+      "type": "string",
+      "description": "Reference to bookable slot instance if booked from published slot"
+    },
+    "arrivalNotified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether instructor has notified arrival"
+    },
+    "arrivalNotifiedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When arrival was notified"
+    },
+    "pupilAcknowledged": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether pupil acknowledged arrival notification"
+    },
+    "pupilAcknowledgedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When pupil acknowledged"
+    },
+    "pupilAcknowledgementOption": {
+      "type": "string",
+      "enum": [
+        "on_my_way",
+        "got_it"
+      ],
+      "description": "Pupil's response option"
+    },
+    "isDeleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Soft delete flag - true if booking has been deleted"
+    },
+    "deletedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the booking was deleted"
+    },
+    "deletedByRole": {
+      "type": "string",
+      "enum": [
+        "pupil",
+        "instructor",
+        "system"
+      ],
+      "description": "Who deleted the booking"
+    }
+  },
+  "required": [
+    "instructorId",
+    "pupilId",
+    "startAtUtc",
+    "endAtUtc",
+    "durationHours",
+    "hourlyRateAtBookingGbp",
+    "totalPriceGbp"
+  ]
+}

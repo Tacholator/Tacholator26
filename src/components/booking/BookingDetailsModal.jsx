@@ -466,23 +466,9 @@ export default function BookingDetailsModal({
   const canManage = isPending || isConfirmed;
   const canChangeStatus = isConfirmed;
 
-  // Parse locations and actual notes from notesFromPupil
-  const parseNotesData = () => {
-    const notes = booking.notesFromPupil || '';
-    const pickupMatch = notes.match(/Pickup:\s*([^|]+)/);
-    const dropoffMatch = notes.match(/Dropoff:\s*([^|]+)/);
-    
-    // Extract actual notes by removing pickup/dropoff info
-    const actualNotes = notes.replace(/Pickup:.*?\|.*?Dropoff:.*?\|/g, '').trim();
-    
-    return {
-      pickup: pickupMatch ? pickupMatch[1].trim() : 'Not specified',
-      dropoff: dropoffMatch ? dropoffMatch[1].trim() : 'Not specified',
-      actualNotes: actualNotes
-    };
-  };
-
-  const { pickup, dropoff, actualNotes } = parseNotesData();
+  const pickup = booking.pickupLocation || 'Not specified';
+  const dropoff = booking.dropoffLocation || 'Not specified';
+  const actualNotes = booking.notesFromPupil || '';
 
   return (
     <>
