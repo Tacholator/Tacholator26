@@ -37,7 +37,7 @@ export default function InstructorScheduleLessonModal({
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(true);
   const [dropoffLocation, setDropoffLocation] = useState('');
-  const [notes, setNotes] = useState('');
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isPracticalTest, setIsPracticalTest] = useState(false);
   const [practicalTestTime, setPracticalTestTime] = useState('');
@@ -106,14 +106,8 @@ export default function InstructorScheduleLessonModal({
       const hourlyRate = pupil?.hourlyRate || 0;
       const totalPriceGbp = hourlyRate * durationHours;
 
-      // Build notes with pickup/dropoff
-      const finalDropoff = dropoffSameAsPickup ? pickupLocation : dropoffLocation;
-      let notesFromPupil = `Pickup: ${pickupLocation} | Dropoff: ${finalDropoff}`;
-      if (notes) {
-        notesFromPupil += ` | ${notes}`;
-      }
-
       // Create booking
+      const finalDropoff = dropoffSameAsPickup ? pickupLocation : dropoffLocation;
       const booking = await base44.entities.LessonBooking.create({
         instructorId: user.id,
         pupilId: selectedPupilId,
@@ -121,7 +115,7 @@ export default function InstructorScheduleLessonModal({
         startAtUtc: slotInstance.startAtUtc,
         endAtUtc: slotInstance.endAtUtc,
         pickupLocation,
-        notesFromPupil,
+        dropoffLocation: finalDropoff,
         status: 'confirmed',
         confirmedAt: new Date().toISOString(),
         durationHours,
@@ -189,7 +183,7 @@ export default function InstructorScheduleLessonModal({
     setPickupLocation('');
     setDropoffSameAsPickup(true);
     setDropoffLocation('');
-    setNotes('');
+
     setSearchQuery('');
     setIsPracticalTest(false);
     setPracticalTestTime('');
@@ -346,17 +340,7 @@ export default function InstructorScheduleLessonModal({
             </div>
           )}
 
-          {/* Notes */}
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes (optional)</Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Any additional notes for this lesson..."
-              rows={3}
-            />
-          </div>
+
 
           {/* Practical Test Toggle */}
           <div className={`rounded-lg border p-4 transition-colors ${isPracticalTest ? 'border-amber-700 bg-amber-50' : 'bg-slate-50'}`}>
