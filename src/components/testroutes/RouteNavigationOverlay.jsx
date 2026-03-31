@@ -884,20 +884,11 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                     {followMode ? 'Following' : 'Follow'}
                   </button>
 
-                  {/* Overview */}
-                  <button
-                    onClick={handleOverviewRoute}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-300 bg-white text-slate-600 hover:border-slate-400 transition-colors"
-                  >
-                    <MapIcon className="w-3.5 h-3.5" />
-                    Overview
-                  </button>
-
                   <Button
                     onClick={handleEnd}
                     variant="destructive"
                     size="sm"
-                    className="font-semibold"
+                    className="font-semibold px-5"
                   >
                     End
                   </Button>
