@@ -6,20 +6,18 @@ const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=app.base.m
 
 const DISMISSED_KEY = 'tacholator_app_banner_dismissed';
 
-function isRunningAsPWA() {
+function shouldHideBanner() {
   const ua = navigator.userAgent || '';
-  // Standalone PWA mode
+  // Hide on all mobile devices (iOS or Android) — they either have the app or are already on mobile
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+  // Also hide if running as standalone PWA
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-  // Android WebView: contains 'wv' flag or missing 'Chrome' entirely
-  const isAndroidWebView = /Android/i.test(ua) && (/wv\)/i.test(ua) || !/Chrome/i.test(ua));
-  // iOS WebView: has AppleWebKit but no 'Safari' token
-  const isIOSWebView = /iPhone|iPad|iPod/i.test(ua) && /AppleWebKit/i.test(ua) && !/Safari/i.test(ua);
-  return isStandalone || isAndroidWebView || isIOSWebView;
+  return isMobile || isStandalone;
 }
 
 export default function AppDownloadBanner() {
   const [dismissed, setDismissed] = useState(() => {
-    if (isRunningAsPWA()) return true;
+    if (shouldHideBanner()) return true;
     return localStorage.getItem(DISMISSED_KEY) === 'true';
   });
 
