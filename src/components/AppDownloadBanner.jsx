@@ -7,7 +7,14 @@ const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=app.base.m
 const DISMISSED_KEY = 'tacholator_app_banner_dismissed';
 
 function isRunningAsPWA() {
-  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const ua = navigator.userAgent || '';
+  // Standalone PWA mode
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  // Android WebView: contains 'wv' flag or missing 'Chrome' entirely
+  const isAndroidWebView = /Android/i.test(ua) && (/wv\)/i.test(ua) || !/Chrome/i.test(ua));
+  // iOS WebView: has AppleWebKit but no 'Safari' token
+  const isIOSWebView = /iPhone|iPad|iPod/i.test(ua) && /AppleWebKit/i.test(ua) && !/Safari/i.test(ua);
+  return isStandalone || isAndroidWebView || isIOSWebView;
 }
 
 export default function AppDownloadBanner() {
