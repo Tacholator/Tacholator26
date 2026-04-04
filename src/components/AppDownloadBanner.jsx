@@ -6,8 +6,13 @@ const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=app.base.m
 
 const DISMISSED_KEY = 'tacholator_app_banner_dismissed';
 
+function isRunningAsPWA() {
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
 export default function AppDownloadBanner() {
   const [dismissed, setDismissed] = useState(() => {
+    if (isRunningAsPWA()) return true;
     return localStorage.getItem(DISMISSED_KEY) === 'true';
   });
 
