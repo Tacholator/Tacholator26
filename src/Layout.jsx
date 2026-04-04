@@ -43,6 +43,7 @@ import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
 import AccountProfilePanel from '@/components/account/AccountProfilePanel';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import AppDownloadBanner from '@/components/AppDownloadBanner';
 import { Toaster } from '@/components/ui/toaster';
 
 export default function Layout({ children, currentPageName }) {
@@ -491,6 +492,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main className="lg:pl-64" style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}>
+        <AppDownloadBanner />
         {children}
       </main>
 
