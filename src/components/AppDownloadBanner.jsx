@@ -22,8 +22,10 @@ export default function AppDownloadBanner() {
     setDismissed(true);
   };
 
-  const storeUrl = isIOS ? APP_STORE_URL : isAndroid ? PLAY_STORE_URL : null;
-  const storeName = isIOS ? 'App Store' : isAndroid ? 'Google Play' : null;
+  const handleDownload = () => {
+    const url = isIOS ? APP_STORE_URL : isAndroid ? PLAY_STORE_URL : APP_STORE_URL;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className="bg-[#071739] text-white px-4 py-2.5 flex items-center gap-3 z-50 relative">
@@ -33,35 +35,12 @@ export default function AppDownloadBanner() {
         <span className="text-slate-300 ml-1 hidden sm:inline">— a better experience on your phone.</span>
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        {storeUrl ? (
-          <a
-            href={storeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-[#F7B602] text-[#071739] text-xs font-bold px-3 py-1.5 rounded-full hover:bg-[#d99f02] transition-colors"
-          >
-            Download on {storeName}
-          </a>
-        ) : (
-          <div className="flex gap-2">
-            <a
-              href={APP_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-[#F7B602] text-[#071739] text-xs font-bold px-3 py-1.5 rounded-full hover:bg-[#d99f02] transition-colors"
-            >
-              App Store
-            </a>
-            <a
-              href={PLAY_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-[#F7B602] text-[#071739] text-xs font-bold px-3 py-1.5 rounded-full hover:bg-[#d99f02] transition-colors"
-            >
-              Google Play
-            </a>
-          </div>
-        )}
+        <button
+          onClick={handleDownload}
+          className="bg-[#F7B602] text-[#071739] text-xs font-bold px-3 py-1.5 rounded-full hover:bg-[#d99f02] transition-colors"
+        >
+          Download App
+        </button>
         <button onClick={handleDismiss} className="text-slate-400 hover:text-white transition-colors ml-1">
           <X className="w-4 h-4" />
         </button>
