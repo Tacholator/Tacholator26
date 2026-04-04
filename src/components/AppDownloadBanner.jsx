@@ -6,18 +6,20 @@ const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=app.base.m
 
 const DISMISSED_KEY = 'tacholator_app_banner_dismissed';
 
-function shouldHideBanner() {
+function isRunningAsPWA() {
   const ua = navigator.userAgent || '';
-  // Hide on all mobile devices (iOS or Android) — they either have the app or are already on mobile
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
-  // Also hide if running as standalone PWA
+  // Standalone PWA mode
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-  return isMobile || isStandalone;
+  // Android WebView: contains 'wv' flag or missing 'Chrome' entirely
+  const isAndroidWebView = /Android/i.test(ua) && (/wv\)/i.test(ua) || !/Chrome/i.test(ua));
+  // iOS WebView: has AppleWebKit but no 'Safari' token
+  const isIOSWebView = /iPhone|iPad|iPod/i.test(ua) && /AppleWebKit/i.test(ua) && !/Safari/i.test(ua);
+  return isStandalone || isAndroidWebView || isIOSWebView;
 }
 
 export default function AppDownloadBanner() {
   const [dismissed, setDismissed] = useState(() => {
-    if (shouldHideBanner()) return true;
+    if (isRunningAsPWA()) return true;
     return localStorage.getItem(DISMISSED_KEY) === 'true';
   });
 
@@ -42,6 +44,7 @@ export default function AppDownloadBanner() {
       <Smartphone className="w-5 h-5 text-[#F7B602] shrink-0" />
       <div className="flex-1 text-sm">
         <span className="font-semibold">Get the Tacholator app</span>
+        <span className="text-slate-300 ml-1 hidden sm:inline">— a better experience on your phone.</span>
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <button
