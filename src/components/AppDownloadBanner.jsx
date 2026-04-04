@@ -42,7 +42,6 @@ export default function AppDownloadBanner() {
       <Smartphone className="w-5 h-5 text-[#F7B602] shrink-0" />
       <div className="flex-1 text-sm">
         <span className="font-semibold">Get the Tacholator app</span>
-        <span className="text-slate-300 ml-1 hidden sm:inline">— a better experience on your phone.</span>
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <button
