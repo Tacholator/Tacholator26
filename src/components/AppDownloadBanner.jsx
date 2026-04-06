@@ -36,7 +36,7 @@ export default function AppDownloadBanner() {
 
   const handleDownload = () => {
     const url = isIOS ? APP_STORE_URL : isAndroid ? PLAY_STORE_URL : APP_STORE_URL;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.location.href = url;
   };
 
   return (
