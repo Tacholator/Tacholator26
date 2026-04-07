@@ -52,8 +52,12 @@ export default function Home() {
     return <RoleSelection />;
   }
 
-  if (isInstructor || user.userType === 'instructor') {
+  if (isInstructor) {
     return <InstructorDashboard />;
+  } else {
+    return <LearnerDashboard />;
+  } else {
+    return <LearnerDashboard />;
   } else {
     return <LearnerDashboard />;
   }
