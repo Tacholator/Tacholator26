@@ -23,7 +23,8 @@ import {
   BookMarked,
   Star,
   BarChart2,
-  HeadphonesIcon
+  HeadphonesIcon,
+  MessageSquarePlus
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -174,17 +175,19 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
         { name: 'Admin Dashboard', icon: Settings, page: 'AdminDashboard' },
         { name: 'GPS Routes', icon: MapPin, page: 'AdminGpsRoutes' },
         { name: 'GPS Route Access', icon: MapPin, page: 'AdminGpsRouteAccess' },
-        { name: 'Support Messages', icon: HeadphonesIcon, page: 'AdminSupportMessages' }
+        { name: 'Support Messages', icon: HeadphonesIcon, page: 'AdminSupportMessages' },
+        { name: 'App Feedback', icon: MessageSquarePlus, page: 'AdminFeedback' }
       ] 
     : [];
   
   const contactSupport = { name: 'Contact Support', icon: HeadphonesIcon, page: 'ContactSupport' };
+  const appFeedback = { name: 'App Feedback', icon: MessageSquarePlus, page: 'AppFeedback' };
 
   return [
     shared[0], // Home
     ...roleSpecific,
     ...shared.slice(1), // Payments, Notifications, Chats (Homework excluded for instructors)
     ...adminDashboard, // Admin Dashboard at the end (after Chats)
-    ...(isMainAdmin ? [] : [contactSupport]) // Contact Support for non-main-admin users
+    ...(isMainAdmin ? [] : [contactSupport, appFeedback]) // Contact Support & Feedback for non-main-admin users
   ];
 };

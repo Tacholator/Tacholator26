@@ -16,6 +16,8 @@ import InstructorGpsRoutes from './pages/InstructorGpsRoutes';
 import LearnerClassNotes from './pages/LearnerClassNotes';
 import ContactSupport from './pages/ContactSupport';
 import AdminSupportMessages from './pages/AdminSupportMessages';
+import AppFeedback from './pages/AppFeedback';
+import AdminFeedback from './pages/AdminFeedback';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -95,6 +97,16 @@ const AuthenticatedApp = () => {
       <Route path="/AdminSupportMessages" element={
         <LayoutWrapper currentPageName="AdminSupportMessages">
           <AdminSupportMessages />
+        </LayoutWrapper>
+      } />
+      <Route path="/AppFeedback" element={
+        <LayoutWrapper currentPageName="AppFeedback">
+          <AppFeedback />
+        </LayoutWrapper>
+      } />
+      <Route path="/AdminFeedback" element={
+        <LayoutWrapper currentPageName="AdminFeedback">
+          <AdminFeedback />
         </LayoutWrapper>
       } />
       <Route path="/RoleSelection" element={

@@ -1,0 +1,45 @@
+{
+  "name": "AppFeedback",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string"
+    },
+    "userEmail": {
+      "type": "string"
+    },
+    "userName": {
+      "type": "string"
+    },
+    "userRole": {
+      "type": "string",
+      "enum": [
+        "instructor",
+        "learner"
+      ]
+    },
+    "rating": {
+      "type": "number",
+      "description": "1-5 star rating"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "general",
+        "bug",
+        "feature_request",
+        "ui_ux",
+        "performance"
+      ],
+      "default": "general"
+    },
+    "feedback": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "userId",
+    "feedback",
+    "rating"
+  ]
+}
