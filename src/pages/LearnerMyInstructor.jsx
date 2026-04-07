@@ -112,10 +112,28 @@ export default function LearnerMyInstructor() {
 
   if (!pupil) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <User className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-          <p className="text-slate-600">No pupil profile found</p>
+      <div className="min-h-screen bg-slate-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-[#071739]">My Instructor</h1>
+          </div>
+          <Card>
+            <CardContent className="flex flex-col items-center text-center py-16 px-6">
+              <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-6">
+                <UserX className="w-10 h-10 text-amber-500" />
+              </div>
+              <h2 className="text-xl font-bold text-[#071739] mb-3">Account Not Linked to an Instructor</h2>
+              <p className="text-slate-600 max-w-md mb-4">
+                Your learner account hasn't been linked to an instructor yet. Your instructor needs to add you to their Tacholator account first.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md w-full text-left">
+                <p className="text-sm font-semibold text-blue-800 mb-1">What to do next:</p>
+                <p className="text-sm text-blue-700">
+                  Please contact your driving instructor and ask them to link your account in the Tacholator app. They will need your email address: <strong>{user?.email}</strong>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
