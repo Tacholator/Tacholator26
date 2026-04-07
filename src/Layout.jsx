@@ -118,6 +118,17 @@ export default function Layout({ children, currentPageName }) {
     enabled: !!user?.id,
     refetchInterval: 30000
   });
+
+  // Fetch pending deletion requests count (admin only)
+  const { data: pendingDeletionCount = 0 } = useQuery({
+    queryKey: ['pendingDeletionCount'],
+    queryFn: async () => {
+      const items = await base44.entities.DeletionRequest.filter({ status: 'pending' });
+      return items.length;
+    },
+    enabled: isMainAdmin,
+    refetchInterval: 60000
+  });
   
   // Fetch instructor profile to get GPS routes access flag
   const { data: instructorProfile } = useQuery({
@@ -275,6 +286,11 @@ export default function Layout({ children, currentPageName }) {
                         {item.name === 'Notifications' && unreadNotificationsCount > 0 && (
                           <Badge className="ml-auto bg-rose-500 text-white text-xs font-bold px-2 h-5">
                             {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                          </Badge>
+                        )}
+                        {item.name === 'Deletion Requests' && pendingDeletionCount > 0 && (
+                          <Badge className="ml-auto bg-rose-500 text-white text-xs font-bold px-2 h-5">
+                            {pendingDeletionCount}
                           </Badge>
                         )}
                       </Link>
@@ -468,6 +484,11 @@ export default function Layout({ children, currentPageName }) {
                           {item.name === 'Notifications' && unreadNotificationsCount > 0 && (
                             <Badge className="ml-auto bg-rose-500 text-white text-xs font-bold px-2 h-5">
                               {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                            </Badge>
+                          )}
+                          {item.name === 'Deletion Requests' && pendingDeletionCount > 0 && (
+                            <Badge className="ml-auto bg-rose-500 text-white text-xs font-bold px-2 h-5">
+                              {pendingDeletionCount}
                             </Badge>
                           )}
                         </Link>

@@ -5,11 +5,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trash2, CheckCircle2, Loader2, Clock, UserX, History } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Trash2, CheckCircle2, Loader2, Clock, UserX, History, UserMinus } from 'lucide-react';
 import moment from 'moment';
 
 export default function AdminDeletionRequests() {
   const queryClient = useQueryClient();
+  const [confirmDelete, setConfirmDelete] = useState(null); // stores the request to delete
 
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ['deletionRequests'],
@@ -21,26 +32,41 @@ export default function AdminDeletionRequests() {
     onSuccess: () => queryClient.invalidateQueries(['deletionRequests'])
   });
 
-  const deleteMutation = useMutation({
+  const deleteRequestMutation = useMutation({
     mutationFn: (id) => base44.entities.DeletionRequest.delete(id),
     onSuccess: () => queryClient.invalidateQueries(['deletionRequests'])
+  });
+
+  // Delete the user AND resolve/remove the deletion request
+  const deleteUserMutation = useMutation({
+    mutationFn: async ({ requestId, userId }) => {
+      if (userId) {
+        await base44.entities.User.delete(userId);
+      }
+      await base44.entities.DeletionRequest.update(requestId, { status: 'resolved' });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['deletionRequests']);
+      setConfirmDelete(null);
+    }
   });
 
   const pending = requests.filter(r => r.status === 'pending');
   const resolved = requests.filter(r => r.status === 'resolved');
 
   const RequestCard = ({ req, showActions }) => (
-    <Card key={req.id} className={`border ${req.status === 'pending' ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200'}`}>
+    <Card className={`border ${req.status === 'pending' ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200'}`}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <p className="font-semibold text-slate-800">{req.userName || 'Unknown'}</p>
               <Badge className={req.status === 'pending' ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-green-100 text-green-700 border-green-200'}>
                 {req.status === 'pending' ? 'Pending' : 'Resolved'}
               </Badge>
             </div>
             <p className="text-sm text-slate-500">{req.userEmail}</p>
+            {req.userId && <p className="text-xs text-slate-400 font-mono mt-0.5">UID: {req.userId}</p>}
             <p className="text-sm text-slate-700 mt-2"><span className="font-medium">Reason:</span> {req.reason}</p>
             {req.additionalInfo && (
               <p className="text-sm text-slate-600 mt-1"><span className="font-medium">Details:</span> {req.additionalInfo}</p>
@@ -51,7 +77,7 @@ export default function AdminDeletionRequests() {
             </div>
           </div>
           {showActions && (
-            <div className="flex gap-2 shrink-0">
+            <div className="flex flex-col gap-2 shrink-0">
               <Button
                 size="sm"
                 variant="outline"
@@ -65,11 +91,21 @@ export default function AdminDeletionRequests() {
               <Button
                 size="sm"
                 variant="outline"
-                className="border-rose-300 text-rose-700 hover:bg-rose-50"
-                onClick={() => deleteMutation.mutate(req.id)}
-                disabled={deleteMutation.isPending}
+                className="border-rose-500 text-rose-700 hover:bg-rose-50 font-medium"
+                onClick={() => setConfirmDelete(req)}
               >
-                <Trash2 className="w-4 h-4" />
+                <UserMinus className="w-4 h-4 mr-1" />
+                Delete User
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-slate-400 hover:text-rose-500"
+                onClick={() => deleteRequestMutation.mutate(req.id)}
+                disabled={deleteRequestMutation.isPending}
+              >
+                <Trash2 className="w-3 h-3 mr-1" />
+                Remove
               </Button>
             </div>
           )}
@@ -166,6 +202,30 @@ export default function AdminDeletionRequests() {
           </TabsContent>
         </Tabs>
       )}
+
+      {/* Confirm Delete User Dialog */}
+      <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User Account</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete <strong>{confirmDelete?.userName || confirmDelete?.userEmail}</strong>'s account from the database. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteUserMutation.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteUserMutation.mutate({ requestId: confirmDelete.id, userId: confirmDelete.userId })}
+              disabled={deleteUserMutation.isPending}
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              {deleteUserMutation.isPending ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Deleting...</>
+              ) : 'Delete Account'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
