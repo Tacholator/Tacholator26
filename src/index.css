@@ -187,3 +187,12 @@ button:focus-visible {
 .pb-nav-safe {
   padding-bottom: calc(5rem + env(safe-area-inset-bottom));
 }
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
