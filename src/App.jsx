@@ -14,6 +14,8 @@ import AdminGpsRouteAccess from './pages/AdminGpsRouteAccess';
 import AdminGpsRoutes from './pages/AdminGpsRoutes';
 import InstructorGpsRoutes from './pages/InstructorGpsRoutes';
 import LearnerClassNotes from './pages/LearnerClassNotes';
+import ContactSupport from './pages/ContactSupport';
+import AdminSupportMessages from './pages/AdminSupportMessages';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -83,6 +85,16 @@ const AuthenticatedApp = () => {
       <Route path="/LearnerClassNotes" element={
         <LayoutWrapper currentPageName="LearnerClassNotes">
           <LearnerClassNotes />
+        </LayoutWrapper>
+      } />
+      <Route path="/ContactSupport" element={
+        <LayoutWrapper currentPageName="ContactSupport">
+          <ContactSupport />
+        </LayoutWrapper>
+      } />
+      <Route path="/AdminSupportMessages" element={
+        <LayoutWrapper currentPageName="AdminSupportMessages">
+          <AdminSupportMessages />
         </LayoutWrapper>
       } />
       <Route path="/RoleSelection" element={

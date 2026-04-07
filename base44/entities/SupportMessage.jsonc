@@ -1,0 +1,49 @@
+{
+  "name": "SupportMessage",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "User ID of the sender"
+    },
+    "userEmail": {
+      "type": "string"
+    },
+    "userName": {
+      "type": "string"
+    },
+    "userRole": {
+      "type": "string",
+      "enum": [
+        "instructor",
+        "learner"
+      ]
+    },
+    "subject": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "resolved"
+      ],
+      "default": "open"
+    },
+    "adminReply": {
+      "type": "string"
+    },
+    "repliedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "userId",
+    "message",
+    "subject"
+  ]
+}
