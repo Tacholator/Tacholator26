@@ -20,7 +20,9 @@ import moment from 'moment';
 
 export default function AdminDeletionRequests() {
   const queryClient = useQueryClient();
-  const [confirmDelete, setConfirmDelete] = useState(null); // stores the request to delete
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [confirmResolve, setConfirmResolve] = useState(null);
+  const [confirmRemove, setConfirmRemove] = useState(null);
 
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ['deletionRequests'],
@@ -82,8 +84,7 @@ export default function AdminDeletionRequests() {
                 size="sm"
                 variant="outline"
                 className="border-green-300 text-green-700 hover:bg-green-50"
-                onClick={() => resolveMutation.mutate(req.id)}
-                disabled={resolveMutation.isPending}
+                onClick={() => setConfirmResolve(req)}
               >
                 <CheckCircle2 className="w-4 h-4 mr-1" />
                 Resolve
@@ -101,8 +102,7 @@ export default function AdminDeletionRequests() {
                 size="sm"
                 variant="ghost"
                 className="text-slate-400 hover:text-rose-500"
-                onClick={() => deleteRequestMutation.mutate(req.id)}
-                disabled={deleteRequestMutation.isPending}
+                onClick={() => setConfirmRemove(req)}
               >
                 <Trash2 className="w-3 h-3 mr-1" />
                 Remove
@@ -202,6 +202,48 @@ export default function AdminDeletionRequests() {
           </TabsContent>
         </Tabs>
       )}
+
+      {/* Confirm Resolve Dialog */}
+      <AlertDialog open={!!confirmResolve} onOpenChange={(open) => !open && setConfirmResolve(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mark as Resolved?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Mark <strong>{confirmResolve?.userName || confirmResolve?.userEmail}</strong>'s deletion request as resolved. The user's account will NOT be deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { resolveMutation.mutate(confirmResolve.id); setConfirmResolve(null); }}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Mark Resolved
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirm Remove Request Dialog */}
+      <AlertDialog open={!!confirmRemove} onOpenChange={(open) => !open && setConfirmRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Request?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove <strong>{confirmRemove?.userName || confirmRemove?.userEmail}</strong>'s deletion request from the log. The user's account will NOT be deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { deleteRequestMutation.mutate(confirmRemove.id); setConfirmRemove(null); }}
+              className="bg-slate-700 hover:bg-slate-800"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Confirm Delete User Dialog */}
       <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
