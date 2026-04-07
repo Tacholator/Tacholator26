@@ -21,6 +21,7 @@ export default function AccountDeletionRequest() {
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -29,14 +30,14 @@ export default function AccountDeletionRequest() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!reason) return;
-
+    if (!reason || !user?.id) return;
+    setErrorMsg('');
     setIsSending(true);
     try {
       await base44.entities.DeletionRequest.create({
-        userId: user?.id,
-        userEmail: user?.email,
-        userName: user?.full_name,
+        userId: user.id,
+        userEmail: user.email,
+        userName: user.full_name,
         reason,
         additionalInfo,
         status: 'pending'
@@ -55,6 +56,7 @@ export default function AccountDeletionRequest() {
       setSubmitted(true);
     } catch (error) {
       console.error('Failed to send deletion request:', error);
+      setErrorMsg('Something went wrong submitting your request. Please try again.');
     } finally {
       setIsSending(false);
     }
@@ -142,9 +144,14 @@ export default function AccountDeletionRequest() {
                 />
               </div>
 
+              {errorMsg && (
+                <div className="bg-rose-50 border border-rose-300 text-rose-700 text-sm rounded-lg p-3">
+                  {errorMsg}
+                </div>
+              )}
               <Button 
                 type="submit" 
-                disabled={!reason || isSending}
+                disabled={!reason || isSending || !user?.id}
                 className="w-full bg-rose-600 hover:bg-rose-700 text-white"
               >
                 {isSending ? (
