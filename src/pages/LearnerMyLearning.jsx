@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import PupilClassNotes from '@/components/classnotes/PupilClassNotes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, Award, TrendingUp, Clock } from 'lucide-react';
+import { BookOpen, Award, TrendingUp, Clock, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function LearnerMyLearning() {
   const { data: user } = useQuery({
@@ -87,6 +88,24 @@ export default function LearnerMyLearning() {
               </p>
             </CardContent>
           </Card>
+
+          {/* Class Notes card — visible on all screens, acts as nav shortcut on mobile */}
+          <Link to="/LearnerClassNotes" className="block md:hidden">
+            <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <BookOpen className="w-5 h-5 text-teal-600" />
+                  Class Notes
+                  <ChevronRight className="w-4 h-4 text-slate-400 ml-auto" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-slate-600">
+                  View whiteboard notes saved by your instructor
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Class Notes Section */}
