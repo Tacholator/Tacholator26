@@ -18,6 +18,7 @@ import ContactSupport from './pages/ContactSupport';
 import AdminSupportMessages from './pages/AdminSupportMessages';
 import AppFeedback from './pages/AppFeedback';
 import AdminFeedback from './pages/AdminFeedback';
+import AdminDeletionRequests from './pages/AdminDeletionRequests';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -107,6 +108,11 @@ const AuthenticatedApp = () => {
       <Route path="/AdminFeedback" element={
         <LayoutWrapper currentPageName="AdminFeedback">
           <AdminFeedback />
+        </LayoutWrapper>
+      } />
+      <Route path="/AdminDeletionRequests" element={
+        <LayoutWrapper currentPageName="AdminDeletionRequests">
+          <AdminDeletionRequests />
         </LayoutWrapper>
       } />
       <Route path="/RoleSelection" element={

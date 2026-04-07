@@ -33,6 +33,14 @@ export default function AccountDeletionRequest() {
 
     setIsSending(true);
     try {
+      await base44.entities.DeletionRequest.create({
+        userId: user?.id,
+        userEmail: user?.email,
+        userName: user?.full_name,
+        reason,
+        additionalInfo,
+        status: 'pending'
+      });
       await base44.integrations.Core.SendEmail({
         to: 'fasobah@gmail.com',
         subject: 'Account Deletion Request - Mobrage Tacholator',
