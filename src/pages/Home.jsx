@@ -29,7 +29,7 @@ export default function Home() {
 
   const isLearner = !!pupilRecord;
   const isInstructor = !isLearner && user?.role === 'admin';
-  const needsRoleSelection = !isLoading && !isPupilLoading && user && !isLearner && !isInstructor && !user.userType && user.email !== 'fasobah@gmail.com';
+  const needsRoleSelection = !isLoading && !isPupilLoading && user && !isLearner && user?.role !== 'admin';
 
   useEffect(() => {
     if (needsRoleSelection) {
