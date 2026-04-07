@@ -41,7 +41,7 @@ export default function LearnerNotes() {
     retry: false
   });
 
-  const { data: pupil } = useQuery({
+  const { data: pupil, isLoading: isPupilLoading } = useQuery({
     queryKey: ['myPupilProfile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -125,10 +125,22 @@ export default function LearnerNotes() {
       return 0;
     });
 
-  if (isLoading) {
+  if (isLoading || isPupilLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+      </div>
+    );
+  }
+
+  if (!pupil) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+        <div className="text-center max-w-sm">
+          <StickyNote className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+          <h2 className="text-lg font-semibold text-slate-700 mb-2">Account not linked</h2>
+          <p className="text-slate-500 text-sm">Your account hasn't been linked to a pupil profile yet. Please contact your instructor.</p>
+        </div>
       </div>
     );
   }

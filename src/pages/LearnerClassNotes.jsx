@@ -42,8 +42,8 @@ export default function LearnerClassNotes() {
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-slate-400">
             <BookOpen className="w-12 h-12 mb-3 opacity-30" />
-            <p className="font-medium text-slate-500">No class notes yet</p>
-            <p className="text-sm mt-1">Your instructor will add notes here during lessons</p>
+            <p className="font-medium text-slate-500">Account not linked</p>
+            <p className="text-sm mt-1">Your account hasn't been linked to a pupil profile yet. Please contact your instructor.</p>
           </div>
         )}
       </div>

@@ -51,7 +51,7 @@ export default function CourseWork() {
     queryFn: () => base44.auth.me()
   });
 
-  const { data: pupil } = useQuery({
+  const { data: pupil, isLoading: isPupilLoading } = useQuery({
     queryKey: ['currentPupil', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -174,6 +174,19 @@ export default function CourseWork() {
     setAssignmentModalOpen(false);
     setSelectedTopic(null);
   };
+
+  // Not linked to a pupil profile
+  if (!isInstructor && !isPupilLoading && pupil === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+        <div className="text-center max-w-sm">
+          <FileText className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+          <h2 className="text-lg font-semibold text-slate-700 mb-2">Account not linked</h2>
+          <p className="text-slate-500 text-sm">Your account hasn't been linked to a pupil profile yet. Please contact your instructor.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Restrict access for non-active pupils
   if (!isInstructor && pupil && pupil.status !== 'Active') {
