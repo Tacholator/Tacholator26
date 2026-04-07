@@ -33,25 +33,6 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
     ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
     : user?.full_name || user?.email;
 
-  const isDesktop = window.innerWidth >= 1024;
-
-  if (selectedItem?.component === 'profile' && !isDesktop) {
-    return (
-      <div className="flex flex-col h-full">
-        <button
-          onClick={() => setSelectedItem(null)}
-          className="flex items-center gap-2 p-4 text-slate-600 hover:text-slate-900"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">Back</span>
-        </button>
-        <div className="flex-1 overflow-y-auto">
-          <ProfileSettingsContent user={user} isInstructor={isInstructor} />
-        </div>
-      </div>
-    );
-  }
-
 
   return (
     <div className="flex flex-col h-full">
@@ -79,11 +60,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             <button
               key={item.page}
               onClick={() => {
-                if (item.component === 'profile' && !isDesktop) {
-                  setSelectedItem(item);
-                } else {
-                  window.location.href = createPageUrl(item.page);
-                }
+                window.location.href = createPageUrl(item.page);
               }}
               className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
             >
