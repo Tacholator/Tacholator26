@@ -3,14 +3,15 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { FileText, StickyNote, GraduationCap, FolderOpen, ClipboardList } from 'lucide-react';
+import { FileText, StickyNote, GraduationCap, FolderOpen, ClipboardList, Notebook } from 'lucide-react';
 
 const learningCards = [
   { name: 'Course Work', icon: FileText, page: 'CourseWork', color: 'from-blue-500 to-blue-600' },
   { name: 'My Notes', icon: StickyNote, page: 'LearnerNotes', color: 'from-purple-500 to-purple-600' },
   { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress', color: 'from-emerald-500 to-emerald-600' },
   { name: 'Resources', icon: FolderOpen, page: 'LearnerResources', color: 'from-amber-500 to-amber-600' },
-  { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework', color: 'from-rose-500 to-rose-600' }
+  { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework', color: 'from-rose-500 to-rose-600' },
+  { name: 'Class Notes', icon: Notebook, page: 'LearnerClassNotes', color: 'from-teal-500 to-teal-600' }
 ];
 
 export default function LearnerLearningHub() {
