@@ -90,7 +90,7 @@ export default function LearnerMyLearning() {
           </Card>
 
           {/* Class Notes card — visible on all screens, acts as nav shortcut on mobile */}
-          <Link to="/LearnerClassNotes" className="block md:hidden">
+          <Link to="/LearnerClassNotes" className="block lg:hidden">
             <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
