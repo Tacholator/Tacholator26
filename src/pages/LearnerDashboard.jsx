@@ -333,13 +333,34 @@ export default function LearnerDashboard() {
   if (!pupil) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6">
-        <Card className="max-w-md text-center p-8">
-          <Car className="w-16 h-16 mx-auto mb-4 text-slate-300" />
-          <h2 className="text-xl font-semibold text-slate-700 mb-2">Account Not Linked</h2>
-          <p className="text-slate-500">
-            Your account hasn't been linked to a pupil profile yet. Please contact your instructor.
-          </p>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full"
+        >
+          <Card className="border-0 shadow-xl overflow-hidden">
+            <div className="bg-gradient-to-br from-[#071739] to-[#0d2a5e] p-8 text-center">
+              <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
+                <Car className="w-10 h-10 text-[#F7B602]" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Welcome to Tacholator!</h2>
+              <p className="text-white/70 text-sm">You're almost ready to start your journey</p>
+            </div>
+            <CardContent className="p-8 text-center bg-white">
+              <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-4">
+                <User className="w-6 h-6 text-[#F7B602]" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-800 mb-2">Account Not Linked Yet</h3>
+              <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                Your account hasn't been linked to a pupil profile yet. Please contact your instructor and they'll get you set up.
+              </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-left">
+                <p className="text-xs font-semibold text-amber-800 mb-1">What to do next</p>
+                <p className="text-xs text-amber-700">Share your sign-up email address with your instructor so they can link your account to your pupil profile.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     );
   }
