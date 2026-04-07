@@ -126,6 +126,18 @@ async function processWebhookEvent(event, base44) {
     case 'refund.updated':
       return await handleRefundUpdated(data, base44);
     
+    case 'customer.subscription.created':
+      return await handleSubscriptionCreated(data, base44);
+    
+    case 'customer.subscription.updated':
+      return await handleSubscriptionUpdated(data, base44);
+    
+    case 'customer.subscription.deleted':
+      return await handleSubscriptionDeleted(data, base44);
+    
+    case 'invoice.payment_failed':
+      return await handleInvoicePaymentFailed(data, base44);
+
     default:
       console.log(`Unhandled event type: ${eventType}`);
       return { success: true, message: 'Event type not handled' };
@@ -241,9 +253,89 @@ async function handleChargeRefunded(charge, base44) {
 
 async function handleRefundUpdated(refund, base44) {
   console.log('Processing refund.updated:', refund.id);
-  
-  // Log refund status change
-  // Can be extended based on specific business logic
-  
+  return { success: true };
+}
+
+async function handleSubscriptionCreated(subscription, base44) {
+  console.log('Processing customer.subscription.created:', subscription.id);
+  const userId = subscription.metadata?.userId;
+  if (!userId) {
+    console.warn('No userId in subscription metadata, skipping');
+    return { success: true };
+  }
+
+  const statusMap = { trialing: 'trialing', active: 'active', past_due: 'past_due', canceled: 'cancelled' };
+  const status = statusMap[subscription.status] || 'active';
+  const billingPeriod = subscription.metadata?.billingPeriod || 'monthly';
+
+  const data = {
+    userId,
+    stripeSubscriptionId: subscription.id,
+    stripeCustomerId: subscription.customer,
+    status,
+    billingPeriod,
+    trialStartAt: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
+    trialEndAt: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+    currentPeriodStartAt: new Date(subscription.current_period_start * 1000).toISOString(),
+    currentPeriodEndAt: new Date(subscription.current_period_end * 1000).toISOString(),
+    cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+  };
+
+  const existing = await base44.asServiceRole.entities.UserSubscription.filter({ userId });
+  if (existing.length > 0) {
+    await base44.asServiceRole.entities.UserSubscription.update(existing[0].id, data);
+  } else {
+    await base44.asServiceRole.entities.UserSubscription.create(data);
+  }
+  return { success: true };
+}
+
+async function handleSubscriptionUpdated(subscription, base44) {
+  console.log('Processing customer.subscription.updated:', subscription.id);
+  const statusMap = { trialing: 'trialing', active: 'active', past_due: 'past_due', canceled: 'cancelled' };
+  const status = statusMap[subscription.status] || 'active';
+
+  const existing = await base44.asServiceRole.entities.UserSubscription.filter({ stripeSubscriptionId: subscription.id });
+  if (existing.length === 0) {
+    // Fall back to userId if available
+    const userId = subscription.metadata?.userId;
+    if (userId) return await handleSubscriptionCreated(subscription, base44);
+    return { success: true };
+  }
+
+  await base44.asServiceRole.entities.UserSubscription.update(existing[0].id, {
+    status,
+    trialEndAt: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+    currentPeriodStartAt: new Date(subscription.current_period_start * 1000).toISOString(),
+    currentPeriodEndAt: new Date(subscription.current_period_end * 1000).toISOString(),
+    cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+  });
+  return { success: true };
+}
+
+async function handleSubscriptionDeleted(subscription, base44) {
+  console.log('Processing customer.subscription.deleted:', subscription.id);
+  const existing = await base44.asServiceRole.entities.UserSubscription.filter({ stripeSubscriptionId: subscription.id });
+  if (existing.length > 0) {
+    await base44.asServiceRole.entities.UserSubscription.update(existing[0].id, {
+      status: 'cancelled',
+      cancelledAt: new Date().toISOString(),
+      cancelAtPeriodEnd: false
+    });
+  }
+  return { success: true };
+}
+
+async function handleInvoicePaymentFailed(invoice, base44) {
+  console.log('Processing invoice.payment_failed:', invoice.id);
+  if (!invoice.subscription) return { success: true };
+  const existing = await base44.asServiceRole.entities.UserSubscription.filter({ stripeSubscriptionId: invoice.subscription });
+  if (existing.length > 0) {
+    await base44.asServiceRole.entities.UserSubscription.update(existing[0].id, {
+      status: 'past_due',
+      lastPaymentStatus: 'failed',
+      lastPaymentAt: new Date().toISOString()
+    });
+  }
   return { success: true };
 }

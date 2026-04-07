@@ -27,9 +27,10 @@ export default function RoleSelection() {
         await base44.entities.Instructor.create({
           name: fullName,
         });
+        navigate('/InstructorSubscription');
+      } else {
+        navigate(createPageUrl('Home'));
       }
-
-      navigate(createPageUrl('Home'));
     } catch (error) {
       console.error('Failed to set role:', error);
       setSelecting(null);

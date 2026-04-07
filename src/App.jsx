@@ -19,6 +19,7 @@ import AdminSupportMessages from './pages/AdminSupportMessages';
 import AppFeedback from './pages/AppFeedback';
 import AdminFeedback from './pages/AdminFeedback';
 import AdminDeletionRequests from './pages/AdminDeletionRequests';
+import InstructorSubscription from './pages/InstructorSubscription';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -118,6 +119,11 @@ const AuthenticatedApp = () => {
       <Route path="/RoleSelection" element={
         <LayoutWrapper currentPageName="RoleSelection">
           <RoleSelection />
+        </LayoutWrapper>
+      } />
+      <Route path="/InstructorSubscription" element={
+        <LayoutWrapper currentPageName="InstructorSubscription">
+          <InstructorSubscription />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

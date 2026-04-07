@@ -1,132 +1,316 @@
-import React from 'react';
-import { Star, CheckCircle, Zap, Shield } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle
+} from '@/components/ui/alert-dialog';
+import { CheckCircle, Zap, Shield, Calendar, CreditCard, Loader2, Star, Clock, AlertTriangle } from 'lucide-react';
 
-const plans = [
+const PLANS = [
   {
-    name: 'Basic',
-    price: '£0',
+    id: 'monthly',
+    name: 'Monthly',
+    price: '£10.00',
     period: '/month',
-    description: 'Get started with essential features',
+    annualEquivalent: '£120/year',
+    priceNote: 'Billed monthly',
     badge: null,
-    features: [
-      'Up to 5 pupils',
-      'Basic calendar',
-      'Lesson scheduling',
-      'Basic messaging',
-    ],
-    cta: 'Current Plan',
-    disabled: true,
-    variant: 'outline'
   },
   {
-    name: 'Standard',
-    price: '£9.99',
-    period: '/month',
-    description: 'Grow your business with advanced tools',
-    badge: null,
-    features: [
-      'Up to 20 pupils',
-      'Advanced calendar & availability',
-      'Automated booking approvals',
-      'Payment management',
-      'Basic homework tools',
-      'Progress tracking',
-    ],
-    cta: 'Upgrade to Standard',
-    disabled: false,
-    variant: 'outline'
-  },
-  {
-    name: 'Pro',
-    price: '£14.99',
-    period: '/month',
-    description: 'Everything you need to scale your business',
-    badge: 'Most Popular',
-    features: [
-      'Unlimited pupils',
-      'Advanced calendar & availability',
-      'Automated booking approvals',
-      'Payment management & invoicing',
-      'Course work & homework tools',
-      'Whiteboard editor',
-      'Progress tracking',
-      'Priority support',
-    ],
-    cta: 'Upgrade to Pro',
-    disabled: false,
-    variant: 'default'
-  },
+    id: 'yearly',
+    name: 'Annual',
+    price: '£100.00',
+    period: '/year',
+    annualEquivalent: 'Save £20 vs monthly',
+    priceNote: 'Billed annually',
+    badge: 'Best Value',
+  }
 ];
 
+const FEATURES = [
+  'Unlimited pupils',
+  'Advanced calendar & availability',
+  'Automated booking & approvals',
+  'Payment management & invoicing',
+  'Coursework & homework tools',
+  'Progress tracking & reports',
+  'Messaging with pupils',
+  'Priority support',
+];
+
+function daysUntil(dateStr) {
+  if (!dateStr) return 0;
+  const diff = new Date(dateStr) - new Date();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 export default function InstructorSubscription() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [subscribing, setSubscribing] = useState(null);
+  const [cancelling, setCancelling] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const justSubscribed = urlParams.get('subscribed') === 'true';
+
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+    retry: false
+  });
+
+  const { data: subscription, isLoading: isSubLoading, refetch: refetchSub } = useQuery({
+    queryKey: ['instructorSubscription', user?.id],
+    queryFn: async () => {
+      const subs = await base44.entities.UserSubscription.filter({ userId: user.id });
+      return subs[0] || null;
+    },
+    enabled: !!user?.id,
+    refetchInterval: justSubscribed ? 3000 : false
+  });
+
+  useEffect(() => {
+    if (justSubscribed) {
+      setSuccessMessage('Welcome! Your 3-day free trial has started. You can explore all features now.');
+      // Clean URL without reload
+      window.history.replaceState({}, '', '/InstructorSubscription');
+    }
+  }, [justSubscribed]);
+
+  // Stop polling once subscription is active
+  useEffect(() => {
+    if (justSubscribed && subscription?.status === 'trialing') {
+      queryClient.setQueryDefaults(['instructorSubscription', user?.id], { refetchInterval: false });
+    }
+  }, [subscription?.status, justSubscribed]);
+
+  const handleStartTrial = async (billingPeriod) => {
+    setSubscribing(billingPeriod);
+    const res = await base44.functions.invoke('createInstructorSubscription', { billingPeriod });
+    if (res.data?.url) {
+      window.location.href = res.data.url;
+    }
+    setSubscribing(null);
+  };
+
+  const handleCancel = async () => {
+    setCancelling(true);
+    await base44.functions.invoke('cancelInstructorSubscription', {});
+    await refetchSub();
+    setCancelling(false);
+    setShowCancelDialog(false);
+  };
+
+  const isTrialing = subscription?.status === 'trialing';
+  const isActive = subscription?.status === 'active';
+  const isCancelled = subscription?.status === 'cancelled';
+  const isPastDue = subscription?.status === 'past_due';
+  const hasValidSub = isTrialing || isActive;
+
+  const trialDaysLeft = daysUntil(subscription?.trialEndAt);
+  const nextBillingDate = formatDate(subscription?.currentPeriodEndAt);
+
+  if (isSubLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#F7B602]" />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
-            <div className="bg-yellow-100 p-3 rounded-full">
-              <Star className="w-7 h-7 text-yellow-500" />
+            <div className="bg-[#F7B602]/20 p-3 rounded-full">
+              <Star className="w-7 h-7 text-[#F7B602]" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-[#071739]">Subscription Plans</h1>
-          <p className="text-slate-500 mt-2">Choose the plan that works best for your teaching business</p>
+          <h1 className="text-3xl font-bold text-[#071739]">Instructor Subscription</h1>
+          <p className="text-slate-500 mt-2">Access all Tacholator features for your driving school</p>
         </div>
 
-        {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          {plans.map((plan) => (
-            <Card
-              key={plan.name}
-              className={`relative flex flex-col ${plan.badge ? 'border-[#F7B602] border-2 shadow-lg' : ''}`}
-            >
-              {plan.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-[#F7B602] text-[#071739] font-semibold px-3 py-1">
-                    {plan.badge}
-                  </Badge>
+        {/* Success banner */}
+        {successMessage && (
+          <div className="mb-6 bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-emerald-800">You're all set!</p>
+              <p className="text-emerald-700 text-sm">{successMessage}</p>
+            </div>
+          </div>
+        )}
+
+        {/* ACTIVE SUBSCRIPTION STATUS */}
+        {hasValidSub && (
+          <div className="mb-8">
+            <Card className={`border-2 ${isTrialing ? 'border-[#F7B602]' : 'border-emerald-400'}`}>
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-14 h-14 rounded-full flex items-center justify-center ${isTrialing ? 'bg-[#F7B602]/20' : 'bg-emerald-100'}`}>
+                      {isTrialing ? (
+                        <Clock className="w-7 h-7 text-[#F7B602]" />
+                      ) : (
+                        <CheckCircle className="w-7 h-7 text-emerald-600" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h2 className="text-xl font-bold text-[#071739]">
+                          {isTrialing ? 'Free Trial Active' : 'Subscription Active'}
+                        </h2>
+                        <Badge className={isTrialing ? 'bg-[#F7B602] text-[#071739]' : 'bg-emerald-500 text-white'}>
+                          {isTrialing ? 'Trialing' : 'Active'}
+                        </Badge>
+                      </div>
+                      <p className="text-slate-600 text-sm">
+                        {subscription?.billingPeriod === 'yearly' ? 'Annual Plan — £100/year' : 'Monthly Plan — £10/month'}
+                      </p>
+                      {isTrialing && (
+                        <p className="text-[#F7B602] font-semibold text-sm mt-1">
+                          {trialDaysLeft} day{trialDaysLeft !== 1 ? 's' : ''} remaining in your trial
+                        </p>
+                      )}
+                      {isActive && (
+                        <p className="text-slate-500 text-sm mt-1">
+                          Next billing: {nextBillingDate}
+                          {subscription?.cancelAtPeriodEnd && (
+                            <span className="ml-2 text-amber-600 font-medium">(Cancels on this date)</span>
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate('/')}
+                      className="border-[#071739] text-[#071739]"
+                    >
+                      Go to Dashboard
+                    </Button>
+                    {!subscription?.cancelAtPeriodEnd && (
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowCancelDialog(true)}
+                        className="border-rose-300 text-rose-600 hover:bg-rose-50"
+                      >
+                        {isTrialing ? 'Cancel Trial' : 'Cancel Plan'}
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              )}
-              <CardHeader className="pb-4">
-                <CardTitle className="text-xl text-[#071739]">{plan.name}</CardTitle>
-                <div className="flex items-end gap-1 mt-1">
-                  <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
-                  <span className="text-slate-500 mb-1">{plan.period}</span>
-                </div>
-                <p className="text-sm text-slate-500">{plan.description}</p>
-              </CardHeader>
-              <CardContent className="flex flex-col flex-1 gap-4">
-                <ul className="space-y-2 flex-1">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-slate-700">
-                      <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  variant={plan.variant}
-                  disabled={plan.disabled}
-                  className={`w-full mt-4 ${plan.badge ? 'bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]' : ''}`}
-                >
-                  {plan.cta}
-                </Button>
+
+                {/* Trial info */}
+                {isTrialing && (
+                  <div className="mt-4 pt-4 border-t border-slate-100 bg-amber-50 rounded-lg p-3">
+                    <p className="text-amber-800 text-sm">
+                      <strong>How it works:</strong> Your card will be charged on <strong>{formatDate(subscription?.trialEndAt)}</strong> when the trial ends.
+                      Cancel before then and you won't be charged at all.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
-          ))}
-        </div>
+          </div>
+        )}
 
-        {/* Features callout */}
+        {/* PAST DUE WARNING */}
+        {isPastDue && (
+          <div className="mb-6 bg-amber-50 border border-amber-300 rounded-xl p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-amber-800">Payment Failed</p>
+              <p className="text-amber-700 text-sm">Your last payment didn't go through. Please update your payment method to continue.</p>
+            </div>
+          </div>
+        )}
+
+        {/* PLAN SELECTION — shown when no active subscription */}
+        {!hasValidSub && (
+          <>
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 bg-[#F7B602]/10 border border-[#F7B602]/30 rounded-full px-4 py-2 text-[#071739] font-semibold text-sm mb-4">
+                <Zap className="w-4 h-4 text-[#F7B602]" />
+                3-Day Free Trial on all plans — no charge until trial ends
+              </div>
+              {isCancelled && (
+                <p className="text-slate-500 text-sm">Your subscription has ended. Choose a plan to reactivate.</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {PLANS.map((plan) => (
+                <Card
+                  key={plan.id}
+                  className={`relative flex flex-col ${plan.badge ? 'border-[#F7B602] border-2 shadow-lg' : 'border-slate-200'}`}
+                >
+                  {plan.badge && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-[#F7B602] text-[#071739] font-semibold px-3 py-1">{plan.badge}</Badge>
+                    </div>
+                  )}
+                  <CardHeader className="pb-2 pt-6">
+                    <CardTitle className="text-lg text-[#071739]">{plan.name}</CardTitle>
+                    <div className="flex items-end gap-1 mt-1">
+                      <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
+                      <span className="text-slate-500 mb-1">{plan.period}</span>
+                    </div>
+                    <p className="text-sm text-slate-400">{plan.priceNote}</p>
+                    <p className="text-xs text-emerald-600 font-medium">{plan.annualEquivalent}</p>
+                  </CardHeader>
+                  <CardContent className="flex flex-col flex-1 gap-4 pt-2">
+                    <ul className="space-y-2 flex-1">
+                      {FEATURES.map((f) => (
+                        <li key={f} className="flex items-center gap-2 text-sm text-slate-700">
+                          <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      onClick={() => handleStartTrial(plan.id)}
+                      disabled={!!subscribing}
+                      className={`w-full mt-2 ${plan.badge ? 'bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]' : 'bg-[#071739] text-white hover:bg-[#0a1f4e]'}`}
+                    >
+                      {subscribing === plan.id ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Redirecting to Stripe...</>
+                      ) : (
+                        'Start 3-Day Free Trial'
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Trust badges */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { icon: Zap, title: 'Instant Activation', desc: 'Upgrade and get access immediately — no waiting.' },
-            { icon: Shield, title: 'Cancel Anytime', desc: 'No long-term contracts. Cancel with one click.' },
-            { icon: Star, title: 'Dedicated Support', desc: 'Pro plan includes priority support.' }
+            { icon: Shield, title: 'Cancel Anytime', desc: 'Cancel during your trial and pay nothing. No questions asked.' },
+            { icon: CreditCard, title: 'Secure Payments', desc: 'Payments processed securely by Stripe. Your card details are never stored by us.' },
+            { icon: Calendar, title: 'Instant Access', desc: 'Get full access to all features immediately after starting your trial.' },
           ].map(({ icon: Icon, title, desc }) => (
-            <Card key={title} className="text-center p-4">
+            <Card key={title} className="text-center p-4 border-slate-200">
               <div className="flex justify-center mb-2">
                 <Icon className="w-6 h-6 text-[#F7B602]" />
               </div>
@@ -136,6 +320,32 @@ export default function InstructorSubscription() {
           ))}
         </div>
       </div>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {isTrialing ? 'Cancel your free trial?' : 'Cancel your subscription?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {isTrialing
+                ? 'Your trial will end immediately and you will not be charged. You can resubscribe at any time.'
+                : `Your subscription will remain active until ${nextBillingDate}, then it will not renew.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={cancelling}>Keep Subscription</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancel}
+              disabled={cancelling}
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              {cancelling ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Cancelling...</> : 'Yes, Cancel'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
