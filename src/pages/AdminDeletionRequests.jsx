@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2, CheckCircle2, Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Trash2, CheckCircle2, Loader2, Clock, UserX, History } from 'lucide-react';
 import moment from 'moment';
 
 export default function AdminDeletionRequests() {
@@ -28,6 +29,55 @@ export default function AdminDeletionRequests() {
   const pending = requests.filter(r => r.status === 'pending');
   const resolved = requests.filter(r => r.status === 'resolved');
 
+  const RequestCard = ({ req, showActions }) => (
+    <Card key={req.id} className={`border ${req.status === 'pending' ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200'}`}>
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-slate-800">{req.userName || 'Unknown'}</p>
+              <Badge className={req.status === 'pending' ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-green-100 text-green-700 border-green-200'}>
+                {req.status === 'pending' ? 'Pending' : 'Resolved'}
+              </Badge>
+            </div>
+            <p className="text-sm text-slate-500">{req.userEmail}</p>
+            <p className="text-sm text-slate-700 mt-2"><span className="font-medium">Reason:</span> {req.reason}</p>
+            {req.additionalInfo && (
+              <p className="text-sm text-slate-600 mt-1"><span className="font-medium">Details:</span> {req.additionalInfo}</p>
+            )}
+            <div className="flex items-center gap-1 mt-2 text-xs text-slate-400">
+              <Clock className="w-3 h-3" />
+              {moment(req.created_date).format('D MMM YYYY, h:mm a')}
+            </div>
+          </div>
+          {showActions && (
+            <div className="flex gap-2 shrink-0">
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-green-300 text-green-700 hover:bg-green-50"
+                onClick={() => resolveMutation.mutate(req.id)}
+                disabled={resolveMutation.isPending}
+              >
+                <CheckCircle2 className="w-4 h-4 mr-1" />
+                Resolve
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-rose-300 text-rose-700 hover:bg-rose-50"
+                onClick={() => deleteMutation.mutate(req.id)}
+                disabled={deleteMutation.isPending}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-6">
@@ -40,82 +90,81 @@ export default function AdminDeletionRequests() {
           <Loader2 className="w-6 h-6 animate-spin text-[#F7B602]" />
         </div>
       ) : (
-        <div className="space-y-6">
-          <section>
-            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-              Pending ({pending.length})
-            </h2>
+        <Tabs defaultValue="pending">
+          <TabsList className="mb-6">
+            <TabsTrigger value="pending" className="flex items-center gap-2">
+              <UserX className="w-4 h-4" />
+              Pending
+              {pending.length > 0 && (
+                <Badge className="ml-1 bg-rose-500 text-white text-xs px-1.5 h-4">{pending.length}</Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="resolved" className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" />
+              Resolved ({resolved.length})
+            </TabsTrigger>
+            <TabsTrigger value="history" className="flex items-center gap-2">
+              <History className="w-4 h-4" />
+              Log History ({requests.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pending">
             {pending.length === 0 ? (
-              <p className="text-slate-400 text-sm">No pending requests.</p>
+              <p className="text-slate-400 text-sm py-4">No pending requests.</p>
             ) : (
               <div className="space-y-3">
-                {pending.map(req => (
-                  <Card key={req.id} className="border border-rose-200 bg-rose-50/30">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <p className="font-semibold text-slate-800">{req.userName || 'Unknown'}</p>
-                          <p className="text-sm text-slate-500">{req.userEmail}</p>
-                          <p className="text-sm text-slate-700 mt-2"><span className="font-medium">Reason:</span> {req.reason}</p>
-                          {req.additionalInfo && (
-                            <p className="text-sm text-slate-600 mt-1"><span className="font-medium">Details:</span> {req.additionalInfo}</p>
-                          )}
-                          <p className="text-xs text-slate-400 mt-2">{moment(req.created_date).format('D MMM YYYY, h:mm a')}</p>
-                        </div>
-                        <div className="flex gap-2 shrink-0">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="border-green-300 text-green-700 hover:bg-green-50"
-                            onClick={() => resolveMutation.mutate(req.id)}
-                            disabled={resolveMutation.isPending}
-                          >
-                            <CheckCircle2 className="w-4 h-4 mr-1" />
-                            Resolve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="border-rose-300 text-rose-700 hover:bg-rose-50"
-                            onClick={() => deleteMutation.mutate(req.id)}
-                            disabled={deleteMutation.isPending}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {pending.map(req => <RequestCard key={req.id} req={req} showActions={true} />)}
               </div>
             )}
-          </section>
+          </TabsContent>
 
-          {resolved.length > 0 && (
-            <section>
-              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-                Resolved ({resolved.length})
-              </h2>
+          <TabsContent value="resolved">
+            {resolved.length === 0 ? (
+              <p className="text-slate-400 text-sm py-4">No resolved requests yet.</p>
+            ) : (
               <div className="space-y-3">
-                {resolved.map(req => (
-                  <Card key={req.id} className="border border-slate-200 opacity-70">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className="font-semibold text-slate-800">{req.userName || 'Unknown'}</p>
-                          <p className="text-sm text-slate-500">{req.userEmail}</p>
-                          <p className="text-sm text-slate-700 mt-1"><span className="font-medium">Reason:</span> {req.reason}</p>
-                          <p className="text-xs text-slate-400 mt-2">{moment(req.created_date).format('D MMM YYYY, h:mm a')}</p>
-                        </div>
-                        <Badge className="bg-green-100 text-green-700 border-green-200">Resolved</Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {resolved.map(req => <RequestCard key={req.id} req={req} showActions={false} />)}
               </div>
-            </section>
-          )}
-        </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="history">
+            <div className="space-y-1">
+              {requests.length === 0 ? (
+                <p className="text-slate-400 text-sm py-4">No requests recorded yet.</p>
+              ) : (
+                <div className="relative">
+                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-200" />
+                  <div className="space-y-4 pl-10">
+                    {requests.map((req) => (
+                      <div key={req.id} className="relative">
+                        <div className={`absolute -left-6 w-4 h-4 rounded-full border-2 border-white mt-1 ${req.status === 'pending' ? 'bg-rose-400' : 'bg-green-400'}`} />
+                        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <span className="font-semibold text-slate-800">{req.userName || 'Unknown'}</span>
+                            <Badge className={req.status === 'pending' ? 'bg-rose-100 text-rose-700 border-rose-200 text-xs' : 'bg-green-100 text-green-700 border-green-200 text-xs'}>
+                              {req.status === 'pending' ? 'Pending' : 'Resolved'}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-slate-500 mb-2">{req.userEmail}</p>
+                          <p className="text-sm text-slate-700"><span className="font-medium">Reason:</span> {req.reason}</p>
+                          {req.additionalInfo && (
+                            <p className="text-sm text-slate-600 mt-1"><span className="font-medium">Notes:</span> {req.additionalInfo}</p>
+                          )}
+                          <div className="flex items-center gap-1 mt-3 text-xs text-slate-400">
+                            <Clock className="w-3 h-3" />
+                            Submitted {moment(req.created_date).fromNow()} — {moment(req.created_date).format('D MMM YYYY, h:mm a')}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   );
