@@ -1,8 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { useNavigate } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import LearnerDashboard from './LearnerDashboard';
 import InstructorDashboard from './InstructorDashboard';
 import RoleSelection from './RoleSelection';
@@ -15,19 +13,14 @@ export default function Home() {
     retry: false
   });
 
-  // Check if user is a learner by looking for a pupil record
   const { data: pupilRecord, isLoading: isPupilLoading } = useQuery({
     queryKey: ['userPupilRecord', user?.id, user?.email],
     queryFn: async () => {
       if (!user?.id || !user?.email) return null;
-      const allPupils = await base44.entities.Pupil.list();
-      let matchingPupil = allPupils.find(p => p.linkedUserId === user.id);
-      if (!matchingPupil) {
-        matchingPupil = allPupils.find(
-          p => p.email && p.email.toLowerCase() === user.email.toLowerCase()
-        );
-      }
-      return matchingPupil || null;
+      const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (byLinkedId.length > 0) return byLinkedId[0];
+      const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+      return byEmail.length > 0 ? byEmail[0] : null;
     },
     enabled: !!user?.id && !!user?.email
   });
@@ -40,12 +33,8 @@ export default function Home() {
     );
   }
 
-  // Priority: If user has a pupil record, they're a learner regardless of role
   const isLearner = !!pupilRecord;
   const isInstructor = !isLearner && user.role === 'admin';
-
-  // New users who haven't selected a role yet (no pupil record, not admin)
-  // Skip role selection for the main admin account
   const needsRoleSelection = !isLearner && !isInstructor && !user.userType && user.email !== 'fasobah@gmail.com';
 
   if (needsRoleSelection) {
@@ -54,11 +43,7 @@ export default function Home() {
 
   if (isInstructor) {
     return <InstructorDashboard />;
-  } else {
-    return <LearnerDashboard />;
-  } else {
-    return <LearnerDashboard />;
-  } else {
-    return <LearnerDashboard />;
   }
+
+  return <LearnerDashboard />;
 }
