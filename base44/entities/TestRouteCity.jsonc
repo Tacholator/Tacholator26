@@ -1,0 +1,13 @@
+{
+  "name": "TestRouteCity",
+  "type": "object",
+  "properties": {
+    "cityName": {
+      "type": "string",
+      "description": "Name of the city"
+    }
+  },
+  "required": [
+    "cityName"
+  ]
+}

@@ -30,6 +30,11 @@ export default function AdminTestRoutes() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const { data: citiesData = [], isLoading: citiesLoading } = useQuery({
+    queryKey: ['testRouteCities'],
+    queryFn: () => base44.entities.TestRouteCity.list()
+  });
+
   const { data: routes = [], isLoading: routesLoading } = useQuery({
     queryKey: ['adminTestRoutes'],
     queryFn: async () => {
@@ -38,13 +43,14 @@ export default function AdminTestRoutes() {
     }
   });
 
-  const cities = Array.from(new Map(routes.map(r => [r.city, r.city])).values()).sort();
-  const isLoading = routesLoading;
+  const cities = citiesData.map(c => c.cityName).sort();
+  const isLoading = citiesLoading || routesLoading;
 
   const createCityMutation = useMutation({
-    mutationFn: (city) => Promise.resolve({ success: true, city }),
+    mutationFn: (cityName) =>
+      base44.entities.TestRouteCity.create({ cityName }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminTestRoutes'] });
+      queryClient.invalidateQueries({ queryKey: ['testRouteCities'] });
       setNewCityName('');
       setCreatingCity(false);
       toast({ title: 'Success', description: 'City created. Add routes to it.' });
@@ -56,10 +62,17 @@ export default function AdminTestRoutes() {
 
   const deleteCityMutation = useMutation({
     mutationFn: async (city) => {
+      // Delete all routes in this city
       const cityRoutes = routes.filter(r => r.city === city);
       await Promise.all(cityRoutes.map(r => base44.entities.TestRoute.delete(r.id)));
+      // Delete the city record
+      const cityRecord = citiesData.find(c => c.cityName === city);
+      if (cityRecord) {
+        await base44.entities.TestRouteCity.delete(cityRecord.id);
+      }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['testRouteCities'] });
       queryClient.invalidateQueries({ queryKey: ['adminTestRoutes'] });
       setDeleteCityId(null);
       toast({ title: 'Deleted', description: 'City and all its routes removed.' });
@@ -162,7 +175,7 @@ export default function AdminTestRoutes() {
           <p className="text-slate-600">Organize test routes by city and manage video links.</p>
           <div className="flex gap-4 mt-4">
             <Badge className="bg-emerald-100 text-emerald-800 text-sm px-3 py-1">
-              {cities.length} cities
+              {citiesData.length} cities
             </Badge>
             <Badge className="bg-blue-100 text-blue-800 text-sm px-3 py-1">
               {routes.length} routes
