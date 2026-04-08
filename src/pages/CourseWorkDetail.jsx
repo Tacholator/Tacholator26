@@ -314,15 +314,15 @@ export default function CourseWorkDetail() {
       );
     }
 
-    // Mark material as opened when studying
-    useEffect(() => {
-      if (skillAssignment && !skillAssignment.hasOpenedMaterial) {
-        base44.entities.SkillAssignment.update(skillAssignment.id, {
-          hasOpenedMaterial: true,
-          materialOpenedAt: new Date().toISOString()
-        }).catch(err => console.error('Failed to mark material as opened:', err));
-      }
-    }, [skillAssignment]);
+  // Mark material as opened when studying
+  useEffect(() => {
+    if (skillAssignment && !skillAssignment.hasOpenedMaterial && (shouldHaveSubcards && subcard === 'study')) {
+      base44.entities.SkillAssignment.update(skillAssignment.id, {
+        hasOpenedMaterial: true,
+        materialOpenedAt: new Date().toISOString()
+      }).catch(err => console.error('Failed to mark material as opened:', err));
+    }
+  }, [skillAssignment, shouldHaveSubcards, subcard]);
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
