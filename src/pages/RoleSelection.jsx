@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { GraduationCap, BookOpen, Loader2, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function RoleSelection() {
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [selecting, setSelecting] = useState(null);
 
   const { data: user } = useQuery({
@@ -25,13 +23,15 @@ export default function RoleSelection() {
         await base44.functions.invoke('setInstructorRole', {});
         // Create an Instructor profile for this user
         const fullName = user?.full_name || user?.email?.split('@')[0] || '';
-        await base44.entities.Instructor.create({
-          name: fullName,
-        });
-        navigate('/InstructorSubscription');
+        await base44.entities.Instructor.create({ name: fullName });
+        // Invalidate cache and hard-navigate so Home sees fresh user data
+        queryClient.clear();
+        window.location.href = '/InstructorSubscription';
       } else {
         await base44.auth.updateMe({ userType: role });
-        navigate(createPageUrl('Home'));
+        // Invalidate cache and hard-navigate so Home sees fresh user data
+        queryClient.clear();
+        window.location.href = '/';
       }
     } catch (error) {
       console.error('Failed to set role:', error);
