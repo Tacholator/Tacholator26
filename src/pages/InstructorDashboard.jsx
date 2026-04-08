@@ -194,6 +194,16 @@ export default function InstructorDashboard() {
     enabled: !!user?.id && pupils.length > 0 && !isPupilCheckLoading && !pupilCheck
   });
 
+  const { data: subscription } = useQuery({
+    queryKey: ['userSubscription', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const subs = await base44.entities.UserSubscription.filter({ userId: user.id });
+      return subs.length > 0 ? subs[0] : null;
+    },
+    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
+  });
+
   const { data: availableSlotsToday = [] } = useQuery({
     queryKey: ['availableSlotsToday', user?.id],
     queryFn: async () => {
@@ -356,6 +366,29 @@ export default function InstructorDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Subscription Upgrade Card - Show if no active subscription */}
+          {subscription && (subscription.status === 'none' || !subscription.status) && (
+            <Card className="bg-gradient-to-r from-[#F7B602] to-amber-500 border-0 shadow-md overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold text-[#071739] mb-2">Unlock Full Access</h3>
+                    <p className="text-sm text-[#071739]/80 mb-4">
+                      Subscribe to a plan to get access to all premium features including pupil management, lesson tracking, and more.
+                    </p>
+                    <Link to={createPageUrl('InstructorSubscription')}>
+                      <Button className="bg-[#071739] hover:bg-[#0e2a5a] text-white">
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        View Plans
+                      </Button>
+                    </Link>
+                  </div>
+                  <Sparkles className="w-12 h-12 text-[#071739]/30 shrink-0" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (
