@@ -26,18 +26,27 @@ export default function LearnerMyLearning() {
     enabled: !!user?.id
   });
 
-  // Fetch instructor for subscription check
-  const { data: instructor } = useQuery({
-    queryKey: ['instructor', pupilProfile?.instructorId],
+  // Fetch instructor subscription
+  const { data: subscription, isLoading: subscriptionLoading } = useQuery({
+    queryKey: ['instructorSubscription', pupilProfile?.instructorId],
     queryFn: async () => {
       if (!pupilProfile?.instructorId) return null;
-      const users = await base44.entities.User.filter({ id: pupilProfile.instructorId });
-      return users.length > 0 ? users[0] : null;
+      const subs = await base44.entities.UserSubscription.filter({ userId: pupilProfile.instructorId });
+      return subs[0] || null;
     },
     enabled: !!pupilProfile?.instructorId
   });
 
-
+  // Fetch instructor profile for platform access override
+  const { data: instructorProfile, isLoading: instructorProfileLoading } = useQuery({
+    queryKey: ['instructorProfileForAccess', pupilProfile?.instructorEmail],
+    queryFn: async () => {
+      if (!pupilProfile?.instructorEmail) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: pupilProfile.instructorEmail });
+      return results[0] || null;
+    },
+    enabled: !!pupilProfile?.instructorEmail
+  });
 
   // Check if instructor has valid access
   const instructorHasValidAccess = !!(instructorProfile?.platformAccessOverride || (subscription?.status && ['trialing', 'active'].includes(subscription.status)));
