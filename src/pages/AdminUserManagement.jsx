@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Car, BookOpen, Users, ArrowLeft, Loader2, ChevronRight, Mail, Phone, MapPin, Calendar, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import InstructorCard from '@/components/admin/InstructorCard';
 
 // View states: 'overview' | 'instructors' | 'learners' | 'detail'
 
@@ -30,7 +31,12 @@ export default function AdminUserManagement() {
     queryFn: () => base44.entities.Instructor.list(),
   });
 
-  const isLoading = usersLoading || pupilsLoading || instructorsLoading;
+  const { data: allSubscriptions = [], isLoading: subscriptionsLoading } = useQuery({
+    queryKey: ['allSubscriptions'],
+    queryFn: () => base44.entities.UserSubscription.list(),
+  });
+
+  const isLoading = usersLoading || pupilsLoading || instructorsLoading || subscriptionsLoading;
 
   const learnerUsers = allUsers.filter(u =>
     allPupils.some(p => p.linkedUserId === u.id || (p.email && p.email.toLowerCase() === u.email?.toLowerCase()))
@@ -149,35 +155,27 @@ export default function AdminUserManagement() {
 
         {/* INSTRUCTORS LIST */}
         {view === 'instructors' && (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-100 divide-y divide-slate-100">
+          <div>
             {instructorUsers.length === 0 ? (
               <p className="text-center text-slate-400 py-12">No instructors registered yet</p>
             ) : (
-              instructorUsers.map(u => {
-                const instructor = allInstructors.find(i => i.created_by === u.email || i.instructorEmail === u.email || i.userId === u.id);
-                const pupilCount = allPupils.filter(p => p.instructorId === u.id).length;
-                return (
-                  <button
-                    key={u.id}
-                    onClick={() => openDetail(u, 'instructor')}
-                    className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors text-left"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#F7B602]/20 flex items-center justify-center shrink-0">
-                        <Car className="w-5 h-5 text-[#071739]" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-[#071739]">{instructor?.name || u.full_name || u.email}</p>
-                        <p className="text-xs text-slate-400">{u.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge variant="outline" className="text-xs">{pupilCount} pupil{pupilCount !== 1 ? 's' : ''}</Badge>
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
-                    </div>
-                  </button>
-                );
-              })
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {instructorUsers.map(u => {
+                  const instructor = allInstructors.find(i => i.created_by === u.email || i.instructorEmail === u.email || i.userId === u.id);
+                  const pupilCount = allPupils.filter(p => p.instructorId === u.id).length;
+                  const subscription = allSubscriptions.find(s => s.userId === u.id);
+                  return (
+                    <InstructorCard
+                      key={u.id}
+                      user={u}
+                      instructor={instructor}
+                      pupilCount={pupilCount}
+                      subscription={subscription}
+                      onClick={() => openDetail(u, 'instructor')}
+                    />
+                  );
+                })}
+              </div>
             )}
           </div>
         )}
