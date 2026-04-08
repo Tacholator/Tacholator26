@@ -229,6 +229,21 @@ export default function AdminUserManagement() {
           const pupilCount = isInstructorType ? allPupils.filter(p => p.instructorId === selectedUser.id).length : null;
           const subscription = isInstructorType ? allSubscriptions.find(s => s.userId === selectedUser.id) : null;
 
+          // When trialing, period start = trial end, period end = trial end + billing period
+          let displayPeriodStart = subscription?.currentPeriodStartAt;
+          let displayPeriodEnd = subscription?.currentPeriodEndAt;
+          if (subscription?.status === 'trialing' && subscription?.trialEndAt) {
+            const trialEnd = new Date(subscription.trialEndAt);
+            displayPeriodStart = trialEnd.toISOString();
+            const periodEnd = new Date(trialEnd);
+            if (subscription.billingPeriod === 'yearly') {
+              periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+            } else {
+              periodEnd.setMonth(periodEnd.getMonth() + 1);
+            }
+            displayPeriodEnd = periodEnd.toISOString();
+          }
+
           return (
             <div className="space-y-4">
               {/* Profile Card */}
@@ -298,11 +313,11 @@ export default function AdminUserManagement() {
                       {subscription.trialEndAt && (
                         <DetailRow label="Trial Ends" value={new Date(subscription.trialEndAt).toLocaleDateString('en-GB')} />
                       )}
-                      {subscription.currentPeriodStartAt && (
-                        <DetailRow label="Period Start" value={new Date(subscription.currentPeriodStartAt).toLocaleDateString('en-GB')} />
+                      {displayPeriodStart && (
+                        <DetailRow label="Period Start" value={new Date(displayPeriodStart).toLocaleDateString('en-GB')} />
                       )}
-                      {subscription.currentPeriodEndAt && (
-                        <DetailRow label="Period End" value={new Date(subscription.currentPeriodEndAt).toLocaleDateString('en-GB')} />
+                      {displayPeriodEnd && (
+                        <DetailRow label="Period End" value={new Date(displayPeriodEnd).toLocaleDateString('en-GB')} />
                       )}
                       {subscription.lastPaymentAt && (
                         <DetailRow label="Last Payment" value={new Date(subscription.lastPaymentAt).toLocaleDateString('en-GB')} />

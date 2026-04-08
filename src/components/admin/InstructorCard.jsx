@@ -31,7 +31,18 @@ export default function InstructorCard({ user, instructor, pupilCount, subscript
   const subStatus = subscription?.status || 'none';
   const billingPeriod = subscription?.billingPeriod;
   const trialEndAt = subscription?.trialEndAt;
-  const currentPeriodEndAt = subscription?.currentPeriodEndAt;
+
+  // When trialing, compute period end from trial end + billing period
+  let currentPeriodEndAt = subscription?.currentPeriodEndAt;
+  if (subStatus === 'trialing' && trialEndAt) {
+    const periodEnd = new Date(trialEndAt);
+    if (billingPeriod === 'yearly') {
+      periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+    } else {
+      periodEnd.setMonth(periodEnd.getMonth() + 1);
+    }
+    currentPeriodEndAt = periodEnd.toISOString();
+  }
 
   return (
     <Card
