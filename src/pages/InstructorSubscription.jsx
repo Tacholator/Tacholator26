@@ -87,12 +87,10 @@ export default function InstructorSubscription() {
   useEffect(() => {
     if (justSubscribed) {
       setSuccessMessage('Welcome! Your 3-day free trial has started. You can explore all features now.');
-      // Clean URL without reload
       window.history.replaceState({}, '', '/InstructorSubscription');
     }
   }, [justSubscribed]);
 
-  // Stop polling once subscription is active
   useEffect(() => {
     if (justSubscribed && subscription?.status === 'trialing') {
       queryClient.setQueryDefaults(['instructorSubscription', user?.id], { refetchInterval: false });
@@ -213,32 +211,6 @@ export default function InstructorSubscription() {
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => navigate('/')}
-                      className="border-[#071739] text-[#071739]"
-                    >
-                      Go to Dashboard
-                    </Button>
-                    {canUpgrade && (
-                      <Button
-                        onClick={() => setShowUpgradeDialog(true)}
-                        className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] font-semibold"
-                      >
-                        <Star className="w-4 h-4 mr-1" /> Upgrade to Annual
-                      </Button>
-                    )}
-                    {!subscription?.cancelAtPeriodEnd && (
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowCancelDialog(true)}
-                        className="border-rose-300 text-rose-600 hover:bg-rose-50"
-                      >
-                        {isTrialing ? 'Cancel Trial' : 'Cancel Plan'}
-                      </Button>
-                    )}
-                  </div>
                 </div>
 
                 {/* Trial info */}
@@ -266,48 +238,83 @@ export default function InstructorSubscription() {
           </div>
         )}
 
-        {/* PLAN SELECTION — shown when no active subscription */}
+        {/* Trial Banner — only when no active sub */}
         {!hasValidSub && (
-          <>
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 bg-[#F7B602]/10 border border-[#F7B602]/30 rounded-full px-4 py-2 text-[#071739] font-semibold text-sm mb-4">
-                <Zap className="w-4 h-4 text-[#F7B602]" />
-                3-Day Free Trial on all plans — no charge until trial ends
-              </div>
-              {isCancelled && (
-                <p className="text-slate-500 text-sm">Your subscription has ended. Choose a plan to reactivate.</p>
-              )}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 bg-[#F7B602]/10 border border-[#F7B602]/30 rounded-full px-4 py-2 text-[#071739] font-semibold text-sm mb-4">
+              <Zap className="w-4 h-4 text-[#F7B602]" />
+              3-Day Free Trial on all plans — no charge until trial ends
             </div>
+            {isCancelled && (
+              <p className="text-slate-500 text-sm">Your subscription has ended. Choose a plan to reactivate.</p>
+            )}
+          </div>
+        )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {PLANS.map((plan) => (
-                <Card
-                  key={plan.id}
-                  className={`relative flex flex-col ${plan.badge ? 'border-[#F7B602] border-2 shadow-lg' : 'border-slate-200'}`}
-                >
-                  {plan.badge && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-[#F7B602] text-[#071739] font-semibold px-3 py-1">{plan.badge}</Badge>
-                    </div>
-                  )}
-                  <CardHeader className="pb-2 pt-6">
-                    <CardTitle className="text-lg text-[#071739]">{plan.name}</CardTitle>
-                    <div className="flex items-end gap-1 mt-1">
-                      <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
-                      <span className="text-slate-500 mb-1">{plan.period}</span>
-                    </div>
-                    <p className="text-sm text-slate-400">{plan.priceNote}</p>
-                    <p className="text-xs text-emerald-600 font-medium">{plan.annualEquivalent}</p>
-                  </CardHeader>
-                  <CardContent className="flex flex-col flex-1 gap-4 pt-2">
-                    <ul className="space-y-2 flex-1">
-                      {FEATURES.map((f) => (
-                        <li key={f} className="flex items-center gap-2 text-sm text-slate-700">
-                          <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
+        {/* PLAN CARDS — always visible */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {PLANS.map((plan) => {
+            const isCurrentPlan = hasValidSub && subscription?.billingPeriod === plan.id;
+            const isYearlyUpgrade = plan.id === 'yearly' && canUpgrade;
+            const isDowngradeBlocked = hasValidSub && plan.id === 'monthly' && subscription?.billingPeriod === 'yearly';
+
+            return (
+              <Card
+                key={plan.id}
+                className={`relative flex flex-col ${
+                  isCurrentPlan
+                    ? 'border-[#F7B602] border-2 shadow-lg'
+                    : plan.badge && !hasValidSub
+                    ? 'border-[#F7B602] border-2 shadow-lg'
+                    : 'border-slate-200'
+                }`}
+              >
+                {/* Badge */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  {isCurrentPlan ? (
+                    <Badge className="bg-emerald-500 text-white font-semibold px-3 py-1">Current Plan</Badge>
+                  ) : plan.badge && !hasValidSub ? (
+                    <Badge className="bg-[#F7B602] text-[#071739] font-semibold px-3 py-1">{plan.badge}</Badge>
+                  ) : null}
+                </div>
+
+                <CardHeader className="pb-2 pt-6">
+                  <CardTitle className="text-lg text-[#071739]">{plan.name}</CardTitle>
+                  <div className="flex items-end gap-1 mt-1">
+                    <span className="text-4xl font-bold text-[#071739]">{plan.price}</span>
+                    <span className="text-slate-500 mb-1">{plan.period}</span>
+                  </div>
+                  <p className="text-sm text-slate-400">{plan.priceNote}</p>
+                  <p className="text-xs text-emerald-600 font-medium">{plan.annualEquivalent}</p>
+                </CardHeader>
+
+                <CardContent className="flex flex-col flex-1 gap-4 pt-2">
+                  <ul className="space-y-2 flex-1">
+                    {FEATURES.map((f) => (
+                      <li key={f} className="flex items-center gap-2 text-sm text-slate-700">
+                        <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA Button */}
+                  {isCurrentPlan ? (
+                    <Button disabled className="w-full mt-2 bg-slate-100 text-slate-400 cursor-not-allowed">
+                      <CheckCircle className="w-4 h-4 mr-2" /> Current Plan
+                    </Button>
+                  ) : isYearlyUpgrade ? (
+                    <Button
+                      onClick={() => setShowUpgradeDialog(true)}
+                      className="w-full mt-2 bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] font-semibold"
+                    >
+                      <Star className="w-4 h-4 mr-1" /> Upgrade Now
+                    </Button>
+                  ) : isDowngradeBlocked ? (
+                    <Button disabled className="w-full mt-2 bg-slate-100 text-slate-400 cursor-not-allowed">
+                      Not Available
+                    </Button>
+                  ) : !hasValidSub ? (
                     <Button
                       onClick={() => handleStartTrial(plan.id)}
                       disabled={!!subscribing}
@@ -319,11 +326,29 @@ export default function InstructorSubscription() {
                         'Start 3-Day Free Trial'
                       )}
                     </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </>
+                  ) : null}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Management actions — only when active sub */}
+        {hasValidSub && (
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
+            <Button variant="outline" onClick={() => navigate('/')} className="border-[#071739] text-[#071739]">
+              Go to Dashboard
+            </Button>
+            {!subscription?.cancelAtPeriodEnd && (
+              <Button
+                variant="outline"
+                onClick={() => setShowCancelDialog(true)}
+                className="border-rose-300 text-rose-600 hover:bg-rose-50"
+              >
+                {isTrialing ? 'Cancel Trial' : 'Cancel Plan'}
+              </Button>
+            )}
+          </div>
         )}
 
         {/* Trust badges */}
