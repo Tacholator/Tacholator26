@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
@@ -34,7 +35,7 @@ function extractYouTubeId(url) {
   return '';
 }
 
-export default function CourseWorkSubcardSelect({ itemId, content, isInstructor, hasStudyAccess, hasMcqAccess }) {
+export default function CourseWorkSubcardSelect({ itemId, content, isInstructor, hasStudyAccess, hasMcqAccess, isSubscribed = true }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showLockedDialog, setShowLockedDialog] = useState(false);
@@ -123,6 +124,7 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
   };
 
   const handleSubcardClick = (type) => {
+    if (isInstructor && !isSubscribed) { setShowLockedDialog(true); return; }
     if (type === 'study' && !hasStudyAccess) { setShowLockedDialog(true); return; }
     if (type === 'practice' && !hasMcqAccess) { setShowLockedDialog(true); return; }
     navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}&subcard=${type}`);
@@ -150,9 +152,9 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
         <div className="grid gap-6 md:grid-cols-2 mb-8">
           <Card
             onClick={() => handleSubcardClick('study')}
-            className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 relative ${!hasStudyAccess ? 'opacity-75' : ''}`}
+            className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 relative ${(!hasStudyAccess && !isInstructor) || (isInstructor && !isSubscribed) ? 'opacity-75' : ''}`}
           >
-            {!hasStudyAccess && !isInstructor && (
+            {((!hasStudyAccess && !isInstructor) || (isInstructor && !isSubscribed)) && (
               <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow-sm">
                 <Lock className="w-5 h-5 text-amber-600" />
               </div>
@@ -170,6 +172,9 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                   {!hasStudyAccess && !isInstructor && (
                     <p className="text-sm text-amber-600 mt-2 font-medium">🔒 Ask your instructor for access</p>
                   )}
+                  {isInstructor && !isSubscribed && (
+                    <p className="text-sm text-amber-600 mt-2 font-medium">🔒 Subscription required</p>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -177,9 +182,9 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
 
           <Card
             onClick={() => handleSubcardClick('practice')}
-            className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50 relative ${!hasMcqAccess ? 'opacity-75' : ''}`}
+            className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50 relative ${(!hasMcqAccess && !isInstructor) || (isInstructor && !isSubscribed) ? 'opacity-75' : ''}`}
           >
-            {!hasMcqAccess && !isInstructor && (
+            {((!hasMcqAccess && !isInstructor) || (isInstructor && !isSubscribed)) && (
               <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow-sm">
                 <Lock className="w-5 h-5 text-amber-600" />
               </div>
@@ -197,6 +202,9 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                   {!hasMcqAccess && !isInstructor && (
                     <p className="text-sm text-amber-600 mt-2 font-medium">🔒 Ask your instructor for access</p>
                   )}
+                  {isInstructor && !isSubscribed && (
+                    <p className="text-sm text-amber-600 mt-2 font-medium">🔒 Subscription required</p>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -211,7 +219,7 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                 <Video className="w-5 h-5 text-[#F7B602]" />
                 Video Tutorials ({videos.length})
               </h2>
-              {isInstructor && (
+              {isInstructor && isSubscribed && (
                 <Button
                   onClick={() => setShowAddForm(true)}
                   className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold"

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -74,6 +75,7 @@ export default function CourseWork() {
   });
 
   const isInstructor = user?.role === 'admin';
+  const { hasValidSub: isSubscribed } = useInstructorSubscription(user?.id);
 
   const getBackPage = () => {
     return isInstructor ? 'InstructorTeachingHub' : 'LearnerLearningHub';
@@ -86,7 +88,6 @@ export default function CourseWork() {
       const accessRecords = [];
 
       for (const pupilId of pupilIds) {
-        // Create access record to unlock the content
         accessRecords.push({
           pupilId,
           instructorId: user.id,
@@ -123,12 +124,9 @@ export default function CourseWork() {
         }
       }
 
-      // Create access records first to unlock content
       if (accessRecords.length > 0) {
         await base44.entities.PupilTopicAccess.bulkCreate(accessRecords);
       }
-
-      // Then create homework items
       if (homeworkItems.length > 0) {
         await base44.entities.HomeworkItem.bulkCreate(homeworkItems);
       }
@@ -144,13 +142,11 @@ export default function CourseWork() {
   const hasAccess = (topicId, type) => {
     if (isInstructor) return true;
     const access = accessList.find(a => a.topicId === courseWorkTopics.find(t => t.id === topicId)?.topicId && !a.revokedAt);
-    // Default: full access unless explicitly restricted
     if (!access) return true;
     return type === 'study' ? access.grantStudyMaterial !== false : access.grantPracticeQuestions !== false;
   };
 
   const handleCardClick = (itemId, event) => {
-    // Check if clicking on the assign button
     if (event.target.closest('.assign-button')) {
       event.stopPropagation();
       const topic = courseWorkTopics.find(t => t.id === itemId);
@@ -158,6 +154,7 @@ export default function CourseWork() {
       setAssignmentModalOpen(true);
       return;
     }
+    if (isInstructor && !isSubscribed) return;
     navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}`);
   };
 
@@ -170,12 +167,10 @@ export default function CourseWork() {
       dueDate,
       instructions
     });
-
     setAssignmentModalOpen(false);
     setSelectedTopic(null);
   };
 
-  // Not linked to a pupil profile
   if (!isInstructor && !isPupilLoading && pupil === null) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
@@ -188,7 +183,6 @@ export default function CourseWork() {
     );
   }
 
-  // Restrict access for non-active pupils
   if (!isInstructor && pupil && pupil.status !== 'Active') {
     return <RestrictedAccessMessage pupilStatus={pupil.status} />;
   }
@@ -209,7 +203,22 @@ export default function CourseWork() {
           <h1 className="text-3xl font-bold text-[#071739]">Course Work</h1>
         </div>
 
-        {isInstructor && (
+        {/* Instructor subscription banner */}
+        {isInstructor && !isSubscribed && (
+          <div className="mb-6 bg-amber-50 border border-amber-300 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p className="font-semibold text-amber-900">Subscription Required</p>
+              <p className="text-sm text-amber-700 mt-0.5">Start your free trial to access course work content for all 28 topics.</p>
+            </div>
+            <Link to="/InstructorSubscription">
+              <button className="shrink-0 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+                Start Free Trial
+              </button>
+            </Link>
+          </div>
+        )}
+
+        {isInstructor && isSubscribed && (
           <div className="mb-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -230,14 +239,19 @@ export default function CourseWork() {
               <Card 
                 key={item.id}
                 onClick={(e) => handleCardClick(item.id, e)}
-                className={`${cardColors[index]} border-0 shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square flex items-center justify-center hover:scale-105 relative group`}
+                className={`${cardColors[index]} border-0 shadow-sm transition-all aspect-square flex items-center justify-center relative group ${isInstructor && !isSubscribed ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:shadow-md hover:scale-105'}`}
               >
+                {isInstructor && !isSubscribed && (
+                  <div className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm">
+                    <Lock className="w-4 h-4 text-slate-600" />
+                  </div>
+                )}
                 {isLocked && (
                   <div className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm">
                     <Lock className="w-4 h-4 text-slate-600" />
                   </div>
                 )}
-                {isInstructor && (
+                {isInstructor && isSubscribed && (
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity assign-button">
                     <Button
                       size="sm"
