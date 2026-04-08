@@ -19,14 +19,14 @@ export default function InstructorPupilNotes() {
   });
 
   const { data: pupils = [], isLoading } = useQuery({
-    queryKey: ['pupils'],
-    queryFn: () => base44.entities.Pupil.list(),
+    queryKey: ['myPupils', user?.id],
+    queryFn: () => base44.entities.Pupil.filter({ instructorId: user.id }),
     enabled: !!user?.id
   });
 
   const { data: allNotes = [] } = useQuery({
-    queryKey: ['allNotes'],
-    queryFn: () => base44.entities.Note.list(),
+    queryKey: ['allNotes', user?.id],
+    queryFn: () => base44.entities.Note.filter({ instructorId: user.id }),
     enabled: !!user?.id
   });
 

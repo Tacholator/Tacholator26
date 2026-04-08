@@ -27,14 +27,14 @@ export default function InstructorMcqReporting() {
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['pupils'],
-    queryFn: () => base44.entities.Pupil.list(),
+    queryKey: ['myPupils', user?.id],
+    queryFn: () => base44.entities.Pupil.filter({ instructorId: user.id }),
     enabled: !!user?.id
   });
 
   const { data: allMcqStatuses = [] } = useQuery({
-    queryKey: ['allMcqStatuses'],
-    queryFn: () => base44.entities.McqStatus.list('-lastAttemptAt'),
+    queryKey: ['allMcqStatuses', user?.id],
+    queryFn: () => base44.entities.McqStatus.filter({ instructorId: user.id }, '-lastAttemptAt'),
     enabled: !!user?.id
   });
 
