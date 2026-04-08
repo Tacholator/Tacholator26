@@ -657,6 +657,18 @@ export default function CourseWorkDetail() {
               </div>
             ))}
           </div>
+
+          <Card className="mt-12 bg-gradient-to-br from-blue-50 to-indigo-50 border-0">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <Volume2 className="w-6 h-6 text-indigo-600 shrink-0 mt-1" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-indigo-900 mb-2">Listen to this lesson</h3>
+                  <GoogleTTSAudioPlayer text={fullContentText} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
