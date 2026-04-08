@@ -46,7 +46,7 @@ export default function InstructorCard({ user, instructor, pupilCount, subscript
 
   return (
     <Card
-      className="border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer hover:border-[#F7B602]/50 group"
+      className="border-2 border-[#F7B602]/30 shadow-sm hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 hover:border-[#F7B602] group"
       onClick={onClick}
     >
       <CardContent className="p-4">
