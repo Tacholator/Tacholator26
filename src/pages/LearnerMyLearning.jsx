@@ -60,10 +60,10 @@ export default function LearnerMyLearning() {
   });
 
   // Check if instructor has valid access
-  const instructorHasValidAccess = !!(instructorProfile?.platformAccessOverride || (subscription && ['trialing', 'active'].includes(subscription.status)));
+  const instructorHasValidAccess = !!(instructorProfile?.platformAccessOverride || (subscription?.status && ['trialing', 'active'].includes(subscription.status)));
 
-  // Show restriction message if instructor doesn't have active plan
-  if (pupilProfile && !instructorHasValidAccess) {
+  // Show restriction message if instructor doesn't have active plan and profile is loaded
+  if (pupilProfile && instructorProfile !== undefined && !instructorHasValidAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
         <motion.div

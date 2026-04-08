@@ -83,7 +83,7 @@ export default function LearnerDashboard() {
   });
 
   // Fetch instructor subscription
-  const { data: subscription } = useQuery({
+  const { data: subscription, isLoading: subscriptionLoading } = useQuery({
     queryKey: ['instructorSubscription', instructor?.id],
     queryFn: async () => {
       if (!instructor?.id) return null;
@@ -94,7 +94,7 @@ export default function LearnerDashboard() {
   });
 
   // Fetch instructor profile for access override check
-  const { data: instructorProfile } = useQuery({
+  const { data: instructorProfile, isLoading: instructorProfileLoading } = useQuery({
     queryKey: ['instructorProfileForAccess', instructor?.email],
     queryFn: async () => {
       if (!instructor?.email) return null;
@@ -330,7 +330,7 @@ export default function LearnerDashboard() {
   }, [dailyQuiz, mcqAttempts, pupil?.id]);
 
   // Show loading while user is loading, pupil is being looked up, or subscription/profile is loading
-  if (userLoading || pupilLoading || (user && pupil === undefined) || (pupil && !instructorProfile)) {
+  if (userLoading || pupilLoading || (user && pupil === undefined) || (pupil && (subscriptionLoading || instructorProfileLoading))) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
