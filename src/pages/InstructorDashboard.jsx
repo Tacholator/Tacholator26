@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
@@ -35,6 +36,8 @@ export default function InstructorDashboard() {
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
+
+  const { hasOverride } = useInstructorSubscription(user?.id, user?.email);
 
   // Guard: reuse the same query key as layout so it hits the cache (no extra network call)
   const { data: pupilCheck, isLoading: isPupilCheckLoading } = useQuery({
@@ -331,6 +334,18 @@ export default function InstructorDashboard() {
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
         <div className="space-y-4">
+          {/* Admin Override Banner */}
+          {hasOverride && (
+            <div className="mb-6 bg-emerald-50 border-2 border-emerald-400 rounded-xl p-4 flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                <span className="text-lg font-bold text-emerald-600">✓</span>
+              </div>
+              <div>
+                <p className="font-semibold text-emerald-800">Full Platform Access Granted</p>
+                <p className="text-emerald-700 text-sm mt-1">An administrator has granted you full access to all Tacholator features. You have unlimited access to teaching tools and pupil management.</p>
+              </div>
+            </div>
+          )}
 
           {/* 1. Greeting Card */}
           <Card className={`${warmPalette.card_greeting} border-0 shadow-sm overflow-hidden`}>
