@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { FileText, Lock, UserPlus, ArrowLeft, CheckCircle } from 'lucide-react';
 import CourseWorkAssignmentModal from '@/components/homework/CourseWorkAssignmentModal';
 import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 const cardColors = [
   'bg-gradient-to-br from-blue-100 to-blue-200',
