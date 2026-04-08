@@ -672,6 +672,16 @@ export default function CourseWorkDetail() {
           </Card>
 
           <div className="space-y-8">
+            {content.sections.map((section, idx) => (
+              <div key={idx}>
+                <h2 className="text-2xl font-bold text-[#071739] mb-4">{section.heading}</h2>
+                <div className="prose max-w-none text-slate-700 whitespace-pre-wrap">
+                  {section.body}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -691,5 +701,4 @@ export default function CourseWorkDetail() {
       </div>
     </div>
   );
-}
 }
