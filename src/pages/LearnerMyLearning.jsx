@@ -37,27 +37,7 @@ export default function LearnerMyLearning() {
     enabled: !!pupilProfile?.instructorId
   });
 
-  // Fetch instructor subscription
-  const { data: subscription, isLoading: subscriptionLoading } = useQuery({
-    queryKey: ['instructorSubscription', instructor?.id],
-    queryFn: async () => {
-      if (!instructor?.id) return null;
-      const subs = await base44.entities.UserSubscription.filter({ userId: instructor.id });
-      return subs[0] || null;
-    },
-    enabled: !!instructor?.id
-  });
 
-  // Fetch instructor profile
-  const { data: instructorProfile, isLoading: instructorProfileLoading } = useQuery({
-    queryKey: ['instructorProfileForAccess', instructor?.email],
-    queryFn: async () => {
-      if (!instructor?.email) return null;
-      const results = await base44.entities.Instructor.filter({ created_by: instructor.email });
-      return results[0] || null;
-    },
-    enabled: !!instructor?.email
-  });
 
   // Check if instructor has valid access
   const instructorHasValidAccess = !!(instructorProfile?.platformAccessOverride || (subscription?.status && ['trialing', 'active'].includes(subscription.status)));
