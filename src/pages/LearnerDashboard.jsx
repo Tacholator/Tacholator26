@@ -82,6 +82,31 @@ export default function LearnerDashboard() {
     enabled: !!pupil?.instructorId
   });
 
+  // Fetch instructor subscription
+  const { data: subscription } = useQuery({
+    queryKey: ['instructorSubscription', instructor?.id],
+    queryFn: async () => {
+      if (!instructor?.id) return null;
+      const subs = await base44.entities.UserSubscription.filter({ userId: instructor.id });
+      return subs[0] || null;
+    },
+    enabled: !!instructor?.id
+  });
+
+  // Fetch instructor profile for access override check
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfileForAccess', instructor?.email],
+    queryFn: async () => {
+      if (!instructor?.email) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: instructor.email });
+      return results[0] || null;
+    },
+    enabled: !!instructor?.email
+  });
+
+  // Check if instructor has valid access (active subscription OR override)
+  const instructorHasValidAccess = !!(instructorProfile?.platformAccessOverride || (subscription?.status && ['trialing', 'active'].includes(subscription.status)));
+
   // Auto-link pupil record and track login timestamps
   const updatePupilMutation = useMutation({
     mutationFn: ({ pupilId, data }) => 
@@ -304,8 +329,8 @@ export default function LearnerDashboard() {
     };
   }, [dailyQuiz, mcqAttempts, pupil?.id]);
 
-  // Show loading while user is loading, or while pupil is being looked up (including when user just loaded)
-  if (userLoading || pupilLoading || (user && pupil === undefined)) {
+  // Show loading while user is loading, pupil is being looked up, or subscription/profile is loading
+  if (userLoading || pupilLoading || (user && pupil === undefined) || (pupil && !instructorProfile)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
@@ -326,6 +351,47 @@ export default function LearnerDashboard() {
             Log In
           </Button>
         </Card>
+      </div>
+    );
+  }
+
+  // Show access restricted if instructor doesn't have valid access
+  if (pupil && !instructorHasValidAccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full"
+        >
+          <Card className="border-0 shadow-xl overflow-hidden">
+            <div className="bg-gradient-to-br from-rose-500 to-red-600 p-8 text-center">
+              <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Access Restricted</h2>
+              <p className="text-white/70 text-sm">Dashboard features unavailable</p>
+            </div>
+            <CardContent className="p-8 text-center bg-white">
+              <p className="text-slate-700 text-sm leading-relaxed mb-4">
+                Your instructor's subscription is not active or has not been granted full platform access.
+              </p>
+              <p className="text-slate-600 text-sm mb-6">
+                Please contact your instructor to activate their account so you can access your learning dashboard and study materials.
+              </p>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-left mb-6">
+                <p className="text-xs font-semibold text-red-800 mb-2">Next Steps</p>
+                <p className="text-xs text-red-700">Reach out to your instructor and ask them to activate their subscription plan.</p>
+              </div>
+              <Button 
+                onClick={() => base44.auth.logout()}
+                className="w-full bg-slate-700 hover:bg-slate-800"
+              >
+                Sign Out
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     );
   }
