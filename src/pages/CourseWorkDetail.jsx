@@ -585,6 +585,18 @@ export default function CourseWorkDetail() {
             <p className="text-slate-500">Study Material</p>
           </div>
 
+          <Card className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-0">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <Volume2 className="w-6 h-6 text-indigo-600 shrink-0 mt-1" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-indigo-900 mb-2">Listen to this lesson</h3>
+                  <GoogleTTSAudioPlayer text={fullContentText} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {showAudioHint && (
             <Card className="border-l-4 border-l-blue-500 mb-6 bg-blue-50">
               <CardContent className="p-4 flex items-start justify-between">
@@ -593,7 +605,7 @@ export default function CourseWorkDetail() {
                   <div>
                     <p className="font-medium text-blue-900">Audio Available</p>
                     <p className="text-sm text-blue-700 mt-1">
-                      This content can be read aloud. Use the audio player below to listen.
+                      This content can be read aloud. Use the audio player above to listen.
                     </p>
                   </div>
                 </div>
@@ -647,18 +659,7 @@ export default function CourseWorkDetail() {
             <h1 className="text-3xl font-bold text-[#071739]">{content.title}</h1>
           </div>
 
-          <div className="space-y-8">
-            {content.sections.map((section, idx) => (
-              <div key={idx}>
-                <h2 className="text-2xl font-bold text-[#071739] mb-4">{section.heading}</h2>
-                <div className="prose max-w-none text-slate-700 whitespace-pre-wrap">
-                  {section.body}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <Card className="mt-12 bg-gradient-to-br from-blue-50 to-indigo-50 border-0">
+          <Card className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-0">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <Volume2 className="w-6 h-6 text-indigo-600 shrink-0 mt-1" />
@@ -669,7 +670,8 @@ export default function CourseWorkDetail() {
               </div>
             </CardContent>
           </Card>
-        </div>
+
+          <div className="space-y-8">
       </div>
     );
   }
@@ -689,4 +691,5 @@ export default function CourseWorkDetail() {
       </div>
     </div>
   );
+}
 }
