@@ -79,242 +79,33 @@ This includes:
       ]
       },
       2: {
-      title: 'Vehicle Safety',
-      sections: [
-      {
-        heading: 'Vehicle Safety – Overview',
-        body: `Your vehicle must be safe, legal and roadworthy. Regular maintenance and checks help prevent breakdowns and accidents.`
-      },
-      {
-        heading: 'Essential Checks',
-        body: `Before every journey, check your lights, mirrors, tyres, seatbelts and windscreen wipers. Perform monthly checks on fluid levels and tyre condition.`
-      }
-      ]
-      },
-      3: {
-      title: 'Hazard Awareness',
-      sections: [
-      {
-        heading: 'Spotting Hazards',
-        body: `A hazard is anything that could affect your driving. Learn to identify hazards early and react appropriately.`
-      }
-      ]
-      },
-      4: {
-      title: 'Defensive Driving',
-      sections: [
-      {
-        heading: 'Defensive Driving Techniques',
-        body: `Anticipate dangers and keep a safe distance from other vehicles.`
-      }
-      ]
-      },
-      5: {
-      title: 'Speed Management',
-      sections: [
-      {
-        heading: 'Speed and Safety',
-        body: `Speed must be appropriate for road, weather and traffic conditions.`
-      }
-      ]
-      },
-      6: {
-      title: 'Urban Driving',
-      sections: [
-      {
-        heading: 'Driving in Towns and Cities',
-        body: `In urban areas, stay alert for pedestrians, cyclists and parked vehicles.`
-      }
-      ]
-      },
-      7: {
-      title: 'Rural Driving',
-      sections: [
-      {
-        heading: 'Country Roads',
-        body: `Rural roads may be narrow with poor visibility. Adjust your speed accordingly.`
-      }
-      ]
-      },
-      8: {
-      title: 'Motorway Driving',
-      sections: [
-      {
-        heading: 'Safe Motorway Driving',
-        body: `On motorways, maintain safe distances and use correct lane discipline.`
-      }
-      ]
-      },
-      9: {
-      title: 'Weather Conditions',
-      sections: [
-      {
-        heading: 'Driving in Bad Weather',
-        body: `Rain, fog, ice and snow all affect how you drive. Adjust speed and increase stopping distance.`
-      }
-      ]
-      },
-      10: {
-      title: 'Night Driving',
-      sections: [
-      {
-        heading: 'Driving in Darkness',
-        body: `Use headlights correctly and be aware of reduced visibility at night.`
-      }
-      ]
-      },
-      11: {
-      title: 'Reversing',
-      sections: [
-      {
-        heading: 'Reversing Safely',
-        body: `Always check your surroundings and use mirrors. Reverse slowly and deliberately.`
-      }
-      ]
-      },
-      12: {
-      title: 'Parking',
-      sections: [
-      {
-        heading: 'Parking Techniques',
-        body: `Park safely and legally. Follow all parking regulations.`
-      }
-      ]
-      },
-      13: {
-      title: 'Emergency Procedures',
-      sections: [
-      {
-        heading: 'What to Do in an Emergency',
-        body: `Know how to handle breakdowns, accidents and medical emergencies.`
-      }
-      ]
-      },
-      14: {
-      title: 'Eco-Driving',
-      sections: [
-      {
-        heading: 'Environmentally Friendly Driving',
-        body: `Smooth acceleration, maintaining steady speed and proper maintenance reduce emissions.`
-      }
-      ]
-      },
-      15: {
-      title: 'Driver Fatigue',
-      sections: [
-      {
-        heading: 'Managing Tiredness',
-        body: `Never drive when tired. Take regular breaks on long journeys.`
-      }
-      ]
-      },
-      16: {
-      title: 'Vulnerable Road Users',
-      sections: [
-      {
-        heading: 'Protecting Pedestrians and Cyclists',
-        body: `Always be aware of vulnerable road users and give them space and time.`
-      }
-      ]
-      },
-      17: {
-      title: 'Psychological Factors',
-      sections: [
-      {
-        heading: 'Attitude and Behaviour',
-        body: `Your attitude and emotions affect your driving. Stay calm and patient.`
-      }
-      ]
-      },
-      18: {
-      title: 'Practical Skills',
-      sections: [
-      {
-        heading: 'Developing Driving Skills',
-        body: `Practice under varied conditions to develop confidence and competence.`
-      }
-      ]
-      },
-      19: {
-      title: 'Oil and Fluid Checks',
-      sections: [
-      {
-        heading: 'Engine Maintenance',
-        body: `Regular checks of oil, coolant and other fluids prevent breakdowns.`
-      }
-      ]
-      },
-      20: {
-      title: 'Tyre Maintenance',
-      sections: [
-      {
-        heading: 'Tyre Safety',
-        body: `Tyres must have adequate tread. Check pressure regularly.`
-      }
-      ]
-      },
-      21: {
-      title: 'Lighting Systems',
-      sections: [
-      {
-        heading: 'Vehicle Lights',
-        body: `All lights must work correctly. Use them appropriately for conditions.`
-      }
-      ]
-      },
-      22: {
-      title: 'Braking Systems',
-      sections: [
-      {
-        heading: 'Brake Safety',
-        body: `Brakes must be well maintained. Know your vehicle's stopping distance.`
-      }
-      ]
-      },
-      23: {
-      title: 'Steering and Handling',
-      sections: [
-      {
-        heading: 'Vehicle Control',
-        body: `Master steering techniques and understand vehicle handling characteristics.`
-      }
-      ]
-      },
-      24: {
-      title: 'Loads and Towing',
-      sections: [
-      {
-        heading: 'Transporting Cargo',
-        body: `Secure loads properly. Understand how weight distribution affects driving.`
-      }
-      ]
-      },
-      25: {
-      title: 'Show Me Tell Me',
-      sections: [
-      {
-        heading: 'Vehicle Safety Questions',
-        body: `During your practical test, the examiner will ask you to show or tell them about vehicle safety procedures.`
-      }
-      ]
-      },
-      26: {
-      title: 'Independent Driving',
-      sections: [
-      {
-        heading: 'Navigation and Decision Making',
-        body: `Demonstrate your ability to follow directions and make independent decisions while driving.`
-      }
-      ]
-      },
-      27: {
-      title: 'Route Planning',
-      sections: [
-      {
-        heading: 'Journey Planning',
-        body: `Plan routes in advance, check traffic conditions and allow extra time.`
-      }
-      ]
+        title: 'Vehicle Safety',
+        sections: [
+          {
+            heading: 'Vehicle Safety – Overview',
+            body: `Your vehicle must be safe, legal and roadworthy. Regular maintenance and checks help prevent breakdowns and accidents.`
+          },
+          {
+            heading: 'Essential Checks',
+            body: `Before every journey, check your lights, mirrors, tyres, seatbelts and windscreen wipers. Perform monthly checks on fluid levels and tyre condition.
+
+      Daily Checks:
+      • Check all lights are functioning (headlights, brake lights, indicators, fog lights)
+      • Ensure all mirrors are properly adjusted for full visibility
+      • Check tyre condition and pressure
+      • Verify windscreen wipers work and washer fluid is filled
+      • Test brakes are responsive
+      • Check seat belts work correctly
+
+      Weekly/Monthly Checks:
+      • Engine oil level
+      • Coolant level
+      • Brake fluid level
+      • Power steering fluid
+      • Tyre tread depth (minimum 1.6mm legally, but 3mm recommended)
+      • Tyre condition for damage`
+          }
+        ]
       },
       28: {
       title: 'Test Preparation',
@@ -615,61 +406,6 @@ export default function CourseWorkDetail() {
               </CardContent>
             </Card>
           )}
-
-          <div className="space-y-8">
-            {content.sections.map((section, idx) => (
-              <div key={idx}>
-                <h2 className="text-2xl font-bold text-[#071739] mb-4">{section.heading}</h2>
-                <div className="prose max-w-none text-slate-700 whitespace-pre-wrap">
-                  {section.body}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <Card className="mt-12 bg-gradient-to-br from-blue-50 to-indigo-50 border-0">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <Volume2 className="w-6 h-6 text-indigo-600 shrink-0 mt-1" />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-indigo-900 mb-2">Listen to this lesson</h3>
-                  <GoogleTTSAudioPlayer text={fullContentText} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // For cards without sub-cards (Show Me Tell Me, Test Preparation)
-  if (!shouldHaveSubcards && content) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
-        <div className="max-w-4xl mx-auto">
-          <Link to={createPageUrl('CourseWork')}>
-            <Button variant="ghost" className="gap-2 text-slate-600 hover:text-slate-800 mb-6">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Course Work
-            </Button>
-          </Link>
-
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-[#071739]">{content.title}</h1>
-          </div>
-
-          <Card className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-0">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <Volume2 className="w-6 h-6 text-indigo-600 shrink-0 mt-1" />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-indigo-900 mb-2">Listen to this lesson</h3>
-                  <GoogleTTSAudioPlayer text={fullContentText} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           <div className="space-y-8">
             {content.sections.map((section, idx) => (
