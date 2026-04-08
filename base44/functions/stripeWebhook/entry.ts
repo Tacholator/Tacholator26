@@ -268,16 +268,17 @@ async function handleSubscriptionCreated(subscription, base44) {
   const status = statusMap[subscription.status] || 'active';
   const billingPeriod = subscription.metadata?.billingPeriod || 'monthly';
 
+  const toIso = (ts) => (ts != null ? new Date(ts * 1000).toISOString() : null);
   const data = {
     userId,
     stripeSubscriptionId: subscription.id,
     stripeCustomerId: subscription.customer,
     status,
     billingPeriod,
-    trialStartAt: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-    trialEndAt: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-    currentPeriodStartAt: new Date(subscription.current_period_start * 1000).toISOString(),
-    currentPeriodEndAt: new Date(subscription.current_period_end * 1000).toISOString(),
+    trialStartAt: toIso(subscription.trial_start),
+    trialEndAt: toIso(subscription.trial_end),
+    currentPeriodStartAt: toIso(subscription.current_period_start),
+    currentPeriodEndAt: toIso(subscription.current_period_end),
     cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
   };
 
