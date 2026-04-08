@@ -20,7 +20,9 @@ export default function RoleSelection() {
     setSelecting(role);
     try {
       if (role === 'instructor') {
-        await base44.auth.updateMe({ userType: role, role: 'admin' });
+        await base44.auth.updateMe({ userType: role });
+        // Use backend function to set role to 'admin' (protected field)
+        await base44.functions.invoke('setInstructorRole', {});
         // Create an Instructor profile for this user
         const fullName = user?.full_name || user?.email?.split('@')[0] || '';
         await base44.entities.Instructor.create({
