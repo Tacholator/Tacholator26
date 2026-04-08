@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Car, BookOpen, Users, ArrowLeft, Loader2, ChevronRight, Mail, Phone, MapPin, Calendar, User } from 'lucide-react';
+import { Car, BookOpen, Users, ArrowLeft, Loader2, ChevronRight, Mail, Phone, MapPin, Calendar, User, ShieldCheck } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import InstructorCard from '@/components/admin/InstructorCard';
 
@@ -13,6 +16,7 @@ import InstructorCard from '@/components/admin/InstructorCard';
 
 export default function AdminUserManagement() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [view, setView] = useState('overview');
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -34,6 +38,11 @@ export default function AdminUserManagement() {
   const { data: allSubscriptions = [], isLoading: subscriptionsLoading } = useQuery({
     queryKey: ['allSubscriptions'],
     queryFn: () => base44.entities.UserSubscription.list(),
+  });
+
+  const toggleOverrideMutation = useMutation({
+    mutationFn: ({ instructorId, value }) => base44.entities.Instructor.update(instructorId, { platformAccessOverride: value }),
+    onSuccess: () => queryClient.invalidateQueries(['allInstructors'])
   });
 
   const isLoading = usersLoading || pupilsLoading || instructorsLoading || subscriptionsLoading;
@@ -287,6 +296,34 @@ export default function AdminUserManagement() {
                 </div>
               </div>
 
+              {/* Platform Access Override */}
+              {isInstructorType && instructor && (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <ShieldCheck className="w-5 h-5 text-[#071739]" />
+                    <h3 className="text-lg font-semibold text-[#071739]">Platform Access</h3>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="access-override" className="text-sm font-medium text-slate-800">Full Access Override</Label>
+                      <p className="text-xs text-slate-400 mt-0.5">Grant full platform access without a subscription</p>
+                    </div>
+                    <Switch
+                      id="access-override"
+                      checked={!!instructor.platformAccessOverride}
+                      onCheckedChange={(val) => toggleOverrideMutation.mutate({ instructorId: instructor.id, value: val })}
+                      disabled={toggleOverrideMutation.isPending}
+                    />
+                  </div>
+                  {instructor.platformAccessOverride && (
+                    <div className="mt-3 flex items-center gap-2 text-xs text-emerald-600 bg-emerald-50 rounded-lg px-3 py-2">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      This instructor has full access regardless of subscription status
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Instructor Subscription Info */}
               {isInstructorType && (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
@@ -307,38 +344,8 @@ export default function AdminUserManagement() {
                       {subscription.billingPeriod && (
                         <DetailRow label="Billing Period" value={subscription.billingPeriod.charAt(0).toUpperCase() + subscription.billingPeriod.slice(1)} />
                       )}
-                      {subscription.trialStartAt && (
-                        <DetailRow label="Trial Started" value={new Date(subscription.trialStartAt).toLocaleDateString('en-GB')} />
-                      )}
-                      {subscription.trialEndAt && (
-                        <DetailRow label="Trial Ends" value={new Date(subscription.trialEndAt).toLocaleDateString('en-GB')} />
-                      )}
-                      {displayPeriodStart && (
-                        <DetailRow label="Period Start" value={new Date(displayPeriodStart).toLocaleDateString('en-GB')} />
-                      )}
-                      {displayPeriodEnd && (
-                        <DetailRow label="Period End" value={new Date(displayPeriodEnd).toLocaleDateString('en-GB')} />
-                      )}
-                      {subscription.lastPaymentAt && (
-                        <DetailRow label="Last Payment" value={new Date(subscription.lastPaymentAt).toLocaleDateString('en-GB')} />
-                      )}
-                      {subscription.lastPaymentStatus && (
-                        <DetailRow label="Payment Status" value={subscription.lastPaymentStatus} badge
-                          badgeClass={subscription.lastPaymentStatus === 'succeeded' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}
-                        />
-                      )}
-                      {subscription.cancelAtPeriodEnd && (
-                        <DetailRow label="Cancels At Period End" value="Yes" badge badgeClass="bg-orange-100 text-orange-700" />
-                      )}
-                      {subscription.stripeSubscriptionId && (
-                        <DetailRow label="Stripe Sub ID" value={subscription.stripeSubscriptionId} />
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
 
-              {/* Instructor Business Info */}
+                      {/* Instructor Business Info */}
               {isInstructorType && instructor?.businessName && (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
                   <h3 className="text-lg font-semibold text-[#071739] mb-4">Business Information</h3>
