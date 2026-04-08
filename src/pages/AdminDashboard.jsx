@@ -132,35 +132,6 @@ export default function AdminDashboard() {
             );
           })}
         </div>
-
-        {/* Subscriptions Section */}
-        <div className="mt-10">
-          <h2 className="text-2xl font-bold text-[#071739] mb-6">Subscriptions</h2>
-          <Card className="border-t-4 border-[#F7B602] shadow-sm">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card
-                  className="cursor-pointer hover:shadow-md transition-all duration-200 border border-slate-200 group"
-                  onClick={() => navigate(createPageUrl('AdminSubscriptions') + '?section=instructor')}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                      <Users className="w-5 h-5 text-white" />
-                    </div>
-                    <CardTitle className="text-lg text-[#071739] group-hover:text-[#F7B602] transition-colors">Instructors</CardTitle>
-                    <CardDescription className="text-slate-600 text-sm">Manage instructor subscription plans</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-sm text-[#F7B602] font-medium flex items-center gap-2 group-hover:gap-3 transition-all">
-                      Open <span className="group-hover:translate-x-1 transition-transform">→</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
       </div>
     </div>
   );
