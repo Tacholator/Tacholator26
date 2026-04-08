@@ -187,6 +187,10 @@ export default function CourseWorkDetail() {
     localStorage.setItem('audio_hint_seen', 'true');
   };
 
+  // Cards that should NOT have sub-cards
+  const excludedCards = [25, 28]; // Show Me Tell Me (25), Test Preparation (28)
+  const shouldHaveSubcards = itemId && !excludedCards.includes(itemId);
+
   // Mark material as opened when studying
   useEffect(() => {
     if (skillAssignment && !skillAssignment.hasOpenedMaterial && (shouldHaveSubcards && subcard === 'study')) {
@@ -201,10 +205,6 @@ export default function CourseWorkDetail() {
   const fullContentText = content?.sections?.map(section => 
     `${section.heading}. ${section.body}`
   ).join('. ') || '';
-
-  // Cards that should NOT have sub-cards
-  const excludedCards = [25, 28]; // Show Me Tell Me (25), Test Preparation (28)
-  const shouldHaveSubcards = itemId && !excludedCards.includes(itemId);
 
   const handleSubcardClick = (type) => {
     if (type === 'study' && !hasStudyAccess) {
