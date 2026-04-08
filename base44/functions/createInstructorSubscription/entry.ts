@@ -43,6 +43,7 @@ Deno.serve(async (req) => {
 
     // Create Stripe Checkout Session with 3-day free trial
     const session = await stripe.checkout.sessions.create({
+      allow_promotion_codes: true,
       customer: stripeCustomerId,
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
