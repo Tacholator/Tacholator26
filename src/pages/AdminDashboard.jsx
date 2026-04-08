@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, Calendar, Trash2, Sparkles, MapPin, CreditCard, Gift, Users, ClipboardCheck } from 'lucide-react';
+import { Settings, Calendar, Trash2, Sparkles, MapPin, CreditCard, Gift, Users, ClipboardCheck, Video } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
@@ -78,6 +78,13 @@ const adminCards = [
     icon: ClipboardCheck,
     page: 'AdminDailyQuizzes',
     color: 'from-purple-500 to-purple-600'
+  },
+  {
+    title: 'Test Routes',
+    description: 'Create and manage test routes with videos',
+    icon: Video,
+    page: 'AdminTestRoutes',
+    color: 'from-cyan-500 to-cyan-600'
   }
 ];
 

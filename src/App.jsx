@@ -20,6 +20,7 @@ import AppFeedback from './pages/AppFeedback';
 import AdminFeedback from './pages/AdminFeedback';
 import AdminDeletionRequests from './pages/AdminDeletionRequests';
 import InstructorSubscription from './pages/InstructorSubscription';
+import AdminTestRoutes from './pages/AdminTestRoutes';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -124,6 +125,11 @@ const AuthenticatedApp = () => {
       <Route path="/InstructorSubscription" element={
         <LayoutWrapper currentPageName="InstructorSubscription">
           <InstructorSubscription />
+        </LayoutWrapper>
+      } />
+      <Route path="/AdminTestRoutes" element={
+        <LayoutWrapper currentPageName="AdminTestRoutes">
+          <AdminTestRoutes />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
