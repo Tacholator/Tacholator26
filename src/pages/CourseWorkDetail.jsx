@@ -149,7 +149,7 @@ export default function CourseWorkDetail() {
   const isInstructor = user?.role === 'admin';
   const { hasValidAccess, isLoading: accessCheckLoading } = useInstructorAccessCheck(pupil);
 
-  // Show loading while checking instructor access
+  // Show loading while checking instructor access (only for pupils)
   if (!isInstructor && pupil && accessCheckLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -158,7 +158,7 @@ export default function CourseWorkDetail() {
     );
   }
 
-  // Restrict access if instructor doesn't have active subscription
+  // Restrict access if pupil's instructor doesn't have active subscription
   if (!isInstructor && pupil && !hasValidAccess) {
     return <RestrictedAccessNotice />;
   }
@@ -174,11 +174,11 @@ export default function CourseWorkDetail() {
      h.title?.toLowerCase().includes(topicIdStr?.toLowerCase()))
   );
   
-  // Default: full access unless explicitly restricted
-  const hasStudyAccess = isInstructor || !access || access.grantStudyMaterial !== false || 
-    (hasHomeworkAccess && myHomework.some(h => h.description?.toLowerCase().includes('study')));
-  const hasMcqAccess = isInstructor || !access || access.grantPracticeQuestions !== false || 
-    (hasHomeworkAccess && myHomework.some(h => h.description?.toLowerCase().includes('practice')));
+  // Instructors always have full access
+  const hasStudyAccess = isInstructor ? true : (!access || access.grantStudyMaterial !== false || 
+    (hasHomeworkAccess && myHomework.some(h => h.description?.toLowerCase().includes('study'))));
+  const hasMcqAccess = isInstructor ? true : (!access || access.grantPracticeQuestions !== false || 
+    (hasHomeworkAccess && myHomework.some(h => h.description?.toLowerCase().includes('practice'))));
   
   const isTopicLocked = !isInstructor && access && access.grantStudyMaterial === false && access.grantPracticeQuestions === false;
 
@@ -290,7 +290,7 @@ export default function CourseWorkDetail() {
 
   // Handle Study Material sub-card
   if (shouldHaveSubcards && subcard === 'study' && content) {
-    if (!hasStudyAccess && !isInstructor) {
+    if (!hasStudyAccess) {
       return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
           <div className="max-w-4xl mx-auto">
