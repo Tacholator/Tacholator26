@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import LearnerDashboard from './LearnerDashboard';
 import InstructorDashboard from './InstructorDashboard';
 import { useNavigate } from 'react-router-dom';
@@ -27,6 +28,8 @@ export default function Home() {
     enabled: !!user?.id && !!user?.email
   });
 
+  const { hasOverride } = useInstructorSubscription(user?.id, user?.email);
+
   const { data: subscription, isLoading: isSubLoading } = useQuery({
     queryKey: ['instructorSubscription', user?.id],
     queryFn: async () => {
@@ -40,7 +43,7 @@ export default function Home() {
   const isInstructor = !isLearner && user?.role === 'admin';
   const hasValidSubscription = subscription && ['trialing', 'active'].includes(subscription.status);
   const needsRoleSelection = !isLoading && !isPupilLoading && user && !isLearner && user?.role !== 'admin';
-  const needsSubscription = !isLoading && !isPupilLoading && !isSubLoading && isInstructor && !hasValidSubscription;
+  const needsSubscription = !isLoading && !isPupilLoading && !isSubLoading && isInstructor && !hasValidSubscription && !hasOverride;
 
   useEffect(() => {
     if (needsRoleSelection) {
