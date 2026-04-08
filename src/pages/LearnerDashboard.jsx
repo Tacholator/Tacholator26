@@ -82,33 +82,6 @@ export default function LearnerDashboard() {
     enabled: !!pupil?.instructorId
   });
 
-  // Fetch instructor subscription
-  const { data: subscription } = useQuery({
-    queryKey: ['instructorSubscription', instructor?.id],
-    queryFn: async () => {
-      if (!instructor?.id) return null;
-      const subs = await base44.entities.UserSubscription.filter({ userId: instructor.id });
-      return subs[0] || null;
-    },
-    enabled: !!instructor?.id
-  });
-
-  // Fetch instructor profile
-  const { data: instructorProfile } = useQuery({
-    queryKey: ['instructorProfileForAccess', instructor?.email],
-    queryFn: async () => {
-      if (!instructor?.email) return null;
-      const results = await base44.entities.Instructor.filter({ created_by: instructor.email });
-      return results[0] || null;
-    },
-    enabled: !!instructor?.email
-  });
-
-  // Check if instructor has valid access
-  const instructorHasValidAccess = !!(instructorProfile?.platformAccessOverride || (subscription?.status && ['trialing', 'active'].includes(subscription.status)));
-
-
-
   // Auto-link pupil record and track login timestamps
   const updatePupilMutation = useMutation({
     mutationFn: ({ pupilId, data }) => 
@@ -331,7 +304,7 @@ export default function LearnerDashboard() {
     };
   }, [dailyQuiz, mcqAttempts, pupil?.id]);
 
-  // Show loading while user or pupil is being looked up
+  // Show loading while user is loading, or while pupil is being looked up (including when user just loaded)
   if (userLoading || pupilLoading || (user && pupil === undefined)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -356,8 +329,6 @@ export default function LearnerDashboard() {
       </div>
     );
   }
-
-
 
   if (!pupil) {
     return (
@@ -468,25 +439,6 @@ export default function LearnerDashboard() {
         {/* Arrival Notification Banner */}
         {arrivalNotification && (
           <ArrivalBanner notification={arrivalNotification} lesson={arrivalLesson} />
-        )}
-
-        {/* Instructor Subscription Warning Card */}
-        {pupil && instructorProfile && !instructorHasValidAccess && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-3 p-4 rounded-xl bg-rose-50 border border-rose-200"
-          >
-            <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center shrink-0 mt-0.5">
-              <Lock className="w-4 h-4 text-rose-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-rose-900 text-sm">Full access unavailable</p>
-              <p className="text-rose-700 text-xs mt-0.5">
-                Your instructor's subscription is not active. Contact them to activate their account so you can access all learning materials.
-              </p>
-            </div>
-          </motion.div>
         )}
 
         {/* First Lesson Checks Complete Banner */}
