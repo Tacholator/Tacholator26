@@ -18,7 +18,8 @@ import {
   DollarSign,
   Wallet,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Star
 } from 'lucide-react';
 import moment from 'moment';
 
@@ -173,7 +174,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
 
         {/* Payment Methods & Invoices (only show for non-admin view) */}
         {!adminProxyInstructorId && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link to={createPageUrl('PaymentMethods')}>
               <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                 <CardContent className="p-6">
@@ -191,6 +192,17 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                   <div className="flex items-center gap-3">
                     <DollarSign className="w-6 h-6 text-[#F7B602]" />
                     <h3 className="text-lg font-semibold text-[#071739]">Invoices</h3>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link to={createPageUrl('InstructorSubscription')}>
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <Star className="w-6 h-6 text-[#F7B602]" />
+                    <h3 className="text-lg font-semibold text-[#071739]">Manage Subscription</h3>
                   </div>
                 </CardContent>
               </Card>
