@@ -94,6 +94,8 @@ export default function CourseWorkDetail() {
   const [showLockedDialog, setShowLockedDialog] = useState(false);
   const [showRemoveAllDialog, setShowRemoveAllDialog] = useState(false);
 
+  const currentTopic = courseWorkTopics.find(t => t.id === itemId);
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
@@ -162,7 +164,6 @@ export default function CourseWorkDetail() {
   }
 
   const content = courseWorkContent[itemId];
-  const currentTopic = courseWorkTopics.find(t => t.id === itemId);
   const topicIdStr = currentTopic?.topicId;
   
   // Check if pupil has access via PupilTopicAccess OR via assigned homework
