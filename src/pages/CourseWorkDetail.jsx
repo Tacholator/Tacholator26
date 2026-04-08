@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -314,7 +314,7 @@ export default function CourseWorkDetail() {
     }
 
     // Mark material as opened when studying
-    React.useEffect(() => {
+    useEffect(() => {
       if (skillAssignment && !skillAssignment.hasOpenedMaterial) {
         base44.entities.SkillAssignment.update(skillAssignment.id, {
           hasOpenedMaterial: true,
