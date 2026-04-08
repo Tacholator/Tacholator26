@@ -13,7 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Clock, CalendarDays, Coffee, Loader2, Settings, Eye } from 'lucide-react';
+import { Clock, CalendarDays, Coffee, Loader2, Settings, Eye, Lock, Zap } from 'lucide-react';
+import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
@@ -49,6 +50,8 @@ export default function InstructorBookingCalendar() {
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
+
+  const { hasValidSub } = useInstructorSubscription(user?.id);
 
   const { data: rules = [], isLoading: rulesLoading } = useQuery({
     queryKey: ['calendarRules', user?.id],
@@ -379,6 +382,21 @@ export default function InstructorBookingCalendar() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-3 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
+        {!hasValidSub && (
+          <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Lock className="w-5 h-5 text-amber-600 shrink-0" />
+              <p className="text-amber-800 text-sm font-medium">To access full calendar controls, select a plan.</p>
+            </div>
+            <a href="/InstructorSubscription">
+              <button className="flex items-center gap-2 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold text-sm px-4 py-2 rounded-lg transition-colors shrink-0">
+                <Zap className="w-4 h-4" />
+                Start Free Trial
+              </button>
+            </a>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div>
             <h1 className="text-xl sm:text-3xl font-bold text-slate-800 mb-0.5 sm:mb-2">Booking Calendar</h1>

@@ -23,7 +23,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote, UserX, Video, Plus, Trash2, Pencil } from 'lucide-react';
+import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote, UserX, Video, Plus, Trash2, Pencil, Lock, Zap } from 'lucide-react';
+import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { Input } from '@/components/ui/input';
 import { getSkillById, DVSA_SKILLS_DATA } from '@/components/dvsa/dvsaSkillsData';
 import StudyMaterial from '@/components/dvsa/StudyMaterial';
@@ -58,6 +59,8 @@ export default function DVSASkillDetail() {
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
+
+  const { hasValidSub } = useInstructorSubscription(user?.id);
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['pupils'],
@@ -372,7 +375,19 @@ export default function DVSASkillDetail() {
           <TabsContent value="material">
             <Card className="border-0 shadow-sm">
               <CardContent className="p-8">
-                {user?.role === 'admin' ? (
+                {user?.role === 'admin' && !hasValidSub ? (
+                  <div className="text-center py-12">
+                    <Lock className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                    <h3 className="text-lg font-semibold text-slate-700 mb-2">Study Material Locked</h3>
+                    <p className="text-slate-500 mb-6">Start a free trial to access study material and practice questions.</p>
+                    <a href="/InstructorSubscription">
+                      <button className="inline-flex items-center gap-2 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold px-6 py-3 rounded-lg transition-colors">
+                        <Zap className="w-4 h-4" />
+                        Start Free Trial
+                      </button>
+                    </a>
+                  </div>
+                ) : user?.role === 'admin' ? (
                   <StudyMaterial
                     content={materialContent}
                     onProgress={handleMaterialProgress}
@@ -398,7 +413,19 @@ export default function DVSASkillDetail() {
           <TabsContent value="quiz">
             <Card className="border-0 shadow-sm">
               <CardContent className="p-6">
-                {!skill.mcqQuiz?.questions?.length ? (
+                {user?.role === 'admin' && !hasValidSub ? (
+                  <div className="text-center py-12">
+                    <Lock className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                    <h3 className="text-lg font-semibold text-slate-700 mb-2">Practice Questions Locked</h3>
+                    <p className="text-slate-500 mb-6">Start a free trial to access practice questions.</p>
+                    <a href="/InstructorSubscription">
+                      <button className="inline-flex items-center gap-2 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold px-6 py-3 rounded-lg transition-colors">
+                        <Zap className="w-4 h-4" />
+                        Start Free Trial
+                      </button>
+                    </a>
+                  </div>
+                ) : !skill.mcqQuiz?.questions?.length ? (
                   <div className="text-center py-8 text-slate-500">
                     <ClipboardCheck className="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p>No quiz questions available for this skill yet</p>
@@ -536,7 +563,7 @@ export default function DVSASkillDetail() {
                   <Video className="w-5 h-5 text-[#071739]" />
                   Video Tutorial
                 </CardTitle>
-                {!isEditingVideo && (
+                {!isEditingVideo && hasValidSub && (
                   <Button
                     size="sm"
                     variant="outline"

@@ -44,6 +44,7 @@ import {
   X
 } from 'lucide-react';
 import PupilFormModal, { DVSA_SKILLS } from '@/components/modals/PupilFormModal';
+import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import OneOffPupilModal from '@/components/modals/OneOffPupilModal';
 import moment from 'moment';
 
@@ -67,6 +68,8 @@ export default function PupilList() {
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
+
+  const { hasValidSub } = useInstructorSubscription(currentUser?.id);
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['allUsers'],
@@ -305,16 +308,25 @@ export default function PupilList() {
             </div>
           </div>
           
-          <Button
-            onClick={() => {
-              setEditingPupil(null);
-              setShowPupilModal(true);
-            }}
-            className="bg-teal-600 hover:bg-teal-700"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Pupil
-          </Button>
+          {!hasValidSub ? (
+            <a href="/InstructorSubscription">
+              <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] gap-2">
+                <span>🔒</span>
+                Start Free Trial to Add Pupils
+              </Button>
+            </a>
+          ) : (
+            <Button
+              onClick={() => {
+                setEditingPupil(null);
+                setShowPupilModal(true);
+              }}
+              className="bg-teal-600 hover:bg-teal-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Pupil
+            </Button>
+          )}
         </div>
 
         {/* Status Filter Cards */}
@@ -372,16 +384,24 @@ export default function PupilList() {
             <div className="text-left">
               <div className="text-2xl font-bold text-purple-600">{oneOffPupils.length}</div>
               <div className="text-sm text-slate-600 mt-1">One Offs</div>
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowOneOffModal(true);
-                }}
-                className="mt-2 w-full bg-purple-600 hover:bg-purple-700 text-xs h-8"
-              >
-                <Plus className="w-3 h-3 mr-1" />
-                Add One Off
-              </Button>
+              {hasValidSub ? (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowOneOffModal(true);
+                  }}
+                  className="mt-2 w-full bg-purple-600 hover:bg-purple-700 text-xs h-8"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add One Off
+                </Button>
+              ) : (
+                <a href="/InstructorSubscription" onClick={(e) => e.stopPropagation()}>
+                  <Button className="mt-2 w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-xs h-8">
+                    🔒 Start Free Trial
+                  </Button>
+                </a>
+              )}
             </div>
           </div>
         </div>
