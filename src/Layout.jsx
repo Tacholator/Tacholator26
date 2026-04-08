@@ -84,9 +84,9 @@ export default function Layout({ children, currentPageName }) {
   });
 
   // Determine if user is instructor or learner
-  // If user has a pupil record, they're a learner regardless of role
-  const isLearner = pupilProfile !== null && pupilProfile !== undefined;
-  const isInstructor = !isLearner && user?.role === 'admin';
+  // Admin role always takes priority — admin users are always instructors
+  const isInstructor = user?.role === 'admin';
+  const isLearner = !isInstructor && pupilProfile !== null && pupilProfile !== undefined;
   const isMainAdmin = isInstructor && user?.email === 'fasobah@gmail.com';
 
   // Fetch unread messages count - filter server-side, use real-time subscription
