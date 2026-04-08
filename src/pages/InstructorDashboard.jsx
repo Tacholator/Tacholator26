@@ -350,7 +350,7 @@ export default function InstructorDashboard() {
                   <div className="flex-1">
                     <h3 className="font-semibold text-blue-900 text-lg mb-2">Unlock Full Platform Access</h3>
                     <p className="text-blue-700 text-sm mb-4">Subscribe to Tacholator to access all teaching tools, pupil management, and premium features.</p>
-                    <Link to="/InstructorSubscription" className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors">
+                    <Link to={createPageUrl('InstructorSubscription')} className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors">
                       View Subscription Plans
                     </Link>
                   </div>
