@@ -385,14 +385,7 @@ export default function PupilList() {
             <div className="text-left">
               <div className="text-2xl font-bold text-purple-600">{oneOffPupils.length}</div>
               <div className="text-sm text-slate-600 mt-1">One Offs</div>
-              <div className="flex flex-col gap-1 mt-2">
-                {!hasValidSub && (
-                  <a href="/InstructorSubscription" onClick={(e) => e.stopPropagation()}>
-                    <Button className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-xs h-8">
-                      Start Free Trial
-                    </Button>
-                  </a>
-                )}
+              <div className="mt-2">
                 <Button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -405,9 +398,8 @@ export default function PupilList() {
                   Add One Off
                 </Button>
               </div>
-            </div>
-          </div>
-        </div>
+              </div>
+              </div>
 
         {/* Search */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
