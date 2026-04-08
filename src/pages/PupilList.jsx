@@ -308,25 +308,26 @@ export default function PupilList() {
             </div>
           </div>
           
-          {!hasValidSub ? (
-            <a href="/InstructorSubscription">
-              <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] gap-2">
-                <span>🔒</span>
-                Start Free Trial to Add Pupils
-              </Button>
-            </a>
-          ) : (
+          <div className="flex items-center gap-2">
+            {!hasValidSub && (
+              <a href="/InstructorSubscription">
+                <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] gap-2">
+                  Start Free Trial
+                </Button>
+              </a>
+            )}
             <Button
               onClick={() => {
                 setEditingPupil(null);
                 setShowPupilModal(true);
               }}
+              disabled={!hasValidSub}
               className="bg-teal-600 hover:bg-teal-700"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Pupil
             </Button>
-          )}
+          </div>
         </div>
 
         {/* Status Filter Cards */}
@@ -384,24 +385,26 @@ export default function PupilList() {
             <div className="text-left">
               <div className="text-2xl font-bold text-purple-600">{oneOffPupils.length}</div>
               <div className="text-sm text-slate-600 mt-1">One Offs</div>
-              {hasValidSub ? (
+              <div className="flex flex-col gap-1 mt-2">
+                {!hasValidSub && (
+                  <a href="/InstructorSubscription" onClick={(e) => e.stopPropagation()}>
+                    <Button className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-xs h-8">
+                      Start Free Trial
+                    </Button>
+                  </a>
+                )}
                 <Button
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowOneOffModal(true);
                   }}
-                  className="mt-2 w-full bg-purple-600 hover:bg-purple-700 text-xs h-8"
+                  disabled={!hasValidSub}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-xs h-8"
                 >
                   <Plus className="w-3 h-3 mr-1" />
                   Add One Off
                 </Button>
-              ) : (
-                <a href="/InstructorSubscription" onClick={(e) => e.stopPropagation()}>
-                  <Button className="mt-2 w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] text-xs h-8">
-                    🔒 Start Free Trial
-                  </Button>
-                </a>
-              )}
+              </div>
             </div>
           </div>
         </div>
