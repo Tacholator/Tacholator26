@@ -227,6 +227,7 @@ export default function AdminUserManagement() {
           const instructor = allInstructors.find(i => i.created_by === selectedUser.email || i.instructorEmail === selectedUser.email || i.userId === selectedUser.id);
           const pupil = allPupils.find(p => p.linkedUserId === selectedUser.id || p.email?.toLowerCase() === selectedUser.email?.toLowerCase());
           const pupilCount = isInstructorType ? allPupils.filter(p => p.instructorId === selectedUser.id).length : null;
+          const subscription = isInstructorType ? allSubscriptions.find(s => s.userId === selectedUser.id) : null;
 
           return (
             <div className="space-y-4">
@@ -270,6 +271,57 @@ export default function AdminUserManagement() {
                   )}
                 </div>
               </div>
+
+              {/* Instructor Subscription Info */}
+              {isInstructorType && (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                  <h3 className="text-lg font-semibold text-[#071739] mb-4">Subscription</h3>
+                  {!subscription || subscription.status === 'none' ? (
+                    <p className="text-sm text-slate-400">No active subscription</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <DetailRow label="Status" value={subscription.status} badge
+                        badgeClass={
+                          subscription.status === 'active' ? 'bg-emerald-100 text-emerald-700' :
+                          subscription.status === 'trialing' ? 'bg-[#F7B602]/20 text-[#071739]' :
+                          subscription.status === 'past_due' || subscription.status === 'grace' ? 'bg-orange-100 text-orange-700' :
+                          subscription.status === 'cancelled' ? 'bg-slate-100 text-slate-600' :
+                          'bg-red-100 text-red-700'
+                        }
+                      />
+                      {subscription.billingPeriod && (
+                        <DetailRow label="Billing Period" value={subscription.billingPeriod.charAt(0).toUpperCase() + subscription.billingPeriod.slice(1)} />
+                      )}
+                      {subscription.trialStartAt && (
+                        <DetailRow label="Trial Started" value={new Date(subscription.trialStartAt).toLocaleDateString('en-GB')} />
+                      )}
+                      {subscription.trialEndAt && (
+                        <DetailRow label="Trial Ends" value={new Date(subscription.trialEndAt).toLocaleDateString('en-GB')} />
+                      )}
+                      {subscription.currentPeriodStartAt && (
+                        <DetailRow label="Period Start" value={new Date(subscription.currentPeriodStartAt).toLocaleDateString('en-GB')} />
+                      )}
+                      {subscription.currentPeriodEndAt && (
+                        <DetailRow label="Period End" value={new Date(subscription.currentPeriodEndAt).toLocaleDateString('en-GB')} />
+                      )}
+                      {subscription.lastPaymentAt && (
+                        <DetailRow label="Last Payment" value={new Date(subscription.lastPaymentAt).toLocaleDateString('en-GB')} />
+                      )}
+                      {subscription.lastPaymentStatus && (
+                        <DetailRow label="Payment Status" value={subscription.lastPaymentStatus} badge
+                          badgeClass={subscription.lastPaymentStatus === 'succeeded' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}
+                        />
+                      )}
+                      {subscription.cancelAtPeriodEnd && (
+                        <DetailRow label="Cancels At Period End" value="Yes" badge badgeClass="bg-orange-100 text-orange-700" />
+                      )}
+                      {subscription.stripeSubscriptionId && (
+                        <DetailRow label="Stripe Sub ID" value={subscription.stripeSubscriptionId} />
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Instructor Business Info */}
               {isInstructorType && instructor?.businessName && (
