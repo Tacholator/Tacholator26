@@ -238,7 +238,6 @@ export default function AdminUserManagement() {
           const pupilCount = isInstructorType ? allPupils.filter(p => p.instructorId === selectedUser.id).length : null;
           const subscription = isInstructorType ? allSubscriptions.find(s => s.userId === selectedUser.id) : null;
 
-          // When trialing, period start = trial end, period end = trial end + billing period
           let displayPeriodStart = subscription?.currentPeriodStartAt;
           let displayPeriodEnd = subscription?.currentPeriodEndAt;
           if (subscription?.status === 'trialing' && subscription?.trialEndAt) {
@@ -272,7 +271,6 @@ export default function AdminUserManagement() {
                     </Badge>
                   </div>
                 </div>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <DetailRow icon={Mail} label="Email" value={selectedUser.email} />
                   <DetailRow icon={Phone} label="Phone" value={isInstructorType ? (instructor?.phone || '—') : (pupil?.phone || '—')} />
@@ -344,8 +342,38 @@ export default function AdminUserManagement() {
                       {subscription.billingPeriod && (
                         <DetailRow label="Billing Period" value={subscription.billingPeriod.charAt(0).toUpperCase() + subscription.billingPeriod.slice(1)} />
                       )}
+                      {subscription.trialStartAt && (
+                        <DetailRow label="Trial Started" value={new Date(subscription.trialStartAt).toLocaleDateString('en-GB')} />
+                      )}
+                      {subscription.trialEndAt && (
+                        <DetailRow label="Trial Ends" value={new Date(subscription.trialEndAt).toLocaleDateString('en-GB')} />
+                      )}
+                      {displayPeriodStart && (
+                        <DetailRow label="Period Start" value={new Date(displayPeriodStart).toLocaleDateString('en-GB')} />
+                      )}
+                      {displayPeriodEnd && (
+                        <DetailRow label="Period End" value={new Date(displayPeriodEnd).toLocaleDateString('en-GB')} />
+                      )}
+                      {subscription.lastPaymentAt && (
+                        <DetailRow label="Last Payment" value={new Date(subscription.lastPaymentAt).toLocaleDateString('en-GB')} />
+                      )}
+                      {subscription.lastPaymentStatus && (
+                        <DetailRow label="Payment Status" value={subscription.lastPaymentStatus} badge
+                          badgeClass={subscription.lastPaymentStatus === 'succeeded' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}
+                        />
+                      )}
+                      {subscription.cancelAtPeriodEnd && (
+                        <DetailRow label="Cancels At Period End" value="Yes" badge badgeClass="bg-orange-100 text-orange-700" />
+                      )}
+                      {subscription.stripeSubscriptionId && (
+                        <DetailRow label="Stripe Sub ID" value={subscription.stripeSubscriptionId} />
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
-                      {/* Instructor Business Info */}
+              {/* Instructor Business Info */}
               {isInstructorType && instructor?.businessName && (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
                   <h3 className="text-lg font-semibold text-[#071739] mb-4">Business Information</h3>
