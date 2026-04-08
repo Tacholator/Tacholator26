@@ -184,9 +184,11 @@ export default function InstructorSubscription() {
                       <h2 className="text-xl font-bold text-[#071739]">
                         {isTrialing ? 'Free Trial Active' : 'Subscription Active'}
                       </h2>
-                      <Badge className={isTrialing ? 'bg-[#F7B602] text-[#071739]' : 'bg-emerald-500 text-white'}>
-                        {isTrialing ? 'Trial' : 'Active'}
-                      </Badge>
+                      {!isTrialing && (
+                        <Badge className="bg-emerald-500 text-white">
+                          Active
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-slate-600 text-sm">
                       {subscription?.billingPeriod === 'yearly' ? 'Annual Plan — £100/year' : 'Monthly Plan — £10/month'}
