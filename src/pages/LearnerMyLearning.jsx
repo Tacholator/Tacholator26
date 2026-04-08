@@ -38,7 +38,7 @@ export default function LearnerMyLearning() {
   });
 
   // Fetch instructor subscription
-  const { data: subscription } = useQuery({
+  const { data: subscription, isLoading: subscriptionLoading } = useQuery({
     queryKey: ['instructorSubscription', instructor?.id],
     queryFn: async () => {
       if (!instructor?.id) return null;
@@ -49,7 +49,7 @@ export default function LearnerMyLearning() {
   });
 
   // Fetch instructor profile
-  const { data: instructorProfile } = useQuery({
+  const { data: instructorProfile, isLoading: instructorProfileLoading } = useQuery({
     queryKey: ['instructorProfileForAccess', instructor?.email],
     queryFn: async () => {
       if (!instructor?.email) return null;
@@ -62,8 +62,17 @@ export default function LearnerMyLearning() {
   // Check if instructor has valid access
   const instructorHasValidAccess = !!(instructorProfile?.platformAccessOverride || (subscription?.status && ['trialing', 'active'].includes(subscription.status)));
 
+  // Show loading while fetching instructor access data
+  if (pupilProfile && (subscriptionLoading || instructorProfileLoading)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   // Show restriction message if instructor doesn't have active plan and profile is loaded
-  if (pupilProfile && instructorProfile !== undefined && !instructorHasValidAccess) {
+  if (pupilProfile && !instructorHasValidAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
         <motion.div
