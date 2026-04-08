@@ -269,6 +269,26 @@ async function handleSubscriptionCreated(subscription, base44) {
   const billingPeriod = subscription.metadata?.billingPeriod || 'monthly';
 
   const toIso = (ts) => (ts != null ? new Date(ts * 1000).toISOString() : null);
+
+  // When trialing, the paid period hasn't started yet.
+  // currentPeriodStart should be when the trial ends (i.e. when billing begins).
+  let currentPeriodStartAt, currentPeriodEndAt;
+  if (status === 'trialing' && subscription.trial_end) {
+    const trialEndDate = new Date(subscription.trial_end * 1000);
+    currentPeriodStartAt = trialEndDate.toISOString();
+    // Calculate period end based on billing period
+    const periodEnd = new Date(trialEndDate);
+    if (billingPeriod === 'yearly') {
+      periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+    } else {
+      periodEnd.setMonth(periodEnd.getMonth() + 1);
+    }
+    currentPeriodEndAt = periodEnd.toISOString();
+  } else {
+    currentPeriodStartAt = toIso(subscription.current_period_start);
+    currentPeriodEndAt = toIso(subscription.current_period_end);
+  }
+
   const data = {
     userId,
     stripeSubscriptionId: subscription.id,
@@ -277,9 +297,8 @@ async function handleSubscriptionCreated(subscription, base44) {
     billingPeriod,
     trialStartAt: toIso(subscription.trial_start),
     trialEndAt: toIso(subscription.trial_end),
-    currentPeriodStartAt: toIso(subscription.current_period_start),
-    currentPeriodEndAt: toIso(subscription.current_period_end),
-    cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+    currentPeriodStartAt,
+    currentPeriodEndAt,
   };
 
   const existing = await base44.asServiceRole.entities.UserSubscription.filter({ userId });
@@ -304,11 +323,28 @@ async function handleSubscriptionUpdated(subscription, base44) {
     return { success: true };
   }
 
+  const billingPeriod = existing[0].billingPeriod || 'monthly';
+  let currentPeriodStartAt, currentPeriodEndAt;
+  if (status === 'trialing' && subscription.trial_end) {
+    const trialEndDate = new Date(subscription.trial_end * 1000);
+    currentPeriodStartAt = trialEndDate.toISOString();
+    const periodEnd = new Date(trialEndDate);
+    if (billingPeriod === 'yearly') {
+      periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+    } else {
+      periodEnd.setMonth(periodEnd.getMonth() + 1);
+    }
+    currentPeriodEndAt = periodEnd.toISOString();
+  } else {
+    currentPeriodStartAt = new Date(subscription.current_period_start * 1000).toISOString();
+    currentPeriodEndAt = new Date(subscription.current_period_end * 1000).toISOString();
+  }
+
   await base44.asServiceRole.entities.UserSubscription.update(existing[0].id, {
     status,
     trialEndAt: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-    currentPeriodStartAt: new Date(subscription.current_period_start * 1000).toISOString(),
-    currentPeriodEndAt: new Date(subscription.current_period_end * 1000).toISOString(),
+    currentPeriodStartAt,
+    currentPeriodEndAt,
     cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
   });
   return { success: true };
