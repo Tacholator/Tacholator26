@@ -368,7 +368,7 @@ export default function InstructorDashboard() {
           </Card>
 
           {/* Subscription Upgrade Card - Show if no active subscription */}
-          {subscription && (subscription.status === 'none' || !subscription.status) && (
+          {!subscription || (subscription.status !== 'active' && subscription.status !== 'trialing' && subscription.status !== 'grace') ? (
             <Card className="bg-gradient-to-r from-[#F7B602] to-amber-500 border-0 shadow-md overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4">
@@ -388,7 +388,7 @@ export default function InstructorDashboard() {
                 </div>
               </CardContent>
             </Card>
-          )}
+          ) : null}
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (
