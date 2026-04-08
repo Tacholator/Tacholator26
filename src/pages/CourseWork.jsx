@@ -86,6 +86,20 @@ export default function CourseWork() {
 
   const isInstructor = user?.role === 'admin';
   const { hasValidSub: isSubscribed } = useInstructorSubscription(user?.id);
+  
+  // Fetch instructor profile to check platformAccessOverride
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfileOverride', user?.email],
+    queryFn: async () => {
+      if (!user?.email || !isInstructor) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: user.email });
+      return results[0] || null;
+    },
+    enabled: !!user?.email && isInstructor
+  });
+  
+  const hasPlatformAccess = instructorProfile?.platformAccessOverride || false;
+  const hasFullAccess = isSubscribed || hasPlatformAccess;
   const { hasValidAccess, isLoading: accessCheckLoading } = useInstructorAccessCheck(pupil);
 
   const getBackPage = () => {
@@ -165,7 +179,7 @@ export default function CourseWork() {
       setAssignmentModalOpen(true);
       return;
     }
-    if (isInstructor && !isSubscribed) return;
+    if (isInstructor && !hasFullAccess) return;
     navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}`);
   };
 
@@ -229,7 +243,7 @@ export default function CourseWork() {
         </div>
 
         {/* Instructor subscription banner */}
-        {isInstructor && !isSubscribed && (
+        {isInstructor && !hasFullAccess && (
           <div className="mb-6 bg-amber-50 border border-amber-300 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <p className="font-semibold text-amber-900">Subscription Required</p>
@@ -243,7 +257,7 @@ export default function CourseWork() {
           </div>
         )}
 
-        {isInstructor && isSubscribed && (
+        {isInstructor && hasFullAccess && (
           <div className="mb-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -266,9 +280,9 @@ export default function CourseWork() {
               <Card 
                 key={item.id}
                 onClick={(e) => handleCardClick(item.id, e)}
-                className={`${cardColors[index]} border-0 shadow-sm transition-all aspect-square flex items-center justify-center relative group ${isInstructor && !isSubscribed ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:shadow-md hover:scale-105'}`}
+                className={`${cardColors[index]} border-0 shadow-sm transition-all aspect-square flex items-center justify-center relative group ${isInstructor && !hasFullAccess ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:shadow-md hover:scale-105'}`}
               >
-                {isInstructor && !isSubscribed && (
+                {isInstructor && !hasFullAccess && (
                   <div className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm">
                     <Lock className="w-4 h-4 text-slate-600" />
                   </div>
@@ -283,7 +297,7 @@ export default function CourseWork() {
                     <CheckCircle className="w-4 h-4 text-white" />
                   </div>
                 )}
-                {isInstructor && isSubscribed && (
+                {isInstructor && hasFullAccess && (
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity assign-button">
                     <Button
                       size="sm"
