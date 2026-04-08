@@ -74,7 +74,20 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
     enabled: !!pupil?.instructorId
   });
 
-  const { data: relatedHomework } = useQuery({
+  const { data: skillAssignment } = useQuery({
+    queryKey: ['skillAssignment', pupil?.id, topicIdStr],
+    queryFn: async () => {
+      if (!pupil?.id || !topicIdStr) return null;
+      const assignments = await base44.entities.SkillAssignment.filter({
+        pupilId: pupil.id,
+        skillId: topicIdStr
+      });
+      return assignments.length > 0 ? assignments[0] : null;
+    },
+    enabled: !!pupil?.id && !!topicIdStr
+  });
+
+  const { data: relatedHomework = [] } = useQuery({
     queryKey: ['relatedHomework', pupil?.id, topicIdStr],
     queryFn: async () => {
       if (!pupil?.id) return [];
@@ -145,7 +158,6 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const handleNext = () => {
     if (currentQuestionIndex < shuffledQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      // Auto-read continues only if enabled (user clicked Play and didn't stop)
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -153,7 +165,6 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-      // Auto-read continues only if enabled (user clicked Play and didn't stop)
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -238,6 +249,22 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
     };
 
     await upsertStatusMutation.mutateAsync(statusData);
+
+    // Update skill assignment if passed and material viewed
+    if (passed && skillAssignment && skillAssignment.hasOpenedMaterial) {
+      await base44.entities.SkillAssignment.update(skillAssignment.id, {
+        passedMcq: true,
+        status: 'completed'
+      });
+      queryClient.invalidateQueries(['skillAssignment']);
+      queryClient.invalidateQueries(['skills']);
+    } else if (passed && skillAssignment) {
+      // Just mark as passed, not completed yet (waiting for material view)
+      await base44.entities.SkillAssignment.update(skillAssignment.id, {
+        passedMcq: true
+      });
+      queryClient.invalidateQueries(['skillAssignment']);
+    }
 
     // Update related homework status to Completed if passed
     if (passed && relatedHomework && relatedHomework.length > 0) {

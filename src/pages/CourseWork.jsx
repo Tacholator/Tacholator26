@@ -8,8 +8,7 @@ import RestrictedAccessNotice from '@/components/access/RestrictedAccessNotice';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Lock, UserPlus, ArrowLeft } from 'lucide-react';
-import { courseWorkTopics } from '@/components/coursework/topicIndex';
+import { FileText, Lock, UserPlus, ArrowLeft, CheckCircle } from 'lucide-react';
 import CourseWorkAssignmentModal from '@/components/homework/CourseWorkAssignmentModal';
 import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
 
@@ -74,6 +73,15 @@ export default function CourseWork() {
     queryKey: ['pupils'],
     queryFn: () => base44.entities.Pupil.list(),
     enabled: user?.role === 'admin'
+  });
+
+  const { data: skillAssignments = [] } = useQuery({
+    queryKey: ['skillAssignments', pupil?.id],
+    queryFn: async () => {
+      if (!pupil?.id) return [];
+      return base44.entities.SkillAssignment.filter({ pupilId: pupil.id });
+    },
+    enabled: !!pupil?.id && !isInstructor
   });
 
   const isInstructor = user?.role === 'admin';
@@ -251,6 +259,8 @@ export default function CourseWork() {
             const hasStudyAccess = hasAccess(item.id, 'study');
             const hasMcqAccess = hasAccess(item.id, 'mcq');
             const isLocked = !isInstructor && !hasStudyAccess && !hasMcqAccess;
+            const skillAssignment = skillAssignments.find(s => s.skillId === item.topicId);
+            const isCompleted = skillAssignment?.passedMcq && skillAssignment?.hasOpenedMaterial;
 
             return (
               <Card 
@@ -266,6 +276,11 @@ export default function CourseWork() {
                 {isLocked && (
                   <div className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm">
                     <Lock className="w-4 h-4 text-slate-600" />
+                  </div>
+                )}
+                {isCompleted && !isInstructor && (
+                  <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1.5 shadow-sm">
+                    <CheckCircle className="w-4 h-4 text-white" />
                   </div>
                 )}
                 {isInstructor && isSubscribed && (

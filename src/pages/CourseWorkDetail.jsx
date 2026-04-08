@@ -121,10 +121,17 @@ export default function CourseWorkDetail() {
     enabled: !!pupil?.id
   });
 
-  const { data: allPupils = [] } = useQuery({
-    queryKey: ['pupils'],
-    queryFn: () => base44.entities.Pupil.list(),
-    enabled: !!user?.id && user?.role === 'admin'
+  const { data: skillAssignment } = useQuery({
+    queryKey: ['skillAssignment', pupil?.id, currentTopic?.topicId],
+    queryFn: async () => {
+      if (!pupil?.id || !currentTopic?.topicId) return null;
+      const assignments = await base44.entities.SkillAssignment.filter({
+        pupilId: pupil.id,
+        skillId: currentTopic.topicId
+      });
+      return assignments.length > 0 ? assignments[0] : null;
+    },
+    enabled: !!pupil?.id && !!currentTopic?.topicId
   });
 
   const { data: topicAccessRecords = [] } = useQuery({
@@ -305,6 +312,16 @@ export default function CourseWorkDetail() {
         </div>
       );
     }
+
+    // Mark material as opened when studying
+    React.useEffect(() => {
+      if (skillAssignment && !skillAssignment.hasOpenedMaterial) {
+        base44.entities.SkillAssignment.update(skillAssignment.id, {
+          hasOpenedMaterial: true,
+          materialOpenedAt: new Date().toISOString()
+        }).catch(err => console.error('Failed to mark material as opened:', err));
+      }
+    }, [skillAssignment]);
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
