@@ -36,6 +36,17 @@ export default function InstructorDashboard() {
     queryFn: () => base44.auth.me()
   });
 
+  const { data: subscription } = useQuery({
+    queryKey: ['instructorSubscription', user?.id],
+    queryFn: async () => {
+      const subs = await base44.entities.UserSubscription.filter({ userId: user.id });
+      return subs[0] || null;
+    },
+    enabled: !!user?.id
+  });
+
+  const hasValidSubscription = subscription && ['trialing', 'active'].includes(subscription.status);
+
   // Guard: reuse the same query key as layout so it hits the cache (no extra network call)
   const { data: pupilCheck, isLoading: isPupilCheckLoading } = useQuery({
     queryKey: ['learnerPupilProfile', user?.id, user?.email],
@@ -331,6 +342,22 @@ export default function InstructorDashboard() {
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
         <div className="space-y-4">
+          {/* Subscription Prompt Card for Instructors Without Active Subscription */}
+          {!hasValidSubscription && (
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-sm overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-blue-900 text-lg mb-2">Unlock Full Platform Access</h3>
+                    <p className="text-blue-700 text-sm mb-4">Subscribe to Tacholator to access all teaching tools, pupil management, and premium features.</p>
+                    <Link to="/InstructorSubscription" className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors">
+                      View Subscription Plans
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* 1. Greeting Card */}
           <Card className={`${warmPalette.card_greeting} border-0 shadow-sm overflow-hidden`}>

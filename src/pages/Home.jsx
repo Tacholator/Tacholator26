@@ -28,32 +28,17 @@ export default function Home() {
     enabled: !!user?.id && !!user?.email
   });
 
-  const { hasOverride } = useInstructorSubscription(user?.id, user?.email);
-
-  const { data: subscription, isLoading: isSubLoading } = useQuery({
-    queryKey: ['instructorSubscription', user?.id],
-    queryFn: async () => {
-      const subs = await base44.entities.UserSubscription.filter({ userId: user.id });
-      return subs[0] || null;
-    },
-    enabled: !!user?.id && user?.role === 'admin'
-  });
-
   const isLearner = !!pupilRecord;
   const isInstructor = !isLearner && user?.role === 'admin';
-  const hasValidSubscription = subscription && ['trialing', 'active'].includes(subscription.status);
   const needsRoleSelection = !isLoading && !isPupilLoading && user && !isLearner && user?.role !== 'admin';
-  const needsSubscription = !isLoading && !isPupilLoading && !isSubLoading && isInstructor && !hasValidSubscription && !hasOverride;
 
   useEffect(() => {
     if (needsRoleSelection) {
       navigate('/RoleSelection', { replace: true });
-    } else if (needsSubscription) {
-      navigate('/InstructorSubscription', { replace: true });
     }
-  }, [needsRoleSelection, needsSubscription, navigate]);
+  }, [needsRoleSelection, navigate]);
 
-  if (isLoading || !user || isPupilLoading || (user?.role === 'admin' && isSubLoading)) {
+  if (isLoading || !user || isPupilLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-teal-50/30">
         <Loader2 className="w-8 h-8 animate-spin text-[#F7B602]" />
