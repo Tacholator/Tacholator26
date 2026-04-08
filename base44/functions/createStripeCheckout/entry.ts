@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { pupilId, amount, successUrl, cancelUrl } = await req.json();
+    const { pupilId, amount, successUrl, cancelUrl, promoCode } = await req.json();
 
     if (!pupilId || !amount || amount < 10) {
       return Response.json({ error: 'Invalid request' }, { status: 400 });
@@ -50,6 +50,7 @@ Deno.serve(async (req) => {
 
     // Create Stripe checkout session with connected account
     const session = await stripe.checkout.sessions.create({
+      allow_promotion_codes: true,
       payment_method_types: ['card'],
       line_items: [
         {
@@ -78,10 +79,11 @@ Deno.serve(async (req) => {
         userId: user.id,
         instructorId: instructorAccount.id,
         amount: amount.toString()
-      }
+      },
+      ...(promoCode && { discounts: [{ coupon: promoCode }] })
     });
 
-    return Response.json({ url: session.url });
+    return Response.json({ url: session.url, sessionId: session.id });
   } catch (error) {
     console.error('Stripe checkout error:', error);
     return Response.json({ error: error.message }, { status: 500 });
