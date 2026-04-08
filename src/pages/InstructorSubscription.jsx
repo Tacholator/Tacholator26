@@ -185,7 +185,7 @@ export default function InstructorSubscription() {
                         {isTrialing ? 'Free Trial Active' : 'Subscription Active'}
                       </h2>
                       <Badge className={isTrialing ? 'bg-[#F7B602] text-[#071739]' : 'bg-emerald-500 text-white'}>
-                        {isTrialing ? 'Trialing' : 'Active'}
+                        {isTrialing ? 'Trial' : 'Active'}
                       </Badge>
                     </div>
                     <p className="text-slate-600 text-sm">
