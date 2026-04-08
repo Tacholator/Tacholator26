@@ -19,9 +19,8 @@ export default function RoleSelection() {
   const handleSelect = async (role) => {
     setSelecting(role);
     try {
-      await base44.auth.updateMe({ userType: role });
-
       if (role === 'instructor') {
+        await base44.auth.updateMe({ userType: role, role: 'admin' });
         // Create an Instructor profile for this user
         const fullName = user?.full_name || user?.email?.split('@')[0] || '';
         await base44.entities.Instructor.create({
@@ -29,6 +28,7 @@ export default function RoleSelection() {
         });
         navigate('/InstructorSubscription');
       } else {
+        await base44.auth.updateMe({ userType: role });
         navigate(createPageUrl('Home'));
       }
     } catch (error) {
