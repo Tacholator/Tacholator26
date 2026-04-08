@@ -22,8 +22,8 @@ export default function InstructorTopicAssignment() {
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['pupils'],
-    queryFn: () => base44.entities.Pupil.list(),
+    queryKey: ['myPupils', user?.id],
+    queryFn: () => base44.entities.Pupil.filter({ instructorId: user.id }),
     enabled: !!user?.id
   });
 

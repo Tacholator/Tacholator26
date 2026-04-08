@@ -32,10 +32,16 @@ export default function InstructorMcqReporting() {
     enabled: !!user?.id
   });
 
+  const myPupilIds = pupils.map(p => p.id);
+
   const { data: allMcqStatuses = [] } = useQuery({
-    queryKey: ['allMcqStatuses', user?.id],
-    queryFn: () => base44.entities.McqStatus.filter({ instructorId: user.id }, '-lastAttemptAt'),
-    enabled: !!user?.id
+    queryKey: ['allMcqStatuses', user?.id, myPupilIds.join(',')],
+    queryFn: async () => {
+      const statuses = await base44.entities.McqStatus.list('-lastAttemptAt');
+      const idSet = new Set(myPupilIds);
+      return statuses.filter(s => idSet.has(s.pupilId));
+    },
+    enabled: !!user?.id && myPupilIds.length > 0
   });
 
   const { data: settings } = useQuery({
