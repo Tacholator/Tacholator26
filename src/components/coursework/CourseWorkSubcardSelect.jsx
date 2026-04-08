@@ -54,6 +54,19 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
   // Always fetch subscription status directly — never rely on prop default
   const { hasValidSub: isSubscribed, isLoading: subLoading } = useInstructorSubscription(isInstructor ? user?.id : null);
 
+  // For instructors, check if they have platform access override
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['subcardInstructorProfile', user?.email, isInstructor],
+    queryFn: async () => {
+      if (!isInstructor || !user?.email) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: user.email });
+      return results[0] || null;
+    },
+    enabled: !!isInstructor && !!user?.email
+  });
+
+  const hasFullAccess = isInstructor && (isSubscribed || instructorProfile?.platformAccessOverride);
+
   // For learners, get their pupil record to find instructorId
   const { data: pupilProfile } = useQuery({
     queryKey: ['subCardPupilProfile', user?.id, user?.email],
@@ -127,7 +140,7 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
   };
 
   const handleSubcardClick = (type) => {
-    if (isInstructor && !isSubscribed && !subLoading) { navigate('/InstructorSubscription'); return; }
+    if (isInstructor && !hasFullAccess && !subLoading) { navigate('/InstructorSubscription'); return; }
     if (type === 'study' && !hasStudyAccess) { setShowLockedDialog(true); return; }
     if (type === 'practice' && !hasMcqAccess) { setShowLockedDialog(true); return; }
     navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}&subcard=${type}`);
@@ -155,9 +168,9 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
         <div className="grid gap-6 md:grid-cols-2 mb-8">
           <Card
             onClick={() => handleSubcardClick('study')}
-            className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 relative ${(!hasStudyAccess && !isInstructor) || (isInstructor && !isSubscribed) ? 'opacity-75' : ''}`}
-          >
-            {((!hasStudyAccess && !isInstructor) || (isInstructor && !isSubscribed)) && (
+            className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-orange-400 hover:border-t-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 relative ${(!hasStudyAccess && !isInstructor) || (isInstructor && !hasFullAccess) ? 'opacity-75' : ''}`}
+              >
+                {((!hasStudyAccess && !isInstructor) || (isInstructor && !hasFullAccess)) && (
               <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow-sm">
                 <Lock className="w-5 h-5 text-amber-600" />
               </div>
@@ -175,19 +188,19 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                   {!hasStudyAccess && !isInstructor && (
                     <p className="text-sm text-amber-600 mt-2 font-medium">🔒 Ask your instructor for access</p>
                   )}
-                  {isInstructor && !isSubscribed && (
+                  {isInstructor && !hasFullAccess && (
                     <p className="text-sm text-amber-600 mt-2 font-medium">🔒 Subscription required</p>
                   )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                  </div>
+                  </div>
+                  </CardContent>
+                  </Card>
 
-          <Card
-            onClick={() => handleSubcardClick('practice')}
-            className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50 relative ${(!hasMcqAccess && !isInstructor) || (isInstructor && !isSubscribed) ? 'opacity-75' : ''}`}
-          >
-            {((!hasMcqAccess && !isInstructor) || (isInstructor && !isSubscribed)) && (
+                  <Card
+                  onClick={() => handleSubcardClick('practice')}
+            className={`hover:shadow-xl transition-all cursor-pointer h-full border-t-4 border-t-rose-400 hover:border-t-rose-500 bg-gradient-to-br from-rose-50 to-pink-50 relative ${(!hasMcqAccess && !isInstructor) || (isInstructor && !hasFullAccess) ? 'opacity-75' : ''}`}
+            >
+              {((!hasMcqAccess && !isInstructor) || (isInstructor && !hasFullAccess)) && (
               <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow-sm">
                 <Lock className="w-5 h-5 text-amber-600" />
               </div>
@@ -205,16 +218,16 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                   {!hasMcqAccess && !isInstructor && (
                     <p className="text-sm text-amber-600 mt-2 font-medium">🔒 Ask your instructor for access</p>
                   )}
-                  {isInstructor && !isSubscribed && (
+                  {isInstructor && !hasFullAccess && (
                     <p className="text-sm text-amber-600 mt-2 font-medium">🔒 Subscription required</p>
                   )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                  </div>
+                  </div>
+                  </CardContent>
+                  </Card>
+                  </div>
 
-        {/* Video Tutorials Section */}
+                  {/* Video Tutorials Section */}
         {(isInstructor || videos.length > 0) && (
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -222,7 +235,7 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
                 <Video className="w-5 h-5 text-[#F7B602]" />
                 Video Tutorials ({videos.length})
               </h2>
-              {isInstructor && isSubscribed && (
+              {isInstructor && hasFullAccess && (
                 <Button
                   onClick={() => setShowAddForm(true)}
                   className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold"
