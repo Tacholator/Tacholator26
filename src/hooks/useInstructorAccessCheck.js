@@ -2,15 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
 export function useInstructorAccessCheck(pupil) {
-  // Fetch instructor subscription
+  // Fetch instructor subscription by instructor email
   const { data: subscription, isLoading: subscriptionLoading } = useQuery({
-    queryKey: ['instructorSubscription', pupil?.instructorId],
+    queryKey: ['instructorSubscription', pupil?.instructorEmail],
     queryFn: async () => {
-      if (!pupil?.instructorId) return null;
-      const subs = await base44.entities.UserSubscription.filter({ userId: pupil.instructorId });
+      if (!pupil?.instructorEmail) return null;
+      const subs = await base44.entities.UserSubscription.filter({ userId: pupil.instructorEmail });
       return subs[0] || null;
     },
-    enabled: !!pupil?.instructorId
+    enabled: !!pupil?.instructorEmail
   });
 
   // Fetch instructor profile for platform access override
