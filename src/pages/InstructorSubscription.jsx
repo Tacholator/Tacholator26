@@ -59,6 +59,8 @@ export default function InstructorSubscription() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [subscribing, setSubscribing] = useState(null);
+  const [upgrading, setUpgrading] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -106,6 +108,17 @@ export default function InstructorSubscription() {
     setSubscribing(null);
   };
 
+  const handleUpgrade = async () => {
+    setUpgrading(true);
+    const res = await base44.functions.invoke('upgradeInstructorSubscription', {});
+    if (res.data?.success) {
+      await refetchSub();
+      setSuccessMessage('You have been upgraded to the Annual plan (£100/year).');
+    }
+    setUpgrading(false);
+    setShowUpgradeDialog(false);
+  };
+
   const handleCancel = async () => {
     setCancelling(true);
     await base44.functions.invoke('cancelInstructorSubscription', {});
@@ -116,6 +129,8 @@ export default function InstructorSubscription() {
 
   const isTrialing = subscription?.status === 'trialing';
   const isActive = subscription?.status === 'active';
+  const isMonthly = subscription?.billingPeriod === 'monthly';
+  const canUpgrade = (isActive || isTrialing) && isMonthly;
   const isCancelled = subscription?.status === 'cancelled';
   const isPastDue = subscription?.status === 'past_due';
   const hasValidSub = isTrialing || isActive;
@@ -198,7 +213,7 @@ export default function InstructorSubscription() {
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex flex-wrap gap-3">
                     <Button
                       variant="outline"
                       onClick={() => navigate('/')}
@@ -206,6 +221,14 @@ export default function InstructorSubscription() {
                     >
                       Go to Dashboard
                     </Button>
+                    {canUpgrade && (
+                      <Button
+                        onClick={() => setShowUpgradeDialog(true)}
+                        className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] font-semibold"
+                      >
+                        <Star className="w-4 h-4 mr-1" /> Upgrade to Annual
+                      </Button>
+                    )}
                     {!subscription?.cancelAtPeriodEnd && (
                       <Button
                         variant="outline"
@@ -320,6 +343,28 @@ export default function InstructorSubscription() {
           ))}
         </div>
       </div>
+
+      {/* Upgrade Confirmation Dialog */}
+      <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Upgrade to Annual Plan?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You'll switch from £10/month to £100/year — saving £20. The change takes effect immediately and any unused days on your current cycle will be prorated.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={upgrading}>Keep Monthly</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleUpgrade}
+              disabled={upgrading}
+              className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]"
+            >
+              {upgrading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Upgrading...</> : 'Yes, Upgrade to Annual'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Cancel Confirmation Dialog */}
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
