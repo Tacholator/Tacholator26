@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import LearnerDashboard from './LearnerDashboard';
 import InstructorDashboard from './InstructorDashboard';
 import { useNavigate } from 'react-router-dom';
