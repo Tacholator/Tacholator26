@@ -398,8 +398,9 @@ export default function PupilList() {
                   Add One Off
                 </Button>
               </div>
-              </div>
-              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Search */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
