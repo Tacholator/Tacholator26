@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -74,8 +73,6 @@ export default function InstructorSubscription() {
     queryFn: () => base44.auth.me(),
     retry: false,
   });
-
-  const { hasOverride } = useInstructorSubscription(user?.id, user?.email);
 
   const { data: subscription, isLoading: isSubLoading, refetch: refetchSub } = useQuery({
     queryKey: ['instructorSubscription', user?.id],
@@ -166,19 +163,6 @@ export default function InstructorSubscription() {
             <div>
               <p className="font-semibold text-emerald-800">You're all set!</p>
               <p className="text-emerald-700 text-sm">{successMessage}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Admin Override Banner */}
-        {hasOverride && (
-          <div className="mb-8 bg-emerald-50 border-2 border-emerald-400 rounded-xl p-6 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-              <Shield className="w-6 h-6 text-emerald-600" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-emerald-800">Full Platform Access Granted</h2>
-              <p className="text-emerald-700 text-sm mt-2">An administrator has granted you full access to all Tacholator features. You have unlimited access to all teaching tools, pupil management, and resources without requiring a paid subscription.</p>
             </div>
           </div>
         )}

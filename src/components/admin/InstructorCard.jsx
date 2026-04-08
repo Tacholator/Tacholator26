@@ -7,12 +7,12 @@ import moment from 'moment';
 function SubscriptionBadge({ status }) {
   const config = {
     active: { label: 'Active', className: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
-    trialing: { label: 'Free Trial', className: 'bg-lime-100 text-lime-700', icon: Clock },
+    trialing: { label: 'Free Trial', className: 'bg-[#F7B602]/20 text-[#071739]', icon: Clock },
     past_due: { label: 'Past Due', className: 'bg-orange-100 text-orange-700', icon: AlertTriangle },
     grace: { label: 'Grace Period', className: 'bg-orange-100 text-orange-700', icon: AlertTriangle },
     cancelled: { label: 'Cancelled', className: 'bg-slate-100 text-slate-600', icon: XCircle },
     expired: { label: 'Expired', className: 'bg-red-100 text-red-700', icon: XCircle },
-    none: { label: 'No Plan', className: 'bg-red-100 text-red-600', icon: Minus },
+    none: { label: 'No Plan', className: 'bg-slate-100 text-slate-500', icon: Minus },
   };
 
   const c = config[status] || config.none;
@@ -46,7 +46,7 @@ export default function InstructorCard({ user, instructor, pupilCount, subscript
 
   return (
     <Card
-      className="border-2 border-[#F7B602]/30 shadow-sm hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 hover:border-[#F7B602] group"
+      className="border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer hover:border-[#F7B602]/50 group"
       onClick={onClick}
     >
       <CardContent className="p-4">
@@ -66,12 +66,9 @@ export default function InstructorCard({ user, instructor, pupilCount, subscript
         <div className="mt-4 flex flex-wrap gap-2 items-center">
           <SubscriptionBadge status={subStatus} />
           {billingPeriod && subStatus !== 'none' && (
-            <Badge className={`text-xs capitalize ${billingPeriod === 'monthly' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>{billingPeriod}</Badge>
+            <Badge variant="outline" className="text-xs capitalize">{billingPeriod}</Badge>
           )}
-          {instructor?.platformAccessOverride && (
-            <Badge className="bg-indigo-100 text-indigo-700 text-xs">Full access granted by admin</Badge>
-          )}
-          <Badge className="bg-purple-100 text-purple-700 text-xs flex items-center gap-1">
+          <Badge variant="outline" className="text-xs flex items-center gap-1">
             <Users className="w-3 h-3" />
             {pupilCount} pupil{pupilCount !== 1 ? 's' : ''}
           </Badge>

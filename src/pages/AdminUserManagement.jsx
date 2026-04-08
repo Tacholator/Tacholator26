@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Car, BookOpen, Users, ArrowLeft, Loader2, ChevronRight, Mail, Phone, MapPin, Calendar, User, ShieldCheck } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { Car, BookOpen, Users, ArrowLeft, Loader2, ChevronRight, Mail, Phone, MapPin, Calendar, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import InstructorCard from '@/components/admin/InstructorCard';
 
@@ -16,7 +13,6 @@ import InstructorCard from '@/components/admin/InstructorCard';
 
 export default function AdminUserManagement() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [view, setView] = useState('overview');
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -38,11 +34,6 @@ export default function AdminUserManagement() {
   const { data: allSubscriptions = [], isLoading: subscriptionsLoading } = useQuery({
     queryKey: ['allSubscriptions'],
     queryFn: () => base44.entities.UserSubscription.list(),
-  });
-
-  const toggleOverrideMutation = useMutation({
-    mutationFn: ({ instructorId, value }) => base44.entities.Instructor.update(instructorId, { platformAccessOverride: value }),
-    onSuccess: () => queryClient.invalidateQueries(['allInstructors'])
   });
 
   const isLoading = usersLoading || pupilsLoading || instructorsLoading || subscriptionsLoading;
@@ -238,6 +229,7 @@ export default function AdminUserManagement() {
           const pupilCount = isInstructorType ? allPupils.filter(p => p.instructorId === selectedUser.id).length : null;
           const subscription = isInstructorType ? allSubscriptions.find(s => s.userId === selectedUser.id) : null;
 
+          // When trialing, period start = trial end, period end = trial end + billing period
           let displayPeriodStart = subscription?.currentPeriodStartAt;
           let displayPeriodEnd = subscription?.currentPeriodEndAt;
           if (subscription?.status === 'trialing' && subscription?.trialEndAt) {
@@ -271,6 +263,7 @@ export default function AdminUserManagement() {
                     </Badge>
                   </div>
                 </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <DetailRow icon={Mail} label="Email" value={selectedUser.email} />
                   <DetailRow icon={Phone} label="Phone" value={isInstructorType ? (instructor?.phone || '—') : (pupil?.phone || '—')} />
@@ -293,34 +286,6 @@ export default function AdminUserManagement() {
                   )}
                 </div>
               </div>
-
-              {/* Platform Access Override */}
-              {isInstructorType && instructor && (
-                <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <ShieldCheck className="w-5 h-5 text-[#071739]" />
-                    <h3 className="text-lg font-semibold text-[#071739]">Platform Access</h3>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="access-override" className="text-sm font-medium text-slate-800">Full Access Override</Label>
-                      <p className="text-xs text-slate-400 mt-0.5">Grant full platform access without a subscription</p>
-                    </div>
-                    <Switch
-                      id="access-override"
-                      checked={!!instructor.platformAccessOverride}
-                      onCheckedChange={(val) => toggleOverrideMutation.mutate({ instructorId: instructor.id, value: val })}
-                      disabled={toggleOverrideMutation.isPending}
-                    />
-                  </div>
-                  {instructor.platformAccessOverride && (
-                    <div className="mt-3 flex items-center gap-2 text-xs text-emerald-600 bg-emerald-50 rounded-lg px-3 py-2">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      This instructor has full access regardless of subscription status
-                    </div>
-                  )}
-                </div>
-              )}
 
               {/* Instructor Subscription Info */}
               {isInstructorType && (

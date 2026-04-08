@@ -69,7 +69,7 @@ export default function PupilList() {
     queryFn: () => base44.auth.me()
   });
 
-  const { hasValidSub } = useInstructorSubscription(currentUser?.id, currentUser?.email);
+  const { hasValidSub } = useInstructorSubscription(currentUser?.id);
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['allUsers'],
