@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
+import { useInstructorAccessCheck } from '@/hooks/useInstructorAccessCheck';
+import RestrictedAccessNotice from '@/components/access/RestrictedAccessNotice';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -344,6 +346,22 @@ export default function LearnerBookingCalendar() {
     ['reserved_pending_instructor', 'confirmed'].includes(b.status) &&
     moment(b.startAtUtc).isAfter(moment())
   ).sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
+
+  const { hasValidAccess, isLoading: accessCheckLoading } = useInstructorAccessCheck(pupil);
+
+  // Show loading while checking instructor access
+  if (accessCheckLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Restrict access if instructor doesn't have active subscription
+  if (!hasValidAccess) {
+    return <RestrictedAccessNotice />;
+  }
 
   if (!pupil) {
     return (

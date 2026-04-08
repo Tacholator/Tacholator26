@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate, Link } from 'react-router-dom';
 import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
+import { useInstructorAccessCheck } from '@/hooks/useInstructorAccessCheck';
+import RestrictedAccessNotice from '@/components/access/RestrictedAccessNotice';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -76,6 +78,7 @@ export default function CourseWork() {
 
   const isInstructor = user?.role === 'admin';
   const { hasValidSub: isSubscribed } = useInstructorSubscription(user?.id);
+  const { hasValidAccess, isLoading: accessCheckLoading } = useInstructorAccessCheck(pupil);
 
   const getBackPage = () => {
     return isInstructor ? 'InstructorTeachingHub' : 'LearnerLearningHub';
@@ -185,6 +188,20 @@ export default function CourseWork() {
 
   if (!isInstructor && pupil && pupil.status !== 'Active') {
     return <RestrictedAccessMessage pupilStatus={pupil.status} />;
+  }
+
+  // Show loading while checking instructor access
+  if (!isInstructor && pupil && accessCheckLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Restrict access if instructor doesn't have active subscription
+  if (!isInstructor && pupil && !hasValidAccess) {
+    return <RestrictedAccessNotice />;
   }
 
   return (
