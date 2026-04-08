@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import PupilClassNotes from '@/components/classnotes/PupilClassNotes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, Award, TrendingUp, Clock, ChevronRight } from 'lucide-react';
+import { BookOpen, Award, TrendingUp, Clock, ChevronRight, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 export default function LearnerMyLearning() {
   const { data: user } = useQuery({
@@ -23,6 +25,77 @@ export default function LearnerMyLearning() {
     },
     enabled: !!user?.id
   });
+
+  // Fetch instructor for subscription check
+  const { data: instructor } = useQuery({
+    queryKey: ['instructor', pupilProfile?.instructorId],
+    queryFn: async () => {
+      if (!pupilProfile?.instructorId) return null;
+      const users = await base44.entities.User.filter({ id: pupilProfile.instructorId });
+      return users.length > 0 ? users[0] : null;
+    },
+    enabled: !!pupilProfile?.instructorId
+  });
+
+  // Fetch instructor subscription
+  const { data: subscription } = useQuery({
+    queryKey: ['instructorSubscription', instructor?.id],
+    queryFn: async () => {
+      if (!instructor?.id) return null;
+      const subs = await base44.entities.UserSubscription.filter({ userId: instructor.id });
+      return subs[0] || null;
+    },
+    enabled: !!instructor?.id
+  });
+
+  // Fetch instructor profile
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfileForAccess', instructor?.email],
+    queryFn: async () => {
+      if (!instructor?.email) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: instructor.email });
+      return results[0] || null;
+    },
+    enabled: !!instructor?.email
+  });
+
+  // Check if instructor has valid access
+  const instructorHasValidAccess = !!(instructorProfile?.platformAccessOverride || (subscription && ['trialing', 'active'].includes(subscription.status)));
+
+  // Show restriction message if instructor doesn't have active plan
+  if (pupilProfile && !instructorHasValidAccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full"
+        >
+          <Card className="border-0 shadow-xl overflow-hidden">
+            <div className="bg-gradient-to-br from-rose-500 to-red-600 p-8 text-center">
+              <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Access Restricted</h2>
+              <p className="text-white/70 text-sm">My Learning tab is unavailable</p>
+            </div>
+            <CardContent className="p-8 text-center bg-white">
+              <p className="text-slate-700 text-sm leading-relaxed mb-4">
+                Your instructor's subscription is not active or has not been granted full platform access.
+              </p>
+              <p className="text-slate-600 text-sm mb-6">
+                This area requires an active instructor subscription. Please contact your instructor to activate their account.
+              </p>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-left">
+                <p className="text-xs font-semibold text-red-800 mb-2">Next Steps</p>
+                <p className="text-xs text-red-700">Ask your instructor to activate their subscription plan so you can access all learning materials.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
