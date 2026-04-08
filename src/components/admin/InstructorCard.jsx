@@ -68,6 +68,9 @@ export default function InstructorCard({ user, instructor, pupilCount, subscript
           {billingPeriod && subStatus !== 'none' && (
             <Badge variant="outline" className="text-xs capitalize">{billingPeriod}</Badge>
           )}
+          {instructor?.platformAccessOverride && (
+            <Badge className="bg-indigo-100 text-indigo-700 text-xs">Full access granted by admin</Badge>
+          )}
           <Badge variant="outline" className="text-xs flex items-center gap-1">
             <Users className="w-3 h-3" />
             {pupilCount} pupil{pupilCount !== 1 ? 's' : ''}
