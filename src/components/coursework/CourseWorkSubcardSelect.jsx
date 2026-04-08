@@ -35,7 +35,7 @@ function extractYouTubeId(url) {
   return '';
 }
 
-export default function CourseWorkSubcardSelect({ itemId, content, isInstructor, hasStudyAccess, hasMcqAccess, isSubscribed = true }) {
+export default function CourseWorkSubcardSelect({ itemId, content, isInstructor, hasStudyAccess, hasMcqAccess }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showLockedDialog, setShowLockedDialog] = useState(false);
@@ -50,6 +50,9 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
+
+  // Always fetch subscription status directly — never rely on prop default
+  const { hasValidSub: isSubscribed, isLoading: subLoading } = useInstructorSubscription(isInstructor ? user?.id : null);
 
   // For learners, get their pupil record to find instructorId
   const { data: pupilProfile } = useQuery({
@@ -124,7 +127,7 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
   };
 
   const handleSubcardClick = (type) => {
-    if (isInstructor && !isSubscribed) { setShowLockedDialog(true); return; }
+    if (isInstructor && !isSubscribed && !subLoading) { navigate('/InstructorSubscription'); return; }
     if (type === 'study' && !hasStudyAccess) { setShowLockedDialog(true); return; }
     if (type === 'practice' && !hasMcqAccess) { setShowLockedDialog(true); return; }
     navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}&subcard=${type}`);
