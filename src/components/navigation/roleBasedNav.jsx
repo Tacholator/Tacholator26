@@ -87,7 +87,6 @@ export const instructorOnlyLinks = [
       { name: 'Whiteboards', icon: Pen, page: 'InstructorWhiteboardLibrary' },
       { name: 'Course Work', icon: FileText, page: 'CourseWork' },
       { name: 'Pupil Notes', icon: Notebook, page: 'InstructorPupilNotes' },
-      { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment' },
       { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
       { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }

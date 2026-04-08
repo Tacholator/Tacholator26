@@ -87,7 +87,7 @@ import InstructorSubscription from './pages/InstructorSubscription';
 import InstructorTeachingHub from './pages/InstructorTeachingHub';
 import InstructorTestRouteDetail from './pages/InstructorTestRouteDetail';
 import InstructorTestRoutes from './pages/InstructorTestRoutes';
-import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
+
 import InstructorWhiteboardEditor from './pages/InstructorWhiteboardEditor';
 import InstructorWhiteboardLibrary from './pages/InstructorWhiteboardLibrary';
 import Invoices from './pages/Invoices';
@@ -172,7 +172,7 @@ export const PAGES = {
     "InstructorTeachingHub": InstructorTeachingHub,
     "InstructorTestRouteDetail": InstructorTestRouteDetail,
     "InstructorTestRoutes": InstructorTestRoutes,
-    "InstructorTopicAssignment": InstructorTopicAssignment,
+
     "InstructorWhiteboardEditor": InstructorWhiteboardEditor,
     "InstructorWhiteboardLibrary": InstructorWhiteboardLibrary,
     "Invoices": Invoices,
