@@ -343,7 +343,7 @@ export default function InstructorDashboard() {
       <div className="max-w-5xl mx-auto">
         <div className="space-y-4">
           {/* Subscription Prompt Card for Instructors Without Active Subscription */}
-          {!hasValidSubscription && (
+          {!hasValidSubscription && !instructor?.platformAccessOverride && (
             <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-sm overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4">
