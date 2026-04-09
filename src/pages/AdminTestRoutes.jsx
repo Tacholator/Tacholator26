@@ -82,13 +82,39 @@ export default function AdminTestRoutes() {
 
           {/* ── SUBSCRIPTION PLANS TAB ── */}
           <TabsContent value="plans">
-            <Card>
-              <CardContent className="py-16 text-center">
-                <CreditCard className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                <p className="text-lg font-semibold text-slate-700 mb-2">Subscription Plans</p>
-                <p className="text-slate-500">Subscription plan management coming soon.</p>
-              </CardContent>
-            </Card>
+            <div className="max-w-sm">
+              <Card className="border-2 border-[#071739] shadow-lg overflow-hidden">
+                <div className="bg-[#071739] px-6 py-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-[#F7B602] text-xs font-semibold uppercase tracking-widest mb-1">Test Routes Access</p>
+                    <h2 className="text-white text-2xl font-bold">Monthly Plan</h2>
+                  </div>
+                  <Badge className="bg-amber-400 text-[#071739] font-semibold">Draft</Badge>
+                </div>
+                <CardContent className="p-6">
+                  <div className="flex items-end gap-1 mb-6">
+                    <span className="text-4xl font-extrabold text-[#071739]">£20</span>
+                    <span className="text-slate-500 mb-1">/month</span>
+                  </div>
+                  <ul className="space-y-3 mb-6">
+                    {[
+                      'Access to all national test centre route videos',
+                      'New routes added regularly',
+                      'Watch anytime, on any device',
+                      'Cancel anytime',
+                    ].map((feature) => (
+                      <li key={feature} className="flex items-start gap-3 text-sm text-slate-700">
+                        <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-xs text-amber-700">
+                    This plan is currently in <strong>draft</strong> and not visible to users. Publish it when ready.
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* ── SUBSCRIBERS TAB ── */}
