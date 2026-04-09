@@ -69,10 +69,10 @@ export default function AdminTestRoutes() {
         </div>
 
         <Tabs defaultValue="national">
-          <TabsList className="mb-6">
-            <TabsTrigger value="national">National Centres</TabsTrigger>
-            <TabsTrigger value="plans">Subscription Plans</TabsTrigger>
-            <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
+          <TabsList className="mb-6 bg-[#071739] p-1">
+            <TabsTrigger value="national" className="text-slate-300 data-[state=active]:bg-[#F7B602] data-[state=active]:text-[#071739] data-[state=active]:font-semibold">National Centres</TabsTrigger>
+            <TabsTrigger value="plans" className="text-slate-300 data-[state=active]:bg-[#F7B602] data-[state=active]:text-[#071739] data-[state=active]:font-semibold">Subscription Plans</TabsTrigger>
+            <TabsTrigger value="subscribers" className="text-slate-300 data-[state=active]:bg-[#F7B602] data-[state=active]:text-[#071739] data-[state=active]:font-semibold">Subscribers</TabsTrigger>
           </TabsList>
 
           {/* ── NATIONAL CENTRES TAB ── */}
