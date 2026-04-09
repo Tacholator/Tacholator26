@@ -25,7 +25,8 @@ import {
   BarChart2,
   HeadphonesIcon,
   MessageSquarePlus,
-  UserX
+  UserX,
+  ClipboardCheck
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -60,6 +61,13 @@ export const sharedNavLinks = [
       { name: 'Payment Management', icon: CreditCard, page: 'LearnerPayments' },
       { name: 'Video Subscription', icon: MapPin, page: 'VideoSubscription' }
     ]
+  },
+  {
+    id: 'testReadiness',
+    name: 'Test Readiness',
+    icon: ClipboardCheck,
+    instructorPage: 'TestReadiness',
+    learnerPage: 'TestReadiness'
   },
   {
     id: 'notifications',
