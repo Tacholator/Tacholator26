@@ -1,0 +1,61 @@
+{
+  "name": "TestRoute",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Instructor who owns this route video"
+    },
+    "centreId": {
+      "type": "string",
+      "description": "Reference to TestRouteCentre (legacy)"
+    },
+    "city": {
+      "type": "string",
+      "description": "City this route belongs to (used for admin-managed routes)"
+    },
+    "routeNumber": {
+      "type": "number",
+      "description": "Route number"
+    },
+    "routeName": {
+      "type": "string",
+      "description": "Name/title of the route"
+    },
+    "youtubeUrl": {
+      "type": "string",
+      "description": "Full YouTube URL for this route"
+    },
+    "youtubeVideoId": {
+      "type": "string",
+      "description": "Extracted YouTube video ID"
+    },
+    "gpsRouteType": {
+      "type": "string",
+      "enum": [
+        "gpx_url",
+        "geojson_url",
+        "external_map_url"
+      ],
+      "default": "gpx_url"
+    },
+    "gpsRouteUrl": {
+      "type": "string",
+      "description": "URL to GPS route file or map"
+    },
+    "gpsGeoJson": {
+      "type": "object",
+      "description": "GeoJSON Feature with LineString geometry"
+    },
+    "stepsJson": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Turn-by-turn navigation steps"
+    }
+  },
+  "required": [
+    "routeName"
+  ]
+}
