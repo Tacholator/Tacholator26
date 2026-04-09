@@ -190,6 +190,24 @@ export default function TestCentreDetail() {
           ))
         )}
 
+        {/* Subscribe CTA at bottom */}
+        {!isSubscribed && routes.length > 0 && (
+          <div className="bg-[#071739] rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-[#F7B602] text-xs font-semibold uppercase tracking-widest mb-1">Unlock Full Access</p>
+              <p className="text-white font-bold text-xl">£20/month</p>
+              <p className="text-slate-400 text-sm mt-0.5">Watch all {routes.length} route{routes.length !== 1 ? 's' : ''} for {centre.name}. Cancel anytime.</p>
+            </div>
+            <Button
+              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-bold gap-2 px-6 shrink-0"
+              onClick={handleSubscribe}
+              disabled={loadingSubscribe}
+            >
+              {loadingSubscribe ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+              {loadingSubscribe ? 'Loading...' : 'Subscribe Now'}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
