@@ -21,6 +21,7 @@ export default function AdminTestRouteCityDetail() {
 
   const [creatingRoute, setCreatingRoute] = useState(false);
   const [newRouteName, setNewRouteName] = useState('');
+  const [newRouteUrl, setNewRouteUrl] = useState('');
   const [editingRouteId, setEditingRouteId] = useState(null);
   const [editUrl, setEditUrl] = useState('');
   const [expandedRouteId, setExpandedRouteId] = useState(null);
@@ -40,11 +41,13 @@ export default function AdminTestRouteCityDetail() {
   });
 
   const createRouteMutation = useMutation({
-    mutationFn: (name) => base44.entities.TestRoute.create({ routeName: name, city }),
+    mutationFn: ({ name, youtubeUrl, youtubeVideoId }) =>
+      base44.entities.TestRoute.create({ routeName: name, city, youtubeUrl, youtubeVideoId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cityRoutes', city] });
       queryClient.invalidateQueries({ queryKey: ['adminTestRoutes'] });
       setNewRouteName('');
+      setNewRouteUrl('');
       setCreatingRoute(false);
       toast({ title: 'Success', description: 'Route created.' });
     },
@@ -113,25 +116,31 @@ export default function AdminTestRouteCityDetail() {
         <div className="mb-6">
           {creatingRoute ? (
             <Card className="border-[#F7B602] border-2">
-              <CardContent className="p-4">
-                <div className="flex gap-3">
-                  <Input
-                    value={newRouteName}
-                    onChange={(e) => setNewRouteName(e.target.value)}
-                    placeholder="Enter route name..."
-                    onKeyDown={(e) => e.key === 'Enter' && newRouteName.trim() && createRouteMutation.mutate(newRouteName.trim())}
-                    autoFocus
-                  />
+              <CardContent className="p-4 space-y-3">
+                <Input
+                  value={newRouteName}
+                  onChange={(e) => setNewRouteName(e.target.value)}
+                  placeholder="Route name (e.g. Route 1 - Town Centre)..."
+                  autoFocus
+                />
+                <Input
+                  value={newRouteUrl}
+                  onChange={(e) => setNewRouteUrl(e.target.value)}
+                  placeholder="YouTube URL (optional, e.g. https://www.youtube.com/watch?v=...)"
+                />
+                <div className="flex gap-2">
                   <Button
-                    onClick={() => createRouteMutation.mutate(newRouteName.trim())}
+                    onClick={() => {
+                      const videoId = extractVideoId(newRouteUrl);
+                      createRouteMutation.mutate({ name: newRouteName.trim(), youtubeUrl: newRouteUrl, youtubeVideoId: videoId });
+                    }}
                     disabled={createRouteMutation.isPending || !newRouteName.trim()}
                     className="bg-emerald-500 hover:bg-emerald-600 gap-1"
                   >
-                    <Check className="w-4 h-4" />
-                    Create
+                    <Check className="w-4 h-4" /> Save Route
                   </Button>
-                  <Button variant="outline" onClick={() => { setCreatingRoute(false); setNewRouteName(''); }}>
-                    <X className="w-4 h-4" />
+                  <Button variant="outline" onClick={() => { setCreatingRoute(false); setNewRouteName(''); setNewRouteUrl(''); }}>
+                    <X className="w-4 h-4" /> Cancel
                   </Button>
                 </div>
               </CardContent>
