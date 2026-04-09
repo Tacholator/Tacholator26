@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Youtube, Plus, Trash2, Users, Video, ExternalLink, Pencil } from 'lucide-react';
+import { Youtube, Plus, Trash2, Users, Video, ExternalLink, Pencil, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
   AlertDialog,
@@ -34,6 +35,7 @@ function extractYouTubeId(url) {
 }
 
 export default function InstructorTestRoutes() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
@@ -136,6 +138,12 @@ export default function InstructorTestRoutes() {
       <div className="max-w-4xl mx-auto space-y-8">
 
         {/* Header */}
+        <div className="flex items-center gap-3 mb-2">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/TestReadiness')} className="text-slate-500 hover:text-[#071739]">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <span className="text-sm text-slate-500 cursor-pointer hover:text-[#071739]" onClick={() => navigate('/TestReadiness')}>Test Readiness</span>
+        </div>
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-[#071739] mb-1">Test Route Videos</h1>

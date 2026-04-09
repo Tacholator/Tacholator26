@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
-import { Youtube, Lock, Play, X } from 'lucide-react';
+import { Youtube, Lock, Play, X, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function LearnerTestRoutes() {
+  const navigate = useNavigate();
   const [playingId, setPlayingId] = useState(null);
 
   const { data: user } = useQuery({
@@ -56,6 +58,12 @@ export default function LearnerTestRoutes() {
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
+          <div className="flex items-center gap-3 mb-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/TestReadiness')} className="text-slate-500 hover:text-[#071739]">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <span className="text-sm text-slate-500 cursor-pointer hover:text-[#071739]" onClick={() => navigate('/TestReadiness')}>Test Readiness</span>
+          </div>
           <h1 className="text-3xl font-bold text-[#071739] mb-2">Test Route Videos</h1>
           <p className="text-slate-600">Watch your instructor's test route videos to prepare for your driving test</p>
         </div>
