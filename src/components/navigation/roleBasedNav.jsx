@@ -63,13 +63,6 @@ export const sharedNavLinks = [
     ]
   },
   {
-    id: 'testReadiness',
-    name: 'Test Readiness',
-    icon: ClipboardCheck,
-    instructorPage: 'TestReadiness',
-    learnerPage: 'TestReadiness'
-  },
-  {
     id: 'notifications',
     name: 'Notifications',
     icon: Bell,
@@ -103,6 +96,7 @@ export const instructorOnlyLinks = [
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
+  { name: 'Test Readiness', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'Test Route Videos', icon: MapPin, page: 'InstructorTestRoutes' },
   { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
@@ -124,6 +118,7 @@ export const learnerOnlyLinks = [
       { name: 'Class Notes', icon: Notebook, page: 'LearnerClassNotes' }
     ]
   },
+  { name: 'Test Readiness', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
   { name: 'My Bookings', icon: BookMarked, page: 'LearnerMyBookings' },
   { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' }
