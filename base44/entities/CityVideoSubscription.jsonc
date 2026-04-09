@@ -1,0 +1,48 @@
+{
+  "name": "CityVideoSubscription",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "ID of the user who subscribed"
+    },
+    "cityId": {
+      "type": "string",
+      "description": "ID of the TestRouteCity entity"
+    },
+    "cityName": {
+      "type": "string",
+      "description": "Name of the city (denormalized for display)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "past_due",
+        "canceled"
+      ],
+      "default": "inactive"
+    },
+    "stripeSubscriptionId": {
+      "type": "string",
+      "description": "Stripe Subscription ID"
+    },
+    "stripePriceId": {
+      "type": "string",
+      "description": "Stripe Price ID"
+    },
+    "currentPeriodEndAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cancelAtPeriodEnd": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "userId",
+    "cityId"
+  ]
+}

@@ -22,6 +22,7 @@ import AdminDeletionRequests from './pages/AdminDeletionRequests';
 import InstructorSubscription from './pages/InstructorSubscription';
 import AdminTestRoutes from './pages/AdminTestRoutes';
 import AdminTestRouteCityDetail from './pages/AdminTestRouteCityDetail';
+import VideoSubscription from './pages/VideoSubscription';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -136,6 +137,11 @@ const AuthenticatedApp = () => {
       <Route path="/AdminTestRouteCityDetail" element={
         <LayoutWrapper currentPageName="AdminTestRouteCityDetail">
           <AdminTestRouteCityDetail />
+        </LayoutWrapper>
+      } />
+      <Route path="/VideoSubscription" element={
+        <LayoutWrapper currentPageName="VideoSubscription">
+          <VideoSubscription />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
