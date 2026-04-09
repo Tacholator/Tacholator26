@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ArrowLeft, MapPin, Check, X, Plus, Trash2, Users, CreditCard, ChevronRight } from 'lucide-react';
+import { ArrowLeft, MapPin, Check, X, Plus, Trash2, Users, CreditCard, ChevronRight, Flag } from 'lucide-react';
+import NationalCentresList from '@/components/testroutes/NationalCentresList';
 import { useToast } from '@/components/ui/use-toast';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
@@ -95,12 +96,18 @@ export default function AdminTestRoutes() {
           <p className="text-slate-600">Manage test routes, subscription plans and subscribers.</p>
         </div>
 
-        <Tabs defaultValue="routes">
+        <Tabs defaultValue="national">
           <TabsList className="mb-6">
-            <TabsTrigger value="routes">Routes</TabsTrigger>
+            <TabsTrigger value="national">National Centres</TabsTrigger>
+            <TabsTrigger value="routes">City Routes</TabsTrigger>
             <TabsTrigger value="plans">Subscription Plans</TabsTrigger>
             <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
           </TabsList>
+
+          {/* ── NATIONAL CENTRES TAB ── */}
+          <TabsContent value="national">
+            <NationalCentresList />
+          </TabsContent>
 
           {/* ── ROUTES TAB ── */}
           <TabsContent value="routes">

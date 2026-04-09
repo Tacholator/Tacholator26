@@ -1,0 +1,21 @@
+{
+  "name": "NationalTestCentre",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the test centre"
+    },
+    "youtubeUrl": {
+      "type": "string",
+      "description": "Full YouTube URL for this test centre's route video"
+    },
+    "youtubeVideoId": {
+      "type": "string",
+      "description": "Extracted YouTube video ID"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
