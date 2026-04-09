@@ -13,6 +13,15 @@
     "youtubeVideoId": {
       "type": "string",
       "description": "Extracted YouTube video ID"
+    },
+    "isPublished": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, this centre is visible to all users in the Test Routes tab"
+    },
+    "stripePriceId": {
+      "type": "string",
+      "description": "Stripe Price ID for subscribing to this test centre"
     }
   },
   "required": [
