@@ -36,7 +36,8 @@ import {
   Calendar as CalendarIcon,
   ChevronDown,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Star
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
@@ -278,6 +279,9 @@ export default function Layout({ children, currentPageName }) {
                           isActive ? 'text-[#071739]' : 'text-slate-300 group-hover:text-white'
                         }`} />
                         {item.name}
+                        {item.isPremium && (
+                          <Star className="w-3 h-3 text-[#F7B602] fill-[#F7B602] ml-auto" />
+                        )}
                         {item.name === 'Chats' && unreadMessagesCount > 0 && (
                           <Badge className="ml-auto bg-[#F7B602] text-[#071739] text-xs font-bold px-2 h-5">
                             {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
@@ -476,6 +480,9 @@ export default function Layout({ children, currentPageName }) {
                         >
                           <item.icon className={`w-5 h-5 ${isActive ? 'text-[#071739]' : 'text-slate-300'}`} />
                           {item.name}
+                          {item.isPremium && (
+                            <Star className="w-3 h-3 text-[#F7B602] fill-[#F7B602] ml-auto" />
+                          )}
                           {item.name === 'Chats' && unreadMessagesCount > 0 && (
                             <Badge className="ml-auto bg-[#F7B602] text-[#071739] text-xs font-bold px-2 h-5">
                               {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}

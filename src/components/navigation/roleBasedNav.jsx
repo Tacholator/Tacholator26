@@ -97,7 +97,7 @@ export const instructorOnlyLinks = [
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
-  { name: 'Test Routes', icon: Route, page: 'TestRoutes' },
+  { name: 'Test Routes', icon: Route, page: 'TestRoutes', isPremium: true },
   { name: 'Test Readiness', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
@@ -119,7 +119,7 @@ export const learnerOnlyLinks = [
       { name: 'Class Notes', icon: Notebook, page: 'LearnerClassNotes' }
     ]
   },
-  { name: 'Test Routes', icon: Route, page: 'TestRoutes' },
+  { name: 'Test Routes', icon: Route, page: 'TestRoutes', isPremium: true },
   { name: 'Test Readiness', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
   { name: 'My Bookings', icon: BookMarked, page: 'LearnerMyBookings' },
