@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Video, Plus, X, Check, Search } from 'lucide-react';
+import { MapPin, Video, Search, ChevronRight } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 function extractYouTubeId(url) {
@@ -14,60 +15,29 @@ function extractYouTubeId(url) {
   return match ? match[1] : null;
 }
 
-function CentreCard({ centre, onSave }) {
-  const [editing, setEditing] = useState(false);
-  const [url, setUrl] = useState(centre.youtubeUrl || '');
-
-  const handleSave = () => {
-    const videoId = extractYouTubeId(url);
-    onSave(centre.id, url.trim(), videoId);
-    setEditing(false);
-  };
+function CentreCard({ centre }) {
+  const routeCount = 0; // placeholder — counts shown on detail page
 
   return (
-    <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-[#F7B602] transition-colors group">
+    <Link to={`/AdminNationalCentreDetail?centre=${encodeURIComponent(centre.name)}`} className="block">
+    <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-[#F7B602] hover:shadow-md transition-all cursor-pointer group">
       <div className="flex items-center gap-3 min-w-0">
         <MapPin className="w-4 h-4 text-[#F7B602] shrink-0" />
         <span className="text-sm font-medium text-[#071739] truncate">{centre.name}</span>
       </div>
 
-      {editing ? (
-        <div className="flex items-center gap-2 flex-1 max-w-md">
-          <Input
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Paste YouTube URL..."
-            className="text-xs h-8"
-            autoFocus
-            onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-          />
-          <Button size="sm" onClick={handleSave} className="bg-emerald-500 hover:bg-emerald-600 h-8 px-2 gap-1">
-            <Check className="w-3.5 h-3.5" />
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => { setEditing(false); setUrl(centre.youtubeUrl || ''); }} className="h-8 px-2">
-            <X className="w-3.5 h-3.5" />
-          </Button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 shrink-0">
-          {centre.youtubeVideoId ? (
-            <Badge className="bg-emerald-100 text-emerald-700 text-xs gap-1">
-              <Video className="w-3 h-3" /> Video Added
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="text-xs text-slate-400">No Video</Badge>
-          )}
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setEditing(true)}
-            className="h-7 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            {centre.youtubeVideoId ? 'Edit Video' : 'Add Video'}
-          </Button>
-        </div>
-      )}
+      <div className="flex items-center gap-2 shrink-0">
+        {centre.youtubeVideoId ? (
+          <Badge className="bg-emerald-100 text-emerald-700 text-xs gap-1">
+            <Video className="w-3 h-3" /> Video Added
+          </Badge>
+        ) : (
+          <Badge variant="outline" className="text-xs text-slate-400">No Video</Badge>
+        )}
+        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#F7B602] transition-colors" />
+      </div>
     </div>
+    </Link>
   );
 }
 
@@ -79,18 +49,6 @@ export default function NationalCentresList() {
   const { data: centres = [], isLoading } = useQuery({
     queryKey: ['nationalTestCentres'],
     queryFn: () => base44.entities.NationalTestCentre.list()
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, youtubeUrl, youtubeVideoId }) =>
-      base44.entities.NationalTestCentre.update(id, { youtubeUrl, youtubeVideoId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['nationalTestCentres'] });
-      toast({ title: 'Saved', description: 'Video link updated.' });
-    },
-    onError: () => {
-      toast({ title: 'Error', description: 'Failed to save.', variant: 'destructive' });
-    }
   });
 
   const sorted = [...centres].sort((a, b) => a.name.localeCompare(b.name));
@@ -130,13 +88,7 @@ export default function NationalCentresList() {
       ) : (
         <div className="space-y-2">
           {filtered.map(centre => (
-            <CentreCard
-              key={centre.id}
-              centre={centre}
-              onSave={(id, youtubeUrl, youtubeVideoId) =>
-                updateMutation.mutate({ id, youtubeUrl, youtubeVideoId })
-              }
-            />
+            <CentreCard key={centre.id} centre={centre} />
           ))}
           {filtered.length === 0 && (
             <p className="text-center text-slate-500 py-8">No results for "{search}"</p>
