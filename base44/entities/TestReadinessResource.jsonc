@@ -1,0 +1,38 @@
+{
+  "name": "TestReadinessResource",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "ID of the instructor who added this resource"
+    },
+    "title": {
+      "type": "string",
+      "description": "Resource title"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "url",
+        "pdf",
+        "video",
+        "other"
+      ],
+      "default": "url",
+      "description": "Type of resource"
+    },
+    "url": {
+      "type": "string",
+      "description": "URL or file URL of the resource"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description"
+    }
+  },
+  "required": [
+    "instructorId",
+    "title",
+    "type"
+  ]
+}
