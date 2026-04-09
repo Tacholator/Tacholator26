@@ -18,7 +18,7 @@ function extractYouTubeId(url) {
 function CentreCard({ centre, videoCount }) {
   return (
     <Link to={`/AdminNationalCentreDetail?centre=${encodeURIComponent(centre.name)}`} className="block">
-    <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-amber-100 bg-amber-50 hover:border-[#F7B602] hover:bg-amber-100 hover:shadow-md transition-all cursor-pointer group">
+    <div className="flex items-center justify-between gap-3 p-4 rounded-xl border-2 border-blue-500 bg-amber-50 hover:border-[#F7B602] hover:bg-amber-100 hover:shadow-md transition-all cursor-pointer group">
       <div className="flex items-center gap-3 min-w-0">
         <MapPin className="w-4 h-4 text-[#F7B602] shrink-0" />
         <span className="text-sm font-medium text-[#071739] truncate">{centre.name}</span>
