@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ArrowLeft, MapPin, Pencil, Check, X, PlayCircle, Plus, Trash2, Youtube, Users, CreditCard } from 'lucide-react';
+import { ArrowLeft, MapPin, Pencil, Check, X, PlayCircle, Plus, Trash2, Youtube, Users, CreditCard, ChevronDown, ChevronRight } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
@@ -244,9 +244,16 @@ export default function AdminTestRoutes() {
                         className="w-full mb-4 p-4 rounded-lg border-2 border-[#F7B602] bg-gradient-to-r from-[#F7B602]/10 to-transparent hover:shadow-lg transition-all text-left group"
                       >
                         <div className="flex items-center justify-between">
-                          <h2 className="text-xl font-bold text-[#071739] group-hover:text-[#d99f02]">{city}</h2>
+                          <div className="flex items-center gap-3">
+                            {expandedCityId === city ? <ChevronDown className="w-5 h-5 text-[#F7B602]" /> : <ChevronRight className="w-5 h-5 text-slate-400" />}
+                            <MapPin className="w-5 h-5 text-[#F7B602]" />
+                            <h2 className="text-xl font-bold text-[#071739] group-hover:text-[#d99f02]">{city}</h2>
+                          </div>
                           <div className="flex items-center gap-3">
                             <Badge className="bg-slate-100 text-slate-700">{cityRoutes.length} route{cityRoutes.length !== 1 ? 's' : ''}</Badge>
+                            <Badge className={cityRoutes.filter(r => r.youtubeVideoId).length === cityRoutes.length && cityRoutes.length > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}>
+                              {cityRoutes.filter(r => r.youtubeVideoId).length}/{cityRoutes.length} videos
+                            </Badge>
                             <Button
                               size="icon"
                               variant="ghost"
