@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ArrowLeft, MapPin, Pencil, Check, X, PlayCircle, Plus, Trash2, Youtube, Users, CreditCard, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowLeft, MapPin, Check, X, Plus, Trash2, Users, CreditCard, ChevronRight } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
@@ -19,13 +19,6 @@ import {
 export default function AdminTestRoutes() {
   const [creatingCity, setCreatingCity] = useState(false);
   const [newCityName, setNewCityName] = useState('');
-  const [creatingRoute, setCreatingRoute] = useState(null);
-  const [newRouteName, setNewRouteName] = useState('');
-  const [editingRouteId, setEditingRouteId] = useState(null);
-  const [editUrl, setEditUrl] = useState('');
-  const [expandedRouteId, setExpandedRouteId] = useState(null);
-  const [expandedCityId, setExpandedCityId] = useState(null);
-  const [deleteRouteId, setDeleteRouteId] = useState(null);
   const [deleteCityId, setDeleteCityId] = useState(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -39,12 +32,13 @@ export default function AdminTestRoutes() {
     queryKey: ['adminTestRoutes'],
     queryFn: async () => {
       const allRoutes = await base44.entities.TestRoute.list();
-      return allRoutes.filter(r => !r.centreId && r.city).sort((a, b) => (a.routeNumber || 0) - (b.routeNumber || 0));
+      return allRoutes.filter(r => !r.centreId && r.city);
     }
   });
 
   const cities = citiesData.map(c => c.cityName).sort();
   const isLoading = citiesLoading || routesLoading;
+  const totalWithVideo = routes.filter(r => r.youtubeVideoId).length;
 
   const createCityMutation = useMutation({
     mutationFn: (cityName) => base44.entities.TestRouteCity.create({ cityName }),
@@ -52,7 +46,7 @@ export default function AdminTestRoutes() {
       queryClient.invalidateQueries({ queryKey: ['testRouteCities'] });
       setNewCityName('');
       setCreatingCity(false);
-      toast({ title: 'Success', description: 'City created. Add routes to it.' });
+      toast({ title: 'Success', description: 'City created. Click it to add routes.' });
     },
     onError: () => {
       toast({ title: 'Error', description: 'Failed to create city.', variant: 'destructive' });
@@ -77,50 +71,6 @@ export default function AdminTestRoutes() {
     }
   });
 
-  const createRouteMutation = useMutation({
-    mutationFn: ({ name, city }) => base44.entities.TestRoute.create({ routeName: name, city }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminTestRoutes'] });
-      setNewRouteName('');
-      setCreatingRoute(null);
-      toast({ title: 'Success', description: 'Test route created.' });
-    },
-    onError: () => {
-      toast({ title: 'Error', description: 'Failed to create test route.', variant: 'destructive' });
-    }
-  });
-
-  const updateRouteMutation = useMutation({
-    mutationFn: ({ id, youtubeUrl, youtubeVideoId }) =>
-      base44.entities.TestRoute.update(id, { youtubeUrl, youtubeVideoId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminTestRoutes'] });
-      setEditingRouteId(null);
-      toast({ title: 'Saved', description: 'Video URL updated successfully.' });
-    },
-    onError: () => {
-      toast({ title: 'Error', description: 'Failed to update video URL.', variant: 'destructive' });
-    }
-  });
-
-  const deleteRouteMutation = useMutation({
-    mutationFn: (id) => base44.entities.TestRoute.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminTestRoutes'] });
-      setDeleteRouteId(null);
-      toast({ title: 'Deleted', description: 'Test route removed.' });
-    },
-    onError: () => {
-      toast({ title: 'Error', description: 'Failed to delete test route.', variant: 'destructive' });
-    }
-  });
-
-  const extractVideoId = (url) => {
-    if (!url) return '';
-    const match = url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
-    return match ? match[1] : '';
-  };
-
   const handleCreateCity = () => {
     if (!newCityName.trim()) return;
     if (cities.includes(newCityName.trim())) {
@@ -129,28 +79,6 @@ export default function AdminTestRoutes() {
     }
     createCityMutation.mutate(newCityName.trim());
   };
-
-  const handleCreateRoute = (city) => {
-    if (!newRouteName.trim()) return;
-    createRouteMutation.mutate({ name: newRouteName.trim(), city });
-  };
-
-  const handleSave = (routeId) => {
-    const videoId = extractVideoId(editUrl);
-    updateRouteMutation.mutate({ id: routeId, youtubeUrl: editUrl, youtubeVideoId: videoId });
-  };
-
-  const handleEdit = (route) => {
-    setEditingRouteId(route.id);
-    setEditUrl(route.youtubeUrl || '');
-  };
-
-  const handleCancel = () => {
-    setEditingRouteId(null);
-    setEditUrl('');
-  };
-
-  const totalWithVideo = routes.filter(r => r.youtubeVideoId).length;
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
@@ -169,23 +97,17 @@ export default function AdminTestRoutes() {
 
         <Tabs defaultValue="routes">
           <TabsList className="mb-6">
-            <TabsTrigger value="routes" className="gap-2">Routes</TabsTrigger>
-            <TabsTrigger value="plans" className="gap-2">Subscription Plans</TabsTrigger>
-            <TabsTrigger value="subscribers" className="gap-2">Subscribers</TabsTrigger>
+            <TabsTrigger value="routes">Routes</TabsTrigger>
+            <TabsTrigger value="plans">Subscription Plans</TabsTrigger>
+            <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
           </TabsList>
 
           {/* ── ROUTES TAB ── */}
           <TabsContent value="routes">
             <div className="flex gap-4 mb-6">
-              <Badge className="bg-emerald-100 text-emerald-800 text-sm px-3 py-1">
-                {citiesData.length} cities
-              </Badge>
-              <Badge className="bg-blue-100 text-blue-800 text-sm px-3 py-1">
-                {routes.length} routes
-              </Badge>
-              <Badge variant="outline" className="text-sm px-3 py-1">
-                {totalWithVideo} with video
-              </Badge>
+              <Badge className="bg-emerald-100 text-emerald-800 text-sm px-3 py-1">{citiesData.length} cities</Badge>
+              <Badge className="bg-blue-100 text-blue-800 text-sm px-3 py-1">{routes.length} routes</Badge>
+              <Badge variant="outline" className="text-sm px-3 py-1">{totalWithVideo} with video</Badge>
             </div>
 
             {/* Create city */}
@@ -201,13 +123,8 @@ export default function AdminTestRoutes() {
                         onKeyDown={(e) => e.key === 'Enter' && handleCreateCity()}
                         autoFocus
                       />
-                      <Button
-                        onClick={handleCreateCity}
-                        disabled={createCityMutation.isPending || !newCityName.trim()}
-                        className="bg-emerald-500 hover:bg-emerald-600 gap-1"
-                      >
-                        <Check className="w-4 h-4" />
-                        Create
+                      <Button onClick={handleCreateCity} disabled={createCityMutation.isPending || !newCityName.trim()} className="bg-emerald-500 hover:bg-emerald-600 gap-1">
+                        <Check className="w-4 h-4" /> Create
                       </Button>
                       <Button variant="outline" onClick={() => { setCreatingCity(false); setNewCityName(''); }}>
                         <X className="w-4 h-4" />
@@ -217,13 +134,12 @@ export default function AdminTestRoutes() {
                 </Card>
               ) : (
                 <Button onClick={() => setCreatingCity(true)} className="gap-2 bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]">
-                  <Plus className="w-4 h-4" />
-                  Create City
+                  <Plus className="w-4 h-4" /> Create City
                 </Button>
               )}
             </div>
 
-            {/* Cities list */}
+            {/* Cities grid */}
             {isLoading ? (
               <div className="text-center py-12 text-slate-500">Loading cities...</div>
             ) : cities.length === 0 ? (
@@ -234,165 +150,35 @@ export default function AdminTestRoutes() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {cities.map(city => {
                   const cityRoutes = routes.filter(r => r.city === city);
+                  const videosCount = cityRoutes.filter(r => r.youtubeVideoId).length;
                   return (
-                    <div key={city}>
-                      <button
-                        onClick={() => setExpandedCityId(expandedCityId === city ? null : city)}
-                        className="w-full mb-4 p-4 rounded-lg border-2 border-[#F7B602] bg-gradient-to-r from-[#F7B602]/10 to-transparent hover:shadow-lg transition-all text-left group"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            {expandedCityId === city ? <ChevronDown className="w-5 h-5 text-[#F7B602]" /> : <ChevronRight className="w-5 h-5 text-slate-400" />}
-                            <MapPin className="w-5 h-5 text-[#F7B602]" />
-                            <h2 className="text-xl font-bold text-[#071739] group-hover:text-[#d99f02]">{city}</h2>
+                    <div key={city} className="relative group">
+                      <Link to={`/AdminTestRouteCityDetail?city=${encodeURIComponent(city)}`}>
+                        <div className="p-5 rounded-xl border-2 border-[#F7B602] bg-gradient-to-br from-[#F7B602]/10 to-white hover:shadow-lg transition-all cursor-pointer">
+                          <div className="flex items-start justify-between mb-3">
+                            <MapPin className="w-6 h-6 text-[#F7B602]" />
+                            <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#F7B602] transition-colors" />
                           </div>
-                          <div className="flex items-center gap-3">
-                            <Badge className="bg-slate-100 text-slate-700">{cityRoutes.length} route{cityRoutes.length !== 1 ? 's' : ''}</Badge>
-                            <Badge className={cityRoutes.filter(r => r.youtubeVideoId).length === cityRoutes.length && cityRoutes.length > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}>
-                              {cityRoutes.filter(r => r.youtubeVideoId).length}/{cityRoutes.length} videos
+                          <h2 className="text-lg font-bold text-[#071739] mb-3">{city}</h2>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge className="bg-slate-100 text-slate-700 text-xs">{cityRoutes.length} routes</Badge>
+                            <Badge className={videosCount === cityRoutes.length && cityRoutes.length > 0 ? 'bg-emerald-100 text-emerald-700 text-xs' : 'bg-amber-100 text-amber-700 text-xs'}>
+                              {videosCount}/{cityRoutes.length} videos
                             </Badge>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="text-rose-600 hover:bg-rose-50 h-8 w-8"
-                              onClick={(e) => { e.stopPropagation(); setDeleteCityId(city); }}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
                           </div>
                         </div>
-                      </button>
-
-                      {expandedCityId === city && (
-                        <div className="space-y-4 pl-4">
-                          {creatingRoute === city && (
-                            <Card className="border-[#F7B602] border-2 bg-slate-50">
-                              <CardContent className="p-4">
-                                <div className="flex gap-3">
-                                  <Input
-                                    value={newRouteName}
-                                    onChange={(e) => setNewRouteName(e.target.value)}
-                                    placeholder="Enter route name..."
-                                    onKeyDown={(e) => e.key === 'Enter' && handleCreateRoute(city)}
-                                    autoFocus
-                                  />
-                                  <Button
-                                    onClick={() => handleCreateRoute(city)}
-                                    disabled={createRouteMutation.isPending || !newRouteName.trim()}
-                                    className="bg-emerald-500 hover:bg-emerald-600 gap-1"
-                                  >
-                                    <Check className="w-4 h-4" />
-                                    Create
-                                  </Button>
-                                  <Button variant="outline" onClick={() => { setCreatingRoute(null); setNewRouteName(''); }}>
-                                    <X className="w-4 h-4" />
-                                  </Button>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          )}
-
-                          <Button
-                            onClick={() => setCreatingRoute(city)}
-                            variant="outline"
-                            className="gap-2 border-[#F7B602] text-[#F7B602] mb-3"
-                            disabled={creatingRoute === city}
-                          >
-                            <Plus className="w-4 h-4" />
-                            Add Route
-                          </Button>
-
-                          <div className="space-y-3">
-                            {cityRoutes.map(route => (
-                              <Card key={route.id} className="border border-slate-200 bg-white">
-                                <CardContent className="p-4">
-                                  <div className="flex items-start gap-4">
-                                    <div
-                                      className={`w-28 h-16 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden ${route.youtubeVideoId ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
-                                      onClick={() => route.youtubeVideoId && setExpandedRouteId(expandedRouteId === route.id ? null : route.id)}
-                                    >
-                                      {route.youtubeVideoId ? (
-                                        <div className="relative w-full h-full">
-                                          <img src={`https://img.youtube.com/vi/${route.youtubeVideoId}/mqdefault.jpg`} alt="thumbnail" className="w-full h-full object-cover" />
-                                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                            <PlayCircle className="w-7 h-7 text-white drop-shadow" />
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <Youtube className="w-6 h-6 text-slate-300" />
-                                      )}
-                                    </div>
-
-                                    <div className="flex-1 min-w-0">
-                                      <div className="flex items-center justify-between gap-2 mb-2">
-                                        <div className="flex items-center gap-2">
-                                          <span className="font-semibold text-slate-800">{route.routeName}</span>
-                                          {route.youtubeVideoId ? (
-                                            <Badge className="bg-emerald-100 text-emerald-700 text-xs">Video added</Badge>
-                                          ) : (
-                                            <Badge variant="outline" className="text-xs text-slate-500">No video</Badge>
-                                          )}
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          {route.youtubeVideoId && (
-                                            <Button
-                                              size="sm"
-                                              variant="ghost"
-                                              className="text-xs text-blue-600 gap-1 h-7 px-2"
-                                              onClick={() => setExpandedRouteId(expandedRouteId === route.id ? null : route.id)}
-                                            >
-                                              <PlayCircle className="w-3.5 h-3.5" />
-                                              {expandedRouteId === route.id ? 'Hide' : 'Watch'}
-                                            </Button>
-                                          )}
-                                          <Button size="icon" variant="ghost" className="text-rose-600 hover:bg-rose-50 h-8 w-8" onClick={() => setDeleteRouteId(route.id)}>
-                                            <Trash2 className="w-4 h-4" />
-                                          </Button>
-                                        </div>
-                                      </div>
-
-                                      {editingRouteId === route.id ? (
-                                        <div className="flex items-center gap-2">
-                                          <Input value={editUrl} onChange={e => setEditUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." className="text-sm" />
-                                          <Button size="icon" className="bg-emerald-500 hover:bg-emerald-600 shrink-0" onClick={() => handleSave(route.id)} disabled={updateRouteMutation.isPending}>
-                                            <Check className="w-4 h-4" />
-                                          </Button>
-                                          <Button size="icon" variant="outline" className="shrink-0" onClick={handleCancel}>
-                                            <X className="w-4 h-4" />
-                                          </Button>
-                                        </div>
-                                      ) : (
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-sm text-slate-500 truncate flex-1">{route.youtubeUrl || 'No URL set'}</span>
-                                          <Button size="sm" variant="outline" className="shrink-0 gap-1" onClick={() => handleEdit(route)}>
-                                            <Pencil className="w-3.5 h-3.5" />
-                                            {route.youtubeUrl ? 'Edit' : 'Add URL'}
-                                          </Button>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {expandedRouteId === route.id && route.youtubeVideoId && (
-                                    <div className="mt-4 rounded-lg overflow-hidden w-full relative" style={{ paddingTop: '56.25%' }}>
-                                      <iframe
-                                        src={`https://www.youtube.com/embed/${route.youtubeVideoId}?autoplay=1`}
-                                        title={route.routeName}
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                        className="absolute inset-0 w-full h-full"
-                                      />
-                                    </div>
-                                  )}
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      </Link>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="absolute top-2 right-2 text-rose-500 hover:bg-rose-50 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        onClick={(e) => { e.preventDefault(); setDeleteCityId(city); }}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
                     </div>
                   );
                 })}
@@ -430,31 +216,13 @@ export default function AdminTestRoutes() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete City?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove {deleteCityId} and all its test routes. This action cannot be undone.
+              This will permanently remove "{deleteCityId}" and all its test routes. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteCityMutation.mutate(deleteCityId)} disabled={deleteCityMutation.isPending} className="bg-rose-600 hover:bg-rose-700">
               {deleteCityMutation.isPending ? 'Deleting...' : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Delete Route Dialog */}
-      <AlertDialog open={!!deleteRouteId} onOpenChange={(open) => !open && setDeleteRouteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Test Route?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently remove the test route. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteRouteMutation.mutate(deleteRouteId)} disabled={deleteRouteMutation.isPending} className="bg-rose-600 hover:bg-rose-700">
-              {deleteRouteMutation.isPending ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
