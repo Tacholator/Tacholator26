@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import TestCentreDetailModal from '@/components/testroutes/TestCentreDetailModal';
+import { useNavigate } from 'react-router-dom';
+
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,7 +13,7 @@ import { useToast } from '@/components/ui/use-toast';
 export default function TestRoutes() {
   const [search, setSearch] = useState('');
   const [loadingCentreId, setLoadingCentreId] = useState(null);
-  const [selectedCentre, setSelectedCentre] = useState(null);
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const { data: user } = useQuery({
@@ -131,7 +132,7 @@ export default function TestRoutes() {
               return (
                 <div
                   key={centre.id}
-                  onClick={() => setSelectedCentre(centre)}
+                  onClick={() => navigate(`/TestCentreDetail?centreId=${centre.id}`)}
                   className={`flex items-center justify-between gap-4 p-4 rounded-xl border-2 bg-white transition-all cursor-pointer ${
                     sub ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200 hover:border-[#071739]'
                   }`}
@@ -154,14 +155,14 @@ export default function TestRoutes() {
 
                   <div className="shrink-0">
                     {sub ? (
-                      <Button size="sm" variant="outline" className="gap-2 border-emerald-400 text-emerald-700 hover:bg-emerald-50" onClick={e => { e.stopPropagation(); setSelectedCentre(centre); }}>
+                      <Button size="sm" variant="outline" className="gap-2 border-emerald-400 text-emerald-700 hover:bg-emerald-50" onClick={e => { e.stopPropagation(); navigate(`/TestCentreDetail?centreId=${centre.id}`); }}>
                         <Play className="w-3.5 h-3.5" /> Watch Routes
                       </Button>
                     ) : (
                       <Button
                         size="sm"
                         className="bg-[#071739] hover:bg-[#0a1f4d] text-white gap-2"
-                        onClick={e => { e.stopPropagation(); setSelectedCentre(centre); }}
+                        onClick={e => { e.stopPropagation(); navigate(`/TestCentreDetail?centreId=${centre.id}`); }}
                       >
                         View Centre
                       </Button>
@@ -177,13 +178,6 @@ export default function TestRoutes() {
         )}
       </div>
 
-      <TestCentreDetailModal
-        centre={selectedCentre}
-        subscription={selectedCentre ? getSubscription(selectedCentre.id) : null}
-        onSubscribe={handleSubscribe}
-        isLoadingSubscribe={loadingCentreId === selectedCentre?.id}
-        onClose={() => setSelectedCentre(null)}
-      />
     </div>
   );
 }
