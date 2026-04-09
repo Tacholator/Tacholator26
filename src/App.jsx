@@ -26,7 +26,6 @@ import VideoSubscription from './pages/VideoSubscription';
 import TestReadiness from './pages/TestReadiness';
 import AdminNationalCentreDetail from './pages/AdminNationalCentreDetail';
 import TestRoutes from './pages/TestRoutes';
-import TestCentreDetail from './pages/TestCentreDetail';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -161,11 +160,6 @@ const AuthenticatedApp = () => {
       <Route path="/TestRoutes" element={
         <LayoutWrapper currentPageName="TestRoutes">
           <TestRoutes />
-        </LayoutWrapper>
-      } />
-      <Route path="/TestCentreDetail" element={
-        <LayoutWrapper currentPageName="TestCentreDetail">
-          <TestCentreDetail />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
