@@ -79,6 +79,7 @@ export default function TestRoutes() {
               <MapPin className="w-5 h-5 text-[#F7B602]" />
             </div>
             <h1 className="text-3xl font-bold text-[#071739]">Test Routes</h1>
+            <Badge className="bg-[#F7B602] text-[#071739] font-bold text-xs px-2 py-0.5">Premium</Badge>
           </div>
           <p className="text-slate-600 ml-13">
             Watch video walkthroughs of official DVSA driving test routes. Subscribe to unlock full access.
