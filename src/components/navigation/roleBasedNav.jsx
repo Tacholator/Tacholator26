@@ -97,7 +97,6 @@ export const instructorOnlyLinks = [
     ]
   },
   { name: 'Test Readiness', icon: ClipboardCheck, page: 'TestReadiness' },
-  { name: 'Test Route Videos', icon: MapPin, page: 'InstructorTestRoutes' },
   { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
 ];
@@ -146,7 +145,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
 
   let roleSpecific = isInstructor ? instructorOnlyLinks.filter(link => (!link.requiresGpsAccess || gpsRoutesAccessEnabled) && !(isMainAdmin && link.page === 'InstructorGpsRoutes')) : [
     ...learnerOnlyLinks,
-    ...(testRoutesAccessEnabled ? [{ name: 'Test Route Videos', icon: MapPin, page: 'LearnerTestRoutes' }] : [])
+    ...(testRoutesAccessEnabled ? [] : []) // Test Route Videos moved into Test Readiness page
   ];
   
   // Filter out admin-only links for non-admin instructors
