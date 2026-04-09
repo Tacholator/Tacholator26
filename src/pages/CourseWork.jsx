@@ -150,13 +150,8 @@ export default function CourseWork() {
     if (isInstructor) return false;
     const topic = courseWorkTopics.find(t => t.id === topicId);
     if (!topic) return false;
-    // Check MCQ passed
-    const mcqStatus = mcqStatuses.find(s => s.topicId === topic.topicId && s.completed);
-    if (!mcqStatus) return false;
-    // Check study material opened
-    const access = accessList.find(a => a.topicId === topic.topicId && !a.revokedAt);
-    if (!access || !access.studyOpenedAt) return false;
-    return true;
+    // Completed if MCQ was passed (studyOpenedAt optional for legacy completions)
+    return mcqStatuses.some(s => s.topicId === topic.topicId && s.completed);
   };
 
   const hasAccess = (topicId, type) => {
