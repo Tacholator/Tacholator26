@@ -51,6 +51,28 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
     queryFn: () => base44.auth.me()
   });
 
+  const { data: currentPupil } = useQuery({
+    queryKey: ['currentPupil', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      return pupils.length > 0 ? pupils[0] : null;
+    },
+    enabled: !!user?.id && !isInstructor
+  });
+
+  const { data: topicAccessRecord } = useQuery({
+    queryKey: ['topicAccessForSubcard', currentPupil?.id, itemId],
+    queryFn: async () => {
+      const { courseWorkTopics } = await import('@/components/coursework/topicIndex');
+      const topic = courseWorkTopics.find(t => t.id === itemId);
+      if (!topic || !currentPupil?.id) return null;
+      const records = await base44.entities.PupilTopicAccess.filter({ pupilId: currentPupil.id, topicId: topic.topicId });
+      return records.find(r => !r.revokedAt) || null;
+    },
+    enabled: !!currentPupil?.id && !isInstructor
+  });
+
   // Always fetch subscription status directly — never rely on prop default
   const { hasValidSub: isSubscribed, isLoading: subLoading } = useInstructorSubscription(isInstructor ? user?.id : null);
 
@@ -126,10 +148,14 @@ export default function CourseWorkSubcardSelect({ itemId, content, isInstructor,
     addVideoMutation.mutate(newVideo);
   };
 
-  const handleSubcardClick = (type) => {
+  const handleSubcardClick = async (type) => {
     if (isInstructor && !isSubscribed && !subLoading) { navigate('/InstructorSubscription'); return; }
     if (type === 'study' && !hasStudyAccess) { setShowLockedDialog(true); return; }
     if (type === 'practice' && !hasMcqAccess) { setShowLockedDialog(true); return; }
+    // Track when learner first opens study material
+    if (type === 'study' && !isInstructor && topicAccessRecord && !topicAccessRecord.studyOpenedAt) {
+      base44.entities.PupilTopicAccess.update(topicAccessRecord.id, { studyOpenedAt: new Date().toISOString() }).catch(() => {});
+    }
     navigate(createPageUrl('CourseWorkDetail') + `?id=${itemId}&subcard=${type}`);
   };
 

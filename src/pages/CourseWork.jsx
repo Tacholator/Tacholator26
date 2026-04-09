@@ -6,7 +6,7 @@ import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Lock, UserPlus, ArrowLeft } from 'lucide-react';
+import { FileText, Lock, UserPlus, ArrowLeft, CheckCircle } from 'lucide-react';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 import CourseWorkAssignmentModal from '@/components/homework/CourseWorkAssignmentModal';
 import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
@@ -74,6 +74,13 @@ export default function CourseWork() {
     enabled: user?.role === 'admin'
   });
 
+  // For learners: fetch MCQ status to determine completed topics
+  const { data: mcqStatuses = [] } = useQuery({
+    queryKey: ['allMcqStatuses', pupil?.id],
+    queryFn: () => base44.entities.McqStatus.filter({ pupilId: pupil.id }),
+    enabled: !!pupil?.id
+  });
+
   const isInstructor = user?.role === 'admin';
   const { hasValidSub: isSubscribed } = useInstructorSubscription(user?.id);
 
@@ -138,6 +145,19 @@ export default function CourseWork() {
       queryClient.invalidateQueries(['pupilTopicAccess']);
     }
   });
+
+  const isTopicCompleted = (topicId) => {
+    if (isInstructor) return false;
+    const topic = courseWorkTopics.find(t => t.id === topicId);
+    if (!topic) return false;
+    // Check MCQ passed
+    const mcqStatus = mcqStatuses.find(s => s.topicId === topic.topicId && s.completed);
+    if (!mcqStatus) return false;
+    // Check study material opened
+    const access = accessList.find(a => a.topicId === topic.topicId && !a.revokedAt);
+    if (!access || !access.studyOpenedAt) return false;
+    return true;
+  };
 
   const hasAccess = (topicId, type) => {
     if (isInstructor) return true;
@@ -241,6 +261,14 @@ export default function CourseWork() {
                 onClick={(e) => handleCardClick(item.id, e)}
                 className={`${cardColors[index]} border-0 shadow-sm transition-all aspect-square flex items-center justify-center relative group ${isInstructor && !isSubscribed ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:shadow-md hover:scale-105'}`}
               >
+                {!isInstructor && isTopicCompleted(item.id) && (
+                  <div className="absolute top-2 left-2">
+                    <div className="flex items-center gap-1 bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow">
+                      <CheckCircle className="w-3 h-3" />
+                      Completed
+                    </div>
+                  </div>
+                )}
                 {isInstructor && !isSubscribed && (
                   <div className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm">
                     <Lock className="w-4 h-4 text-slate-600" />

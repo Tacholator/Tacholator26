@@ -1,0 +1,48 @@
+{
+  "name": "PupilTopicAccess",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor who made the assignment"
+    },
+    "topicId": {
+      "type": "string",
+      "description": "Topic identifier (e.g., 'legal_responsibilities')"
+    },
+    "grantStudyMaterial": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether pupil can access study material"
+    },
+    "grantPracticeQuestions": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether pupil can access practice questions"
+    },
+    "assignedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When access was granted"
+    },
+    "revokedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When access was revoked (null if active)"
+    },
+    "studyOpenedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the pupil first opened the study material"
+    }
+  },
+  "required": [
+    "pupilId",
+    "instructorId",
+    "topicId"
+  ]
+}
