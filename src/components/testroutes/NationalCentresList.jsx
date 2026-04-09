@@ -15,9 +15,7 @@ function extractYouTubeId(url) {
   return match ? match[1] : null;
 }
 
-function CentreCard({ centre }) {
-  const routeCount = 0; // placeholder — counts shown on detail page
-
+function CentreCard({ centre, videoCount }) {
   return (
     <Link to={`/AdminNationalCentreDetail?centre=${encodeURIComponent(centre.name)}`} className="block">
     <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-[#F7B602] hover:shadow-md transition-all cursor-pointer group">
@@ -27,12 +25,12 @@ function CentreCard({ centre }) {
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
-        {centre.youtubeVideoId ? (
+        {videoCount > 0 ? (
           <Badge className="bg-emerald-100 text-emerald-700 text-xs gap-1">
-            <Video className="w-3 h-3" /> Video Added
+            <Video className="w-3 h-3" /> {videoCount} {videoCount === 1 ? 'video' : 'videos'}
           </Badge>
         ) : (
-          <Badge variant="outline" className="text-xs text-slate-400">No Video</Badge>
+          <Badge variant="outline" className="text-xs text-slate-400">No videos</Badge>
         )}
         <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#F7B602] transition-colors" />
       </div>
@@ -51,9 +49,22 @@ export default function NationalCentresList() {
     queryFn: () => base44.entities.NationalTestCentre.list()
   });
 
+  const { data: allRoutes = [] } = useQuery({
+    queryKey: ['allTestRoutes'],
+    queryFn: () => base44.entities.TestRoute.list()
+  });
+
+  // Count routes with videos per centre name
+  const videoCountByCity = allRoutes.reduce((acc, r) => {
+    if (r.city && r.youtubeVideoId) {
+      acc[r.city] = (acc[r.city] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
   const sorted = [...centres].sort((a, b) => a.name.localeCompare(b.name));
   const filtered = sorted.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
-  const withVideo = centres.filter(c => c.youtubeVideoId).length;
+  const withVideo = sorted.filter(c => (videoCountByCity[c.name] || 0) > 0).length;
 
   if (isLoading) {
     return <div className="text-center py-12 text-slate-500">Loading test centres...</div>;
@@ -88,7 +99,7 @@ export default function NationalCentresList() {
       ) : (
         <div className="space-y-2">
           {filtered.map(centre => (
-            <CentreCard key={centre.id} centre={centre} />
+            <CentreCard key={centre.id} centre={centre} videoCount={videoCountByCity[centre.name] || 0} />
           ))}
           {filtered.length === 0 && (
             <p className="text-center text-slate-500 py-8">No results for "{search}"</p>
