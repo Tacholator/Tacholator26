@@ -84,37 +84,53 @@ export default function TestCentreDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-[#071739] px-6 py-5">
-        <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto px-6 py-6 space-y-4">
+        {/* Back + Title */}
+        <div>
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4 text-sm"
+            className="flex items-center gap-2 text-slate-500 hover:text-[#071739] transition-colors mb-3 text-sm"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Test Routes
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#F7B602]/20 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#071739] flex items-center justify-center shrink-0">
               <MapPin className="w-5 h-5 text-[#F7B602]" />
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-white">{centre.name}</h1>
-              <p className="text-slate-400 text-sm">DVSA Test Centre</p>
+              <h1 className="text-2xl font-bold text-[#071739]">{centre.name}</h1>
+              <p className="text-slate-500 text-sm">DVSA Test Centre</p>
             </div>
             {isSubscribed ? (
-              <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <Badge className="bg-emerald-100 text-emerald-700 border border-emerald-300">
                 <CheckCircle className="w-3 h-3 mr-1" /> Subscribed
               </Badge>
             ) : (
-              <Badge className="bg-slate-700 text-slate-300">
+              <Badge className="bg-slate-100 text-slate-600">
                 <Lock className="w-3 h-3 mr-1" /> Locked
               </Badge>
             )}
           </div>
         </div>
-      </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-6 space-y-4">
+        {/* Subscribe CTA at top */}
+        {!isSubscribed && (
+          <div className="bg-[#071739] rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-[#F7B602] text-xs font-semibold uppercase tracking-widest mb-1">Unlock Full Access</p>
+              <p className="text-white font-bold text-xl">£20/month</p>
+              <p className="text-slate-400 text-sm mt-0.5">Watch all {routes.length} route{routes.length !== 1 ? 's' : ''} for {centre.name}. Cancel anytime.</p>
+            </div>
+            <Button
+              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-bold gap-2 px-6 shrink-0"
+              onClick={handleSubscribe}
+              disabled={loadingSubscribe}
+            >
+              {loadingSubscribe ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+              {loadingSubscribe ? 'Loading...' : 'Subscribe Now'}
+            </Button>
+          </div>
+        )}
         {/* Routes */}
         {routes.length === 0 ? (
           <div className="text-center py-16 text-slate-500 bg-white rounded-2xl border border-slate-200">
@@ -174,24 +190,6 @@ export default function TestCentreDetail() {
           ))
         )}
 
-        {/* Subscribe CTA */}
-        {!isSubscribed && (
-          <div className="bg-[#071739] rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <p className="text-[#F7B602] text-xs font-semibold uppercase tracking-widest mb-1">Unlock Full Access</p>
-              <p className="text-white font-bold text-xl">£20/month</p>
-              <p className="text-slate-400 text-sm mt-0.5">Watch all {routes.length} route{routes.length !== 1 ? 's' : ''} for {centre.name}. Cancel anytime.</p>
-            </div>
-            <Button
-              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-bold gap-2 px-6 shrink-0"
-              onClick={handleSubscribe}
-              disabled={loadingSubscribe}
-            >
-              {loadingSubscribe ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-              {loadingSubscribe ? 'Loading...' : 'Subscribe Now'}
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
