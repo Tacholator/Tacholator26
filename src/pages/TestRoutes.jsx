@@ -116,7 +116,7 @@ export default function TestRoutes() {
             <CardContent className="py-16 text-center">
               <MapPin className="w-12 h-12 text-slate-300 mx-auto mb-4" />
               <p className="text-lg font-semibold text-slate-700 mb-2">Coming Soon</p>
-              <p className="text-slate-500">Test centre subscriptions are being prepared. Check back soon!</p>
+
             </CardContent>
           </Card>
         ) : (
