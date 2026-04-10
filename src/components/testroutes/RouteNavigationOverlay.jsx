@@ -658,9 +658,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const remainingDuration = remainingSteps.reduce((s, st) => s + (st.duration || 0), 0);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-white flex flex-col" style={{
-      '--mapbox-logo-display': 'none',
-    }}>
+    <div className="fixed inset-0 z-[9999] bg-white flex flex-col">
       {/* ── Map ─────────────────────────────────────────────────────────── */}
       <div className="flex-1 relative">
         {mapboxToken ? (
@@ -813,7 +811,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       {/* ── Bottom panel ────────────────────────────────────────────────── */}
       {!hasStarted ? (
         /* Pre-start: route preview card */
-        <div className="bg-white shadow-2xl p-4 pb-8 lg:pb-4">
+        <div className="bg-white shadow-2xl p-3 pb-4 lg:p-3 lg:pb-3">
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="font-bold text-[#071739] text-lg">{route?.routeName || 'Route'}</p>
@@ -842,7 +840,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               key="footer"
               initial={{ y: 80, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="bg-white shadow-2xl px-4 py-3 pb-8 lg:pb-3"
+              className="bg-white shadow-2xl px-4 py-2 pb-4 lg:py-2 lg:pb-2"
             >
               <div className="flex items-center justify-between">
                 <div className="flex gap-6">
