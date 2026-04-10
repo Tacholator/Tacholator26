@@ -701,16 +701,20 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             )}
 
             {/* Start marker */}
-            {startCoord && !hasStarted && (
+            {startCoord && (
               <Marker longitude={startCoord[0]} latitude={startCoord[1]} anchor="center">
-                <div className="bg-green-500 text-white rounded-full w-9 h-9 flex items-center justify-center font-bold shadow-lg text-sm border-2 border-white">S</div>
+                <div className="bg-green-500 hover:bg-green-600 text-white rounded-full w-11 h-11 flex items-center justify-center font-bold shadow-lg text-sm border-3 border-white transition-colors">
+                  <span className="text-lg">S</span>
+                </div>
               </Marker>
             )}
 
             {/* End marker */}
             {endCoord && (
               <Marker longitude={endCoord[0]} latitude={endCoord[1]} anchor="center">
-                <div className="bg-red-500 text-white rounded-full w-9 h-9 flex items-center justify-center font-bold shadow-lg text-sm border-2 border-white">F</div>
+                <div className="bg-red-500 hover:bg-red-600 text-white rounded-full w-11 h-11 flex items-center justify-center font-bold shadow-lg text-sm border-3 border-white transition-colors">
+                  <span className="text-lg">F</span>
+                </div>
               </Marker>
             )}
 
