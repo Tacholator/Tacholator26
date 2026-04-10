@@ -196,9 +196,43 @@ export default function TermsAndConditions() {
 
               {/* Section 13 */}
               <section>
-                <h2 className="text-2xl font-bold text-[#071739] mb-4">13. Contact Us</h2>
+                <h2 className="text-2xl font-bold text-[#071739] mb-4">13. Paid Subscriptions</h2>
                 <p className="text-slate-700 leading-relaxed mb-3">
-                  If you have any questions about these Terms & Conditions or your use of Tacholator, please contact us:
+                  Tacholator may make certain features, tools, content, or services available on a paid subscription basis, including instructor subscriptions and test centre subscriptions. By purchasing, activating, or using any paid subscription within the app, the user agrees to be bound by the terms applicable to that subscription in addition to these Terms and Conditions.
+                </p>
+                <p className="text-slate-700 leading-relaxed mb-3">
+                  Subscription-specific matters, including pricing, billing, automatic renewal, cancellation, refunds, access scope, and any applicable restrictions, are governed by Tacholator's separate{' '}
+                  <a href="/SubscriptionTerms" className="text-[#F7B602] hover:underline font-medium">Subscription T&amp;Cs</a>,
+                  which should be read together with these Terms and Conditions. In the event of any inconsistency relating specifically to subscription matters, the Subscription T&Cs shall apply to the extent of that inconsistency.
+                </p>
+                <p className="text-slate-700 leading-relaxed">
+                  For further information, users should refer to the{' '}
+                  <a href="/SubscriptionTerms" className="text-[#F7B602] hover:underline font-medium">Subscription T&amp;Cs</a> page.
+                </p>
+              </section>
+
+              {/* Section 14 */}
+              <section>
+                <h2 className="text-2xl font-bold text-[#071739] mb-4">14. Test Route Content and GPS Guidance</h2>
+                <p className="text-slate-700 leading-relaxed mb-3">
+                  Tacholator may provide access to test route-related content, including but not limited to route videos, route visualisations, mapped routes, and GPS route guidance, for educational and familiarisation purposes. Such content is intended to support preparation and confidence building only and must not be relied upon as a guarantee of the exact route used in any practical driving test, current road conditions, or any particular test outcome.
+                </p>
+                <p className="text-slate-700 leading-relaxed mb-3">
+                  Users remain solely responsible for complying with all applicable road traffic laws, the Highway Code, live road signs, road markings, traffic conditions, and safe driving practice at all times when using or relying on any test route feature. Use of the test route feature is also subject to Tacholator's separate{' '}
+                  <a href="/TestRouteTerms" className="text-[#F7B602] hover:underline font-medium">Test Route T&amp;Cs</a>,
+                  which contain additional terms relating to permitted use, content limitations, GPS guidance, subscription access, and liability.
+                </p>
+                <p className="text-slate-700 leading-relaxed">
+                  For further information, users should refer to the{' '}
+                  <a href="/TestRouteTerms" className="text-[#F7B602] hover:underline font-medium">Test Route T&amp;Cs</a> page.
+                </p>
+              </section>
+
+              {/* Section 15 */}
+              <section>
+                <h2 className="text-2xl font-bold text-[#071739] mb-4">15. Contact Us</h2>
+                <p className="text-slate-700 leading-relaxed mb-3">
+                  If you have any questions about these Terms &amp; Conditions or your use of Tacholator, please contact us:
                 </p>
                 <div className="bg-slate-50 rounded-lg p-4 space-y-2">
                   <p className="text-slate-700">
