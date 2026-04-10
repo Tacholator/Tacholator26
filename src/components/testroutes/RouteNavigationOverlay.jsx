@@ -762,16 +762,16 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               exit={{ y: -100, opacity: 0 }}
               className="absolute top-4 left-2 right-2 z-10 mx-auto w-11/12"
             >
-              <Card className="bg-white/97 backdrop-blur-sm shadow-2xl border-0">
+              <Card className="bg-[#071739]/97 backdrop-blur-sm shadow-2xl border-0">
                 <CardContent className="p-3">
                   <div className="flex items-center gap-3">
                     <ManeuverIcon iconKey={banner.iconKey} size={44} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-base font-bold text-[#071739] leading-tight">
+                      <p className="text-base font-bold text-white leading-tight">
                         {banner.title}
                       </p>
                       {banner.sub && (
-                        <p className="text-xs text-slate-500 mt-0.5 truncate">{banner.sub}</p>
+                        <p className="text-xs text-slate-300 mt-0.5 truncate">{banner.sub}</p>
                       )}
                     </div>
                     {distanceToManeuver != null && distanceToManeuver > 0 && (
