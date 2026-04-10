@@ -133,9 +133,7 @@ export default function TestRoutes() {
                 <div
                   key={centre.id}
                   onClick={() => navigate(`/TestCentreDetail?centreId=${centre.id}`)}
-                  className={`flex items-center justify-between gap-4 p-4 rounded-xl border-2 bg-white transition-all cursor-pointer ${
-                    sub ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200 hover:border-[#071739]'
-                  }`}
+                  className={`flex items-center justify-between gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer border-[#F7B602] bg-[#fefce8] hover:bg-[#fef9c3]`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     {sub ? (
