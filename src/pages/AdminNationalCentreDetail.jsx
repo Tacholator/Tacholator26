@@ -50,8 +50,9 @@ export default function AdminNationalCentreDetail() {
     mutationFn: ({ name, youtubeUrl, youtubeVideoId }) =>
       base44.entities.TestRoute.create({ routeName: name, city: centreName, youtubeUrl, youtubeVideoId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['nationalCentreRoutes', centreName] });
-      queryClient.invalidateQueries({ queryKey: ['nationalTestCentres'] });
+      queryClient.refetchQueries({ queryKey: ['nationalCentreRoutes', centreName] });
+      queryClient.refetchQueries({ queryKey: ['nationalTestCentres'] });
+      queryClient.refetchQueries({ queryKey: ['allTestRoutes'] });
       setNewRouteName('');
       setNewRouteUrl('');
       setCreatingRoute(false);
@@ -63,8 +64,9 @@ export default function AdminNationalCentreDetail() {
   const updateRouteMutation = useMutation({
     mutationFn: ({ id, youtubeUrl, youtubeVideoId }) =>
       base44.entities.TestRoute.update(id, { youtubeUrl, youtubeVideoId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['nationalCentreRoutes', centreName] });
+    onSuccess: (_, variables) => {
+      queryClient.refetchQueries({ queryKey: ['nationalCentreRoutes', centreName] });
+      queryClient.refetchQueries({ queryKey: ['allTestRoutes'] });
       setEditingRouteId(null);
       toast({ title: 'Saved', description: 'Video URL updated.' });
     },
@@ -74,7 +76,8 @@ export default function AdminNationalCentreDetail() {
   const deleteRouteMutation = useMutation({
     mutationFn: (id) => base44.entities.TestRoute.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['nationalCentreRoutes', centreName] });
+      queryClient.refetchQueries({ queryKey: ['nationalCentreRoutes', centreName] });
+      queryClient.refetchQueries({ queryKey: ['allTestRoutes'] });
       setDeleteRouteId(null);
       toast({ title: 'Deleted', description: 'Route removed.' });
     },
