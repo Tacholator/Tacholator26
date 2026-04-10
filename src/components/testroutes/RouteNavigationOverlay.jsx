@@ -859,22 +859,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* Follow toggle */}
-                  <button
-                    onClick={() => {
-                      if (!followMode) handleRecenter();
-                      else setFollowMode(false);
-                    }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                      followMode
-                        ? 'bg-[#071739] text-white border-[#071739]'
-                        : 'bg-white text-slate-600 border-slate-300 hover:border-slate-400'
-                    }`}
-                  >
-                    <Locate className="w-3.5 h-3.5" />
-                    {followMode ? 'Following' : 'Follow'}
-                  </button>
-
                   <Button
                     onClick={handleEnd}
                     variant="destructive"
