@@ -408,7 +408,7 @@ export default function Layout({ children, currentPageName }) {
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              <nav className="px-4 py-2">
+              <nav className="px-4 py-2 overflow-y-auto scrollbar-hide" style={{ maxHeight: 'calc(100vh - 200px)' }}>
                 {navItems.map((item) => {
                   const isActive = currentPageName === item.page;
                   const isExpanded = expandedMenus[item.name];
