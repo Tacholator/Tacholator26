@@ -762,7 +762,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               exit={{ y: -100, opacity: 0 }}
               className="absolute top-4 left-2 right-2 z-10 mx-auto w-11/12"
             >
-              <Card className="bg-[#071739]/97 backdrop-blur-sm shadow-2xl border-0">
+              <Card className="bg-[#071739] backdrop-blur-sm shadow-2xl border-0">
                 <CardContent className="p-3">
                   <div className="flex items-center gap-3">
                     <ManeuverIcon iconKey={banner.iconKey} size={44} />
