@@ -1,0 +1,48 @@
+{
+  "name": "Referral",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the Pupil entity"
+    },
+    "pupilName": {
+      "type": "string",
+      "description": "Pupil's full name (denormalised for easy display)"
+    },
+    "pupilEmail": {
+      "type": "string",
+      "description": "Pupil's email address"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor this pupil belongs to"
+    },
+    "code": {
+      "type": "string",
+      "description": "Unique referral code"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "redeemed"
+      ],
+      "default": "active",
+      "description": "Whether the referral has been used"
+    },
+    "redeemedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the referral was redeemed"
+    },
+    "redeemedByName": {
+      "type": "string",
+      "description": "Name of the person who used the code"
+    }
+  },
+  "required": [
+    "pupilId",
+    "code"
+  ]
+}

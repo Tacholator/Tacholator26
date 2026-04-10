@@ -30,6 +30,8 @@ import TestCentreDetail from './pages/TestCentreDetail';
 import TestRouteSubscriptions from './pages/TestRouteSubscriptions';
 import SubscriptionTerms from './pages/SubscriptionTerms';
 import TestRouteTerms from './pages/TestRouteTerms';
+import ReferAFriend from './pages/ReferAFriend';
+import InstructorReferralProgram from './pages/InstructorReferralProgram';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -184,6 +186,16 @@ const AuthenticatedApp = () => {
       <Route path="/TestRouteTerms" element={
         <LayoutWrapper currentPageName="TestRouteTerms">
           <TestRouteTerms />
+        </LayoutWrapper>
+      } />
+      <Route path="/ReferAFriend" element={
+        <LayoutWrapper currentPageName="ReferAFriend">
+          <ReferAFriend />
+        </LayoutWrapper>
+      } />
+      <Route path="/InstructorReferralProgram" element={
+        <LayoutWrapper currentPageName="InstructorReferralProgram">
+          <InstructorReferralProgram />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

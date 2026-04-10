@@ -27,7 +27,8 @@ import {
   MessageSquarePlus,
   UserX,
   ClipboardCheck,
-  Navigation
+  Navigation,
+  Gift
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -100,7 +101,8 @@ export const instructorOnlyLinks = [
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
   { name: 'Test Readiness', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
-  { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
+  { name: 'Reports', icon: BarChart2, page: 'InstructorReports' },
+  { name: 'Referral Program', icon: Gift, page: 'InstructorReferralProgram' }
 ];
 
 // Learner-only navigation items

@@ -104,7 +104,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
         })}
 
         <button
-          onClick={() => { window.location.href = createPageUrl('ReferralBanner'); }}
+          onClick={() => { window.location.href = createPageUrl('ReferAFriend'); }}
           className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
         >
           <Users className="w-5 h-5 group-hover:text-[#F7B602]" />
