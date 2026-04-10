@@ -845,7 +845,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               <div className="flex items-center justify-between">
                 <div className="flex gap-6">
                   <div>
-                    <p className="text-xs text-slate-300 uppercase tracking-wide">ETA</p>
+                    <p className="text-xs text-slate-300 uppercase tracking-wide">Time</p>
                     <p className="font-bold text-white">
                       {totalDuration != null ? formatDuration(remainingDuration) : `~${routeMetrics.duration} min`}
                     </p>
