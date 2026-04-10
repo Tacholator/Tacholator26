@@ -305,6 +305,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const watchIdRef = useRef(null);
   const mapRef = useRef(null);
   const firstFixRef = useRef(false);
+  const initialViewStateRef = useRef(null);
   const offRouteCounterRef = useRef(0);
   const lastRerouteRef = useRef(0);
   const milestonesRef = useRef({ prepare: false, approach: false, now: false });
@@ -677,7 +678,10 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             {...viewState}
             onMove={evt => {
               setViewState(evt.viewState);
-              if (followMode && hasStarted && firstFixRef.current) setFollowMode(false);
+              if (followMode && hasStarted && firstFixRef.current) {
+                setFollowMode(false);
+                if (!initialViewStateRef.current) initialViewStateRef.current = evt.viewState;
+              }
             }}
             mapboxAccessToken={mapboxToken}
             mapStyle="mapbox://styles/mapbox/streets-v12"
