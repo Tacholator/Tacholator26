@@ -16,7 +16,11 @@ import {
   ArrowLeft,
   Scale,
   ChevronDown,
-  MapPin
+  MapPin,
+  MessageSquare,
+  ThumbsUp,
+  Users,
+  Smartphone
 } from 'lucide-react';
 import ProfileSettingsContent from './ProfileSettingsContent.jsx';
 
@@ -27,6 +31,11 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
   const menuItems = [
     { icon: UserCircle, label: 'My Account', page: 'ProfileSettings', component: 'profile' },
     { icon: Settings, label: 'Settings', page: 'Settings' },
+  ];
+
+  const quickLinks = [
+    { icon: MessageSquare, label: 'Contact Support', page: 'ContactSupport' },
+    { icon: ThumbsUp, label: 'App Feedback', page: 'AppFeedback' },
   ];
 
   const legalItems = [
@@ -78,6 +87,39 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             </button>
           );
         })}
+
+        {/* Quick Links */}
+        {quickLinks.map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.page}
+              onClick={() => { window.location.href = createPageUrl(item.page); }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+            >
+              <Icon className="w-5 h-5 group-hover:text-[#F7B602]" />
+              <span className="text-sm font-medium">{item.label}</span>
+            </button>
+          );
+        })}
+
+        <button
+          onClick={() => { window.location.href = createPageUrl('ReferralBanner'); }}
+          className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+        >
+          <Users className="w-5 h-5 group-hover:text-[#F7B602]" />
+          <span className="text-sm font-medium">Refer a Friend</span>
+        </button>
+
+        <a
+          href="https://www.mobragedrivingacademy.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+        >
+          <Smartphone className="w-5 h-5 group-hover:text-[#F7B602]" />
+          <span className="text-sm font-medium">Download our App</span>
+        </a>
 
         {/* Legal Section */}
         <button
