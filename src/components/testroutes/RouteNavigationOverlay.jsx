@@ -760,7 +760,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -100, opacity: 0 }}
-              className="absolute top-4 left-16 right-16 z-10"
+              className="absolute top-4 left-2 right-2 z-10 mx-auto w-11/12"
             >
               <Card className="bg-white/97 backdrop-blur-sm shadow-2xl border-0">
                 <CardContent className="p-3">
