@@ -30,6 +30,8 @@ export default function AdminNationalCentreDetail() {
   const [newRouteUrl, setNewRouteUrl] = useState('');
   const [editingRouteId, setEditingRouteId] = useState(null);
   const [editUrl, setEditUrl] = useState('');
+  const [editingNameId, setEditingNameId] = useState(null);
+  const [editName, setEditName] = useState('');
   const [expandedRouteId, setExpandedRouteId] = useState(null);
   const [deleteRouteId, setDeleteRouteId] = useState(null);
   const { toast } = useToast();
@@ -59,6 +61,17 @@ export default function AdminNationalCentreDetail() {
       toast({ title: 'Success', description: 'Route created.' });
     },
     onError: () => toast({ title: 'Error', description: 'Failed to create route.', variant: 'destructive' })
+  });
+
+  const updateNameMutation = useMutation({
+    mutationFn: ({ id, routeName }) =>
+      base44.entities.TestRoute.update(id, { routeName }),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['nationalCentreRoutes', centreName] });
+      setEditingNameId(null);
+      toast({ title: 'Saved', description: 'Route name updated.' });
+    },
+    onError: () => toast({ title: 'Error', description: 'Failed to update route name.', variant: 'destructive' })
   });
 
   const updateRouteMutation = useMutation({
@@ -187,12 +200,40 @@ export default function AdminNationalCentreDetail() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-800 text-base">{route.routeName}</span>
-                          {route.youtubeVideoId ? (
-                            <Badge className="bg-emerald-100 text-emerald-700 text-xs">Video added</Badge>
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          {editingNameId === route.id ? (
+                            <div className="flex items-center gap-2 flex-1">
+                              <Input
+                                value={editName}
+                                onChange={e => setEditName(e.target.value)}
+                                className="text-sm h-8"
+                                autoFocus
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter') updateNameMutation.mutate({ id: route.id, routeName: editName.trim() });
+                                  if (e.key === 'Escape') { setEditingNameId(null); setEditName(''); }
+                                }}
+                              />
+                              <Button size="icon" className="bg-emerald-500 hover:bg-emerald-600 h-8 w-8 shrink-0" onClick={() => updateNameMutation.mutate({ id: route.id, routeName: editName.trim() })} disabled={updateNameMutation.isPending || !editName.trim()}>
+                                <Check className="w-4 h-4" />
+                              </Button>
+                              <Button size="icon" variant="outline" className="h-8 w-8 shrink-0" onClick={() => { setEditingNameId(null); setEditName(''); }}>
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
                           ) : (
-                            <Badge variant="outline" className="text-xs text-slate-500">No video</Badge>
+                            <>
+                              <span className="font-semibold text-slate-800 text-base truncate">{route.routeName}</span>
+                              <button onClick={() => { setEditingNameId(route.id); setEditName(route.routeName || ''); }} className="text-slate-400 hover:text-[#071739] transition-colors shrink-0">
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                            </>
+                          )}
+                          {!editingNameId && (
+                            route.youtubeVideoId ? (
+                              <Badge className="bg-emerald-100 text-emerald-700 text-xs shrink-0">Video added</Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-xs text-slate-500 shrink-0">No video</Badge>
+                            )
                           )}
                         </div>
                         <div className="flex items-center gap-2">
