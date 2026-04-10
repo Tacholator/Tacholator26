@@ -125,7 +125,8 @@ export const learnerOnlyLinks = [
   { name: 'Test Readiness', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
   { name: 'My Bookings', icon: BookMarked, page: 'LearnerMyBookings' },
-  { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' }
+  { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' },
+  { name: 'Refer a Friend', icon: Gift, page: 'ReferAFriend' }
 ];
 
 // Get the correct page for a shared link based on user role
