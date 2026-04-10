@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Volume2, VolumeX, X, Navigation2, Plus, Minus, Locate,
-  Loader2, MapPin, Map as MapIcon
+  Loader2, MapPin, Map as MapIcon, Car
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
@@ -718,20 +718,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               </Marker>
             )}
 
-            {/* User car icon */}
-            {userLocation && hasStarted && (
-              <Marker longitude={userLocation.longitude} latitude={userLocation.latitude} anchor="center" rotation={userHeading || 0}>
-                <div className="relative flex items-center justify-center">
-                  <div className="absolute w-10 h-10 bg-blue-400 rounded-full animate-ping opacity-30" />
-                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>
-                    <path d="M16 2L22 12H24C25.1 12 26 12.9 26 14V24C26 25.1 25.1 26 24 26H22V28H20V26H12V28H10V26H8C6.9 26 6 25.1 6 24V14C6 12.9 6.9 12 8 12H10L16 2Z" fill="#1E6BFF" />
-                    <circle cx="10" cy="22" r="2" fill="white" />
-                    <circle cx="22" cy="22" r="2" fill="white" />
-                    <rect x="12" y="14" width="8" height="4" rx="1" fill="rgba(255,255,255,0.7)" />
-                  </svg>
-                </div>
-              </Marker>
-            )}
+
           </Map>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white">
