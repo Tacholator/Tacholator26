@@ -572,10 +572,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       }
       setViewState({ longitude: startPt[0], latitude: startPt[1], zoom: 17, pitch: 55, bearing: initBearing });
     }
-    // Request browser fullscreen
-    const el = document.documentElement;
-    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
   };
 
   const handleEnd = () => {
