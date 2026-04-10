@@ -725,12 +725,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           </div>
         )}
 
-        {/* ── Close button ──────────────────────────────────────────────── */}
-        <div className="absolute top-4 left-4 z-20">
-          <Button onClick={handleEnd} size="icon" className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg">
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
+
 
         {/* ── Zoom + recenter + overview controls ─────────────────────────── */}
         <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
