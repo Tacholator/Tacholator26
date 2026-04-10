@@ -644,7 +644,10 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       const [lng2, lat2] = coords[i + 1];
       dist += haversineMeters(lat1, lng1, lat2, lng2);
     }
-    return { distance: (dist / 1000 * 0.621371).toFixed(1), duration: Math.round(dist / 1000 / 0.5) };
+    const distance = (dist / 1000 * 0.621371).toFixed(1);
+    // Use actual Mapbox duration (accounts for speed limits) if available, else estimate from Mapbox total
+    const duration = totalDuration ? Math.round(totalDuration / 60) : Math.round(dist / 1000 / 80 * 60); // fallback: assume 80 km/h (~50 mph)
+    return { distance, duration };
   })();
 
   // ── Layer styles ────────────────────────────────────────────────────────────
