@@ -169,17 +169,6 @@ export default function ReferAFriend() {
           </div>
         </div>
 
-        {/* Reward Banner */}
-        <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-5 flex items-center gap-4 shadow-md">
-          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-            <Star className="w-6 h-6 text-white fill-white" />
-          </div>
-          <div>
-            <p className="text-white font-bold text-base">Earn a FREE 1.5-hour lesson</p>
-            <p className="text-white/85 text-xs">For every friend who commits to 10+ hours of training</p>
-          </div>
-        </div>
-
         {/* How It Works */}
         <div className="bg-white rounded-3xl shadow-md p-6">
           <div className="flex items-center gap-2 mb-5">
