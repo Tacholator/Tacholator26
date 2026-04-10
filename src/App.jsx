@@ -28,6 +28,7 @@ import AdminNationalCentreDetail from './pages/AdminNationalCentreDetail';
 import TestRoutes from './pages/TestRoutes';
 import TestCentreDetail from './pages/TestCentreDetail';
 import TestRouteSubscriptions from './pages/TestRouteSubscriptions';
+import SubscriptionTerms from './pages/SubscriptionTerms';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -172,6 +173,11 @@ const AuthenticatedApp = () => {
       <Route path="/testroutesubscriptions" element={
         <LayoutWrapper currentPageName="TestRouteSubscriptions">
           <TestRouteSubscriptions />
+        </LayoutWrapper>
+      } />
+      <Route path="/SubscriptionTerms" element={
+        <LayoutWrapper currentPageName="SubscriptionTerms">
+          <SubscriptionTerms />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

@@ -30,6 +30,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
 
   const legalItems = [
     { icon: FileText, label: 'Lesson T&Cs', page: 'LessonTermsAndConditions' },
+    { icon: Receipt, label: 'Subscription T&Cs', page: 'SubscriptionTerms' },
     { icon: Receipt, label: 'Refund Policy', page: 'RefundPolicy' },
     { icon: FileText, label: 'Terms & Conditions', page: 'TermsAndConditions' },
     { icon: Shield, label: 'Privacy Policy', page: 'PrivacyPolicy' },
