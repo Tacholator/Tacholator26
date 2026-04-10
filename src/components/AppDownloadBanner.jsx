@@ -40,22 +40,18 @@ export default function AppDownloadBanner() {
   };
 
   return (
-    <div className="bg-[#071739] text-white px-4 py-2.5 flex items-center gap-3 relative">
-      <Smartphone className="w-5 h-5 text-[#F7B602] shrink-0" />
-      <div className="flex-1 text-sm">
-        <span className="font-semibold">Get the Tacholator app</span>
-      </div>
-      <div className="flex items-center gap-2 shrink-0">
-        <button
-          onClick={handleDownload}
-          className="bg-[#F7B602] text-[#071739] text-xs font-bold px-3 py-1.5 rounded-full hover:bg-[#d99f02] transition-colors"
-        >
-          Download App
-        </button>
-        <button onClick={handleDismiss} className="text-slate-400 hover:text-white transition-colors ml-1">
-          <X className="w-4 h-4" />
-        </button>
-      </div>
+    <div className="bg-[#F7B602] text-[#071739] px-3 py-1.5 flex items-center gap-2 relative">
+      <Smartphone className="w-4 h-4 shrink-0" />
+      <span className="flex-1 text-xs font-semibold">Get our app</span>
+      <button
+        onClick={handleDownload}
+        className="bg-[#071739] text-white text-xs font-bold px-3 py-1 rounded-full hover:bg-[#0a2150] transition-colors shrink-0"
+      >
+        Download
+      </button>
+      <button onClick={handleDismiss} className="text-[#071739]/60 hover:text-[#071739] transition-colors">
+        <X className="w-4 h-4" />
+      </button>
     </div>
   );
 }
