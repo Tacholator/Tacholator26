@@ -40,7 +40,7 @@ export default function AppDownloadBanner() {
   };
 
   return (
-    <div className="bg-[#071739] text-white px-4 py-2.5 flex items-center gap-3 z-50 relative">
+    <div className="bg-[#071739] text-white px-4 py-2.5 flex items-center gap-3 relative">
       <Smartphone className="w-5 h-5 text-[#F7B602] shrink-0" />
       <div className="flex-1 text-sm">
         <span className="font-semibold">Get the Tacholator app</span>
