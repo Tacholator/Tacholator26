@@ -658,7 +658,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const remainingDuration = remainingSteps.reduce((s, st) => s + (st.duration || 0), 0);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-white flex flex-col" style={{
+    <div className="fixed inset-0 z-[9999] bg-slate-900 flex flex-col" style={{
       '--mapbox-logo-display': 'none',
     }}>
       {/* ── Map ─────────────────────────────────────────────────────────── */}
@@ -842,7 +842,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               key="footer"
               initial={{ y: 80, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="bg-white shadow-2xl px-4 py-3 pb-8 lg:pb-3"
+              className="bg-white shadow-2xl px-4 py-3 pb-8 lg:pb-3 mx-auto max-w-sm"
             >
               <div className="flex items-center justify-between">
                 <div className="flex gap-6">
