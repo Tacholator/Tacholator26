@@ -136,6 +136,11 @@
       "type": "boolean",
       "default": false,
       "description": "When true, all linked pupils can see the Resources tab and all resources shared with any of their pupils"
+    },
+    "referralProgramEnabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether pupils see the referral program banner and popup"
     }
   },
   "required": [

@@ -5,19 +5,36 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Gift, Check, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 const REFERRAL_POPUP_KEY = 'referralPopupDismissed';
 
-export default function ReferralPopup() {
+export default function ReferralPopup({ pupilProfile }) {
   const [isOpen, setIsOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
+  const { data: instructorProfile, isLoading } = useQuery({
+    queryKey: ['instructorProfilePopup', pupilProfile?.instructorId],
+    queryFn: async () => {
+      if (!pupilProfile?.instructorId) return null;
+      const results = await base44.entities.Instructor.filter({ id: pupilProfile.instructorId });
+      return results[0] || null;
+    },
+    enabled: !!pupilProfile?.instructorId,
+  });
+
   useEffect(() => {
+    if (isLoading) return;
+    if (instructorProfile?.referralProgramEnabled === false) {
+      setIsOpen(false);
+      return;
+    }
     const isDismissed = localStorage.getItem(REFERRAL_POPUP_KEY);
     if (!isDismissed) {
       setIsOpen(true);
     }
-  }, []);
+  }, [instructorProfile?.referralProgramEnabled, isLoading]);
 
   const handleDismiss = () => {
     if (dontShowAgain) {
