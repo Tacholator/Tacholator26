@@ -71,13 +71,6 @@ export const sharedNavLinks = [
     instructorPage: 'InstructorNotifications',
     learnerPage: 'LearnerNotifications'
   },
-  {
-    id: 'chats',
-    name: 'Chats',
-    icon: MessageCircle,
-    instructorPage: 'InstructorChats',
-    learnerPage: 'LearnerChats'
-  }
 ];
 
 // Instructor-only navigation items
@@ -161,9 +154,9 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
 
 
 
-  // For non-active pupils, only show: Home, Book a Lesson, Payments, Notifications, Chats
+  // For non-active pupils, only show: Home, Book a Lesson, Payments, Notifications
   if (!isInstructor && pupilStatus !== 'Active') {
-    const allowedIds = ['home', 'payments', 'notifications', 'chats'];
+    const allowedIds = ['home', 'payments', 'notifications'];
     const allowedShared = shared.filter(link => 
       allowedIds.includes(sharedNavLinks.find(s => 
         (isInstructor ? s.instructorPage : s.learnerPage) === link.page
@@ -176,7 +169,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
       shared[0], // Home
       bookLessonLink, // Book a Lesson
       myBookingsLink, // My Bookings
-      ...allowedShared.filter(s => s.page !== (isInstructor ? 'Home' : 'Home')) // Payments, Notifications, Chats
+      ...allowedShared.filter(s => s.page !== (isInstructor ? 'Home' : 'Home')) // Payments, Notifications
     ];
   }
 
@@ -198,7 +191,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
   return [
     shared[0], // Home
     ...roleSpecific,
-    ...shared.slice(1), // Payments, Notifications, Chats (Homework excluded for instructors)
+    ...shared.slice(1), // Payments, Notifications (Homework excluded for instructors)
     ...adminDashboard, // Admin Dashboard at the end (after Chats)
     ...(isMainAdmin ? [] : [contactSupport, appFeedback]) // Contact Support & Feedback for non-main-admin users
   ];

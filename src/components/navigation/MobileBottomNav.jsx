@@ -10,7 +10,7 @@ import {
   Users,
   CalendarPlus,
   FileText,
-  MessageCircle,
+  Bell,
   GraduationCap,
   BookOpen
 } from 'lucide-react';
@@ -41,10 +41,10 @@ const instructorNavItems = [
     page: 'InstructorTeachingHub'
   },
   {
-    id: 'chats',
-    label: 'Chats',
-    icon: MessageCircle,
-    page: 'InstructorChats'
+    id: 'notifications',
+    label: 'Notifications',
+    icon: Bell,
+    page: 'InstructorNotifications'
   }
 ];
 
@@ -68,10 +68,10 @@ const pupilNavItems = [
     page: 'LearnerLearningHub'
   },
   {
-    id: 'chats',
-    label: 'Chats',
-    icon: MessageCircle,
-    page: 'LearnerChats'
+    id: 'notifications',
+    label: 'Notifications',
+    icon: Bell,
+    page: 'LearnerNotifications'
   }
 ];
 
@@ -96,23 +96,17 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
         ? pupilNavItems.filter(item => item.id === 'book')
         : pupilNavItems);
 
-  const { data: unreadMessages = [] } = useQuery({
-    queryKey: ['unreadMessages', userId, isInstructor],
+  const { data: unreadNotifications = [] } = useQuery({
+    queryKey: ['unreadNotificationsBottom', userId],
     queryFn: async () => {
-      const messages = await base44.entities.Message.filter({ readAt: null });
-      // Filter messages where current user is the receiver
-      return messages.filter(msg => {
-        if (isInstructor) {
-          return msg.senderRole === 'pupil' && msg.instructorId === userId;
-        } else {
-          return msg.senderRole === 'instructor' && msg.pupilId === pupilProfile?.id;
-        }
-      });
+      if (!userId) return [];
+      return await base44.entities.Notification.filter({ userId, readAt: null });
     },
-    enabled: !!userId && (isInstructor || !!pupilProfile?.id)
+    enabled: !!userId,
+    refetchInterval: 30000
   });
 
-  const unreadMessagesCount = unreadMessages.length;
+  const unreadNotificationsCount = unreadNotifications.length;
 
   return (
     <div
@@ -136,11 +130,11 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
             >
               <div className="relative">
                 <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-                {item.id === 'chats' && unreadMessagesCount > 0 && (
+                {item.id === 'notifications' && unreadNotificationsCount > 0 && (
                   <Badge 
-                    className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-[#F7B602] text-[#071739] text-xs font-bold"
+                    className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-rose-500 text-white text-xs font-bold"
                   >
-                    {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+                    {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
                   </Badge>
                 )}
               </div>
