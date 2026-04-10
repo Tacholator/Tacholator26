@@ -56,12 +56,10 @@ export const sharedNavLinks = [
     instructorChildren: [
       { name: 'Payment Management', icon: CreditCard, page: 'InstructorPayments' },
       { name: 'Manage Subscription', icon: Star, page: 'InstructorSubscription' },
-      { name: 'Video Subscription', icon: MapPin, page: 'VideoSubscription' },
       { name: 'Test Route Subscriptions', icon: Star, page: 'TestRouteSubscriptions' }
     ],
     learnerChildren: [
       { name: 'Payment Management', icon: CreditCard, page: 'LearnerPayments' },
-      { name: 'Video Subscription', icon: MapPin, page: 'VideoSubscription' },
       { name: 'Test Route Subscriptions', icon: Star, page: 'TestRouteSubscriptions' }
     ]
   },
