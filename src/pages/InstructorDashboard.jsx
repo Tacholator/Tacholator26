@@ -194,15 +194,17 @@ export default function InstructorDashboard() {
     enabled: !!user?.id && pupils.length > 0 && !isPupilCheckLoading && !pupilCheck
   });
 
-  const { data: subscription } = useQuery({
+  const subscriptionEnabled = !!user?.id && !isPupilCheckLoading && !pupilCheck;
+  const { data: subscription, isLoading: isSubscriptionLoading } = useQuery({
     queryKey: ['userSubscription', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       const subs = await base44.entities.UserSubscription.filter({ userId: user.id });
       return subs.length > 0 ? subs[0] : null;
     },
-    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
+    enabled: subscriptionEnabled
   });
+  const isSubscriptionReady = subscriptionEnabled && !isSubscriptionLoading;
 
   const { data: availableSlotsToday = [] } = useQuery({
     queryKey: ['availableSlotsToday', user?.id],
@@ -343,7 +345,7 @@ export default function InstructorDashboard() {
         <div className="space-y-4">
 
           {/* Subscription Upgrade Card - Show if no active subscription */}
-          {!subscription || (subscription.status !== 'active' && subscription.status !== 'trialing' && subscription.status !== 'grace') ? (
+          {isSubscriptionReady && (!subscription || (subscription.status !== 'active' && subscription.status !== 'trialing' && subscription.status !== 'grace')) ? (
             <Card className="bg-gradient-to-r from-[#F7B602] to-amber-500 border-0 shadow-md overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4">
