@@ -718,7 +718,17 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               </Marker>
             )}
 
-
+            {/* User car icon */}
+            {userLocation && hasStarted && (
+              <Marker longitude={userLocation.longitude} latitude={userLocation.latitude} anchor="center" rotation={userHeading || 0}>
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute w-10 h-10 bg-blue-400 rounded-full animate-ping opacity-30" />
+                  <div className="bg-[#1E6BFF] rounded-full p-2 shadow-lg" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>
+                    <Car size={32} className="text-white" strokeWidth={3} />
+                  </div>
+                </div>
+              </Marker>
+            )}
           </Map>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white">
