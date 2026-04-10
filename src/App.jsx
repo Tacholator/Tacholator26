@@ -169,7 +169,7 @@ const AuthenticatedApp = () => {
           <TestCentreDetail />
         </LayoutWrapper>
       } />
-      <Route path="/TestRouteSubscriptions" element={
+      <Route path="/testroutesubscriptions" element={
         <LayoutWrapper currentPageName="TestRouteSubscriptions">
           <TestRouteSubscriptions />
         </LayoutWrapper>
