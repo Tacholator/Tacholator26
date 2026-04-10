@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Copy, Check, Gift, RefreshCw, Star, Users, Sparkles, Share2 } from 'lucide-react';
+import { Copy, Check, Gift, RefreshCw, Star, Users, Sparkles, Share2 } from 'lucide-react';
 
 function generateCode(name) {
   const prefix = name ? name.replace(/\s+/g, '').substring(0, 4).toUpperCase() : 'REF';
@@ -75,23 +75,14 @@ export default function ReferAFriend() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
       <div className="max-w-lg mx-auto px-6 pt-6 pb-16 space-y-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-              <Gift className="w-5 h-5 text-amber-500" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-[#071739]">Refer a Friend</h1>
-              <p className="text-slate-500 text-xs">Earn FREE lessons for every friend you refer</p>
-            </div>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
+            <Gift className="w-5 h-5 text-amber-500" />
           </div>
-          <Button
-            variant="ghost"
-            className="rounded-full h-8 w-8 p-0"
-            onClick={() => navigate(-1)}
-          >
-            ×
-          </Button>
+          <div>
+            <h1 className="text-xl font-bold text-[#071739]">Refer a Friend</h1>
+            <p className="text-slate-500 text-xs">Earn FREE lessons for every friend you refer</p>
+          </div>
         </div>
 
         {/* Code Card */}
