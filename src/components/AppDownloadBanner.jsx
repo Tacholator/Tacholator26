@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Smartphone } from 'lucide-react';
+import { X, Smartphone, ArrowDownToLine } from 'lucide-react';
 
 const APP_STORE_URL = 'https://apps.apple.com/app/tacholator/id6757146033';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=app.base.mobragedrivingschoolced&pcampaignid=web_share';
@@ -45,9 +45,9 @@ export default function AppDownloadBanner() {
       <span className="flex-1 text-xs font-semibold">Get our app</span>
       <button
         onClick={handleDownload}
-        className="bg-[#071739] text-white text-xs font-bold px-3 py-1 rounded-full hover:bg-[#0a2150] transition-colors shrink-0"
+        className="bg-[#071739] text-white p-1.5 rounded-full hover:bg-[#0a2150] transition-colors shrink-0"
       >
-        Download
+        <ArrowDownToLine className="w-4 h-4" />
       </button>
       <button onClick={handleDismiss} className="text-[#071739]/60 hover:text-[#071739] transition-colors">
         <X className="w-4 h-4" />
