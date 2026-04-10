@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Gift, Check } from 'lucide-react';
+import { Gift, Check, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { createPageUrl } from '@/utils';
 
 const REFERRAL_POPUP_KEY = 'referralPopupDismissed';
 
@@ -84,13 +85,22 @@ export default function ReferralPopup() {
             </label>
           </div>
 
-          {/* CTA Button */}
-          <Button 
-            onClick={handleDismiss}
-            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-2 h-10"
-          >
-            Got It! Let's Get Started
-          </Button>
+          {/* CTA Buttons */}
+          <div className="space-y-2">
+            <Button 
+              onClick={() => { handleDismiss(); window.location.href = createPageUrl('ReferAFriend'); }}
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-2 h-10 gap-2"
+            >
+              Learn More <ArrowRight className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={handleDismiss}
+              className="w-full text-slate-500 hover:text-slate-700 h-9 text-sm"
+            >
+              Maybe Later
+            </Button>
+          </div>
         </DialogContent>
       </motion.div>
     </Dialog>
