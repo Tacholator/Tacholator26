@@ -280,7 +280,7 @@ export default function Layout({ children, currentPageName }) {
                         }`} />
                         {item.name}
                         {item.isPremium && (
-                          <Crown className={`w-3 h-3 ml-auto ${isActive ? 'text-[#071739] fill-[#071739]' : 'text-[#F7B602] fill-[#F7B602]'}`} />
+                          <Crown className={`w-4 h-4 ml-auto shrink-0 ${isActive ? 'text-[#071739]' : 'text-[#F7B602]'}`} />
                         )}
                         {item.name === 'Chats' && unreadMessagesCount > 0 && (
                           <Badge className="ml-auto bg-[#F7B602] text-[#071739] text-xs font-bold px-2 h-5">
@@ -481,7 +481,7 @@ export default function Layout({ children, currentPageName }) {
                           <item.icon className={`w-5 h-5 ${isActive ? 'text-[#071739]' : 'text-slate-300'}`} />
                           {item.name}
                           {item.isPremium && (
-                            <Crown className={`w-3 h-3 ml-auto ${isActive ? 'text-[#071739] fill-[#071739]' : 'text-[#F7B602] fill-[#F7B602]'}`} />
+                            <Crown className={`w-4 h-4 ml-auto shrink-0 ${isActive ? 'text-[#071739]' : 'text-[#F7B602]'}`} />
                           )}
                           {item.name === 'Chats' && unreadMessagesCount > 0 && (
                             <Badge className="ml-auto bg-[#F7B602] text-[#071739] text-xs font-bold px-2 h-5">
