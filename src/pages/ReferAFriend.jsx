@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Users, Copy, Check, Gift, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Gift, RefreshCw, Star, Users, Sparkles, Share2 } from 'lucide-react';
 
 function generateCode(name) {
   const prefix = name ? name.replace(/\s+/g, '').substring(0, 4).toUpperCase() : 'REF';
   const suffix = Math.random().toString(36).substring(2, 7).toUpperCase();
   return `${prefix}-${suffix}`;
 }
+
+const steps = [
+  { number: '1', emoji: '👋', title: 'Share Your Code', desc: 'Send your unique referral code to a friend who wants to start driving lessons.' },
+  { number: '2', emoji: '📋', title: 'They Sign Up', desc: 'Your friend shows the code to their instructor when booking their first lessons.' },
+  { number: '3', emoji: '🎉', title: 'You Both Win', desc: 'Once they commit to 10+ hours, you receive a FREE 1.5-hour driving lesson!' },
+];
 
 export default function ReferAFriend() {
   const navigate = useNavigate();
@@ -68,83 +73,148 @@ export default function ReferAFriend() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 p-6 lg:p-8">
-      <div className="max-w-lg mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-6 gap-2 text-slate-600"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </Button>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10" />
+        {/* Decorative circles */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
+        <div className="absolute -bottom-6 -left-6 w-28 h-28 bg-white/10 rounded-full" />
 
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#F7B602]/10 rounded-2xl mb-4">
-            <Gift className="w-8 h-8 text-[#F7B602]" />
+        <div className="relative z-10 max-w-lg mx-auto px-6 pt-6 pb-12">
+          <Button
+            variant="ghost"
+            className="mb-4 gap-2 text-white hover:bg-white/20 hover:text-white -ml-2"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-3xl mb-4 shadow-lg">
+              <Gift className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-2">Refer a Friend</h1>
+            <p className="text-white/90 text-sm leading-relaxed max-w-sm mx-auto">
+              Earn a FREE 1.5-hour lesson every time a friend you refer commits to 10+ hours of training!
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-[#071739] mb-2">Refer a Friend</h1>
-          <p className="text-slate-500 text-sm leading-relaxed">
-            Share your unique referral code with a friend. They can show it to their instructor when they sign up.
-          </p>
         </div>
+      </div>
 
-        <Card className="border-0 shadow-md">
-          <CardHeader className="border-b border-slate-100">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Users className="w-5 h-5 text-[#071739]" />
-              Your Referral Code
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
+      <div className="max-w-lg mx-auto px-6 -mt-6 pb-16 space-y-6">
+
+        {/* Code Card */}
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="bg-[#071739] px-6 py-4 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#F7B602]" />
+            <span className="text-white font-semibold text-sm">Your Unique Referral Code</span>
+          </div>
+          <div className="p-6">
             {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="w-6 h-6 border-2 border-[#F7B602] border-t-transparent rounded-full animate-spin" />
+              <div className="flex justify-center py-10">
+                <div className="w-8 h-8 border-3 border-[#F7B602] border-t-transparent rounded-full animate-spin" />
               </div>
             ) : referral ? (
               <div className="space-y-4">
-                <div className="bg-[#071739] rounded-xl p-5 text-center">
-                  <p className="text-xs text-slate-400 mb-2 uppercase tracking-wider">Your Code</p>
-                  <p className="text-3xl font-bold text-[#F7B602] tracking-widest font-mono">{referral.code}</p>
+                {/* Code Display */}
+                <div className="relative bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-dashed border-amber-300 rounded-2xl p-6 text-center">
+                  <p className="text-xs text-amber-600 font-semibold uppercase tracking-widest mb-2">Share This Code</p>
+                  <p className="text-4xl font-black text-[#071739] tracking-widest font-mono">{referral.code}</p>
                   {referral.status === 'redeemed' && (
-                    <Badge className="mt-3 bg-green-500 text-white">Redeemed</Badge>
+                    <Badge className="mt-3 bg-green-500 text-white px-4 py-1">✓ Redeemed</Badge>
                   )}
                 </div>
 
-                <Button
-                  onClick={handleCopy}
-                  className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold gap-2"
-                >
-                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  {copied ? 'Copied!' : 'Copy Code'}
-                </Button>
-
-                <div className="bg-slate-50 rounded-lg p-4 text-sm text-slate-600 space-y-1">
-                  <p className="font-medium text-slate-700">How it works:</p>
-                  <p>1. Share your code with a friend who is learning to drive.</p>
-                  <p>2. They show the code to their instructor when signing up.</p>
-                  <p>3. The instructor logs it in the Referral Program.</p>
+                {/* Action Buttons */}
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    onClick={handleCopy}
+                    className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-bold gap-2 rounded-xl h-12"
+                  >
+                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    {copied ? 'Copied!' : 'Copy Code'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({ title: 'My Referral Code', text: `Use my referral code ${referral.code} when booking driving lessons!` });
+                      } else {
+                        handleCopy();
+                      }
+                    }}
+                    className="border-[#071739]/20 text-[#071739] font-semibold gap-2 rounded-xl h-12"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </Button>
                 </div>
               </div>
             ) : (
-              <div className="text-center py-4 space-y-4">
-                <p className="text-slate-500 text-sm">You don't have a referral code yet.</p>
+              <div className="text-center py-6 space-y-5">
+                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+                  <Gift className="w-8 h-8 text-amber-500" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#071739] mb-1">No code yet!</p>
+                  <p className="text-slate-500 text-sm">Generate your unique referral code and start sharing.</p>
+                </div>
                 {pupilProfile ? (
                   <Button
                     onClick={() => createReferral()}
                     disabled={isCreating}
-                    className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold gap-2"
+                    className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold gap-2 rounded-xl px-8 h-12"
                   >
-                    {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Gift className="w-4 h-4" />}
+                    {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                     Generate My Code
                   </Button>
                 ) : (
-                  <p className="text-xs text-slate-400">You need to be linked to an instructor to generate a code.</p>
+                  <p className="text-xs text-slate-400 bg-slate-50 rounded-lg p-3">
+                    You need to be linked to an instructor to generate a referral code.
+                  </p>
                 )}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        {/* Reward Banner */}
+        <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-5 flex items-center gap-4 shadow-md">
+          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+            <Star className="w-6 h-6 text-white fill-white" />
+          </div>
+          <div>
+            <p className="text-white font-bold text-base">Earn a FREE 1.5-hour lesson</p>
+            <p className="text-white/85 text-xs">For every friend who commits to 10+ hours of training</p>
+          </div>
+        </div>
+
+        {/* How It Works */}
+        <div className="bg-white rounded-3xl shadow-md p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <Users className="w-5 h-5 text-orange-500" />
+            <h2 className="font-bold text-[#071739] text-base">How It Works</h2>
+          </div>
+          <div className="space-y-4">
+            {steps.map((step, idx) => (
+              <div key={idx} className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  {step.number}
+                </div>
+                <div className="flex-1 pt-1">
+                  <p className="font-semibold text-[#071739] text-sm">{step.emoji} {step.title}</p>
+                  <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer note */}
+        <p className="text-center text-xs text-slate-400 px-4">
+          Rewards are subject to confirmation by your instructor. Code must be presented at time of sign-up.
+        </p>
       </div>
     </div>
   );
