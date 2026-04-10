@@ -658,7 +658,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const remainingDuration = remainingSteps.reduce((s, st) => s + (st.duration || 0), 0);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-slate-900 flex flex-col">
+    <div className="fixed inset-0 z-[9999] bg-slate-900 flex flex-col" style={{
+      '--mapbox-logo-display': 'none',
+    }}>
       {/* ── Map ─────────────────────────────────────────────────────────── */}
       <div className="flex-1 relative">
         {mapboxToken ? (
