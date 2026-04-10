@@ -65,8 +65,8 @@ function distanceToRoute(lat, lng, routeCoords) {
 
 function formatDistance(m) {
   if (m == null) return '';
-  if (m >= 1000) return (m / 1000).toFixed(1) + ' km';
-  return Math.round(m) + ' m';
+  if (m >= 1000) return (m / 1000 * 0.621371).toFixed(1) + ' mi';
+  return Math.round(m * 3.28084) + ' ft';
 }
 
 function formatDuration(s) {
@@ -634,7 +634,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       const [lng2, lat2] = coords[i + 1];
       dist += haversineMeters(lat1, lng1, lat2, lng2);
     }
-    return { distance: (dist / 1000).toFixed(1), duration: Math.round(dist / 1000 / 0.5) };
+    return { distance: (dist / 1000 * 0.621371).toFixed(1), duration: Math.round(dist / 1000 / 0.5) };
   })();
 
   // ── Layer styles ────────────────────────────────────────────────────────────
@@ -816,7 +816,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             <div>
               <p className="font-bold text-white text-lg">{route?.routeName || 'Route'}</p>
               <p className="text-slate-300 text-sm">
-                {routeMetrics.distance} km · approx {routeMetrics.duration} min
+                {routeMetrics.distance} mi · approx {routeMetrics.duration} min
               </p>
             </div>
             <div className="flex items-center gap-1 text-slate-400 text-xs text-white">
@@ -853,7 +853,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                   <div>
                     <p className="text-xs text-slate-300 uppercase tracking-wide">Distance</p>
                     <p className="font-bold text-white">
-                      {totalDistance != null ? formatDistance(remainingDist) : `${routeMetrics.distance} km`}
+                      {totalDistance != null ? formatDistance(remainingDist) : `${routeMetrics.distance} mi`}
                     </p>
                   </div>
                 </div>
