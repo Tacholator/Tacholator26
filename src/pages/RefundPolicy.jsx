@@ -23,6 +23,7 @@ export default function RefundPolicy() {
               <CardTitle className="text-2xl">Refund Policy</CardTitle>
             </div>
             <p className="text-sm text-slate-500 mt-2">Mobrage Driving Academy</p>
+            <p className="text-sm text-slate-500">Last updated: 10 April 2026</p>
           </CardHeader>
           <CardContent className="p-6 prose prose-slate max-w-none">
             <p className="text-slate-600 mb-6">

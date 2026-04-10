@@ -12,7 +12,7 @@ export default function TermsAndConditions() {
             <FileText className="w-8 h-8 text-[#071739]" />
             <h1 className="text-3xl font-bold text-[#071739]">Tacholator – Terms & Conditions</h1>
           </div>
-          <p className="text-slate-600">Last updated: December 2025</p>
+          <p className="text-slate-600">Last updated: 10 April 2026</p>
         </div>
 
         <Card className="border-0 shadow-sm">
