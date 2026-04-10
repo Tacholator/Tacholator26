@@ -323,9 +323,13 @@ export default function InstructorBookingCalendar() {
         }
       }
 
-      // Handle slot instance only deletions (no booking attached) - actually delete it
+      // Handle slot instance only deletions (no booking attached)
       if (slotInstance && !booking) {
-        await base44.entities.BookableSlotInstance.delete(slotInstance.id);
+        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+          status: 'available',
+          bookingId: null,
+          reservedByPupilId: null
+        });
       }
     },
     onSuccess: () => {
@@ -352,19 +356,8 @@ export default function InstructorBookingCalendar() {
     setShowDeleteDialog(true);
   };
 
-  // Build delete dialog title based on context
-  const deleteDialogTitle = () => {
-    if (deleteTarget?.slotInstance && !deleteTarget?.booking) {
-      return 'Delete Available Slot';
-    }
-    return 'Cancel Booking';
-  };
-
   // Build delete dialog description based on whether booking is confirmed
   const deleteDialogDescription = () => {
-    if (deleteTarget?.slotInstance && !deleteTarget?.booking) {
-      return 'Are you sure you want to delete this available slot? It will be permanently removed from your calendar.';
-    }
     const booking = deleteTarget?.booking;
     if (booking?.status === 'confirmed') {
       const escrowAmount = booking?.escrowAmountGbp || 0;
@@ -577,18 +570,18 @@ export default function InstructorBookingCalendar() {
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
             <AlertDialogHeader>
-              <AlertDialogTitle>{deleteDialogTitle()}</AlertDialogTitle>
+              <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
               <AlertDialogDescription>
                 {deleteDialogDescription()}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>{deleteTarget?.slotInstance && !deleteTarget?.booking ? 'Keep Slot' : 'Keep Booking'}</AlertDialogCancel>
+              <AlertDialogCancel>Keep Booking</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => deleteBookingMutation.mutate(deleteTarget)}
                 className="bg-rose-600 hover:bg-rose-700"
               >
-                {deleteTarget?.slotInstance && !deleteTarget?.booking ? 'Delete Slot' : 'Cancel Booking'}
+                Cancel Booking
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
