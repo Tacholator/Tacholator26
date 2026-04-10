@@ -74,35 +74,25 @@ export default function ReferAFriend() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
-      {/* Hero Header */}
-      <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10" />
-        {/* Decorative circles */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
-        <div className="absolute -bottom-6 -left-6 w-28 h-28 bg-white/10 rounded-full" />
-
-        <div className="relative z-10 max-w-lg mx-auto px-6 pt-6 pb-12">
+      <div className="max-w-lg mx-auto px-6 pt-6 pb-16 space-y-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+              <Gift className="w-5 h-5 text-amber-500" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-[#071739]">Refer a Friend</h1>
+              <p className="text-slate-500 text-xs">Earn FREE lessons for every friend you refer</p>
+            </div>
+          </div>
           <Button
             variant="ghost"
-            className="mb-4 gap-2 text-white hover:bg-white/20 hover:text-white -ml-2"
+            className="rounded-full h-8 w-8 p-0"
             onClick={() => navigate(-1)}
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back
+            ×
           </Button>
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-3xl mb-4 shadow-lg">
-              <Gift className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Refer a Friend</h1>
-            <p className="text-white/90 text-sm leading-relaxed max-w-sm mx-auto">
-              Earn a FREE 1.5-hour lesson every time a friend you refer commits to 10+ hours of training!
-            </p>
-          </div>
         </div>
-      </div>
-
-      <div className="max-w-lg mx-auto px-6 -mt-6 pb-16 space-y-6">
 
         {/* Code Card */}
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
