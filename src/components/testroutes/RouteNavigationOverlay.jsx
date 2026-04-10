@@ -811,15 +811,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       {/* ── Bottom panel ────────────────────────────────────────────────── */}
       {!hasStarted ? (
         /* Pre-start: route preview card */
-        <div className="bg-white shadow-2xl p-3 pb-4 lg:p-3 lg:pb-3">
+        <div className="bg-[#071739] shadow-2xl p-3 pb-4 lg:p-3 lg:pb-3">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="font-bold text-[#071739] text-lg">{route?.routeName || 'Route'}</p>
-              <p className="text-slate-500 text-sm">
+              <p className="font-bold text-white text-lg">{route?.routeName || 'Route'}</p>
+              <p className="text-slate-300 text-sm">
                 {routeMetrics.distance} km · approx {routeMetrics.duration} min
               </p>
             </div>
-            <div className="flex items-center gap-1 text-slate-400 text-xs">
+            <div className="flex items-center gap-1 text-slate-400 text-xs text-white">
               <MapPin className="w-3 h-3" />
               <span>Route preview</span>
             </div>
@@ -840,19 +840,19 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               key="footer"
               initial={{ y: 80, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="bg-white shadow-2xl px-4 py-2 pb-4 lg:py-2 lg:pb-2"
+              className="bg-[#071739] shadow-2xl px-4 py-2 pb-4 lg:py-2 lg:pb-2"
             >
               <div className="flex items-center justify-between">
                 <div className="flex gap-6">
                   <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wide">ETA</p>
-                    <p className="font-bold text-[#071739]">
+                    <p className="text-xs text-slate-300 uppercase tracking-wide">ETA</p>
+                    <p className="font-bold text-white">
                       {totalDuration != null ? formatDuration(remainingDuration) : `~${routeMetrics.duration} min`}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wide">Distance</p>
-                    <p className="font-bold text-[#071739]">
+                    <p className="text-xs text-slate-300 uppercase tracking-wide">Distance</p>
+                    <p className="font-bold text-white">
                       {totalDistance != null ? formatDistance(remainingDist) : `${routeMetrics.distance} km`}
                     </p>
                   </div>
