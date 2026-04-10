@@ -78,6 +78,15 @@ function formatDuration(s) {
   return h + 'h ' + m + 'm';
 }
 
+function formatETA(remainingSeconds) {
+  if (remainingSeconds == null) return '—';
+  const now = new Date();
+  const etaDate = new Date(now.getTime() + remainingSeconds * 1000);
+  const hours = String(etaDate.getHours()).padStart(2, '0');
+  const mins = String(etaDate.getMinutes()).padStart(2, '0');
+  return `${hours}:${mins}`;
+}
+
 function ordinal(n) {
   const s = ['th', 'st', 'nd', 'rd'], v = n % 100;
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
@@ -854,6 +863,12 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                     <p className="text-xs text-slate-300 uppercase tracking-wide">Distance</p>
                     <p className="font-bold text-white">
                       {totalDistance != null ? formatDistance(remainingDist) : `${routeMetrics.distance} mi`}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-300 uppercase tracking-wide">ETA</p>
+                    <p className="font-bold text-white">
+                      {totalDuration != null ? formatETA(remainingDuration) : '—'}
                     </p>
                   </div>
                 </div>
