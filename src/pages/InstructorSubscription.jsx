@@ -59,6 +59,7 @@ export default function InstructorSubscription() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [subscribing, setSubscribing] = useState(null);
+  const [openingPortal, setOpeningPortal] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [cancelling, setCancelling] = useState(false);
@@ -121,6 +122,13 @@ export default function InstructorSubscription() {
     await refetchSub();
     setCancelling(false);
     setShowCancelDialog(false);
+  };
+
+  const handleManagePayment = async () => {
+    setOpeningPortal(true);
+    const res = await base44.functions.invoke('createStripeCustomerPortalSession', {});
+    if (res.data?.url) window.location.href = res.data.url;
+    setOpeningPortal(false);
   };
 
   const isTrialing = subscription?.status === 'trialing';
@@ -330,6 +338,17 @@ export default function InstructorSubscription() {
           <div className="flex flex-wrap justify-center gap-3 mb-8">
             <Button variant="outline" onClick={() => navigate('/')} className="border-[#071739] text-[#071739]">
               Go to Dashboard
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleManagePayment}
+              disabled={openingPortal}
+              className="border-[#071739] text-[#071739]"
+            >
+              {openingPortal
+                ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Opening...</>
+                : <><CreditCard className="w-4 h-4 mr-2" />Manage Payment Method</>
+              }
             </Button>
             {!subscription?.cancelAtPeriodEnd && (
               <Button
