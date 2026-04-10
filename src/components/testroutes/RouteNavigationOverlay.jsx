@@ -650,6 +650,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const baseRouteStyle = {
     id: 'base-route',
     type: 'line',
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
     paint: { 'line-color': '#1E6BFF', 'line-width': 6, 'line-opacity': hasStarted ? 0.2 : 0.7 }
   };
   const activeSegmentStyle = {
