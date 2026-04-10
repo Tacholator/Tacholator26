@@ -13,20 +13,26 @@ import {
   LogOut,
   Trash2,
   ChevronRight,
-  ArrowLeft
+  ArrowLeft,
+  Scale,
+  ChevronDown
 } from 'lucide-react';
 import ProfileSettingsContent from './ProfileSettingsContent.jsx';
 
 export default function AccountProfilePanel({ user, isInstructor, onLogout, onDelete, onClose }) {
   const [selectedItem, setSelectedItem] = useState(null);
+  const [legalOpen, setLegalOpen] = useState(false);
 
   const menuItems = [
     { icon: UserCircle, label: 'My Account', page: 'ProfileSettings', component: 'profile' },
     { icon: Settings, label: 'Settings', page: 'Settings' },
+  ];
+
+  const legalItems = [
     { icon: FileText, label: 'Lesson T&Cs', page: 'LessonTermsAndConditions' },
     { icon: Receipt, label: 'Refund Policy', page: 'RefundPolicy' },
     { icon: FileText, label: 'Terms & Conditions', page: 'TermsAndConditions' },
-    { icon: Shield, label: 'Privacy Policy', page: 'PrivacyPolicy' }
+    { icon: Shield, label: 'Privacy Policy', page: 'PrivacyPolicy' },
   ];
 
   const userName = user?.firstName 
@@ -69,6 +75,33 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             </button>
           );
         })}
+
+        {/* Legal Section */}
+        <button
+          onClick={() => setLegalOpen(!legalOpen)}
+          className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+        >
+          <Scale className="w-5 h-5 group-hover:text-[#F7B602]" />
+          <span className="text-sm font-medium flex-1 text-left">Legal</span>
+          <ChevronDown className={`w-4 h-4 transition-transform ${legalOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {legalOpen && (
+          <div className="pl-4 space-y-1">
+            {legalItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.page}
+                  onClick={() => { window.location.href = createPageUrl(item.page); }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors group"
+                >
+                  <Icon className="w-4 h-4 group-hover:text-[#F7B602]" />
+                  <span className="text-sm">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Actions */}
