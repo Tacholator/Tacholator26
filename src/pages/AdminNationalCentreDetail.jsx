@@ -172,7 +172,7 @@ export default function AdminNationalCentreDetail() {
                       {route.youtubeVideoId ? (
                         <div className="relative w-full h-full">
                           <img
-                            src={`https://img.youtube.com/vi/${route.youtubeVideoId}/mqdefault.jpg`}
+                            src={`https://img.youtube.com/vi/${route.youtubeVideoId}/hqdefault.jpg`}
                             alt="thumbnail"
                             className="w-full h-full object-cover"
                           />
