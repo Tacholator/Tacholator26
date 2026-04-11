@@ -375,7 +375,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     const callbackName = '__googleMapsReady__';
     window[callbackName] = () => setGoogleLoaded(true);
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry&callback=${callbackName}&loading=async`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry&callback=${callbackName}`;
     script.async = true;
     script.defer = true;
     script.onerror = () => console.error('Failed to load Google Maps — check API key and enabled APIs');
@@ -386,6 +386,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   // ── Create Google Map instance ───────────────────────────────────────────────
   useEffect(() => {
     if (!googleLoaded || !mapDivRef.current || mapInstanceRef.current) return;
+    if (!(mapDivRef.current instanceof Element) || !document.body.contains(mapDivRef.current)) return;
 
     const center = getRouteCenter();
     const mapInstance = new window.google.maps.Map(mapDivRef.current, {
