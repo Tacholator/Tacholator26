@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Map, { Source, Layer, Marker } from 'react-map-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  Volume2, VolumeX, X, Navigation2, Plus, Minus, Locate,
-  Loader2, MapPin, Map as MapIcon, Car
+  Volume2, VolumeX, Navigation2, Plus, Minus, Locate,
+  Loader2, MapPin, Map as MapIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function haversineMeters(lat1, lng1, lat2, lng2) {
   const R = 6371000;
@@ -38,18 +35,6 @@ function computeHeadingOrBearing(headingDeg, lat, lng, lastLat, lastLng) {
   const dLat = Math.abs(lat - lastLat), dLng = Math.abs(lng - lastLng);
   if (dLat < 0.00001 && dLng < 0.00001) return 0;
   return computeBearing(lastLat, lastLng, lat, lng);
-}
-
-function geojsonBounds(geojson) {
-  const coords = geojson?.geometry?.coordinates || [];
-  let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
-  coords.forEach(([lng, lat]) => {
-    if (lng < minLng) minLng = lng;
-    if (lat < minLat) minLat = lat;
-    if (lng > maxLng) maxLng = lng;
-    if (lat > maxLat) maxLat = lat;
-  });
-  return isFinite(minLng) ? { minLng, minLat, maxLng, maxLat } : null;
 }
 
 function distanceToRoute(lat, lng, routeCoords) {
@@ -115,7 +100,6 @@ async function fetchMiniRoundabouts(coords) {
   const north = Math.max(...lats) + 0.002;
   const west = Math.min(...lngs) - 0.002;
   const east = Math.max(...lngs) + 0.002;
-
   const query = `[out:json][timeout:10];node["highway"="mini_roundabout"](${south},${west},${north},${east});out;`;
   const res = await fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -129,45 +113,66 @@ function isNearMiniRoundabout(lat, lng, miniRoundabouts, thresholdMeters = 25) {
   return miniRoundabouts.some(mr => haversineMeters(lat, lng, mr.lat, mr.lng) <= thresholdMeters);
 }
 
-// ─── Step normalization from Mapbox Directions ───────────────────────────────
+// ─── Google maneuver → modifier mapping ──────────────────────────────────────
 
-function normalizeSteps(rawSteps, miniRoundabouts = []) {
-  return (rawSteps || []).map((s, i) => {
-    const man = s.maneuver || {};
-    const instr = (man.instruction || '').trim();
-    const type = (man.type || '').toLowerCase();
-    const isRoundabout = type === 'roundabout' || type === 'rotary' || /roundabout/i.test(instr);
+function getModifierFromGoogle(maneuver) {
+  if (!maneuver) return 'straight';
+  const m = maneuver.toLowerCase();
+  if (m.includes('uturn')) return 'uturn';
+  if (m === 'turn-slight-left' || m === 'keep-left' || m === 'fork-left') return 'slight left';
+  if (m === 'turn-slight-right' || m === 'keep-right' || m === 'fork-right') return 'slight right';
+  if (m.includes('left') || m === 'ramp-left') return 'left';
+  if (m.includes('right') || m === 'ramp-right') return 'right';
+  return 'straight';
+}
 
+// ─── Step normalization from Google Directions ────────────────────────────────
+
+function normalizeGoogleSteps(legs, miniRoundabouts = []) {
+  const allSteps = legs.flatMap(leg => leg.steps || []);
+  return allSteps.map((s, i) => {
+    const maneuver = s.maneuver || '';
+    const htmlInstr = s.html_instructions || '';
+    const instr = htmlInstr.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+    const isRoundabout = maneuver.startsWith('roundabout') || /roundabout/i.test(instr);
+    const mod = getModifierFromGoogle(maneuver);
+
+    // Parse exit number from instruction text (e.g. "Take the 2nd exit")
     let exitNum = null;
-    if (man.exit != null) exitNum = Number(man.exit);
-    if (!exitNum || isNaN(exitNum)) {
-      const m1 = instr.match(/\b(\d+)(st|nd|rd|th)\b/i);
-      if (m1) exitNum = Number(m1[1]);
-      if (!exitNum) {
-        const words = { first: 1, second: 2, third: 3, fourth: 4, fifth: 5, sixth: 6 };
-        const m2 = instr.match(/\b(first|second|third|fourth|fifth|sixth)\b/i);
-        if (m2) exitNum = words[m2[1].toLowerCase()] || null;
-      }
+    const exitMatch = instr.match(/(\d+)(st|nd|rd|th)\s+exit/i);
+    if (exitMatch) exitNum = parseInt(exitMatch[1]);
+    if (!exitNum) {
+      const words = { first: 1, second: 2, third: 3, fourth: 4, fifth: 5, sixth: 6 };
+      const wordMatch = instr.match(/\b(first|second|third|fourth|fifth|sixth)\s+exit/i);
+      if (wordMatch) exitNum = words[wordMatch[1].toLowerCase()] || null;
     }
 
-    const loc = man.location || [null, null];
-    const manLat = loc[1], manLng = loc[0];
+    const manLat = typeof s.start_location?.lat === 'function' ? s.start_location.lat() : (s.start_location?.lat || null);
+    const manLng = typeof s.start_location?.lng === 'function' ? s.start_location.lng() : (s.start_location?.lng || null);
+
     const isMiniRoundabout = !isRoundabout && manLat != null && isNearMiniRoundabout(manLat, manLng, miniRoundabouts);
+
+    // Convert step path (array of LatLng) to {lat, lng} objects
+    const rawPath = (s.path || []).map(p => ({
+      lat: typeof p.lat === 'function' ? p.lat() : p.lat,
+      lng: typeof p.lng === 'function' ? p.lng() : p.lng
+    }));
 
     return {
       index: i,
-      name: s.name || '',
-      distance: s.distance || 0,
-      duration: s.duration || 0,
+      name: instr,
+      distance: s.distance?.value || 0,
+      duration: s.duration?.value || 0,
       rawInstruction: instr,
-      maneuverType: type,
-      maneuverModifier: (man.modifier || '').toLowerCase(),
-      maneuverLng: manLng,
+      maneuverType: maneuver,
+      maneuverModifier: mod,
       maneuverLat: manLat,
-      geometry: s.geometry || null,
+      maneuverLng: manLng,
       isRoundabout,
       isMiniRoundabout,
-      roundaboutExitNum: isRoundabout ? (exitNum || null) : null,
+      roundaboutExitNum: isRoundabout ? exitNum : null,
+      rawPath,
     };
   });
 }
@@ -210,7 +215,7 @@ function buildBanner(step) {
   return {
     title: step.rawInstruction || 'Continue',
     iconKey,
-    sub: step.name || '',
+    sub: '',
   };
 }
 
@@ -225,32 +230,6 @@ function buildSpeechText(step, prefix) {
     core = (step.rawInstruction || 'continue').replace(/\.+$/, '');
   }
   return prefix ? `${prefix}, ${core}.` : `${core}.`;
-}
-
-// ─── Active segment builder ───────────────────────────────────────────────────
-
-function buildActiveSegment(currentStep, nextStep, mergeNextMeters = 180) {
-  if (!currentStep?.geometry?.coordinates) return null;
-  let coords = [...currentStep.geometry.coordinates];
-
-  if (nextStep?.geometry?.coordinates && mergeNextMeters > 0) {
-    const next = nextStep.geometry.coordinates;
-    let acc = 0;
-    const extra = [next[0]];
-    for (let i = 1; i < next.length; i++) {
-      const [lng1, lat1] = next[i - 1];
-      const [lng2, lat2] = next[i];
-      acc += haversineMeters(lat1, lng1, lat2, lng2);
-      extra.push(next[i]);
-      if (acc >= mergeNextMeters) break;
-    }
-    const last = coords[coords.length - 1];
-    const first = extra[0];
-    if (last[0] !== first[0] || last[1] !== first[1]) coords.push(first);
-    coords = coords.concat(extra.slice(1));
-  }
-
-  return { type: 'Feature', geometry: { type: 'LineString', coordinates: coords }, properties: {} };
 }
 
 // ─── Maneuver Icon SVG Component ─────────────────────────────────────────────
@@ -272,8 +251,8 @@ function ManeuverIcon({ iconKey, size = 40 }) {
     return (
       <svg style={style} viewBox="0 0 40 40" fill="none">
         <circle cx="20" cy="20" r="20" fill="#F7B602" />
-        <path d="M16 10v8h8v10" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M24 10l4 4-4 4" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M24 10v8h-8v10" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M28 14l-4-4-4 4" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     );
   }
@@ -296,12 +275,8 @@ function ManeuverIcon({ iconKey, size = 40 }) {
         <circle cx="20" cy="20" r="8" stroke={color} strokeWidth="2" fill="none" />
         <path d="M20 12a8 8 0 0 1 8 8" stroke={color} strokeWidth="2" strokeLinecap="round" />
         <path d="M28 18l-1.5-3.5L30 17" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        {exit && (
-          <text x="20" y="24" textAnchor="middle" fontSize="9" fontWeight="bold" fill={color}>{exit}</text>
-        )}
-        {(isLeft || isRight) && (
-          <text x="20" y="24" textAnchor="middle" fontSize="7" fontWeight="bold" fill={color}>{isLeft ? '←' : '→'}</text>
-        )}
+        {exit && <text x="20" y="24" textAnchor="middle" fontSize="9" fontWeight="bold" fill={color}>{exit}</text>}
+        {(isLeft || isRight) && <text x="20" y="24" textAnchor="middle" fontSize="7" fontWeight="bold" fill={color}>{isLeft ? '←' : '→'}</text>}
       </svg>
     );
   }
@@ -314,7 +289,6 @@ function ManeuverIcon({ iconKey, size = 40 }) {
       </svg>
     );
   }
-  // default / arrive
   return (
     <svg style={style} viewBox="0 0 40 40" fill="none">
       <circle cx="20" cy="20" r="20" fill="#F7B602" />
@@ -325,31 +299,41 @@ function ManeuverIcon({ iconKey, size = 40 }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
+const GOOGLE_MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY;
+
 export default function RouteNavigationOverlay({ route, onClose }) {
-  const [mapboxToken, setMapboxToken] = useState(null);
+  const [googleLoaded, setGoogleLoaded] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [userHeading, setUserHeading] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [followMode, setFollowMode] = useState(true);
-  const [mapLoaded, setMapLoaded] = useState(false);
 
-  // Directions-based nav state
+  // Navigation state
   const [navSteps, setNavSteps] = useState([]);
   const [stepIndex, setStepIndex] = useState(0);
   const [distanceToManeuver, setDistanceToManeuver] = useState(null);
   const [totalDistance, setTotalDistance] = useState(null);
   const [totalDuration, setTotalDuration] = useState(null);
   const [banner, setBanner] = useState({ title: 'Preparing route...', iconKey: 'default', sub: '' });
-  const [activeSegmentGeoJson, setActiveSegmentGeoJson] = useState(null);
   const [isOffRoute, setIsOffRoute] = useState(false);
   const [isRerouting, setIsRerouting] = useState(false);
 
+  // Map DOM ref and Google Maps instances
+  const mapDivRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const routePolylineRef = useRef(null);
+  const activePolylineRef = useRef(null);
+  const startMarkerRef = useRef(null);
+  const endMarkerRef = useRef(null);
+  const userMarkerRef = useRef(null);
+
+  // Navigation refs
   const watchIdRef = useRef(null);
-  const mapRef = useRef(null);
   const firstFixRef = useRef(false);
-  const initialViewStateRef = useRef(null);
+  const hasStartedRef = useRef(false);
   const offRouteCounterRef = useRef(0);
   const lastRerouteRef = useRef(0);
   const milestonesRef = useRef({ prepare: false, approach: false, now: false });
@@ -362,76 +346,167 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const stepIndexRef = useRef(0);
   const isMutedRef = useRef(false);
   const computedBearingRef = useRef(0);
+  const followModeRef = useRef(true);
 
   // Keep refs in sync
   useEffect(() => { userLocationRef.current = userLocation; }, [userLocation]);
   useEffect(() => { navStepsRef.current = navSteps; }, [navSteps]);
   useEffect(() => { stepIndexRef.current = stepIndex; }, [stepIndex]);
   useEffect(() => { isMutedRef.current = isMuted; }, [isMuted]);
+  useEffect(() => { followModeRef.current = followMode; }, [followMode]);
+  useEffect(() => { hasStartedRef.current = hasStarted; }, [hasStarted]);
 
   const routeGeoJson = route?.gpsGeoJson || null;
+  const startCoord = routeGeoJson?.geometry?.coordinates?.[0];
+  const endCoord = routeGeoJson?.geometry?.coordinates?.[routeGeoJson?.geometry?.coordinates?.length - 1];
 
   const getRouteCenter = () => {
-    if (!routeGeoJson?.geometry?.coordinates?.length) return { longitude: -1.5, latitude: 53.8 };
+    if (!routeGeoJson?.geometry?.coordinates?.length) return { lat: 53.8, lng: -1.5 };
     const coords = routeGeoJson.geometry.coordinates;
-    const avgLon = coords.reduce((s, [lon]) => s + lon, 0) / coords.length;
+    const avgLng = coords.reduce((s, [lng]) => s + lng, 0) / coords.length;
     const avgLat = coords.reduce((s, [, lat]) => s + lat, 0) / coords.length;
-    return { longitude: avgLon, latitude: avgLat };
+    return { lat: avgLat, lng: avgLng };
   };
 
-  const [viewState, setViewState] = useState({ ...getRouteCenter(), zoom: 14 });
-
-  // Fetch Mapbox token
+  // ── Load Google Maps script ──────────────────────────────────────────────────
   useEffect(() => {
-    base44.functions.invoke('getMapboxToken').then(({ data }) => {
-      if (data?.token) setMapboxToken(data.token);
-    }).catch(console.error);
+    if (window.google?.maps) { setGoogleLoaded(true); return; }
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setGoogleLoaded(true);
+    script.onerror = () => console.error('Failed to load Google Maps');
+    document.head.appendChild(script);
   }, []);
 
-  // Fit to route on load
+  // ── Create Google Map instance ───────────────────────────────────────────────
   useEffect(() => {
-    if (routeGeoJson?.geometry?.coordinates?.length && mapboxToken && !hasStarted) {
-      const coords = routeGeoJson.geometry.coordinates;
-      const lngs = coords.map(c => c[0]);
-      const lats = coords.map(c => c[1]);
-      const maxDiff = Math.max(Math.max(...lngs) - Math.min(...lngs), Math.max(...lats) - Math.min(...lats));
-      let zoom = 14;
-      if (maxDiff > 0.1) zoom = 10;
-      else if (maxDiff > 0.05) zoom = 11;
-      else if (maxDiff > 0.02) zoom = 12;
-      else if (maxDiff > 0.01) zoom = 13;
-      const center = getRouteCenter();
-      setViewState({ ...center, zoom });
-    }
-  }, [routeGeoJson, mapboxToken, hasStarted]);
+    if (!googleLoaded || !mapDivRef.current || mapInstanceRef.current) return;
 
-  // ── Build route from Mapbox Directions API ──────────────────────────────────
+    const center = getRouteCenter();
+    const mapInstance = new window.google.maps.Map(mapDivRef.current, {
+      center,
+      zoom: 14,
+      mapTypeId: 'roadmap',
+      disableDefaultUI: true,
+      gestureHandling: 'greedy',
+      styles: [
+        { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
+      ],
+    });
+    mapInstanceRef.current = mapInstance;
+
+    // Draw route polyline
+    if (routeGeoJson?.geometry?.coordinates?.length) {
+      const path = routeGeoJson.geometry.coordinates.map(([lng, lat]) => ({ lat, lng }));
+      routePolylineRef.current = new window.google.maps.Polyline({
+        path,
+        map: mapInstance,
+        strokeColor: '#1E6BFF',
+        strokeWeight: 8,
+        strokeOpacity: 0.9,
+        zIndex: 1,
+      });
+
+      // Active segment polyline (rendered on top, updated as steps advance)
+      activePolylineRef.current = new window.google.maps.Polyline({
+        path: [],
+        map: mapInstance,
+        strokeColor: '#F7B602',
+        strokeWeight: 10,
+        strokeOpacity: 1,
+        zIndex: 2,
+      });
+
+      // Fit bounds to route
+      const bounds = new window.google.maps.LatLngBounds();
+      path.forEach(p => bounds.extend(p));
+      mapInstance.fitBounds(bounds, 40);
+    }
+
+    // Start marker
+    if (startCoord) {
+      startMarkerRef.current = new window.google.maps.Marker({
+        position: { lat: startCoord[1], lng: startCoord[0] },
+        map: mapInstance,
+        zIndex: 5,
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 14,
+          fillColor: '#22c55e',
+          fillOpacity: 1,
+          strokeColor: 'white',
+          strokeWeight: 2,
+        },
+        label: { text: 'S', color: 'white', fontWeight: 'bold', fontSize: '13px' },
+      });
+    }
+
+    // End marker
+    if (endCoord) {
+      endMarkerRef.current = new window.google.maps.Marker({
+        position: { lat: endCoord[1], lng: endCoord[0] },
+        map: mapInstance,
+        zIndex: 5,
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 14,
+          fillColor: '#ef4444',
+          fillOpacity: 1,
+          strokeColor: 'white',
+          strokeWeight: 2,
+        },
+        label: { text: 'F', color: 'white', fontWeight: 'bold', fontSize: '13px' },
+      });
+    }
+
+    // Detect manual map movement to disable followMode
+    mapInstance.addListener('drag', () => {
+      if (hasStartedRef.current && firstFixRef.current) {
+        setFollowMode(false);
+      }
+    });
+
+    setMapReady(true);
+  }, [googleLoaded]);
+
+  // ── Build route using Google Directions API ───────────────────────────────────
   const buildRoute = useCallback(async (originLat, originLng) => {
-    if (!routeGeoJson?.geometry?.coordinates?.length || !mapboxToken) return;
+    if (!routeGeoJson?.geometry?.coordinates?.length || !window.google?.maps) return;
 
     const coords = routeGeoJson.geometry.coordinates;
-    const destCoord = coords[coords.length - 1];
-    const [destLng, destLat] = destCoord;
+    const [destLng, destLat] = coords[coords.length - 1];
 
-    const step = Math.max(1, Math.floor(coords.length / 5));
-    const waypoints = [
-      `${originLng},${originLat}`,
-      ...coords.filter((_, i) => i > 0 && i < coords.length - 1 && i % step === 0).slice(0, 3).map(([lng, lat]) => `${lng},${lat}`),
-      `${destLng},${destLat}`
-    ].join(';');
+    const step = Math.max(1, Math.floor(coords.length / 6));
+    const waypoints = coords
+      .filter((_, i) => i > 0 && i < coords.length - 1 && i % step === 0)
+      .slice(0, 8)
+      .map(([lng, lat]) => ({ location: { lat, lng }, stopover: false }));
 
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${waypoints}?access_token=${mapboxToken}&geometries=geojson&overview=full&steps=true&language=en`;
+    const directionsService = new window.google.maps.DirectionsService();
+    const result = await directionsService.route({
+      origin: { lat: originLat, lng: originLng },
+      destination: { lat: destLat, lng: destLng },
+      waypoints,
+      optimizeWaypoints: false,
+      travelMode: window.google.maps.TravelMode.DRIVING,
+      region: 'GB',
+      provideRouteAlternatives: false,
+    });
 
-    const res = await fetch(url);
-    const data = await res.json();
+    if (result.status !== 'OK' || !result.routes?.length) {
+      console.warn('Google Directions failed:', result.status);
+      return;
+    }
 
-    if (!data.routes?.length) return;
+    const route = result.routes[0];
+    const totalDist = route.legs.reduce((s, l) => s + (l.distance?.value || 0), 0);
+    const totalDur = route.legs.reduce((s, l) => s + (l.duration?.value || 0), 0);
+    setTotalDistance(totalDist);
+    setTotalDuration(totalDur);
 
-    const r = data.routes[0];
-    setTotalDistance(r.distance);
-    setTotalDuration(r.duration);
-
-    // Fetch mini roundabouts from OSM and tag steps
+    // Fetch mini roundabouts from OSM
     let miniRoundabouts = [];
     try {
       miniRoundabouts = await fetchMiniRoundabouts(routeGeoJson.geometry.coordinates);
@@ -439,23 +514,24 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       console.warn('Mini roundabout fetch failed:', e);
     }
 
-    const steps = normalizeSteps(r.legs.flatMap(l => l.steps || []), miniRoundabouts);
+    const steps = normalizeGoogleSteps(route.legs, miniRoundabouts);
     setNavSteps(steps);
     navStepsRef.current = steps;
     setStepIndex(0);
     stepIndexRef.current = 0;
     milestonesRef.current = { prepare: false, approach: false, now: false };
 
-    const newBanner = buildBanner(steps[0]);
-    setBanner(newBanner);
+    setBanner(buildBanner(steps[0]));
 
-    const activeSeg = buildActiveSegment(steps[0], steps[1]);
-    setActiveSegmentGeoJson(activeSeg);
+    // Update active segment polyline
+    if (steps[0]?.rawPath?.length && activePolylineRef.current) {
+      activePolylineRef.current.setPath(steps[0].rawPath);
+    }
 
     return steps;
-  }, [routeGeoJson, mapboxToken]);
+  }, [routeGeoJson]);
 
-  // ── Handle location updates ─────────────────────────────────────────────────
+  // ── Handle GPS location updates ───────────────────────────────────────────────
   const handleLocationUpdate = useCallback((position) => {
     const { latitude, longitude, accuracy, heading, speed } = position.coords;
 
@@ -471,34 +547,62 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     userLocationRef.current = newLoc;
     setUserHeading(bearing);
 
+    // Update/create user location marker
+    if (mapInstanceRef.current) {
+      const pos = { lat: latitude, lng: longitude };
+      const userIcon = {
+        path: 'M 0,-1 L 0.6,0.8 L 0,0.4 L -0.6,0.8 Z',
+        fillColor: '#F7B602',
+        fillOpacity: 1,
+        strokeColor: '#071739',
+        strokeWeight: 0.5,
+        scale: 20,
+        rotation: bearing,
+        anchor: new window.google.maps.Point(0, 0),
+      };
+      if (!userMarkerRef.current) {
+        userMarkerRef.current = new window.google.maps.Marker({
+          position: pos,
+          map: mapInstanceRef.current,
+          icon: userIcon,
+          zIndex: 10,
+        });
+      } else {
+        userMarkerRef.current.setPosition(pos);
+        userMarkerRef.current.setIcon(userIcon);
+      }
+    }
+
     if (!firstFixRef.current) {
       firstFixRef.current = true;
       setIsLoading(false);
-      setViewState({ longitude, latitude, zoom: 17, pitch: 55, bearing });
+
+      // Set navigation camera
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.setCenter({ lat: latitude, lng: longitude });
+        mapInstanceRef.current.setZoom(17);
+        mapInstanceRef.current.setTilt(45);
+        mapInstanceRef.current.setHeading(bearing);
+      }
 
       buildRoute(latitude, longitude).then(steps => {
         if (steps?.length && !isMutedRef.current) {
           setTimeout(() => speak('Starting route guidance.'), 500);
-          setTimeout(() => {
-            const txt = buildSpeechText(steps[0], null);
-            speak(txt);
-          }, 2000);
+          setTimeout(() => speak(buildSpeechText(steps[0], null)), 2000);
         }
       });
       return;
     }
 
     // Follow mode camera — throttled to 500ms
-    if (followMode) {
+    if (followModeRef.current && mapInstanceRef.current) {
       const now = Date.now();
       if (now - lastCameraUpdateRef.current >= 500) {
         lastCameraUpdateRef.current = now;
-        setViewState(prev => ({
-          ...prev,
-          longitude,
-          latitude,
-          bearing: (speed != null && speed >= 1.0) ? bearing : prev.bearing
-        }));
+        mapInstanceRef.current.panTo({ lat: latitude, lng: longitude });
+        if (speed != null && speed >= 1.0) {
+          mapInstanceRef.current.setHeading(bearing);
+        }
       }
     }
 
@@ -515,8 +619,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
       // Voice milestones
       const now = Date.now();
-      const cooldown = 3000;
-      if (now - lastSpokenAtRef.current > cooldown && !isMutedRef.current) {
+      if (now - lastSpokenAtRef.current > 3000 && !isMutedRef.current) {
         const m = milestonesRef.current;
         if (d <= 60 && !m.now) {
           speak(buildSpeechText(curStep, 'Now'));
@@ -541,11 +644,11 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         milestonesRef.current = { prepare: false, approach: false, now: false };
 
         const nextStep = steps[nextIdx];
-        const nb = buildBanner(nextStep);
-        setBanner(nb);
+        setBanner(buildBanner(nextStep));
 
-        const activeSeg = buildActiveSegment(nextStep, steps[nextIdx + 1]);
-        setActiveSegmentGeoJson(activeSeg);
+        if (nextStep?.rawPath?.length && activePolylineRef.current) {
+          activePolylineRef.current.setPath(nextStep.rawPath);
+        }
 
         if (!isMutedRef.current) {
           setTimeout(() => speak(buildSpeechText(nextStep, null)), 500);
@@ -580,16 +683,12 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         });
       }
     }
-  }, [buildRoute, followMode, routeGeoJson]);
+  }, [buildRoute, routeGeoJson]);
 
-  // ── Start GPS watch ─────────────────────────────────────────────────────────
+  // ── Start GPS watch ────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!hasStarted || !mapLoaded) return;
-
-    if (!navigator.geolocation) {
-      setIsLoading(false);
-      return;
-    }
+    if (!hasStarted || !mapReady) return;
+    if (!navigator.geolocation) { setIsLoading(false); return; }
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       handleLocationUpdate,
@@ -600,9 +699,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     return () => {
       if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
     };
-  }, [hasStarted, mapLoaded]);
+  }, [hasStarted, mapReady]);
 
-  // ── Update handler when followMode changes ──────────────────────────────────
+  // ── Re-register watcher when handler changes ────────────────────────────────
   useEffect(() => {
     if (watchIdRef.current) {
       navigator.geolocation.clearWatch(watchIdRef.current);
@@ -619,13 +718,16 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     setHasStarted(true);
     setFollowMode(true);
     const startPt = routeGeoJson?.geometry?.coordinates?.[0];
-    if (startPt) {
+    if (startPt && mapInstanceRef.current) {
       const coords = routeGeoJson.geometry.coordinates;
       let initBearing = 0;
       if (coords.length >= 2) {
         initBearing = computeBearing(coords[0][1], coords[0][0], coords[1][1], coords[1][0]);
       }
-      setViewState({ longitude: startPt[0], latitude: startPt[1], zoom: 17, pitch: 55, bearing: initBearing });
+      mapInstanceRef.current.setCenter({ lat: startPt[1], lng: startPt[0] });
+      mapInstanceRef.current.setZoom(17);
+      mapInstanceRef.current.setTilt(45);
+      mapInstanceRef.current.setHeading(initBearing);
     }
   };
 
@@ -644,39 +746,38 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     setIsMuted(newMuted);
     isMutedRef.current = newMuted;
     if (newMuted) window.speechSynthesis.cancel();
-    else speak(newMuted ? 'Voice muted.' : 'Voice guidance on.');
+    else speak('Voice guidance on.');
   };
 
   const handleRecenter = () => {
     setFollowMode(true);
-    if (userLocation) {
-      setViewState({
-        longitude: userLocation.longitude,
-        latitude: userLocation.latitude,
-        zoom: 17, pitch: 55,
-        bearing: computedBearingRef.current || 0
-      });
+    if (userLocation && mapInstanceRef.current) {
+      mapInstanceRef.current.panTo({ lat: userLocation.latitude, lng: userLocation.longitude });
+      mapInstanceRef.current.setZoom(17);
+      mapInstanceRef.current.setTilt(45);
+      mapInstanceRef.current.setHeading(computedBearingRef.current || 0);
     }
   };
 
   const handleOverviewRoute = () => {
-    if (!routeGeoJson) return;
+    if (!routeGeoJson || !mapInstanceRef.current) return;
     setFollowMode(false);
-    const bounds = geojsonBounds(routeGeoJson);
-    if (!bounds) return;
-    const { minLng, minLat, maxLng, maxLat } = bounds;
-    const centerLng = (minLng + maxLng) / 2;
-    const centerLat = (minLat + maxLat) / 2;
-    const maxDiff = Math.max(maxLng - minLng, maxLat - minLat);
-    let zoom = 14;
-    if (maxDiff > 0.1) zoom = 10;
-    else if (maxDiff > 0.05) zoom = 11;
-    else if (maxDiff > 0.02) zoom = 12;
-    else if (maxDiff > 0.01) zoom = 13;
-    setViewState({ longitude: centerLng, latitude: centerLat, zoom, pitch: 0, bearing: 0 });
+    const bounds = new window.google.maps.LatLngBounds();
+    routeGeoJson.geometry.coordinates.forEach(([lng, lat]) => bounds.extend({ lat, lng }));
+    mapInstanceRef.current.fitBounds(bounds, 40);
+    mapInstanceRef.current.setTilt(0);
+    mapInstanceRef.current.setHeading(0);
   };
 
-  // ── Route metrics ───────────────────────────────────────────────────────────
+  const handleZoomIn = () => {
+    if (mapInstanceRef.current) mapInstanceRef.current.setZoom((mapInstanceRef.current.getZoom() || 14) + 1);
+  };
+
+  const handleZoomOut = () => {
+    if (mapInstanceRef.current) mapInstanceRef.current.setZoom(Math.max((mapInstanceRef.current.getZoom() || 14) - 1, 1));
+  };
+
+  // Route metrics
   const routeMetrics = (() => {
     if (!routeGeoJson?.geometry?.coordinates) return { distance: 0, duration: 0 };
     const coords = routeGeoJson.geometry.coordinates;
@@ -691,102 +792,27 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     return { distance, duration };
   })();
 
-  // ── Layer styles ────────────────────────────────────────────────────────────
-  const baseRouteStyle = {
-    id: 'base-route',
-    type: 'line',
-    layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: { 'line-color': '#1E6BFF', 'line-width': 8, 'line-opacity': 0.9 }
-  };
-  const activeSegmentStyle = {
-    id: 'active-segment',
-    type: 'line',
-    paint: { 'line-color': '#1E6BFF', 'line-width': 8, 'line-opacity': 0.95 }
-  };
-
-  const startCoord = routeGeoJson?.geometry?.coordinates?.[0];
-  const endCoord = routeGeoJson?.geometry?.coordinates?.[routeGeoJson?.geometry?.coordinates?.length - 1];
-
-  // ── ETA + remaining ──────────────────────────────────────────────────────────
   const remainingSteps = navSteps.slice(stepIndex);
   const remainingDist = remainingSteps.reduce((s, st) => s + (st.distance || 0), 0);
   const remainingDuration = remainingSteps.reduce((s, st) => s + (st.duration || 0), 0);
 
   return (
     <div className="fixed inset-0 z-[9999] bg-white flex flex-col">
-      {/* ── Map ─────────────────────────────────────────────────────────── */}
+      {/* ── Map container ─────────────────────────────────────────────────── */}
       <div className="flex-1 relative">
-        {mapboxToken ? (
-          <Map
-            ref={mapRef}
-            {...viewState}
-            onMove={evt => {
-              setViewState(evt.viewState);
-              if (followMode && hasStarted && firstFixRef.current) {
-                setFollowMode(false);
-                if (!initialViewStateRef.current) initialViewStateRef.current = evt.viewState;
-              }
-            }}
-            mapboxAccessToken={mapboxToken}
-            mapStyle="mapbox://styles/mapbox/streets-v12"
-            style={{ width: '100%', height: '100%' }}
-            attributionControl={false}
-            onLoad={() => setMapLoaded(true)}
-            onError={e => console.error('Mapbox error:', e)}
-          >
-            {/* Base route */}
-            {routeGeoJson?.geometry && (
-              <Source id="base-route" type="geojson" data={routeGeoJson}>
-                <Layer {...baseRouteStyle} />
-              </Source>
-            )}
+        <div ref={mapDivRef} style={{ width: '100%', height: '100%' }} />
 
-            {/* Active highlighted segment */}
-            {activeSegmentGeoJson && hasStarted && (
-              <Source id="active-segment" type="geojson" data={activeSegmentGeoJson}>
-                <Layer {...activeSegmentStyle} />
-              </Source>
-            )}
-
-            {/* Start marker */}
-            {startCoord && (
-              <Marker longitude={startCoord[0]} latitude={startCoord[1]} anchor="center">
-                <div className="bg-green-500 text-white rounded-full w-11 h-11 flex items-center justify-center font-bold shadow-lg">
-                  <span className="text-lg">S</span>
-                </div>
-              </Marker>
-            )}
-
-            {/* End marker */}
-            {endCoord && (
-              <Marker longitude={endCoord[0]} latitude={endCoord[1]} anchor="center">
-                <div className="bg-red-500 text-white rounded-full w-11 h-11 flex items-center justify-center font-bold shadow-lg">
-                  <span className="text-lg">F</span>
-                </div>
-              </Marker>
-            )}
-
-            {/* User location arrow */}
-            {userLocation && hasStarted && (
-              <Marker longitude={userLocation.longitude} latitude={userLocation.latitude} anchor="center" rotation={userHeading || 0}>
-                <div className="relative flex items-center justify-center">
-                  <div className="absolute w-10 h-10 bg-amber-300 rounded-full animate-ping opacity-30" />
-                  <div className="bg-[#F7B602] rounded-full shadow-lg flex items-center justify-center" style={{ width: 40, height: 40, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}>
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="#071739">
-                      <path d="M12 2 L20 20 L12 15 L4 20 Z" />
-                    </svg>
-                  </div>
-                </div>
-              </Marker>
-            )}
-          </Map>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-white">
-            <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading map...
+        {/* Loading overlay while Google Maps script loads */}
+        {!googleLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-100">
+            <div className="flex items-center gap-2 text-slate-600">
+              <Loader2 className="w-6 h-6 animate-spin" />
+              <span>Loading map...</span>
+            </div>
           </div>
         )}
 
-        {/* ── Zoom + recenter + overview controls ─────────────────────────── */}
+        {/* ── Zoom + controls ─────────────────────────────────────────────── */}
         <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
           {hasStarted && !followMode && (
             <Button onClick={handleRecenter} size="icon" className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] shadow-lg" title="Recenter">
@@ -794,14 +820,14 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             </Button>
           )}
           {routeGeoJson && (
-            <Button onClick={handleOverviewRoute} size="icon" className={`shadow-lg ${!followMode && !hasStarted ? 'bg-[#F7B602] text-[#071739]' : 'bg-white hover:bg-slate-100 text-slate-900'}`} title="Overview route">
+            <Button onClick={handleOverviewRoute} size="icon" className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg" title="Overview route">
               <MapIcon className="w-5 h-5" />
             </Button>
           )}
-          <Button onClick={() => setViewState(p => ({ ...p, zoom: Math.min(p.zoom + 1, 20) }))} size="icon" className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg">
+          <Button onClick={handleZoomIn} size="icon" className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg">
             <Plus className="w-5 h-5" />
           </Button>
-          <Button onClick={() => setViewState(p => ({ ...p, zoom: Math.max(p.zoom - 1, 1) }))} size="icon" className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg">
+          <Button onClick={handleZoomOut} size="icon" className="bg-white hover:bg-slate-100 text-slate-900 shadow-lg">
             <Minus className="w-5 h-5" />
           </Button>
           {hasStarted && (
@@ -811,7 +837,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           )}
         </div>
 
-        {/* ── Top banner (active navigation) ────────────────────────────── */}
+        {/* ── Top navigation banner ──────────────────────────────────────── */}
         <AnimatePresence>
           {hasStarted && !isLoading && (
             <motion.div
@@ -826,22 +852,17 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                   <div className="flex items-center gap-3">
                     <ManeuverIcon iconKey={banner.iconKey} size={44} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-base font-bold text-white leading-tight">
-                        {banner.title}
-                      </p>
-                      {banner.sub && (
-                        <p className="text-xs text-slate-300 mt-0.5 truncate">{banner.sub}</p>
-                      )}
+                      <p className="text-base font-bold text-white leading-tight">{banner.title}</p>
+                      {banner.sub && <p className="text-xs text-slate-300 mt-0.5 truncate">{banner.sub}</p>}
                     </div>
                     {distanceToManeuver != null && distanceToManeuver > 0 && (
-                      <Badge className="bg-[#071739] text-white text-sm font-bold px-3 py-1 shrink-0">
+                      <Badge className="bg-[#071739] text-white text-sm font-bold px-3 py-1 shrink-0 border border-slate-600">
                         {formatDistance(distanceToManeuver)}
                       </Badge>
                     )}
                   </div>
-
                   {isRerouting && (
-                    <div className="mt-2 flex items-center gap-2 text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs">
+                    <div className="mt-2 flex items-center gap-2 text-blue-400 bg-blue-900/30 px-2 py-1 rounded text-xs">
                       <Loader2 className="w-3 h-3 animate-spin" />
                       <span>Recalculating route...</span>
                     </div>
@@ -852,7 +873,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           )}
         </AnimatePresence>
 
-        {/* ── GPS loading spinner ────────────────────────────────────────── */}
+        {/* ── GPS loading spinner ─────────────────────────────────────────── */}
         {isLoading && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
             <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
@@ -866,7 +887,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         )}
       </div>
 
-      {/* ── Bottom panel ────────────────────────────────────────────────── */}
+      {/* ── Bottom panel ──────────────────────────────────────────────────── */}
       {!hasStarted ? (
         <div className="bg-[#071739] shadow-2xl p-3 pb-4 lg:p-3 lg:pb-3">
           <div className="flex items-center justify-between mb-3">
@@ -919,11 +940,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button onClick={handleEnd} variant="destructive" size="sm" className="font-semibold px-5">
-                    End
-                  </Button>
-                </div>
+                <Button onClick={handleEnd} variant="destructive" size="sm" className="font-semibold px-5">
+                  End
+                </Button>
               </div>
             </motion.div>
           )}
