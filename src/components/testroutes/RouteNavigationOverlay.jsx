@@ -22,7 +22,6 @@ function haversineMeters(lat1, lng1, lat2, lng2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
-// Compute bearing from two points (fallback when GPS heading unavailable)
 function computeBearing(lat1, lng1, lat2, lng2) {
   const toRad = d => d * Math.PI / 180;
   const toDeg = r => r * 180 / Math.PI;
@@ -107,9 +106,32 @@ function speak(text, lang = 'en-GB', rate = 1.0) {
   window.speechSynthesis.speak(utt);
 }
 
+// ─── OSM Mini Roundabout Detection ───────────────────────────────────────────
+
+async function fetchMiniRoundabouts(coords) {
+  const lats = coords.map(c => c[1]);
+  const lngs = coords.map(c => c[0]);
+  const south = Math.min(...lats) - 0.002;
+  const north = Math.max(...lats) + 0.002;
+  const west = Math.min(...lngs) - 0.002;
+  const east = Math.max(...lngs) + 0.002;
+
+  const query = `[out:json][timeout:10];node["highway"="mini_roundabout"](${south},${west},${north},${east});out;`;
+  const res = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    body: 'data=' + encodeURIComponent(query)
+  });
+  const data = await res.json();
+  return (data.elements || []).map(el => ({ lat: el.lat, lng: el.lon }));
+}
+
+function isNearMiniRoundabout(lat, lng, miniRoundabouts, thresholdMeters = 25) {
+  return miniRoundabouts.some(mr => haversineMeters(lat, lng, mr.lat, mr.lng) <= thresholdMeters);
+}
+
 // ─── Step normalization from Mapbox Directions ───────────────────────────────
 
-function normalizeSteps(rawSteps) {
+function normalizeSteps(rawSteps, miniRoundabouts = []) {
   return (rawSteps || []).map((s, i) => {
     const man = s.maneuver || {};
     const instr = (man.instruction || '').trim();
@@ -129,6 +151,9 @@ function normalizeSteps(rawSteps) {
     }
 
     const loc = man.location || [null, null];
+    const manLat = loc[1], manLng = loc[0];
+    const isMiniRoundabout = !isRoundabout && manLat != null && isNearMiniRoundabout(manLat, manLng, miniRoundabouts);
+
     return {
       index: i,
       name: s.name || '',
@@ -137,10 +162,11 @@ function normalizeSteps(rawSteps) {
       rawInstruction: instr,
       maneuverType: type,
       maneuverModifier: (man.modifier || '').toLowerCase(),
-      maneuverLng: loc[0],
-      maneuverLat: loc[1],
+      maneuverLng: manLng,
+      maneuverLat: manLat,
       geometry: s.geometry || null,
       isRoundabout,
+      isMiniRoundabout,
       roundaboutExitNum: isRoundabout ? (exitNum || null) : null,
     };
   });
@@ -156,8 +182,22 @@ function roundaboutPhrase(exitNum) {
   return 'Follow the roundabout';
 }
 
+function miniRoundaboutPhrase(mod) {
+  if (mod === 'left' || mod === 'slight left') return 'At the mini roundabout, turn left';
+  if (mod === 'right' || mod === 'slight right') return 'At the mini roundabout, turn right';
+  return 'At the mini roundabout, go straight ahead';
+}
+
 function buildBanner(step) {
   if (!step) return { title: 'Follow the route', iconKey: 'default', sub: '' };
+  if (step.isMiniRoundabout) {
+    const mod = step.maneuverModifier;
+    return {
+      title: miniRoundaboutPhrase(mod),
+      iconKey: mod === 'left' || mod === 'slight left' ? 'roundabout_left' : mod === 'right' || mod === 'slight right' ? 'roundabout_right' : 'roundabout',
+      sub: 'Mini roundabout',
+    };
+  }
   if (step.isRoundabout) {
     return {
       title: roundaboutPhrase(step.roundaboutExitNum),
@@ -177,7 +217,9 @@ function buildBanner(step) {
 function buildSpeechText(step, prefix) {
   if (!step) return 'Continue.';
   let core;
-  if (step.isRoundabout) {
+  if (step.isMiniRoundabout) {
+    core = miniRoundaboutPhrase(step.maneuverModifier).toLowerCase();
+  } else if (step.isRoundabout) {
     core = roundaboutPhrase(step.roundaboutExitNum).toLowerCase();
   } else {
     core = (step.rawInstruction || 'continue').replace(/\.+$/, '');
@@ -202,7 +244,6 @@ function buildActiveSegment(currentStep, nextStep, mergeNextMeters = 180) {
       extra.push(next[i]);
       if (acc >= mergeNextMeters) break;
     }
-    // avoid duplicate point
     const last = coords[coords.length - 1];
     const first = extra[0];
     if (last[0] !== first[0] || last[1] !== first[1]) coords.push(first);
@@ -222,10 +263,8 @@ function ManeuverIcon({ iconKey, size = 40 }) {
     return (
       <svg style={style} viewBox="0 0 40 40" fill="none">
         <circle cx="20" cy="20" r="20" fill="#F7B602" />
-        <path d="M24 28V18H16l4-4M16 14l4 4" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M16 18v-4" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M12 14l4-4 4 4" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M16 10v8h8v10" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M12 14l4-4 4 4" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     );
   }
@@ -249,6 +288,8 @@ function ManeuverIcon({ iconKey, size = 40 }) {
   }
   if (iconKey?.startsWith('roundabout')) {
     const exit = iconKey === 'roundabout_1st' ? 1 : iconKey === 'roundabout_2nd' ? 2 : iconKey === 'roundabout_3rd' ? 3 : null;
+    const isLeft = iconKey === 'roundabout_left';
+    const isRight = iconKey === 'roundabout_right';
     return (
       <svg style={style} viewBox="0 0 40 40" fill="none">
         <circle cx="20" cy="20" r="20" fill="#F7B602" />
@@ -257,6 +298,9 @@ function ManeuverIcon({ iconKey, size = 40 }) {
         <path d="M28 18l-1.5-3.5L30 17" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         {exit && (
           <text x="20" y="24" textAnchor="middle" fontSize="9" fontWeight="bold" fill={color}>{exit}</text>
+        )}
+        {(isLeft || isRight) && (
+          <text x="20" y="24" textAnchor="middle" fontSize="7" fontWeight="bold" fill={color}>{isLeft ? '←' : '→'}</text>
         )}
       </svg>
     );
@@ -369,8 +413,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     const destCoord = coords[coords.length - 1];
     const [destLng, destLat] = destCoord;
 
-    // Build waypoints: origin + a few key route points + destination
-    // Sample ~4 intermediate waypoints to keep the route on the test route path
     const step = Math.max(1, Math.floor(coords.length / 5));
     const waypoints = [
       `${originLng},${originLat}`,
@@ -389,7 +431,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     setTotalDistance(r.distance);
     setTotalDuration(r.duration);
 
-    const steps = normalizeSteps(r.legs.flatMap(l => l.steps || []));
+    // Fetch mini roundabouts from OSM and tag steps
+    let miniRoundabouts = [];
+    try {
+      miniRoundabouts = await fetchMiniRoundabouts(routeGeoJson.geometry.coordinates);
+    } catch (e) {
+      console.warn('Mini roundabout fetch failed:', e);
+    }
+
+    const steps = normalizeSteps(r.legs.flatMap(l => l.steps || []), miniRoundabouts);
     setNavSteps(steps);
     navStepsRef.current = steps;
     setStepIndex(0);
@@ -411,7 +461,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
     if (!firstFixRef.current && accuracy > 50) return;
 
-    // Compute bearing (use native heading or calculate from movement)
     const bearing = computeHeadingOrBearing(heading, latitude, longitude, lastLatRef.current, lastLngRef.current);
     computedBearingRef.current = bearing;
     lastLatRef.current = latitude;
@@ -502,7 +551,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           setTimeout(() => speak(buildSpeechText(nextStep, null)), 500);
         }
       } else if (d <= 20 && idx === steps.length - 1) {
-        // Arrived
         setBanner({ title: 'You have arrived!', iconKey: 'arrive', sub: '' });
         if (!isMutedRef.current) speak('You have arrived at your destination.');
       }
@@ -520,7 +568,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         setIsOffRoute(false);
       }
 
-      // Auto-reroute after 10 seconds off route
       const nowMs = Date.now();
       if (offRouteCounterRef.current >= 10 && nowMs - lastRerouteRef.current > 20000) {
         lastRerouteRef.current = nowMs;
@@ -571,10 +618,8 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     setIsLoading(true);
     setHasStarted(true);
     setFollowMode(true);
-    // Center on route start point facing forward
     const startPt = routeGeoJson?.geometry?.coordinates?.[0];
     if (startPt) {
-      // Calculate initial bearing from first two route points
       const coords = routeGeoJson.geometry.coordinates;
       let initBearing = 0;
       if (coords.length >= 2) {
@@ -587,7 +632,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const handleEnd = () => {
     window.speechSynthesis.cancel();
     if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
-    // Exit fullscreen if active
     if (document.fullscreenElement || document.webkitFullscreenElement) {
       if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
       else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
@@ -623,9 +667,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     const { minLng, minLat, maxLng, maxLat } = bounds;
     const centerLng = (minLng + maxLng) / 2;
     const centerLat = (minLat + maxLat) / 2;
-    const lngDiff = maxLng - minLng;
-    const latDiff = maxLat - minLat;
-    const maxDiff = Math.max(lngDiff, latDiff);
+    const maxDiff = Math.max(maxLng - minLng, maxLat - minLat);
     let zoom = 14;
     if (maxDiff > 0.1) zoom = 10;
     else if (maxDiff > 0.05) zoom = 11;
@@ -645,8 +687,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       dist += haversineMeters(lat1, lng1, lat2, lng2);
     }
     const distance = (dist / 1000 * 0.621371).toFixed(1);
-    // Use actual Mapbox duration (accounts for speed limits) if available, else estimate from Mapbox total
-    const duration = totalDuration ? Math.round(totalDuration / 60) : Math.round(dist / 1000 / 80 * 60); // fallback: assume 80 km/h (~50 mph)
+    const duration = totalDuration ? Math.round(totalDuration / 60) : Math.round(dist / 1000 / 80 * 60);
     return { distance, duration };
   })();
 
@@ -693,7 +734,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             onLoad={() => setMapLoaded(true)}
             onError={e => console.error('Mapbox error:', e)}
           >
-            {/* Base (dimmed) route */}
+            {/* Base route */}
             {routeGeoJson?.geometry && (
               <Source id="base-route" type="geojson" data={routeGeoJson}>
                 <Layer {...baseRouteStyle} />
@@ -710,7 +751,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             {/* Start marker */}
             {startCoord && (
               <Marker longitude={startCoord[0]} latitude={startCoord[1]} anchor="center">
-                <div className="bg-green-500 hover:bg-green-600 text-white rounded-full w-11 h-11 flex items-center justify-center font-bold shadow-lg text-sm border-3 border-white transition-colors">
+                <div className="bg-green-500 text-white rounded-full w-11 h-11 flex items-center justify-center font-bold shadow-lg">
                   <span className="text-lg">S</span>
                 </div>
               </Marker>
@@ -719,7 +760,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             {/* End marker */}
             {endCoord && (
               <Marker longitude={endCoord[0]} latitude={endCoord[1]} anchor="center">
-                <div className="bg-red-500 hover:bg-red-600 text-white rounded-full w-11 h-11 flex items-center justify-center font-bold shadow-lg text-sm border-3 border-white transition-colors">
+                <div className="bg-red-500 text-white rounded-full w-11 h-11 flex items-center justify-center font-bold shadow-lg">
                   <span className="text-lg">F</span>
                 </div>
               </Marker>
@@ -744,8 +785,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading map...
           </div>
         )}
-
-
 
         {/* ── Zoom + recenter + overview controls ─────────────────────────── */}
         <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
@@ -801,7 +840,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                     )}
                   </div>
 
-                  {/* Rerouting indicator */}
                   {isRerouting && (
                     <div className="mt-2 flex items-center gap-2 text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs">
                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -830,7 +868,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
       {/* ── Bottom panel ────────────────────────────────────────────────── */}
       {!hasStarted ? (
-        /* Pre-start: route preview card */
         <div className="bg-[#071739] shadow-2xl p-3 pb-4 lg:p-3 lg:pb-3">
           <div className="flex items-center justify-between mb-3">
             <div>
@@ -839,7 +876,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                 {routeMetrics.distance} mi · approx {routeMetrics.duration} min
               </p>
             </div>
-            <div className="flex items-center gap-1 text-slate-400 text-xs text-white">
+            <div className="flex items-center gap-1 text-white text-xs">
               <MapPin className="w-3 h-3" />
               <span>Route preview</span>
             </div>
@@ -853,7 +890,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           </Button>
         </div>
       ) : (
-        /* Active navigation footer with ETA + distance + controls */
         <AnimatePresence>
           {!isLoading && (
             <motion.div
@@ -883,14 +919,8 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-center gap-2">
-                  <Button
-                    onClick={handleEnd}
-                    variant="destructive"
-                    size="sm"
-                    className="font-semibold px-5"
-                  >
+                  <Button onClick={handleEnd} variant="destructive" size="sm" className="font-semibold px-5">
                     End
                   </Button>
                 </div>
