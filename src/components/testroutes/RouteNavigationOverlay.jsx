@@ -488,18 +488,24 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       .map(([lng, lat]) => ({ location: { lat, lng }, stopover: false }));
 
     const directionsService = new window.google.maps.DirectionsService();
-    const result = await directionsService.route({
-      origin: { lat: originLat, lng: originLng },
-      destination: { lat: destLat, lng: destLng },
-      waypoints,
-      optimizeWaypoints: false,
-      travelMode: window.google.maps.TravelMode.DRIVING,
-      region: 'GB',
-      provideRouteAlternatives: false,
-    });
+    let result;
+    try {
+      result = await directionsService.route({
+        origin: { lat: originLat, lng: originLng },
+        destination: { lat: destLat, lng: destLng },
+        waypoints,
+        optimizeWaypoints: false,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+        region: 'GB',
+        provideRouteAlternatives: false,
+      });
+    } catch (e) {
+      console.warn('Google Directions failed:', e);
+      return;
+    }
 
-    if (result.status !== 'OK' || !result.routes?.length) {
-      console.warn('Google Directions failed:', result.status);
+    if (!result?.routes?.length) {
+      console.warn('Google Directions returned no routes');
       return;
     }
 
