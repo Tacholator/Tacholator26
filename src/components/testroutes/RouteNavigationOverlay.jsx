@@ -385,94 +385,94 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   // ── Create Google Map instance ───────────────────────────────────────────────
   useEffect(() => {
-    if (!googleLoaded || !mapDivRef.current || mapInstanceRef.current) return;
-    if (!(mapDivRef.current instanceof Element) || !document.body.contains(mapDivRef.current)) return;
+    if (!googleLoaded || mapInstanceRef.current) return;
 
-    const center = getRouteCenter();
-    const mapInstance = new window.google.maps.Map(mapDivRef.current, {
-      center,
-      zoom: 14,
-      mapTypeId: 'roadmap',
-      disableDefaultUI: true,
-      gestureHandling: 'greedy',
-      styles: [
-        { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
-      ],
-    });
-    mapInstanceRef.current = mapInstance;
+    const rafId = requestAnimationFrame(() => {
+      const div = mapDivRef.current;
+      if (!div || !(div instanceof Element) || !document.body.contains(div)) return;
+      if (mapInstanceRef.current) return;
 
-    // Draw route polyline
-    if (routeGeoJson?.geometry?.coordinates?.length) {
-      const path = routeGeoJson.geometry.coordinates.map(([lng, lat]) => ({ lat, lng }));
-      routePolylineRef.current = new window.google.maps.Polyline({
-        path,
-        map: mapInstance,
-        strokeColor: '#1E6BFF',
-        strokeWeight: 8,
-        strokeOpacity: 0.9,
-        zIndex: 1,
+      const center = getRouteCenter();
+      const mapInstance = new window.google.maps.Map(div, {
+        center,
+        zoom: 14,
+        mapTypeId: 'roadmap',
+        disableDefaultUI: true,
+        gestureHandling: 'greedy',
+        styles: [
+          { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
+        ],
       });
+      mapInstanceRef.current = mapInstance;
 
-      // Active segment polyline (rendered on top, updated as steps advance)
-      activePolylineRef.current = new window.google.maps.Polyline({
-        path: [],
-        map: mapInstance,
-        strokeColor: '#F7B602',
-        strokeWeight: 10,
-        strokeOpacity: 1,
-        zIndex: 2,
-      });
+      // Draw route polyline
+      if (routeGeoJson?.geometry?.coordinates?.length) {
+        const path = routeGeoJson.geometry.coordinates.map(([lng, lat]) => ({ lat, lng }));
+        routePolylineRef.current = new window.google.maps.Polyline({
+          path,
+          map: mapInstance,
+          strokeColor: '#1E6BFF',
+          strokeWeight: 8,
+          strokeOpacity: 0.9,
+          zIndex: 1,
+        });
 
-      // Fit bounds to route
-      const bounds = new window.google.maps.LatLngBounds();
-      path.forEach(p => bounds.extend(p));
-      mapInstance.fitBounds(bounds, 40);
-    }
+        activePolylineRef.current = new window.google.maps.Polyline({
+          path: [],
+          map: mapInstance,
+          strokeColor: '#F7B602',
+          strokeWeight: 10,
+          strokeOpacity: 1,
+          zIndex: 2,
+        });
 
-    // Start marker
-    if (startCoord) {
-      startMarkerRef.current = new window.google.maps.Marker({
-        position: { lat: startCoord[1], lng: startCoord[0] },
-        map: mapInstance,
-        zIndex: 5,
-        icon: {
-          path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 14,
-          fillColor: '#22c55e',
-          fillOpacity: 1,
-          strokeColor: 'white',
-          strokeWeight: 2,
-        },
-        label: { text: 'S', color: 'white', fontWeight: 'bold', fontSize: '13px' },
-      });
-    }
-
-    // End marker
-    if (endCoord) {
-      endMarkerRef.current = new window.google.maps.Marker({
-        position: { lat: endCoord[1], lng: endCoord[0] },
-        map: mapInstance,
-        zIndex: 5,
-        icon: {
-          path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 14,
-          fillColor: '#ef4444',
-          fillOpacity: 1,
-          strokeColor: 'white',
-          strokeWeight: 2,
-        },
-        label: { text: 'F', color: 'white', fontWeight: 'bold', fontSize: '13px' },
-      });
-    }
-
-    // Detect manual map movement to disable followMode
-    mapInstance.addListener('drag', () => {
-      if (hasStartedRef.current && firstFixRef.current) {
-        setFollowMode(false);
+        const bounds = new window.google.maps.LatLngBounds();
+        path.forEach(p => bounds.extend(p));
+        mapInstance.fitBounds(bounds, 40);
       }
+
+      if (startCoord) {
+        startMarkerRef.current = new window.google.maps.Marker({
+          position: { lat: startCoord[1], lng: startCoord[0] },
+          map: mapInstance,
+          zIndex: 5,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 14,
+            fillColor: '#22c55e',
+            fillOpacity: 1,
+            strokeColor: 'white',
+            strokeWeight: 2,
+          },
+          label: { text: 'S', color: 'white', fontWeight: 'bold', fontSize: '13px' },
+        });
+      }
+
+      if (endCoord) {
+        endMarkerRef.current = new window.google.maps.Marker({
+          position: { lat: endCoord[1], lng: endCoord[0] },
+          map: mapInstance,
+          zIndex: 5,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 14,
+            fillColor: '#ef4444',
+            fillOpacity: 1,
+            strokeColor: 'white',
+            strokeWeight: 2,
+          },
+          label: { text: 'F', color: 'white', fontWeight: 'bold', fontSize: '13px' },
+        });
+      }
+
+      mapInstance.addListener('drag', () => {
+        if (hasStartedRef.current && firstFixRef.current) setFollowMode(false);
+      });
+
+      setMapReady(true);
     });
 
-    setMapReady(true);
+    return () => cancelAnimationFrame(rafId);
   }, [googleLoaded]);
 
   // ── Build route using Google Directions API ───────────────────────────────────
