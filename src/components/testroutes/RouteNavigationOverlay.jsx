@@ -371,16 +371,27 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   // ── Load Google Maps script ──────────────────────────────────────────────────
   useEffect(() => {
     if (window.google?.maps) { setGoogleLoaded(true); return; }
-    // Use a global callback — required by modern Google Maps JS API
-    const callbackName = '__googleMapsReady__';
+
+    const callbackName = '__googleMapsInitCallback__';
+
+    // If script is already in the DOM (e.g. prior mount), just wait for it
+    const existing = document.querySelector(`script[src*="maps.googleapis.com"]`);
+    if (existing) {
+      // Poll until google.maps is ready
+      const poll = setInterval(() => {
+        if (window.google?.maps) { clearInterval(poll); setGoogleLoaded(true); }
+      }, 100);
+      return () => clearInterval(poll);
+    }
+
+    // Register a persistent global callback (don't delete on cleanup — Google calls it async)
     window[callbackName] = () => setGoogleLoaded(true);
+
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry&callback=${callbackName}`;
     script.async = true;
-    script.defer = true;
-    script.onerror = () => console.error('Failed to load Google Maps — check API key and enabled APIs');
+    script.onerror = () => console.error('Failed to load Google Maps — check API key and enabled APIs in Google Cloud Console');
     document.head.appendChild(script);
-    return () => { delete window[callbackName]; };
   }, []);
 
   // ── Create Google Map instance ───────────────────────────────────────────────
