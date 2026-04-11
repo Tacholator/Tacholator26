@@ -371,13 +371,16 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   // ── Load Google Maps script ──────────────────────────────────────────────────
   useEffect(() => {
     if (window.google?.maps) { setGoogleLoaded(true); return; }
+    // Use a global callback — required by modern Google Maps JS API
+    const callbackName = '__googleMapsReady__';
+    window[callbackName] = () => setGoogleLoaded(true);
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry&callback=${callbackName}&loading=async`;
     script.async = true;
     script.defer = true;
-    script.onload = () => setGoogleLoaded(true);
-    script.onerror = () => console.error('Failed to load Google Maps');
+    script.onerror = () => console.error('Failed to load Google Maps — check API key and enabled APIs');
     document.head.appendChild(script);
+    return () => { delete window[callbackName]; };
   }, []);
 
   // ── Create Google Map instance ───────────────────────────────────────────────
