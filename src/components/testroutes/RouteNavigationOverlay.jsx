@@ -370,25 +370,39 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   // ── Load Google Maps script ──────────────────────────────────────────────────
   useEffect(() => {
-    if (window.google?.maps) { setGoogleLoaded(true); return; }
-
     const callbackName = '__googleMapsInitCallback__';
+    const desiredSrc = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry&callback=${callbackName}`;
 
-    // If script is already in the DOM (e.g. prior mount), just wait for it
-    const existing = document.querySelector(`script[src*="maps.googleapis.com"]`);
-    if (existing) {
-      // Poll until google.maps is ready
+    // If Google Maps already loaded with the correct key, use it directly
+    if (window.google?.maps) {
+      const existing = document.querySelector('script[src*="maps.googleapis.com"]');
+      if (!existing || existing.src.includes(GOOGLE_MAPS_KEY)) {
+        setGoogleLoaded(true);
+        return;
+      }
+    }
+
+    // Remove stale script if it has a different key
+    const existing = document.querySelector('script[src*="maps.googleapis.com"]');
+    if (existing && !existing.src.includes(GOOGLE_MAPS_KEY)) {
+      existing.remove();
+      // Reset google maps global so it gets re-initialised with new key
+      delete window.google;
+    }
+
+    // If script already in DOM with correct key, just poll for readiness
+    const correct = document.querySelector('script[src*="maps.googleapis.com"]');
+    if (correct) {
       const poll = setInterval(() => {
         if (window.google?.maps) { clearInterval(poll); setGoogleLoaded(true); }
       }, 100);
       return () => clearInterval(poll);
     }
 
-    // Register a persistent global callback (don't delete on cleanup — Google calls it async)
+    // Inject fresh script
     window[callbackName] = () => setGoogleLoaded(true);
-
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry&callback=${callbackName}`;
+    script.src = desiredSrc;
     script.async = true;
     script.onerror = () => console.error('Failed to load Google Maps — check API key and enabled APIs in Google Cloud Console');
     document.head.appendChild(script);
