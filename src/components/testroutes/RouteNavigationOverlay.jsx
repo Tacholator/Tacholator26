@@ -398,11 +398,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   useEffect(() => {
     if (!googleLoaded || mapInstanceRef.current) return;
 
-    let rafId2;
-    const rafId = requestAnimationFrame(() => {
-      rafId2 = requestAnimationFrame(() => {
+    const timerId = setTimeout(() => {
       const div = mapDivRef.current;
-      if (!div || !(div instanceof Element) || !document.body.contains(div)) return;
+      if (!div || !(div instanceof Element) || !div.isConnected) return;
       if (mapInstanceRef.current) return;
 
       const center = getRouteCenter();
@@ -483,10 +481,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       });
 
       setMapReady(true);
-      }); // end inner RAF
-    }); // end outer RAF
+    }, 100);
 
-    return () => { cancelAnimationFrame(rafId); cancelAnimationFrame(rafId2); };
+    return () => clearTimeout(timerId);
   }, [googleLoaded]);
 
   // ── Build route using Google Directions API ───────────────────────────────────
