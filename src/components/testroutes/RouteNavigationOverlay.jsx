@@ -399,8 +399,8 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     if (!googleLoaded || mapInstanceRef.current) return;
 
     const timerId = setTimeout(() => {
-      const div = mapDivRef.current;
-      if (!div || !(div instanceof Element) || !div.isConnected) return;
+      const div = document.getElementById('route-nav-map');
+      if (!div || !(div instanceof HTMLElement)) return;
       if (mapInstanceRef.current) return;
 
       const center = getRouteCenter();
@@ -821,7 +821,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     <div className="fixed inset-0 z-[9999] bg-white flex flex-col">
       {/* ── Map container ─────────────────────────────────────────────────── */}
       <div className="flex-1 relative">
-        <div ref={mapDivRef} style={{ width: '100%', height: '100%' }} />
+        <div id="route-nav-map" ref={mapDivRef} style={{ width: '100%', height: '100%' }} />
 
         {/* Loading overlay while Google Maps script loads */}
         {!googleLoaded && (
