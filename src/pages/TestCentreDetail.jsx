@@ -8,20 +8,36 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Build a Google Static Maps URL from a route's GeoJSON or GPS URL
+function encodePolyline(coords) {
+  let output = '';
+  let prevLat = 0, prevLng = 0;
+  for (const [lng, lat] of coords) {
+    const encodePart = (val) => {
+      let v = Math.round(val * 1e5);
+      v = v < 0 ? ~(v << 1) : v << 1;
+      let str = '';
+      while (v >= 0x20) { str += String.fromCharCode((0x20 | (v & 0x1f)) + 63); v >>= 5; }
+      str += String.fromCharCode(v + 63);
+      return str;
+    };
+    output += encodePart(lat - prevLat) + encodePart(lng - prevLng);
+    prevLat = lat; prevLng = lng;
+  }
+  return output;
+}
+
 function buildStaticMapUrl(route, apiKey) {
   if (!apiKey) return null;
-  if (route.gpsGeoJson?.geometry?.coordinates?.length) {
-    const coords = route.gpsGeoJson.geometry.coordinates;
-    // Encode path: sample up to 100 points for URL length
-    const step = Math.max(1, Math.floor(coords.length / 100));
-    const path = coords.filter((_, i) => i % step === 0)
-      .map(([lng, lat]) => `${lat},${lng}`)
-      .join('|');
-    return `https://maps.googleapis.com/maps/api/staticmap?size=640x360&maptype=roadmap&path=color:0x071739ff|weight:4|${path}&key=${apiKey}`;
-  }
-  // Fallback: show a map centred on the GPS URL host (no preview possible)
-  return null;
+  const coords = route.gpsGeoJson?.geometry?.coordinates;
+  if (!coords?.length) return null;
+  const step = Math.max(1, Math.floor(coords.length / 200));
+  const sampled = coords.filter((_, i) => i % step === 0);
+  const encoded = encodePolyline(sampled);
+  const lats = coords.map(c => c[1]);
+  const lngs = coords.map(c => c[0]);
+  const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+  const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+  return `https://maps.googleapis.com/maps/api/staticmap?center=${centerLat},${centerLng}&size=800x450&maptype=roadmap&path=color:0x3B82F6FF|weight:4|enc:${encodeURIComponent(encoded)}&key=${apiKey}`;
 }
 
 export default function TestCentreDetail() {
