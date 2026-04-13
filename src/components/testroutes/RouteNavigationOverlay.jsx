@@ -243,17 +243,48 @@ function buildBanner(step) {
   };
 }
 
-function buildSpeechText(step, prefix) {
+function buildSpeechText(step, distanceMeters) {
   if (!step) return 'Continue.';
-  let core;
+
+  // Build the action phrase (Google Maps style)
+  let action;
   if (step.isMiniRoundabout) {
-    core = miniRoundaboutPhrase(step.maneuverModifier).toLowerCase();
+    const mod = step.maneuverModifier;
+    action = mod === 'left' || mod === 'slight left' ? 'at the mini roundabout, turn left'
+           : mod === 'right' || mod === 'slight right' ? 'at the mini roundabout, turn right'
+           : 'at the mini roundabout, go straight ahead';
   } else if (step.isRoundabout) {
-    core = roundaboutPhrase(step.roundaboutExitNum).toLowerCase();
+    const exit = step.roundaboutExitNum;
+    action = exit ? `at the roundabout, take the ${ordinal(exit)} exit` : 'at the roundabout, follow the roundabout';
   } else {
-    core = (step.rawInstruction || 'continue').replace(/\.+$/, '');
+    const mod = step.maneuverModifier;
+    action = mod === 'left' ? 'turn left'
+           : mod === 'right' ? 'turn right'
+           : mod === 'slight left' ? 'keep left'
+           : mod === 'slight right' ? 'keep right'
+           : mod === 'uturn' ? 'make a U-turn'
+           : 'continue straight ahead';
   }
-  return prefix ? `${prefix}, ${core}.` : `${core}.`;
+
+  // Append street name if available
+  if (step.streetName) action += ` onto ${step.streetName}`;
+
+  // Prefix with distance cue
+  if (distanceMeters == null) return `${action}.`;
+  const distM = Math.round(distanceMeters);
+  let distPhrase;
+  if (distM >= 900) {
+    const miles = (distM / 1000 * 0.621371).toFixed(1);
+    distPhrase = `In ${miles} miles`;
+  } else if (distM >= 450) {
+    distPhrase = 'In half a mile';
+  } else {
+    const feet = Math.round(distM * 3.28084);
+    // Round to nearest 100 ft for naturalness
+    const rounded = Math.round(feet / 100) * 100;
+    distPhrase = `In ${rounded || 100} feet`;
+  }
+  return `${distPhrase}, ${action}.`;
 }
 
 // ─── Maneuver Icon SVG Component ─────────────────────────────────────────────
@@ -641,7 +672,8 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       buildRoute(latitude, longitude).then(steps => {
         if (steps?.length && !isMutedRef.current) {
           setTimeout(() => speak('Starting route guidance.'), 500);
-          setTimeout(() => speak(buildSpeechText(steps[0], null)), 2000);
+          const firstDist = steps[0]?.distance || null;
+          setTimeout(() => speak(buildSpeechText(steps[0], firstDist)), 2000);
         }
       });
       return;
@@ -682,15 +714,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       if (now - lastSpokenAtRef.current > 3000 && !isMutedRef.current) {
         const m = milestonesRef.current;
         if (d <= 60 && !m.now) {
-          speak(buildSpeechText(curStep, 'Now'));
+          speak(buildSpeechText(curStep, null)); // "Turn left onto Chopin Road"
           lastSpokenAtRef.current = now;
           milestonesRef.current = { ...m, now: true };
         } else if (d <= 200 && !m.approach) {
-          speak(buildSpeechText(curStep, 'In 200 metres'));
+          speak(buildSpeechText(curStep, d));
           lastSpokenAtRef.current = now;
           milestonesRef.current = { ...m, approach: true };
         } else if (d <= 500 && !m.prepare) {
-          speak(buildSpeechText(curStep, 'In 500 metres'));
+          speak(buildSpeechText(curStep, d));
           lastSpokenAtRef.current = now;
           milestonesRef.current = { ...m, prepare: true };
         }
@@ -709,7 +741,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
 
         if (!isMutedRef.current) {
-          setTimeout(() => speak(buildSpeechText(nextStep, null)), 500);
+          setTimeout(() => speak(buildSpeechText(nextStep, nextStep?.distance || null)), 500);
         }
       } else if (d <= 20 && idx === steps.length - 1) {
         setBanner({ title: 'You have arrived!', iconKey: 'arrive', sub: '' });
@@ -869,6 +901,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   return (
     <div className="fixed inset-0 z-[9999] bg-white flex flex-col">
+      {/* Hide Google Maps branding UI */}
+      <style>{`
+        .gm-style-cc, .gm-style-cc + div,
+        a[title="Report errors in the road map or imagery to Google"],
+        .gmnoprint a, .gm-style .gm-style-cc > *,
+        .gm-control-active,
+        button[title="Keyboard shortcuts"] { display: none !important; }
+        .gm-style .gm-style-cc { display: none !important; }
+      `}</style>
       {/* ── Map container ─────────────────────────────────────────────────── */}
       <div className="flex-1 relative">
         <div id="route-nav-map" ref={mapDivRef} style={{ width: '100%', height: '100%' }} />
