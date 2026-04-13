@@ -7,8 +7,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MapPin, Pencil, Check, X, PlayCircle, Plus, Trash2, Youtube } from 'lucide-react';
+import { ArrowLeft, MapPin, Pencil, Check, X, PlayCircle, Plus, Trash2, Youtube, Navigation, Upload, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Label } from '@/components/ui/label';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from '@/components/ui/select';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
@@ -28,8 +32,14 @@ export default function AdminNationalCentreDetail() {
   const [creatingRoute, setCreatingRoute] = useState(false);
   const [newRouteName, setNewRouteName] = useState('');
   const [newRouteUrl, setNewRouteUrl] = useState('');
+  const [newGpsType, setNewGpsType] = useState('gpx_url');
+  const [newGpsUrl, setNewGpsUrl] = useState('');
+  const [newGpsUploading, setNewGpsUploading] = useState(false);
   const [editingRouteId, setEditingRouteId] = useState(null);
   const [editUrl, setEditUrl] = useState('');
+  const [editGpsType, setEditGpsType] = useState('gpx_url');
+  const [editGpsUrl, setEditGpsUrl] = useState('');
+  const [editGpsUploading, setEditGpsUploading] = useState(false);
   const [editingNameId, setEditingNameId] = useState(null);
   const [editName, setEditName] = useState('');
   const [expandedRouteId, setExpandedRouteId] = useState(null);
@@ -48,15 +58,25 @@ export default function AdminNationalCentreDetail() {
     enabled: !!centreName
   });
 
+  const handleGpsFileUpload = async (file, setter, setUploading) => {
+    if (!file) return;
+    setUploading(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setter(file_url);
+    setUploading(false);
+  };
+
   const createRouteMutation = useMutation({
-    mutationFn: ({ name, youtubeUrl, youtubeVideoId }) =>
-      base44.entities.TestRoute.create({ routeName: name, city: centreName, youtubeUrl, youtubeVideoId }),
+    mutationFn: ({ name, youtubeUrl, youtubeVideoId, gpsRouteType, gpsRouteUrl }) =>
+      base44.entities.TestRoute.create({ routeName: name, city: centreName, youtubeUrl, youtubeVideoId, gpsRouteType: gpsRouteUrl ? gpsRouteType : undefined, gpsRouteUrl: gpsRouteUrl || undefined }),
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ['nationalCentreRoutes', centreName] });
       queryClient.refetchQueries({ queryKey: ['nationalTestCentres'] });
       queryClient.refetchQueries({ queryKey: ['allTestRoutes'] });
       setNewRouteName('');
       setNewRouteUrl('');
+      setNewGpsType('gpx_url');
+      setNewGpsUrl('');
       setCreatingRoute(false);
       toast({ title: 'Success', description: 'Route created.' });
     },
@@ -75,13 +95,13 @@ export default function AdminNationalCentreDetail() {
   });
 
   const updateRouteMutation = useMutation({
-    mutationFn: ({ id, youtubeUrl, youtubeVideoId }) =>
-      base44.entities.TestRoute.update(id, { youtubeUrl, youtubeVideoId }),
+    mutationFn: ({ id, youtubeUrl, youtubeVideoId, gpsRouteType, gpsRouteUrl }) =>
+      base44.entities.TestRoute.update(id, { youtubeUrl, youtubeVideoId, gpsRouteType: gpsRouteUrl ? gpsRouteType : undefined, gpsRouteUrl: gpsRouteUrl || undefined }),
     onSuccess: (_, variables) => {
       queryClient.refetchQueries({ queryKey: ['nationalCentreRoutes', centreName] });
       queryClient.refetchQueries({ queryKey: ['allTestRoutes'] });
       setEditingRouteId(null);
-      toast({ title: 'Saved', description: 'Video URL updated.' });
+      toast({ title: 'Saved', description: 'Route updated.' });
     },
     onError: () => toast({ title: 'Error', description: 'Failed to update video URL.', variant: 'destructive' })
   });
@@ -138,18 +158,54 @@ export default function AdminNationalCentreDetail() {
                   onChange={(e) => setNewRouteUrl(e.target.value)}
                   placeholder="YouTube URL (optional)"
                 />
+                {/* GPS Route Section */}
+                <div className="border border-slate-200 rounded-lg p-3 space-y-2 bg-slate-50">
+                  <Label className="text-xs font-semibold text-slate-600 flex items-center gap-1"><Navigation className="w-3.5 h-3.5" /> GPS Route (optional)</Label>
+                  <Select value={newGpsType} onValueChange={setNewGpsType}>
+                    <SelectTrigger className="h-8 text-sm bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gpx_url">GPX File URL</SelectItem>
+                      <SelectItem value="geojson_url">GeoJSON File URL</SelectItem>
+                      <SelectItem value="external_map_url">External Map URL</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="flex gap-2">
+                    <Input
+                      value={newGpsUrl}
+                      onChange={(e) => setNewGpsUrl(e.target.value)}
+                      placeholder={newGpsType === 'external_map_url' ? 'https://...' : 'Paste URL or upload file below'}
+                      className="text-sm h-8 bg-white"
+                    />
+                    {newGpsType !== 'external_map_url' && (
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept={newGpsType === 'gpx_url' ? '.gpx' : '.geojson,.json'}
+                          className="hidden"
+                          onChange={(e) => handleGpsFileUpload(e.target.files[0], setNewGpsUrl, setNewGpsUploading)}
+                        />
+                        <div className={`h-8 px-3 flex items-center gap-1 rounded-md border border-slate-300 text-xs text-slate-600 hover:bg-slate-100 transition-colors ${newGpsUploading ? 'opacity-50' : ''}`}>
+                          <Upload className="w-3.5 h-3.5" />
+                          {newGpsUploading ? 'Uploading...' : 'Upload'}
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     onClick={() => {
                       const videoId = extractVideoId(newRouteUrl);
-                      createRouteMutation.mutate({ name: newRouteName.trim(), youtubeUrl: newRouteUrl, youtubeVideoId: videoId });
+                      createRouteMutation.mutate({ name: newRouteName.trim(), youtubeUrl: newRouteUrl, youtubeVideoId: videoId, gpsRouteType: newGpsType, gpsRouteUrl: newGpsUrl });
                     }}
                     disabled={createRouteMutation.isPending || !newRouteName.trim()}
                     className="bg-emerald-500 hover:bg-emerald-600 gap-1"
                   >
                     <Check className="w-4 h-4" /> Save Route
                   </Button>
-                  <Button variant="outline" onClick={() => { setCreatingRoute(false); setNewRouteName(''); setNewRouteUrl(''); }}>
+                  <Button variant="outline" onClick={() => { setCreatingRoute(false); setNewRouteName(''); setNewRouteUrl(''); setNewGpsUrl(''); setNewGpsType('gpx_url'); }}>
                     <X className="w-4 h-4" /> Cancel
                   </Button>
                 </div>
@@ -255,7 +311,7 @@ export default function AdminNationalCentreDetail() {
                       </div>
 
                       {editingRouteId === route.id ? (
-                        <div className="flex items-center gap-2">
+                        <div className="space-y-2">
                           <Input
                             value={editUrl}
                             onChange={e => setEditUrl(e.target.value)}
@@ -263,27 +319,70 @@ export default function AdminNationalCentreDetail() {
                             className="text-sm"
                             autoFocus
                           />
-                          <Button size="icon" className="bg-emerald-500 hover:bg-emerald-600 shrink-0" onClick={() => {
-                            const videoId = extractVideoId(editUrl);
-                            updateRouteMutation.mutate({ id: route.id, youtubeUrl: editUrl, youtubeVideoId: videoId });
-                          }} disabled={updateRouteMutation.isPending}>
-                            <Check className="w-4 h-4" />
-                          </Button>
-                          <Button size="icon" variant="outline" className="shrink-0" onClick={() => { setEditingRouteId(null); setEditUrl(''); }}>
-                            <X className="w-4 h-4" />
-                          </Button>
+                          {/* GPS Route Edit */}
+                          <div className="border border-slate-200 rounded-lg p-3 space-y-2 bg-slate-50">
+                            <Label className="text-xs font-semibold text-slate-600 flex items-center gap-1"><Navigation className="w-3.5 h-3.5" /> GPS Route (optional)</Label>
+                            <Select value={editGpsType} onValueChange={setEditGpsType}>
+                              <SelectTrigger className="h-8 text-sm bg-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="gpx_url">GPX File URL</SelectItem>
+                                <SelectItem value="geojson_url">GeoJSON File URL</SelectItem>
+                                <SelectItem value="external_map_url">External Map URL</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <div className="flex gap-2">
+                              <Input
+                                value={editGpsUrl}
+                                onChange={e => setEditGpsUrl(e.target.value)}
+                                placeholder={editGpsType === 'external_map_url' ? 'https://...' : 'Paste URL or upload file below'}
+                                className="text-sm h-8 bg-white"
+                              />
+                              {editGpsType !== 'external_map_url' && (
+                                <label className="cursor-pointer">
+                                  <input
+                                    type="file"
+                                    accept={editGpsType === 'gpx_url' ? '.gpx' : '.geojson,.json'}
+                                    className="hidden"
+                                    onChange={(e) => handleGpsFileUpload(e.target.files[0], setEditGpsUrl, setEditGpsUploading)}
+                                  />
+                                  <div className={`h-8 px-3 flex items-center gap-1 rounded-md border border-slate-300 text-xs text-slate-600 hover:bg-slate-100 transition-colors ${editGpsUploading ? 'opacity-50' : ''}`}>
+                                    <Upload className="w-3.5 h-3.5" />
+                                    {editGpsUploading ? 'Uploading...' : 'Upload'}
+                                  </div>
+                                </label>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 gap-1" onClick={() => {
+                              const videoId = extractVideoId(editUrl);
+                              updateRouteMutation.mutate({ id: route.id, youtubeUrl: editUrl, youtubeVideoId: videoId, gpsRouteType: editGpsType, gpsRouteUrl: editGpsUrl });
+                            }} disabled={updateRouteMutation.isPending}>
+                              <Check className="w-4 h-4" /> Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => { setEditingRouteId(null); setEditUrl(''); setEditGpsUrl(''); setEditGpsType('gpx_url'); }}>
+                              <X className="w-4 h-4" /> Cancel
+                            </Button>
+                          </div>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-slate-500 truncate flex-1">{route.youtubeUrl || 'No URL set'}</span>
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm text-slate-500 truncate block">{route.youtubeUrl || 'No URL set'}</span>
+                            {route.gpsRouteUrl && (
+                              <span className="text-xs text-emerald-600 flex items-center gap-1 mt-0.5"><Navigation className="w-3 h-3" /> GPS route configured</span>
+                            )}
+                          </div>
                           <Button
                             size="sm"
                             variant="outline"
                             className="shrink-0 gap-1"
-                            onClick={() => { setEditingRouteId(route.id); setEditUrl(route.youtubeUrl || ''); }}
+                            onClick={() => { setEditingRouteId(route.id); setEditUrl(route.youtubeUrl || ''); setEditGpsType(route.gpsRouteType || 'gpx_url'); setEditGpsUrl(route.gpsRouteUrl || ''); }}
                           >
                             <Pencil className="w-3.5 h-3.5" />
-                            {route.youtubeUrl ? 'Edit URL' : 'Add URL'}
+                            {route.youtubeUrl ? 'Edit' : 'Add'}
                           </Button>
                         </div>
                       )}
