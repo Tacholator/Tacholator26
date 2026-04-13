@@ -125,9 +125,13 @@ function _drainQueue() {
   utt.rate = 0.95;
   utt.volume = 1;
   const voices = window.speechSynthesis.getVoices();
-  const preferred = voices.find(v =>
-    v.name.includes('Google UK') || v.name.includes('Daniel') || v.lang === 'en-GB'
-  );
+  const preferred =
+    voices.find(v => v.name === 'Google UK English Female') ||
+    voices.find(v => v.name.includes('Serena')) ||
+    voices.find(v => v.name.includes('Karen')) ||
+    voices.find(v => v.name.includes('Moira')) ||
+    voices.find(v => v.lang === 'en-GB' && v.name.toLowerCase().includes('female')) ||
+    voices.find(v => v.lang === 'en-GB' && !v.name.toLowerCase().includes('male'));
   if (preferred) utt.voice = preferred;
   utt.onend = () => { _isSpeaking = false; _drainQueue(); };
   utt.onerror = () => { _isSpeaking = false; _drainQueue(); };
