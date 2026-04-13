@@ -614,10 +614,10 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       firstFixRef.current = true;
       setIsLoading(false);
 
-      // Set navigation camera
+      // Set navigation camera — Google Maps style (user in lower third)
       if (mapInstanceRef.current) {
         mapInstanceRef.current.setCenter({ lat: latitude, lng: longitude });
-        mapInstanceRef.current.setZoom(17);
+        mapInstanceRef.current.setZoom(18);
         mapInstanceRef.current.setTilt(45);
         mapInstanceRef.current.setHeading(bearing);
       }
@@ -631,15 +631,22 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       return;
     }
 
-    // Follow mode camera — throttled to 500ms
+    // Follow mode camera — Google Maps style smooth tracking
     if (followModeRef.current && mapInstanceRef.current) {
       const now = Date.now();
-      if (now - lastCameraUpdateRef.current >= 500) {
+      if (now - lastCameraUpdateRef.current >= 250) {
         lastCameraUpdateRef.current = now;
-        mapInstanceRef.current.panTo({ lat: latitude, lng: longitude });
-        if (speed != null && speed >= 1.0) {
-          mapInstanceRef.current.setHeading(bearing);
-        }
+        // Offset center so user sits in lower-center third (like Google Maps)
+        const map = mapInstanceRef.current;
+        const zoom = map.getZoom() || 18;
+        const latOffset = 0.0003 * Math.pow(2, 17 - zoom);
+        const headingRad = (bearing * Math.PI) / 180;
+        const offsetLat = latitude - latOffset * Math.cos(headingRad);
+        const offsetLng = longitude - latOffset * Math.sin(headingRad) / Math.cos(latitude * Math.PI / 180);
+        map.panTo({ lat: offsetLat, lng: offsetLng });
+        map.setHeading(bearing);
+        if (zoom < 17) map.setZoom(18);
+        if (map.getTilt() < 40) map.setTilt(45);
       }
     }
 
@@ -775,7 +782,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         initBearing = computeBearing(coords[0][1], coords[0][0], coords[1][1], coords[1][0]);
       }
       mapInstanceRef.current.setCenter({ lat: startPt[1], lng: startPt[0] });
-      mapInstanceRef.current.setZoom(17);
+      mapInstanceRef.current.setZoom(18);
       mapInstanceRef.current.setTilt(45);
       mapInstanceRef.current.setHeading(initBearing);
     }
@@ -803,7 +810,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     setFollowMode(true);
     if (userLocation && mapInstanceRef.current) {
       mapInstanceRef.current.panTo({ lat: userLocation.latitude, lng: userLocation.longitude });
-      mapInstanceRef.current.setZoom(17);
+      mapInstanceRef.current.setZoom(18);
       mapInstanceRef.current.setTilt(45);
       mapInstanceRef.current.setHeading(computedBearingRef.current || 0);
     }
