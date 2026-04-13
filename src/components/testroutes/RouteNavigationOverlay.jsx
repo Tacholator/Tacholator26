@@ -361,6 +361,18 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const startCoord = routeGeoJson?.geometry?.coordinates?.[0];
   const endCoord = routeGeoJson?.geometry?.coordinates?.[routeGeoJson?.geometry?.coordinates?.length - 1];
 
+  // ── Fetch Google Maps API key from backend ───────────────────────────────────
+  useEffect(() => {
+    base44.functions.invoke('getGoogleMapsKey', {}).then(res => {
+      const key = res?.data?.key;
+      if (key) {
+        setGoogleMapsKey(key);
+      } else {
+        setGoogleError(true);
+      }
+    }).catch(() => setGoogleError(true));
+  }, []);
+
   const getRouteCenter = () => {
     if (!routeGeoJson?.geometry?.coordinates?.length) return { lat: 53.8, lng: -1.5 };
     const coords = routeGeoJson.geometry.coordinates;
