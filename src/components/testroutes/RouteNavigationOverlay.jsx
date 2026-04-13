@@ -371,11 +371,8 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   // ── Load Google Maps script ──────────────────────────────────────────────────
   useEffect(() => {
-    if (!GOOGLE_MAPS_KEY) {
-      console.error('VITE_GOOGLE_MAPS_KEY is not set');
-      setGoogleError(true);
-      return;
-    }
+    if (!googleMapsKey) return;
+
 
     const callbackName = '__googleMapsInitCallback__';
     const desiredSrc = `https://maps.googleapis.com/maps/api/js?key=${googleMapsKey}&libraries=geometry&callback=${callbackName}`;
