@@ -1070,17 +1070,19 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           </div>
         )}
 
+        {/* Recenter button - lower left */}
+        {hasStarted && !followMode && (
+          <button
+            onClick={handleRecenter}
+            className="absolute left-3 bottom-4 z-20 w-12 h-12 rounded-full bg-[#F7B602] shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+            title="Recenter"
+          >
+            <Locate className="w-5 h-5 text-[#071739]" />
+          </button>
+        )}
+
         {/* Right-side controls */}
         <div className="absolute right-3 z-20 flex flex-col gap-2.5" style={{ top: '50%', transform: 'translateY(-50%)' }}>
-          {hasStarted && !followMode && (
-            <button
-              onClick={handleRecenter}
-              className="w-11 h-11 rounded-full bg-[#F7B602] shadow-lg flex items-center justify-center active:scale-95 transition-transform"
-              title="Recenter"
-            >
-              <Locate className="w-5 h-5 text-[#071739]" />
-            </button>
-          )}
           <button
             onClick={handleOverview}
             className="w-11 h-11 rounded-full bg-white shadow-lg flex items-center justify-center active:scale-95 transition-transform"
