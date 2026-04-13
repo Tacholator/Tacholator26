@@ -993,7 +993,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               transition={{ type: 'spring', damping: 28, stiffness: 280 }}
               className="absolute top-0 left-0 right-0 z-20"
             >
-              <div className="bg-[#071739]/97 shadow-2xl backdrop-blur-sm">
+              <div className="bg-[#071739] shadow-2xl">
                 {/* Main instruction */}
                 <div className="flex items-center px-4 pt-4 pb-3 gap-4">
                   <ManeuverIcon iconKey={banner.iconKey} size={58} />
