@@ -116,15 +116,29 @@ function isNearMiniRoundabout(lat, lng, miniRoundabouts, thresholdMeters = 25) {
 
 // ─── Google maneuver → modifier mapping ──────────────────────────────────────
 
-function getModifierFromGoogle(maneuver) {
-  if (!maneuver) return 'straight';
-  const m = maneuver.toLowerCase();
-  if (m.includes('uturn')) return 'uturn';
+function getModifierFromGoogle(maneuver, instrText = '') {
+  const m = (maneuver || '').toLowerCase();
+  const t = instrText.toLowerCase();
+  if (m.includes('uturn') || t.includes('u-turn')) return 'uturn';
   if (m === 'turn-slight-left' || m === 'keep-left' || m === 'fork-left') return 'slight left';
   if (m === 'turn-slight-right' || m === 'keep-right' || m === 'fork-right') return 'slight right';
   if (m.includes('left') || m === 'ramp-left') return 'left';
   if (m.includes('right') || m === 'ramp-right') return 'right';
+  // Fallback: parse from instruction text
+  if (t.includes('turn left') || t.includes('turn sharp left')) return 'left';
+  if (t.includes('turn right') || t.includes('turn sharp right')) return 'right';
+  if (t.includes('slight left') || t.includes('keep left')) return 'slight left';
+  if (t.includes('slight right') || t.includes('keep right')) return 'slight right';
   return 'straight';
+}
+
+function extractStreetName(instr) {
+  if (!instr) return '';
+  // Match "onto X", "on X", "toward X"
+  const m = instr.match(/(?:onto|on|toward|towards)\s+(.+)/i);
+  if (m) return m[1].replace(/\s*\(.*?\)/, '').trim();
+  // Last resort: return everything after the first comma or last word group
+  return '';
 }
 
 // ─── Step normalization from Google Directions ────────────────────────────────
@@ -137,7 +151,7 @@ function normalizeGoogleSteps(legs, miniRoundabouts = []) {
     const instr = htmlInstr.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
     const isRoundabout = maneuver.startsWith('roundabout') || /roundabout/i.test(instr);
-    const mod = getModifierFromGoogle(maneuver);
+    const mod = getModifierFromGoogle(maneuver, instr);
 
     // Parse exit number from instruction text (e.g. "Take the 2nd exit")
     let exitNum = null;
@@ -160,9 +174,12 @@ function normalizeGoogleSteps(legs, miniRoundabouts = []) {
       lng: typeof p.lng === 'function' ? p.lng() : p.lng
     }));
 
+    const streetName = extractStreetName(instr);
+
     return {
       index: i,
       name: instr,
+      streetName,
       distance: s.distance?.value || 0,
       duration: s.duration?.value || 0,
       rawInstruction: instr,
@@ -195,28 +212,34 @@ function miniRoundaboutPhrase(mod) {
 }
 
 function buildBanner(step) {
-  if (!step) return { title: 'Follow the route', iconKey: 'default', sub: '' };
+  if (!step) return { title: 'Follow the route', iconKey: 'default', sub: '', street: '' };
   if (step.isMiniRoundabout) {
     const mod = step.maneuverModifier;
     return {
       title: miniRoundaboutPhrase(mod),
       iconKey: mod === 'left' || mod === 'slight left' ? 'roundabout_left' : mod === 'right' || mod === 'slight right' ? 'roundabout_right' : 'roundabout',
       sub: 'Mini roundabout',
+      street: step.streetName || '',
     };
   }
   if (step.isRoundabout) {
+    const mod = step.maneuverModifier;
     return {
       title: roundaboutPhrase(step.roundaboutExitNum),
-      iconKey: step.roundaboutExitNum === 1 ? 'roundabout_1st' : step.roundaboutExitNum === 2 ? 'roundabout_2nd' : step.roundaboutExitNum === 3 ? 'roundabout_3rd' : 'roundabout',
+      iconKey: mod === 'left' || mod === 'slight left' ? 'roundabout_left' : mod === 'right' || mod === 'slight right' ? 'roundabout_right' : step.roundaboutExitNum === 1 ? 'roundabout_1st' : step.roundaboutExitNum === 2 ? 'roundabout_2nd' : step.roundaboutExitNum === 3 ? 'roundabout_3rd' : 'roundabout',
       sub: step.roundaboutExitNum ? `Exit ${step.roundaboutExitNum}` : 'Roundabout',
+      street: step.streetName || '',
     };
   }
   const mod = step.maneuverModifier;
   const iconKey = mod === 'left' ? 'turn_left' : mod === 'right' ? 'turn_right' : mod === 'slight left' ? 'slight_left' : mod === 'slight right' ? 'slight_right' : mod === 'uturn' ? 'uturn' : 'straight';
+  // Action label e.g. "Turn left"
+  const actionLabel = mod === 'left' ? 'Turn left' : mod === 'right' ? 'Turn right' : mod === 'slight left' ? 'Keep left' : mod === 'slight right' ? 'Keep right' : mod === 'uturn' ? 'Make a U-turn' : 'Continue';
   return {
-    title: step.rawInstruction || 'Continue',
+    title: actionLabel,
     iconKey,
     sub: '',
+    street: step.streetName || step.rawInstruction || '',
   };
 }
 
@@ -921,8 +944,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                           {formatDistance(distanceToManeuver)}
                         </p>
                       )}
-                      <p className="text-sm font-semibold text-slate-200 mt-0.5 truncate">{banner.title}</p>
-                      {banner.sub && <p className="text-xs text-[#F7B602] mt-0.5">{banner.sub}</p>}
+                      <p className="text-sm font-semibold text-[#F7B602] mt-1">{banner.title}</p>
+                      {banner.street && <p className="text-base font-bold text-white truncate">{banner.street}</p>}
+                      {banner.sub && <p className="text-xs text-slate-400 mt-0.5">{banner.sub}</p>}
                     </div>
                   </div>
                   {/* Rerouting bar */}
@@ -936,10 +960,13 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                   {nextBanner && (
                     <div className="flex items-center gap-3 border-t border-slate-700 px-4 py-2">
                       <span className="text-xs text-slate-400 font-medium shrink-0">Then</span>
-                      <ManeuverIcon iconKey={nextBanner.iconKey} size={22} />
-                      <span className="text-xs text-slate-300 truncate flex-1">
-                        {nextStep?.distance ? formatDistance(nextStep.distance) + ' · ' : ''}{nextBanner.title}
-                      </span>
+                      <ManeuverIcon iconKey={nextBanner.iconKey} size={24} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-slate-400">
+                          {nextStep?.distance ? formatDistance(nextStep.distance) + ' · ' : ''}{nextBanner.title}
+                        </p>
+                        {nextBanner.street && <p className="text-xs text-white font-semibold truncate">{nextBanner.street}</p>}
+                      </div>
                     </div>
                   )}
                 </div>
