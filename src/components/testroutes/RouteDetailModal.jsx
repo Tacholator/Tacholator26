@@ -117,10 +117,10 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
       totalDistance += R * c;
     }
 
-    const distanceKm = (totalDistance / 1000).toFixed(1);
+    const distanceMi = (totalDistance / 1000 * 0.621371).toFixed(1);
     const durationMin = Math.round((totalDistance / 1000) / 0.5);
 
-    return { distance: distanceKm, duration: durationMin };
+    return { distance: distanceMi, duration: durationMin };
   };
 
   const routeMetrics = calculateRouteMetrics();
@@ -250,7 +250,7 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
                         <p className="text-xs text-slate-500">Distance</p>
                         <p className="text-lg font-semibold text-[#071739] flex items-center gap-1">
                           <RouteIcon className="w-4 h-4" />
-                          {routeMetrics.distance} km
+                          {routeMetrics.distance} mi
                         </p>
                       </div>
                       <div>
