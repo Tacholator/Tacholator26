@@ -553,7 +553,8 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const handleLocationUpdate = useCallback((position) => {
     const { latitude, longitude, accuracy, heading, speed } = position.coords;
 
-    if (!firstFixRef.current && accuracy > 50) return;
+    // Accept first fix if accuracy is reasonable (≤150m) or if fallback timer already forced a start
+    if (!firstFixRef.current && accuracy > 150) return;
 
     const bearing = computeHeadingOrBearing(heading, latitude, longitude, lastLatRef.current, lastLngRef.current);
     computedBearingRef.current = bearing;
@@ -719,9 +720,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     };
   }, [hasStarted, mapReady]);
 
-  // ── Re-register watcher when handler changes ────────────────────────────────
+  // ── Re-register watcher when handler changes (only after first fix to avoid race) ─
   useEffect(() => {
-    if (watchIdRef.current) {
+    if (watchIdRef.current && firstFixRef.current) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = navigator.geolocation.watchPosition(
         handleLocationUpdate,
@@ -735,6 +736,13 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     setIsLoading(true);
     setHasStarted(true);
     setFollowMode(true);
+    // Fallback: force-clear loading after 10s regardless of GPS accuracy
+    setTimeout(() => {
+      if (!firstFixRef.current) {
+        firstFixRef.current = true;
+        setIsLoading(false);
+      }
+    }, 10000);
     const startPt = routeGeoJson?.geometry?.coordinates?.[0];
     if (startPt && mapInstanceRef.current) {
       const coords = routeGeoJson.geometry.coordinates;
