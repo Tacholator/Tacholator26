@@ -947,14 +947,16 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         <div className="bg-[#071739] shadow-2xl p-3 pb-4 lg:p-3 lg:pb-3">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="font-bold text-white text-lg">{route?.routeName || 'Route'}</p>
-              <p className="text-slate-300 text-sm">
-                {routeMetrics.distance} mi · approx {routeMetrics.duration} min
-              </p>
+              <p className="text-xs text-slate-300 uppercase tracking-wide">Time</p>
+              <p className="font-bold text-white">{routeMetrics.duration} min</p>
             </div>
-            <div className="flex items-center gap-1 text-white text-xs">
-              <MapPin className="w-3 h-3" />
-              <span>Route preview</span>
+            <div>
+              <p className="text-xs text-slate-300 uppercase tracking-wide">Distance</p>
+              <p className="font-bold text-white">{routeMetrics.distance} mi</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-300 uppercase tracking-wide">ETA</p>
+              <p className="font-bold text-white">{(() => { const eta = new Date(Date.now() + routeMetrics.duration * 60000); return `${String(eta.getHours()).padStart(2,'0')}:${String(eta.getMinutes()).padStart(2,'0')}`; })()}</p>
             </div>
           </div>
           <Button
