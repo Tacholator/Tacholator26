@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ArrowLeft, MapPin, Check, X, Plus, Trash2, Users, CreditCard, ChevronRight, Flag } from 'lucide-react';
+import { ArrowLeft, MapPin, Check, X, Plus, Trash2, Users, CreditCard, ChevronRight, Flag, Navigation, Video } from 'lucide-react';
 import NationalCentresList from '@/components/testroutes/NationalCentresList';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -82,11 +82,12 @@ export default function AdminTestRoutes() {
 
           {/* ── SUBSCRIPTION PLANS TAB ── */}
           <TabsContent value="plans">
-            <div className="max-w-sm">
-              <Card className="border-2 border-[#071739] shadow-lg overflow-hidden">
-                <div className="bg-[#071739] px-6 py-4 flex items-center justify-between">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
+              {/* Videos Only Plan */}
+              <Card className="border-2 border-slate-200 shadow-md overflow-hidden">
+                <div className="bg-slate-700 px-6 py-4 flex items-center justify-between">
                   <div>
-                    <p className="text-[#F7B602] text-xs font-semibold uppercase tracking-widest mb-1">Test Routes Access</p>
+                    <p className="text-slate-300 text-xs font-semibold uppercase tracking-widest mb-1 flex items-center gap-1"><Video className="w-3 h-3" /> Videos Only</p>
                     <h2 className="text-white text-2xl font-bold">Monthly Plan</h2>
                   </div>
                   <Badge className="bg-amber-400 text-[#071739] font-semibold">Draft</Badge>
@@ -98,6 +99,7 @@ export default function AdminTestRoutes() {
                   </div>
                   <ul className="space-y-3 mb-6">
                     {[
+                      'Route videos filmed by real local instructors',
                       'Access to all national test centre route videos',
                       'New routes added regularly',
                       'Watch anytime, on any device',
@@ -110,7 +112,45 @@ export default function AdminTestRoutes() {
                     ))}
                   </ul>
                   <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-xs text-amber-700">
-                    This plan is currently in <strong>draft</strong> and not visible to users. Publish it when ready.
+                    This plan is currently in <strong>draft</strong> and not visible to users.
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Videos + GPS Plan */}
+              <Card className="border-2 border-[#F7B602] shadow-lg overflow-hidden relative">
+                <div className="absolute top-3 right-3 z-10">
+                  <Badge className="bg-[#F7B602] text-[#071739] font-bold text-xs">BEST VALUE</Badge>
+                </div>
+                <div className="bg-[#071739] px-6 py-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-[#F7B602] text-xs font-semibold uppercase tracking-widest mb-1 flex items-center gap-1"><Navigation className="w-3 h-3" /> Videos + GPS Routes</p>
+                    <h2 className="text-white text-2xl font-bold">Monthly Plan</h2>
+                  </div>
+                  <Badge className="bg-amber-400 text-[#071739] font-semibold">Draft</Badge>
+                </div>
+                <CardContent className="p-6">
+                  <div className="flex items-end gap-1 mb-6">
+                    <span className="text-4xl font-extrabold text-[#071739]">£30</span>
+                    <span className="text-slate-500 mb-1">/month</span>
+                  </div>
+                  <ul className="space-y-3 mb-6">
+                    {[
+                      'Route videos & GPS routes by real local instructors',
+                      'Turn-by-turn GPS navigation for every test route',
+                      'Access to all national test centre route videos',
+                      'Follow-along GPS practice before your test',
+                      'New routes added regularly',
+                      'Cancel anytime',
+                    ].map((feature) => (
+                      <li key={feature} className="flex items-start gap-3 text-sm text-slate-700">
+                        <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-xs text-amber-700">
+                    This plan is currently in <strong>draft</strong> and not visible to users.
                   </div>
                 </CardContent>
               </Card>
