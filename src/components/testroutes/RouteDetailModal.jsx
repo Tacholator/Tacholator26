@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import Map, { Source, Layer } from 'react-map-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
 import {
   Dialog,
   DialogContent,
@@ -15,8 +13,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Youtube, Navigation, Save, Info, Upload, Plus, Minus, Clock, Navigation2 as RouteIcon } from 'lucide-react';
+import { Navigation, Info, Clock, Navigation2 as RouteIcon } from 'lucide-react';
 import RouteNavigationOverlay from './RouteNavigationOverlay';
+
+// Encode a polyline for Google Static Maps
+function encodePolyline(coords) {
+  let output = '';
+  let prevLat = 0, prevLng = 0;
+  for (const [lng, lat] of coords) {
+    const encodePart = (val) => {
+      let v = Math.round(val * 1e5);
+      v = v < 0 ? ~(v << 1) : v << 1;
+      let str = '';
+      while (v >= 0x20) { str += String.fromCharCode((0x20 | (v & 0x1f)) + 63); v >>= 5; }
+      str += String.fromCharCode(v + 63);
+      return str;
+    };
+    output += encodePart(lat - prevLat) + encodePart(lng - prevLng);
+    prevLat = lat; prevLng = lng;
+  }
+  return output;
+}
 
 function extractYouTubeId(url) {
   if (!url) return '';
@@ -33,20 +50,17 @@ function extractYouTubeId(url) {
 
 export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeChange, onGpsChange, isUpdating, isAdmin = true }) {
   const navigate = useNavigate();
-  const [mapboxToken, setMapboxToken] = useState(null);
+  const [googleMapsKey, setGoogleMapsKey] = useState(null);
   const [youtubeUrl, setYoutubeUrl] = useState(route?.youtubeUrl || '');
   const [gpsRouteType, setGpsRouteType] = useState(route?.gpsRouteType || 'gpx_url');
   const [gpsRouteUrl, setGpsRouteUrl] = useState(route?.gpsRouteUrl || '');
   const [uploading, setUploading] = useState(false);
   const [navigationOpen, setNavigationOpen] = useState(false);
-  const [mapZoom, setMapZoom] = useState(13);
 
-  // Fetch Mapbox token
+  // Fetch Google Maps key
   useEffect(() => {
-    base44.functions.invoke('getMapboxToken').then(({ data }) => {
-      if (data?.token) {
-        setMapboxToken(data.token);
-      }
+    base44.functions.invoke('getGoogleMapsKey').then(({ data }) => {
+      if (data?.key) setGoogleMapsKey(data.key);
     }).catch(console.error);
   }, []);
 
@@ -69,27 +83,22 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
   const routeGeoJson = route?.gpsGeoJson || null;
   const hasValidRoute = routeGeoJson?.geometry?.coordinates?.length > 0;
 
-  // Calculate route center
-  const getRouteCenter = () => {
-    if (!routeGeoJson?.geometry?.coordinates) return { longitude: -1.5, latitude: 53.8 };
+  // Build Google Static Maps URL with the route polyline
+  const getStaticMapUrl = () => {
+    if (!hasValidRoute || !googleMapsKey) return null;
     const coords = routeGeoJson.geometry.coordinates;
-    const avgLon = coords.reduce((sum, [lon]) => sum + lon, 0) / coords.length;
-    const avgLat = coords.reduce((sum, [, lat]) => sum + lat, 0) / coords.length;
-    return { longitude: avgLon, latitude: avgLat };
+    // Sample coords to keep URL under limits (max ~8000 chars)
+    const step = Math.max(1, Math.floor(coords.length / 200));
+    const sampled = coords.filter((_, i) => i % step === 0);
+    const encoded = encodePolyline(sampled);
+    const lats = coords.map(c => c[1]);
+    const lngs = coords.map(c => c[0]);
+    const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+    const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${centerLat},${centerLng}&size=800x450&maptype=roadmap&path=color:0x3B82F6FF|weight:4|enc:${encodeURIComponent(encoded)}&key=${googleMapsKey}`;
   };
 
-  const routeCenter = getRouteCenter();
-
-  // Route layer style
-  const routeLayerStyle = {
-    id: 'route-preview',
-    type: 'line',
-    paint: {
-      'line-color': '#3B82F6',
-      'line-width': 4,
-      'line-opacity': 0.8
-    }
-  };
+  const staticMapUrl = getStaticMapUrl();
 
   // Calculate route metrics
   const calculateRouteMetrics = () => {
@@ -168,64 +177,16 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               
               {/* Route Map Visualization */}
               <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden relative">
-                {hasValidRoute && mapboxToken ? (
-                  <>
-                    <Map
-                      mapboxAccessToken={mapboxToken}
-                      initialViewState={{
-                        ...routeCenter,
-                        zoom: mapZoom
-                      }}
-                      mapStyle="mapbox://styles/mapbox/streets-v12"
-                      style={{ width: '100%', height: '100%' }}
-                      onZoom={(e) => setMapZoom(e.viewState.zoom)}
-                      attributionControl={false}
-                      onLoad={(e) => {
-                        // Fit bounds to show entire route with responsive padding
-                        if (routeGeoJson?.geometry?.coordinates?.length > 0) {
-                          const coords = routeGeoJson.geometry.coordinates;
-                          const lngs = coords.map(c => c[0]);
-                          const lats = coords.map(c => c[1]);
-                          
-                          const bounds = [
-                            [Math.min(...lngs), Math.min(...lats)],
-                            [Math.max(...lngs), Math.max(...lats)]
-                          ];
-                          
-                          // Responsive padding based on screen size
-                          const padding = window.innerWidth < 768 ? 20 : 40;
-                          e.target.fitBounds(bounds, { padding, duration: 0 });
-                        }
-                      }}
-                    >
-                      {routeGeoJson && (
-                        <Source id="route-preview-source" type="geojson" data={routeGeoJson}>
-                          <Layer {...routeLayerStyle} />
-                        </Source>
-                      )}
-                    </Map>
-                    {/* Zoom Controls */}
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-10">
-                      <Button
-                        onClick={() => setMapZoom(prev => Math.min(prev + 1, 20))}
-                        size="icon"
-                        className="h-8 w-8 bg-white hover:bg-slate-100 text-slate-900 shadow-lg"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        onClick={() => setMapZoom(prev => Math.max(prev - 1, 1))}
-                        size="icon"
-                        className="h-8 w-8 bg-white hover:bg-slate-100 text-slate-900 shadow-lg"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </>
+                {staticMapUrl ? (
+                  <img
+                    src={staticMapUrl}
+                    alt="Route map"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <p className="text-slate-500">
-                      {!mapboxToken ? 'Loading map...' : 'No route data available'}
+                      {!googleMapsKey ? 'Loading map...' : 'No route data available'}
                     </p>
                   </div>
                 )}
