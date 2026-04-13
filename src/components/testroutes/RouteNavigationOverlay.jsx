@@ -812,7 +812,11 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   // ── Camera animation helper (smooth panTo + heading + tilt + zoom) ────────────
   function animateCameraTo(map, lat, lng, heading, zoom, tilt) {
-    // Offset center so user sits in lower 35% (more road visible ahead)
+    // Set heading first so the offset is applied in the correct rotated direction
+    if (Math.abs((map.getHeading() || 0) - heading) > 5) map.setHeading(heading);
+    if (Math.abs((map.getZoom() || 0) - zoom) > 0.3) map.setZoom(zoom);
+    if ((map.getTilt() || 0) < tilt - 3) map.setTilt(tilt);
+    // Offset center forward (up-screen) so user sits in lower quarter, horizontally centred
     const currentZoom = map.getZoom() || zoom;
     const latOffset = 0.0012 * Math.pow(2, 17 - currentZoom);
     const hRad = (heading * Math.PI) / 180;
@@ -820,9 +824,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     const offLat = lat + latOffset * Math.cos(hRad);
     const offLng = lng + (latOffset * Math.sin(hRad)) / cosLat;
     map.panTo({ lat: offLat, lng: offLng });
-    if (Math.abs((map.getHeading() || 0) - heading) > 5) map.setHeading(heading);
-    if (Math.abs((map.getZoom() || 0) - zoom) > 0.3) map.setZoom(zoom);
-    if ((map.getTilt() || 0) < tilt - 3) map.setTilt(tilt);
   }
 
   // ── GPS Watch ────────────────────────────────────────────────────────────────
