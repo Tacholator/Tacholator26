@@ -455,10 +455,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             path, map: mapInstance,
             strokeColor: '#1E6BFF', strokeWeight: 8, strokeOpacity: 0.9, zIndex: 1,
           });
-          activePolylineRef.current = new window.google.maps.Polyline({
-            path: [], map: mapInstance,
-            strokeColor: '#F7B602', strokeWeight: 10, strokeOpacity: 1, zIndex: 2,
-          });
           const bounds = new window.google.maps.LatLngBounds();
           path.forEach(p => bounds.extend(p));
           mapInstance.fitBounds(bounds, 40);
@@ -559,12 +555,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
     setBanner(buildBanner(steps[0]));
 
-    // Only draw active segment polyline once navigation has started
-    if (hasStartedRef.current && steps[0]?.rawPath?.length && activePolylineRef.current) {
-      activePolylineRef.current.setPath(steps[0].rawPath);
-    } else if (!hasStartedRef.current && activePolylineRef.current) {
-      activePolylineRef.current.setPath([]);
-    }
+
 
     return steps;
   }, [routeGeoJson]);
@@ -692,9 +683,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         const nextStep = steps[nextIdx];
         setBanner(buildBanner(nextStep));
 
-        if (nextStep?.rawPath?.length && activePolylineRef.current) {
-          activePolylineRef.current.setPath(nextStep.rawPath);
-        }
+
 
         if (!isMutedRef.current) {
           setTimeout(() => speak(buildSpeechText(nextStep, null)), 500);
