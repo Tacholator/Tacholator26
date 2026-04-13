@@ -559,9 +559,11 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
     setBanner(buildBanner(steps[0]));
 
-    // Update active segment polyline
-    if (steps[0]?.rawPath?.length && activePolylineRef.current) {
+    // Only draw active segment polyline once navigation has started
+    if (hasStartedRef.current && steps[0]?.rawPath?.length && activePolylineRef.current) {
       activePolylineRef.current.setPath(steps[0].rawPath);
+    } else if (!hasStartedRef.current && activePolylineRef.current) {
+      activePolylineRef.current.setPath([]);
     }
 
     return steps;
