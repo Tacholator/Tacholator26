@@ -817,8 +817,8 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     const latOffset = 0.0018 * Math.pow(2, 17 - currentZoom);
     const hRad = (heading * Math.PI) / 180;
     const cosLat = Math.cos(lat * Math.PI / 180) || 1;
-    const offLat = lat - latOffset * Math.cos(hRad);
-    const offLng = lng - (latOffset * Math.sin(hRad)) / cosLat;
+    const offLat = lat + latOffset * Math.cos(hRad);
+    const offLng = lng + (latOffset * Math.sin(hRad)) / cosLat;
     map.panTo({ lat: offLat, lng: offLng });
     if (Math.abs((map.getHeading() || 0) - heading) > 5) map.setHeading(heading);
     if (Math.abs((map.getZoom() || 0) - zoom) > 0.3) map.setZoom(zoom);
