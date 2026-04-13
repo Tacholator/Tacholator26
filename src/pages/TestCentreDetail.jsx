@@ -3,10 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Lock, Play, CheckCircle, Loader2, MapPin, Video, ArrowLeft, Navigation, Check } from 'lucide-react';
+import { Lock, Play, CheckCircle, Loader2, MapPin, Video, ArrowLeft, Navigation, Check, Clock, Navigation2 as RouteIcon, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
+import RouteNavigationOverlay from '@/components/testroutes/RouteNavigationOverlay';
 
 function encodePolyline(coords) {
   let output = '';
@@ -45,6 +46,7 @@ export default function TestCentreDetail() {
   const { toast } = useToast();
   const [loadingSubscribe, setLoadingSubscribe] = useState(false);
   const [activeTab, setActiveTab] = useState({}); // routeId -> 'video' | 'gps'
+  const [navigationRoute, setNavigationRoute] = useState(null);
 
   const { data: mapsKey } = useQuery({
     queryKey: ['googleMapsKey'],
@@ -125,6 +127,7 @@ export default function TestCentreDetail() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-3xl mx-auto px-6 py-6 space-y-4">
         {/* Back + Title */}
@@ -289,28 +292,76 @@ export default function TestCentreDetail() {
                   )
                 )}
 
-                {/* GPS panel */}
+                {/* GPS panel — Route Layout (same as admin view) */}
                 {tab === 'gps' && hasGps && (() => {
                   const mapUrl = buildStaticMapUrl(route, mapsKey);
+                  const coords = route.gpsGeoJson?.geometry?.coordinates || [];
+                  const hasValidRoute = coords.length > 0;
+
+                  // Calculate route metrics
+                  let totalDistance = 0;
+                  for (let i = 0; i < coords.length - 1; i++) {
+                    const [lng1, lat1] = coords[i];
+                    const [lng2, lat2] = coords[i + 1];
+                    const R = 6371e3;
+                    const φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
+                    const Δφ = (lat2 - lat1) * Math.PI / 180;
+                    const Δλ = (lng2 - lng1) * Math.PI / 180;
+                    const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+                    totalDistance += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                  }
+                  const distanceMi = (totalDistance / 1000 * 0.621371).toFixed(1);
+                  const durationMin = Math.round((totalDistance / 1000) / 0.5);
+
                   return isSubscribed ? (
-                    <div className="relative aspect-video bg-white overflow-hidden">
-                      {mapUrl ? (
-                        <img src={mapUrl} alt="Route map" className="w-full h-full object-contain" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-slate-100">
-                          <Navigation className="w-10 h-10 text-slate-300" />
+                    <div className="space-y-0">
+                      {/* Map */}
+                      <div className="aspect-video bg-slate-200 overflow-hidden">
+                        {mapUrl ? (
+                          <img src={mapUrl} alt="Route map" className="w-full h-full object-contain" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-slate-100">
+                            <Navigation className="w-10 h-10 text-slate-300" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Route details + Start Navigation */}
+                      <div className="p-4 bg-slate-50 border-t border-slate-100 space-y-3">
+                        <div className="flex gap-6 flex-wrap">
+                          <div>
+                            <p className="text-xs text-slate-500">Route Type</p>
+                            <p className="text-base font-semibold text-[#071739]">Test Route {route.routeNumber}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500">Status</p>
+                            <p className="text-base font-semibold text-[#071739]">{hasValidRoute ? 'Ready' : 'No GPS data'}</p>
+                          </div>
+                          {hasValidRoute && distanceMi > 0 && (
+                            <>
+                              <div>
+                                <p className="text-xs text-slate-500">Distance</p>
+                                <p className="text-base font-semibold text-[#071739] flex items-center gap-1">
+                                  <RouteIcon className="w-4 h-4" />{distanceMi} mi
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-slate-500">Duration</p>
+                                <p className="text-base font-semibold text-[#071739] flex items-center gap-1">
+                                  <Clock className="w-4 h-4" />~{durationMin} min
+                                </p>
+                              </div>
+                            </>
+                          )}
                         </div>
-                      )}
-                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex items-end justify-between">
-                        <p className="text-white text-sm font-semibold">GPS Route Preview</p>
-                        <a
-                          href={route.gpsRouteUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#F7B602] text-[#071739] text-xs font-bold hover:bg-[#d99f02] transition-colors"
+                        <Button
+                          className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-bold"
+                          disabled={!hasValidRoute}
+                          onClick={() => setNavigationRoute(route)}
                         >
-                          <Navigation className="w-3 h-3" /> Open Route
-                        </a>
+                          <Navigation className="w-4 h-4 mr-2" />
+                          Start Navigation
+                        </Button>
                       </div>
                     </div>
                   ) : (
@@ -335,5 +386,14 @@ export default function TestCentreDetail() {
 
       </div>
     </div>
+
+    {/* GPS Navigation Overlay */}
+    {navigationRoute && (
+      <RouteNavigationOverlay
+        route={navigationRoute}
+        onClose={() => setNavigationRoute(null)}
+      />
+    )}
+    </>
   );
 }
