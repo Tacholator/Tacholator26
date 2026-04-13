@@ -8,11 +8,35 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 
+// Build a Google Static Maps URL from a route's GeoJSON or GPS URL
+function buildStaticMapUrl(route, apiKey) {
+  if (!apiKey) return null;
+  if (route.gpsGeoJson?.geometry?.coordinates?.length) {
+    const coords = route.gpsGeoJson.geometry.coordinates;
+    // Encode path: sample up to 100 points for URL length
+    const step = Math.max(1, Math.floor(coords.length / 100));
+    const path = coords.filter((_, i) => i % step === 0)
+      .map(([lng, lat]) => `${lat},${lng}`)
+      .join('|');
+    return `https://maps.googleapis.com/maps/api/staticmap?size=640x360&maptype=roadmap&path=color:0x071739ff|weight:4|${path}&key=${apiKey}`;
+  }
+  // Fallback: show a map centred on the GPS URL host (no preview possible)
+  return null;
+}
+
 export default function TestCentreDetail() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loadingSubscribe, setLoadingSubscribe] = useState(false);
   const [activeTab, setActiveTab] = useState({}); // routeId -> 'video' | 'gps'
+
+  const { data: mapsKey } = useQuery({
+    queryKey: ['googleMapsKey'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getGoogleMapsKey', {});
+      return res.data?.key || null;
+    }
+  });
 
   const urlParams = new URLSearchParams(window.location.search);
   const centreId = urlParams.get('centreId');
@@ -250,31 +274,43 @@ export default function TestCentreDetail() {
                 )}
 
                 {/* GPS panel */}
-                {tab === 'gps' && hasGps && (
-                  isSubscribed ? (
-                    <div className="p-4 flex flex-col items-center gap-3">
-                      <div className="w-full rounded-xl bg-slate-50 border border-slate-200 p-4 flex flex-col items-center gap-3">
-                        <Navigation className="w-8 h-8 text-[#071739]" />
-                        <p className="text-sm font-semibold text-[#071739]">GPS Route Available</p>
-                        <p className="text-xs text-slate-500 text-center">Open the GPS file in your preferred navigation app to follow along with this test route.</p>
+                {tab === 'gps' && hasGps && (() => {
+                  const mapUrl = buildStaticMapUrl(route, mapsKey);
+                  return isSubscribed ? (
+                    <div className="relative aspect-video bg-slate-100 overflow-hidden">
+                      {mapUrl ? (
+                        <img src={mapUrl} alt="Route map" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-slate-100">
+                          <Navigation className="w-10 h-10 text-slate-300" />
+                        </div>
+                      )}
+                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex items-end justify-between">
+                        <p className="text-white text-sm font-semibold">GPS Route Preview</p>
                         <a
                           href={route.gpsRouteUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#071739] text-white text-sm font-semibold hover:bg-[#0a1f4d] transition-colors"
+                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#F7B602] text-[#071739] text-xs font-bold hover:bg-[#d99f02] transition-colors"
                         >
-                          <Navigation className="w-4 h-4" /> Open GPS Route
+                          <Navigation className="w-3 h-3" /> Open Route
                         </a>
                       </div>
                     </div>
                   ) : (
-                    <div className="p-8 flex flex-col items-center gap-2 bg-slate-50">
-                      <Lock className="w-8 h-8 text-slate-400" />
-                      <p className="text-sm font-semibold text-slate-600">Subscribe to access GPS routes</p>
-                      <p className="text-xs text-slate-400">Upgrade to the Videos + GPS plan to unlock turn-by-turn navigation.</p>
+                    <div className="relative aspect-video bg-slate-900 overflow-hidden">
+                      {mapUrl ? (
+                        <img src={mapUrl} alt="Route map preview" className="w-full h-full object-cover opacity-25 blur-sm" />
+                      ) : (
+                        <div className="w-full h-full bg-slate-800" />
+                      )}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                        <Lock className="w-8 h-8 text-white" />
+                        <p className="text-white text-sm font-semibold">Subscribe to access GPS routes</p>
+                      </div>
                     </div>
-                  )
-                )}
+                  );
+                })()}
               </div>
             );
           })
