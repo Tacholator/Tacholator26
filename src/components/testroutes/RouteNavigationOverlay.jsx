@@ -12,9 +12,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 function formatDistanceUK(m) {
   if (m == null) return '';
-  if (m >= 1000) return (m / 1000 * 0.621371).toFixed(1) + ' mi';
-  const rounded = Math.round(m / 50) * 50 || 50;
-  return rounded + ' m';
+  const miles = m / 1000 * 0.621371;
+  if (miles >= 0.1) return miles.toFixed(1) + ' mi';
+  const yards = Math.round(m * 1.09361 / 50) * 50 || 50;
+  return yards + ' yd';
 }
 
 function formatDistanceSpeechUK(m) {
@@ -24,9 +25,9 @@ function formatDistanceSpeechUK(m) {
     return `In ${miles} miles`;
   }
   if (m >= 450) return 'In half a mile';
-  if (m >= 250) return 'In 300 metres';
-  if (m >= 140) return 'In 200 metres';
-  return 'In 100 metres';
+  if (m >= 250) return 'In 300 yards';
+  if (m >= 140) return 'In 200 yards';
+  return 'In 100 yards';
 }
 
 function formatDuration(s) {
@@ -42,9 +43,9 @@ function formatETA(remainingSeconds) {
   return String(eta.getHours()).padStart(2, '0') + ':' + String(eta.getMinutes()).padStart(2, '0');
 }
 
-function formatSpeedKmh(mps) {
+function formatSpeedMph(mps) {
   if (mps == null || isNaN(mps)) return null;
-  return Math.round(mps * 3.6) + ' km/h';
+  return Math.round(mps * 2.23694) + ' mph';
 }
 
 // ─── Geo Helpers ──────────────────────────────────────────────────────────────
@@ -1187,7 +1188,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                     <div>
                       <p className="text-[10px] text-slate-400 uppercase tracking-widest">Speed</p>
                       <p className="text-base font-bold text-[#F7B602] leading-tight">
-                        {formatSpeedKmh(currentSpeedMps)}
+                        {formatSpeedMph(currentSpeedMps)}
                       </p>
                     </div>
                   )}
