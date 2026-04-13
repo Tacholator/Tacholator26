@@ -905,40 +905,56 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           )}
         </div>
 
-        {/* ── Top navigation banner ──────────────────────────────────────── */}
+        {/* ── Top navigation banner (Google Maps style) ──────────────── */}
         <AnimatePresence>
-          {hasStarted && !isLoading && (
-            <motion.div
-              key="banner"
-              initial={{ y: -100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -100, opacity: 0 }}
-              className="absolute top-4 left-2 right-2 z-10 mx-auto w-11/12"
-            >
-              <Card className="bg-[#071739] backdrop-blur-sm shadow-2xl border-0">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-3">
-                    <ManeuverIcon iconKey={banner.iconKey} size={44} />
+          {hasStarted && !isLoading && (() => {
+            const nextStep = navSteps[stepIndex + 1] || null;
+            const nextBanner = nextStep ? buildBanner(nextStep) : null;
+            return (
+              <motion.div
+                key="banner"
+                initial={{ y: -120, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -120, opacity: 0 }}
+                className="absolute top-0 left-0 right-0 z-10"
+              >
+                {/* Main maneuver card */}
+                <div className="bg-[#071739] shadow-2xl">
+                  <div className="flex items-center px-4 pt-3 pb-2 gap-4">
+                    {/* Big direction arrow */}
+                    <ManeuverIcon iconKey={banner.iconKey} size={56} />
+                    {/* Street info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-base font-bold text-white leading-tight">{banner.title}</p>
-                      {banner.sub && <p className="text-xs text-slate-300 mt-0.5 truncate">{banner.sub}</p>}
+                      {distanceToManeuver != null && distanceToManeuver > 0 && (
+                        <p className="text-3xl font-black text-white leading-none tracking-tight">
+                          {formatDistance(distanceToManeuver)}
+                        </p>
+                      )}
+                      <p className="text-sm font-semibold text-slate-200 mt-0.5 truncate">{banner.title}</p>
+                      {banner.sub && <p className="text-xs text-[#F7B602] mt-0.5">{banner.sub}</p>}
                     </div>
-                    {distanceToManeuver != null && distanceToManeuver > 0 && (
-                      <Badge className="bg-[#071739] text-white text-sm font-bold px-3 py-1 shrink-0 border border-slate-600">
-                        {formatDistance(distanceToManeuver)}
-                      </Badge>
-                    )}
                   </div>
+                  {/* Rerouting bar */}
                   {isRerouting && (
-                    <div className="mt-2 flex items-center gap-2 text-blue-400 bg-blue-900/30 px-2 py-1 rounded text-xs">
+                    <div className="flex items-center gap-2 text-blue-300 bg-blue-900/40 px-4 py-1.5 text-xs">
                       <Loader2 className="w-3 h-3 animate-spin" />
                       <span>Recalculating route...</span>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
+                  {/* "Then" next step strip */}
+                  {nextBanner && (
+                    <div className="flex items-center gap-3 border-t border-slate-700 px-4 py-2">
+                      <span className="text-xs text-slate-400 font-medium shrink-0">Then</span>
+                      <ManeuverIcon iconKey={nextBanner.iconKey} size={22} />
+                      <span className="text-xs text-slate-300 truncate flex-1">
+                        {nextStep?.distance ? formatDistance(nextStep.distance) + ' · ' : ''}{nextBanner.title}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })()}
         </AnimatePresence>
 
         {/* ── GPS loading spinner ─────────────────────────────────────────── */}
