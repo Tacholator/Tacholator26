@@ -293,9 +293,9 @@ export default function TestCentreDetail() {
                 {tab === 'gps' && hasGps && (() => {
                   const mapUrl = buildStaticMapUrl(route, mapsKey);
                   return isSubscribed ? (
-                    <div className="relative aspect-video bg-slate-100 overflow-hidden">
+                    <div className="relative aspect-video bg-white overflow-hidden">
                       {mapUrl ? (
-                        <img src={mapUrl} alt="Route map" className="w-full h-full object-cover" />
+                        <img src={mapUrl} alt="Route map" className="w-full h-full object-contain" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-slate-100">
                           <Navigation className="w-10 h-10 text-slate-300" />
@@ -314,15 +314,15 @@ export default function TestCentreDetail() {
                       </div>
                     </div>
                   ) : (
-                    <div className="relative aspect-video bg-slate-900 overflow-hidden">
+                    <div className="relative aspect-video bg-white overflow-hidden">
                       {mapUrl ? (
-                        <img src={mapUrl} alt="Route map preview" className="w-full h-full object-cover opacity-25 blur-sm" />
+                        <img src={mapUrl} alt="Route map preview" className="w-full h-full object-contain opacity-30 blur-sm" />
                       ) : (
-                        <div className="w-full h-full bg-slate-800" />
+                        <div className="w-full h-full bg-slate-100" />
                       )}
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                        <Lock className="w-8 h-8 text-white" />
-                        <p className="text-white text-sm font-semibold">Subscribe to access GPS routes</p>
+                        <Lock className="w-8 h-8 text-slate-700" />
+                        <p className="text-slate-800 text-sm font-semibold">Subscribe to access GPS routes</p>
                       </div>
                     </div>
                   );
