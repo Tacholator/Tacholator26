@@ -303,6 +303,7 @@ const GOOGLE_MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
 export default function RouteNavigationOverlay({ route, onClose }) {
   const [googleLoaded, setGoogleLoaded] = useState(false);
+  const [googleError, setGoogleError] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [userHeading, setUserHeading] = useState(null);
@@ -370,6 +371,12 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   // ── Load Google Maps script ──────────────────────────────────────────────────
   useEffect(() => {
+    if (!GOOGLE_MAPS_KEY) {
+      console.error('VITE_GOOGLE_MAPS_KEY is not set');
+      setGoogleError(true);
+      return;
+    }
+
     const callbackName = '__googleMapsInitCallback__';
     const desiredSrc = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry&callback=${callbackName}`;
 
@@ -386,7 +393,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     const existing = document.querySelector('script[src*="maps.googleapis.com"]');
     if (existing && !existing.src.includes(GOOGLE_MAPS_KEY)) {
       existing.remove();
-      // Reset google maps global so it gets re-initialised with new key
       delete window.google;
     }
 
@@ -404,7 +410,10 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     const script = document.createElement('script');
     script.src = desiredSrc;
     script.async = true;
-    script.onerror = () => console.error('Failed to load Google Maps — check API key and enabled APIs in Google Cloud Console');
+    script.onerror = () => {
+      console.error('Failed to load Google Maps — check API key and enabled APIs in Google Cloud Console');
+      setGoogleError(true);
+    };
     document.head.appendChild(script);
   }, []);
 
@@ -828,8 +837,19 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       <div className="flex-1 relative">
         <div id="route-nav-map" ref={mapDivRef} style={{ width: '100%', height: '100%' }} />
 
+        {/* Error overlay if Google Maps failed to load */}
+        {googleError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-100 z-10">
+            <div className="text-center p-6">
+              <MapIcon className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+              <p className="font-semibold text-slate-700">Map failed to load</p>
+              <p className="text-sm text-slate-500 mt-1">Google Maps API key is missing or invalid.<br/>Check that VITE_GOOGLE_MAPS_KEY is set and the Maps JavaScript API is enabled.</p>
+            </div>
+          </div>
+        )}
+
         {/* Loading overlay while Google Maps script loads */}
-        {!googleLoaded && (
+        {!googleLoaded && !googleError && (
           <div className="absolute inset-0 flex items-center justify-center bg-slate-100">
             <div className="flex items-center gap-2 text-slate-600">
               <Loader2 className="w-6 h-6 animate-spin" />
