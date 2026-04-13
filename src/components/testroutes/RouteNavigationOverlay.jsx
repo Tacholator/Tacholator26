@@ -125,12 +125,9 @@ function _drainQueue() {
   utt.rate = 0.95;
   utt.volume = 1;
   const voices = window.speechSynthesis.getVoices();
-  const preferred =
-    voices.find(v => v.name === 'Google UK English Female') ||
-    voices.find(v => v.name === 'Google UK English Male') ||
-    voices.find(v => v.name.includes('Google UK')) ||
-    voices.find(v => v.name === 'Daniel') ||
-    voices.find(v => v.lang === 'en-GB');
+  const preferred = voices.find(v =>
+    v.name.includes('Google UK') || v.name.includes('Daniel') || v.lang === 'en-GB'
+  );
   if (preferred) utt.voice = preferred;
   utt.onend = () => { _isSpeaking = false; _drainQueue(); };
   utt.onerror = () => { _isSpeaking = false; _drainQueue(); };
@@ -177,15 +174,8 @@ function getModifier(maneuver, instrText = '') {
 
 function extractStreetName(instr) {
   if (!instr) return '';
-  // "onto X" / "toward X"
-  const onto = instr.match(/(?:onto|toward|towards)\s+([A-Za-z0-9 '\-]+)/i);
-  if (onto) return onto[1].replace(/\s*\(.*?\)/, '').trim();
-  // "Turn left/right on X"
-  const on = instr.match(/(?:turn|keep|continue)\s+\w+\s+on\s+([A-Za-z0-9 '\-]+)/i);
-  if (on) return on[1].replace(/\s*\(.*?\)/, '').trim();
-  // "Head X on X"
-  const head = instr.match(/^Head\s+\w+\s+on\s+([A-Za-z0-9 '\-]+)/i);
-  if (head) return head[1].replace(/\s*\(.*?\)/, '').trim();
+  const m = instr.match(/(?:onto|on|toward|towards)\s+(.+)/i);
+  if (m) return m[1].replace(/\s*\(.*?\)/, '').trim();
   return '';
 }
 
