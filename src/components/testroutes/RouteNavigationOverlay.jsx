@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -299,9 +300,8 @@ function ManeuverIcon({ iconKey, size = 40 }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const GOOGLE_MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY;
-
 export default function RouteNavigationOverlay({ route, onClose }) {
+  const [googleMapsKey, setGoogleMapsKey] = useState(null);
   const [googleLoaded, setGoogleLoaded] = useState(false);
   const [googleError, setGoogleError] = useState(false);
   const [mapReady, setMapReady] = useState(false);
@@ -378,12 +378,12 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     }
 
     const callbackName = '__googleMapsInitCallback__';
-    const desiredSrc = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry&callback=${callbackName}`;
+    const desiredSrc = `https://maps.googleapis.com/maps/api/js?key=${googleMapsKey}&libraries=geometry&callback=${callbackName}`;
 
     // If Google Maps already loaded with the correct key, use it directly
     if (window.google?.maps) {
       const existing = document.querySelector('script[src*="maps.googleapis.com"]');
-      if (!existing || existing.src.includes(GOOGLE_MAPS_KEY)) {
+      if (!existing || existing.src.includes(googleMapsKey)) {
         setGoogleLoaded(true);
         return;
       }
@@ -391,7 +391,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
     // Remove stale script if it has a different key
     const existing = document.querySelector('script[src*="maps.googleapis.com"]');
-    if (existing && !existing.src.includes(GOOGLE_MAPS_KEY)) {
+    if (existing && !existing.src.includes(googleMapsKey)) {
       existing.remove();
       delete window.google;
     }
@@ -415,7 +415,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       setGoogleError(true);
     };
     document.head.appendChild(script);
-  }, []);
+  }, [googleMapsKey]);
 
   // ── Create Google Map instance ───────────────────────────────────────────────
   useEffect(() => {
