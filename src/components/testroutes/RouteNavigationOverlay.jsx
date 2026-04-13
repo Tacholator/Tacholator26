@@ -722,6 +722,12 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     }
   }, [buildRoute, routeGeoJson]);
 
+  // ── Pre-fetch route metrics from start coord when map is ready ─────────────────
+  useEffect(() => {
+    if (!mapReady || !startCoord) return;
+    buildRoute(startCoord[1], startCoord[0]);
+  }, [mapReady]);
+
   // ── Start GPS watch ────────────────────────────────────────────────────────
   useEffect(() => {
     if (!hasStarted || !mapReady) return;
@@ -948,15 +954,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-xs text-slate-300 uppercase tracking-wide">Time</p>
-              <p className="font-bold text-white">{routeMetrics.duration} min</p>
+              <p className="font-bold text-white">{totalDuration != null ? formatDuration(totalDuration) : `~${routeMetrics.duration} min`}</p>
             </div>
             <div>
               <p className="text-xs text-slate-300 uppercase tracking-wide">Distance</p>
-              <p className="font-bold text-white">{routeMetrics.distance} mi</p>
+              <p className="font-bold text-white">{totalDistance != null ? formatDistance(totalDistance) : `${routeMetrics.distance} mi`}</p>
             </div>
             <div>
               <p className="text-xs text-slate-300 uppercase tracking-wide">ETA</p>
-              <p className="font-bold text-white">{(() => { const eta = new Date(Date.now() + routeMetrics.duration * 60000); return `${String(eta.getHours()).padStart(2,'0')}:${String(eta.getMinutes()).padStart(2,'0')}`; })()}</p>
+              <p className="font-bold text-white">{totalDuration != null ? formatETA(totalDuration) : '—'}</p>
             </div>
           </div>
           <Button
