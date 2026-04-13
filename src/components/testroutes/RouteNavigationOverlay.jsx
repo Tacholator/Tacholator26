@@ -814,7 +814,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   function animateCameraTo(map, lat, lng, heading, zoom, tilt) {
     // Offset center so user sits in lower 35% (more road visible ahead)
     const currentZoom = map.getZoom() || zoom;
-    const latOffset = 0.0006 * Math.pow(2, 17 - currentZoom);
+    const latOffset = 0.0012 * Math.pow(2, 17 - currentZoom);
     const hRad = (heading * Math.PI) / 180;
     const cosLat = Math.cos(lat * Math.PI / 180) || 1;
     const offLat = lat + latOffset * Math.cos(hRad);
