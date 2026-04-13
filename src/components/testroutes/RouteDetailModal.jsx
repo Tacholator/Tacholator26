@@ -287,69 +287,6 @@ export default function RouteDetailModal({ route, open, onOpenChange, onYouTubeC
               </div>
             </div>
 
-          {/* Video Section */}
-          <div className="space-y-4 p-4 border rounded-lg">
-            <div className="flex items-center gap-2 text-lg font-semibold text-slate-700">
-              <Youtube className="w-5 h-5" />
-              Route Video
-            </div>
-            
-            {isAdmin && (
-              <>
-                <div>
-                  <Label htmlFor="youtubeUrl">YouTube URL</Label>
-                  <Input
-                    id="youtubeUrl"
-                    type="url"
-                    placeholder="https://www.youtube.com/watch?v=xxxxxxxxxxx"
-                    value={youtubeUrl}
-                    onChange={(e) => setYoutubeUrl(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-
-                {!videoId && youtubeUrl && (
-                  <Alert>
-                    <Info className="h-4 w-4" />
-                    <AlertDescription>
-                      Invalid YouTube URL. Please check the format.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </>
-            )}
-
-            {videoId ? (
-              <div className="aspect-video bg-slate-900 rounded-lg overflow-hidden">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={`https://www.youtube.com/embed/${videoId}`}
-                  title={route.routeName}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <p className="text-slate-500 text-center py-8">
-                No video available for this route yet.
-              </p>
-            )}
-
-            {isAdmin && hasVideoChanges && (
-              <Button
-                onClick={handleSaveVideo}
-                disabled={isUpdating}
-                className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {isUpdating ? 'Saving...' : 'Save Video'}
-              </Button>
-            )}
-          </div>
-
-
         </div>
       </DialogContent>
     </Dialog>
