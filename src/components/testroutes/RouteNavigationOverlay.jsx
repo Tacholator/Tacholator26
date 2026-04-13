@@ -104,6 +104,20 @@ function ordinal(n) {
 
 let _voiceQueue = [];
 let _isSpeaking = false;
+let _selectedVoice = null;
+
+function getVoice() {
+  if (_selectedVoice) return _selectedVoice;
+  const voices = window.speechSynthesis.getVoices();
+  _selectedVoice =
+    voices.find(v => v.name === 'Google UK English Female') ||
+    voices.find(v => v.name.includes('Serena')) ||
+    voices.find(v => v.name.includes('Karen')) ||
+    voices.find(v => v.name.includes('Moira')) ||
+    voices.find(v => v.lang === 'en-GB' && !v.name.toLowerCase().includes('male')) ||
+    null;
+  return _selectedVoice;
+}
 
 function speakQueued(text, priority = false) {
   if (!text) return;
@@ -124,15 +138,8 @@ function _drainQueue() {
   utt.lang = 'en-GB';
   utt.rate = 0.95;
   utt.volume = 1;
-  const voices = window.speechSynthesis.getVoices();
-  const preferred =
-    voices.find(v => v.name === 'Google UK English Female') ||
-    voices.find(v => v.name.includes('Serena')) ||
-    voices.find(v => v.name.includes('Karen')) ||
-    voices.find(v => v.name.includes('Moira')) ||
-    voices.find(v => v.lang === 'en-GB' && v.name.toLowerCase().includes('female')) ||
-    voices.find(v => v.lang === 'en-GB' && !v.name.toLowerCase().includes('male'));
-  if (preferred) utt.voice = preferred;
+  const voice = getVoice();
+  if (voice) utt.voice = voice;
   utt.onend = () => { _isSpeaking = false; _drainQueue(); };
   utt.onerror = () => { _isSpeaking = false; _drainQueue(); };
   window.speechSynthesis.speak(utt);
