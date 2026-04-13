@@ -1120,6 +1120,13 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       {/* Bottom Panel */}
       {!hasStarted ? (
         <div className="bg-[#071739] px-4 pt-3 pb-5 shadow-2xl">
+          {/* Route name & number */}
+          <div className="mb-3">
+            <p className="text-white font-bold text-base leading-tight truncate">{route?.routeName}</p>
+            {route?.routeNumber && (
+              <p className="text-slate-400 text-xs mt-0.5">Test Route {route.routeNumber}</p>
+            )}
+          </div>
           <div className="flex justify-between mb-4">
             <div>
               <p className="text-[10px] text-slate-400 uppercase tracking-widest">Time</p>
@@ -1164,6 +1171,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               transition={{ type: 'spring', damping: 28 }}
               className="bg-[#071739] px-4 py-3 pb-4 shadow-2xl"
             >
+              {route?.routeName && (
+                <p className="text-xs text-slate-400 truncate mb-2">{route.routeName}{route?.routeNumber ? ` · Route ${route.routeNumber}` : ''}</p>
+              )}
               <div className="flex items-center justify-between">
                 <div className="flex gap-5 items-center">
                   <div>
