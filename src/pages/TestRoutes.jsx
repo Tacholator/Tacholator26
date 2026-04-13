@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Search, CheckCircle, Lock, Loader2, Play } from 'lucide-react';
+import { MapPin, Search, CheckCircle, Lock, Loader2, Play, Video, Navigation, Check } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 export default function TestRoutes() {
@@ -89,16 +89,63 @@ export default function TestRoutes() {
           </p>
         </div>
 
-        {/* Pricing info */}
-        <div className="bg-[#071739] rounded-2xl p-5 mb-8 flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-[#F7B602] text-xs font-semibold uppercase tracking-widest mb-1">Premium Access</p>
-            <p className="text-white text-lg font-bold">£20/month per test centre</p>
-            <p className="text-slate-400 text-sm mt-1">Watch all route videos for your chosen centre. Cancel anytime.</p>
-          </div>
-          <Badge className="bg-[#F7B602] text-[#071739] font-semibold text-sm px-4 py-1.5">
-            {subscriptions.filter(s => s.status === 'active').length} active {subscriptions.filter(s => s.status === 'active').length === 1 ? 'subscription' : 'subscriptions'}
-          </Badge>
+        {/* Pricing Plans */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          {/* Videos Only */}
+          <Card className="border-2 border-slate-200 overflow-hidden">
+            <div className="bg-slate-700 px-5 py-4">
+              <p className="text-slate-300 text-xs font-semibold uppercase tracking-widest mb-1 flex items-center gap-1"><Video className="w-3 h-3" /> Videos Only</p>
+              <div className="flex items-end gap-1">
+                <span className="text-3xl font-extrabold text-white">£20</span>
+                <span className="text-slate-400 mb-0.5">/month</span>
+              </div>
+            </div>
+            <CardContent className="p-4">
+              <ul className="space-y-2">
+                {[
+                  'Route videos filmed by real local instructors',
+                  'Full video walkthroughs of every test route',
+                  'Watch anytime, on any device',
+                  'Cancel anytime',
+                ].map(f => (
+                  <li key={f} className="flex items-start gap-2 text-sm text-slate-700">
+                    <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Videos + GPS */}
+          <Card className="border-2 border-[#F7B602] overflow-hidden relative">
+            <div className="absolute top-3 right-3">
+              <Badge className="bg-[#F7B602] text-[#071739] font-bold text-xs">BEST VALUE</Badge>
+            </div>
+            <div className="bg-[#071739] px-5 py-4">
+              <p className="text-[#F7B602] text-xs font-semibold uppercase tracking-widest mb-1 flex items-center gap-1"><Navigation className="w-3 h-3" /> Videos + GPS Routes</p>
+              <div className="flex items-end gap-1">
+                <span className="text-3xl font-extrabold text-white">£30</span>
+                <span className="text-slate-400 mb-0.5">/month</span>
+              </div>
+            </div>
+            <CardContent className="p-4">
+              <ul className="space-y-2">
+                {[
+                  'Everything in Videos Only',
+                  'GPS routes created by real local instructors',
+                  'Turn-by-turn GPS navigation for every route',
+                  'Follow-along GPS practice before your test',
+                  'Cancel anytime',
+                ].map(f => (
+                  <li key={f} className="flex items-start gap-2 text-sm text-slate-700">
+                    <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Search */}
