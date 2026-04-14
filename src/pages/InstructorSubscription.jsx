@@ -131,8 +131,10 @@ export default function InstructorSubscription() {
     setOpeningPortal(false);
   };
 
-  const isTrialing = subscription?.status === 'trialing';
-  const isActive = subscription?.status === 'active';
+  // If status is still 'trialing' but trial has ended, treat it as active (webhook may have been delayed)
+  const trialHasEnded = subscription?.trialEndAt && new Date(subscription.trialEndAt) < new Date();
+  const isTrialing = subscription?.status === 'trialing' && !trialHasEnded;
+  const isActive = subscription?.status === 'active' || (subscription?.status === 'trialing' && trialHasEnded);
   const isMonthly = subscription?.billingPeriod === 'monthly';
   const canUpgrade = (isActive || isTrialing) && isMonthly;
   const isCancelled = subscription?.status === 'cancelled';
