@@ -122,7 +122,7 @@ export default function MockTestReportForm() {
       const itemsMap = {};
       existingItems.forEach(item => {
         const key = `${item.category}__${item.subcategory}`;
-        itemsMap[key] = { category: item.category, subcategory: item.subcategory, rating: item.rating || "NT", comments: item.comments || "", improvementTag: item.improvementTag || "" };
+        itemsMap[key] = { category: item.category, subcategory: item.subcategory, rating: item.rating || "NT", faultCount: item.faultCount || 1, comments: item.comments || "", improvementTag: item.improvementTag || "" };
       });
       setAssessmentItems(prev => ({ ...buildInitialItems(reportMeta.transmissionType), ...itemsMap }));
     } else if (!reportId) {

@@ -113,9 +113,9 @@ export const QUICK_COMMENTS = [
 export const getRatingInfo = (value) => RATINGS.find(r => r.value === value) || RATINGS[4];
 
 export const calculateTotals = (items) => {
-  const df = items.filter(i => i.rating === "DF").length;
-  const s = items.filter(i => i.rating === "S").length;
-  const d = items.filter(i => i.rating === "D").length;
+  const df = items.filter(i => i.rating === "DF").reduce((sum, i) => sum + (i.faultCount || 1), 0);
+  const s = items.filter(i => i.rating === "S").reduce((sum, i) => sum + (i.faultCount || 1), 0);
+  const d = items.filter(i => i.rating === "D").reduce((sum, i) => sum + (i.faultCount || 1), 0);
   return { df, s, d };
 };
 
@@ -142,7 +142,7 @@ export const buildInitialItems = (transmissionType = "Manual") => {
     cat.subcategories.forEach(sub => {
       if (!isSubcategoryHidden(sub, transmissionType)) {
         const key = `${cat.category}__${sub}`;
-        items[key] = { category: cat.category, subcategory: sub, rating: "NT", comments: "", improvementTag: "" };
+        items[key] = { category: cat.category, subcategory: sub, rating: "NT", faultCount: 1, comments: "", improvementTag: "" };
       }
     });
   });

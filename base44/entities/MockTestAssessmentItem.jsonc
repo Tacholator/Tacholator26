@@ -23,6 +23,11 @@
       ],
       "default": "NT"
     },
+    "faultCount": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of times this fault occurred"
+    },
     "comments": {
       "type": "string"
     },

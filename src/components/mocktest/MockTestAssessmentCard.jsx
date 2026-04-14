@@ -25,7 +25,9 @@ function SubcategoryRow({ subcategory, item, onUpdate }) {
   const [showComments, setShowComments] = useState(false);
   const [showChips, setShowChips] = useState(false);
   const currentRating = item?.rating || "NT";
+  const faultCount = item?.faultCount || 1;
   const ratingInfo = getRatingInfo(currentRating);
+  const hasFaultRating = currentRating !== "NT" && currentRating !== "P";
 
   const handleCommentChip = (chip) => {
     const existing = item?.comments || "";
@@ -38,10 +40,29 @@ function SubcategoryRow({ subcategory, item, onUpdate }) {
     <div className={`rounded-xl border p-3 mb-2 transition-all ${currentRating !== "NT" ? ratingInfo.bg : "bg-white border-slate-100"}`}>
       <div className="flex items-center gap-2">
         <span className="flex-1 text-sm font-medium text-slate-700">{subcategory}</span>
-        <div className="flex gap-1">
+        <div className="flex gap-1 items-center">
           {RATINGS.map(r => (
-            <RatingButton key={r.value} value={r.value} current={currentRating} onSelect={(v) => onUpdate({ rating: v })} />
+            <RatingButton key={r.value} value={r.value} current={currentRating} onSelect={(v) => onUpdate({ rating: v, faultCount: v === "NT" || v === "P" ? 1 : faultCount })} />
           ))}
+          {hasFaultRating && (
+            <div className="flex items-center gap-1 ml-1 bg-white border-2 border-slate-200 rounded-lg px-1">
+              <button
+                type="button"
+                onClick={() => onUpdate({ faultCount: Math.max(1, faultCount - 1) })}
+                className="w-6 h-7 text-slate-500 hover:text-slate-800 font-bold text-base leading-none"
+              >
+                −
+              </button>
+              <span className="min-w-[18px] text-center text-sm font-bold text-slate-700">{faultCount}</span>
+              <button
+                type="button"
+                onClick={() => onUpdate({ faultCount: faultCount + 1 })}
+                className="w-6 h-7 text-slate-500 hover:text-slate-800 font-bold text-base leading-none"
+              >
+                +
+              </button>
+            </div>
+          )}
         </div>
         <button
           type="button"
