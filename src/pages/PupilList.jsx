@@ -78,6 +78,7 @@ export default function PupilList() {
 
   const { data: pupils = [], isLoading } = useQuery({
     queryKey: ['pupils', currentUser?.id],
+    enabled: !!currentUser?.id,
     queryFn: async () => {
       // Only fetch pupils created by this instructor
       const allPupils = await base44.entities.Pupil.filter({ instructorId: currentUser?.id });
