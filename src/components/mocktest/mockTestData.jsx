@@ -13,7 +13,7 @@ export const ASSESSMENT_CATEGORIES = [
   },
   {
     category: "Use of Mirrors",
-    subcategories: ["Before signalling", "Before changing direction"]
+    subcategories: ["Before signalling", "Before changing direction", "Change of Speed"]
   },
   {
     category: "Signals",
@@ -21,7 +21,7 @@ export const ASSESSMENT_CATEGORIES = [
   },
   {
     category: "Response to Signs and Signals",
-    subcategories: ["Traffic signs", "Road markings", "Traffic lights", "Traffic controllers / police"]
+    subcategories: ["Traffic signs", "Road markings", "Traffic lights", "Traffic controllers / police", "Other Road Users"]
   },
   {
     category: "Junctions",
