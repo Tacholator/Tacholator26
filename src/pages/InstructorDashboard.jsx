@@ -590,12 +590,12 @@ export default function InstructorDashboard() {
                                 <p className="text-xs text-rose-600 mt-1">Needs outcome</p>
                               </div>
                               <Button
-                                size="sm"
-                                onClick={() => handleMarkLesson(item.id)}
-                                className="bg-rose-600 hover:bg-rose-700 text-white"
-                              >
-                                Set Outcome
-                              </Button>
+                                 size="sm"
+                                 onClick={() => handleViewSummary(pupil)}
+                                 className="bg-rose-600 hover:bg-rose-700 text-white"
+                               >
+                                 Lesson Summary
+                               </Button>
                             </div>
                           </div>
                         );
