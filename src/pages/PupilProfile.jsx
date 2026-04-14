@@ -63,7 +63,8 @@ export default function PupilProfile() {
   const urlParams = new URLSearchParams(window.location.search);
   const pupilId = urlParams.get('id');
 
-  const [activeTab, setActiveTab] = useState('progress');
+  const initialTab = urlParams.get('tab') || 'progress';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDiaryEntry, setSelectedDiaryEntry] = useState(null);
