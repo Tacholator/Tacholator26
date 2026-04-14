@@ -45,12 +45,13 @@ function FaultGroup({ ratingKey, items }) {
   );
 }
 
-export default function MockTestFeedbackCard({ assessmentItems = {}, items, isGenerating = false }) {
+export default function MockTestFeedbackCard({ assessmentItems = {}, items: itemsArray, isGenerating = false }) {
   // Support both `assessmentItems` (map) and `items` (array) for backward compat
-  if (items && items.length > 0 && Object.keys(assessmentItems).length === 0) {
-    items.forEach(item => { assessmentItems[`${item.category}__${item.subcategory}`] = item; });
+  const resolvedMap = { ...assessmentItems };
+  if (itemsArray && itemsArray.length > 0 && Object.keys(resolvedMap).length === 0) {
+    itemsArray.forEach(item => { resolvedMap[`${item.category}__${item.subcategory}`] = item; });
   }
-  const items = Object.values(assessmentItems);
+  const items = Object.values(resolvedMap);
 
   const dfItems = items.filter(i => i.rating === "DF");
   const sItems  = items.filter(i => i.rating === "S");
