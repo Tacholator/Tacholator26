@@ -59,6 +59,13 @@ export default function MockTestReportForm() {
 
   const { data: currentUser } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
+  const { data: instructor } = useQuery({
+    queryKey: ["instructor", currentUser?.email],
+    queryFn: () => base44.entities.Instructor.filter({ created_by: currentUser?.email }),
+    enabled: !!currentUser?.email,
+    select: (data) => data[0]
+  });
+
   const { data: pupil } = useQuery({
     queryKey: ["pupil", learnerId],
     queryFn: () => base44.entities.Pupil.filter({ id: learnerId }),
@@ -141,7 +148,7 @@ export default function MockTestReportForm() {
   const buildSavePayload = () => ({
     ...reportMeta,
     instructorId: currentUser?.id,
-    instructorName: currentUser?.full_name || currentUser?.email,
+    instructorName: instructor ? `${instructor.name}` : currentUser?.full_name || currentUser?.email,
     learnerId: learnerId || existingReport?.learnerId,
     learnerName: pupil ? `${pupil.firstName} ${pupil.lastName}` : existingReport?.learnerName,
     totalDriverFaults: df,
@@ -188,7 +195,7 @@ export default function MockTestReportForm() {
     } finally {
       setIsSaving(false);
     }
-  }, [assessmentItems, savedReportId, existingItems, reportMeta, feedback, checks, df, s, d, overallResult, manualOverride]);
+  }, [assessmentItems, savedReportId, existingItems, reportMeta, feedback, checks, df, s, d, overallResult, manualOverride, instructor, currentUser, existingReport]);
 
   const handleSaveDraft = async () => {
     await doSave("Draft");
