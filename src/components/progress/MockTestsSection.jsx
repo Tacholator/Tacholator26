@@ -9,13 +9,15 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle2, XCircle, Plus, Edit, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, Plus, Edit, Loader2, ClipboardList } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 
 export default function MockTestsSection({ pupilId }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [editingMock, setEditingMock] = useState(null);
   const [formData, setFormData] = useState({
@@ -72,6 +74,18 @@ export default function MockTestsSection({ pupilId }) {
   return (
     <>
       <div className="space-y-4">
+        {/* Start Mock Test Button */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-slate-500">Quick mock test results below, or start a full detailed report.</p>
+          <Button
+            onClick={() => navigate(`/MockTestReportForm?learnerId=${pupilId}`)}
+            className="bg-[#071739] text-white hover:bg-[#071739]/90 font-semibold shrink-0"
+          >
+            <ClipboardList className="w-4 h-4 mr-2" />
+            Start Mock Test
+          </Button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {['mock_1', 'mock_2', 'mock_3'].map((mockId) => {
             const mock = mockTests.find(m => m.mockTestId === mockId);

@@ -1,0 +1,136 @@
+{
+  "name": "MockTestReport",
+  "type": "object",
+  "properties": {
+    "mockTestId": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "startTime": {
+      "type": "string"
+    },
+    "endTime": {
+      "type": "string"
+    },
+    "testCentreArea": {
+      "type": "string"
+    },
+    "routeName": {
+      "type": "string"
+    },
+    "instructorName": {
+      "type": "string"
+    },
+    "instructorId": {
+      "type": "string"
+    },
+    "learnerName": {
+      "type": "string"
+    },
+    "learnerId": {
+      "type": "string"
+    },
+    "vehicleRegistration": {
+      "type": "string"
+    },
+    "transmissionType": {
+      "type": "string",
+      "enum": [
+        "Manual",
+        "Automatic"
+      ],
+      "default": "Manual"
+    },
+    "weatherConditions": {
+      "type": "string"
+    },
+    "roadConditions": {
+      "type": "string"
+    },
+    "trafficConditions": {
+      "type": "string"
+    },
+    "overallResult": {
+      "type": "string",
+      "enum": [
+        "Pass",
+        "Fail",
+        "Borderline",
+        "Needs More Practice"
+      ]
+    },
+    "totalDriverFaults": {
+      "type": "number",
+      "default": 0
+    },
+    "totalSeriousFaults": {
+      "type": "number",
+      "default": 0
+    },
+    "totalDangerousFaults": {
+      "type": "number",
+      "default": 0
+    },
+    "independentDrivingCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "showMeTellMeCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "controlledStopCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "emergencyStopCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "instructorOverallComment": {
+      "type": "string"
+    },
+    "keyStrengths": {
+      "type": "string"
+    },
+    "mainAreasToImprove": {
+      "type": "string"
+    },
+    "priorityForNextLesson": {
+      "type": "string"
+    },
+    "recommendedPracticeFocus": {
+      "type": "string"
+    },
+    "instructorSignature": {
+      "type": "string"
+    },
+    "learnerSignature": {
+      "type": "string"
+    },
+    "isSharedWithLearner": {
+      "type": "boolean",
+      "default": false
+    },
+    "manualOverrideActive": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Draft",
+        "Finalised",
+        "Shared"
+      ],
+      "default": "Draft"
+    }
+  },
+  "required": [
+    "learnerId",
+    "date"
+  ]
+}

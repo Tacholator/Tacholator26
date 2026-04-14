@@ -32,6 +32,9 @@ import SubscriptionTerms from './pages/SubscriptionTerms';
 import TestRouteTerms from './pages/TestRouteTerms';
 import ReferAFriend from './pages/ReferAFriend';
 import InstructorReferralProgram from './pages/InstructorReferralProgram';
+import MockTestReportForm from './pages/MockTestReportForm';
+import MockTestReportList from './pages/MockTestReportList';
+import MockTestReportView from './pages/MockTestReportView';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -196,6 +199,21 @@ const AuthenticatedApp = () => {
       <Route path="/InstructorReferralProgram" element={
         <LayoutWrapper currentPageName="InstructorReferralProgram">
           <InstructorReferralProgram />
+        </LayoutWrapper>
+      } />
+      <Route path="/MockTestReportForm" element={
+        <LayoutWrapper currentPageName="MockTestReportForm">
+          <MockTestReportForm />
+        </LayoutWrapper>
+      } />
+      <Route path="/MockTestReportList" element={
+        <LayoutWrapper currentPageName="MockTestReportList">
+          <MockTestReportList />
+        </LayoutWrapper>
+      } />
+      <Route path="/MockTestReportView" element={
+        <LayoutWrapper currentPageName="MockTestReportView">
+          <MockTestReportView />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

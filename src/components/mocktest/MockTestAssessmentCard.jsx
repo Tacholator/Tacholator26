@@ -1,0 +1,152 @@
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { ChevronDown, ChevronUp, CheckCircle2 } from "lucide-react";
+import { RATINGS, QUICK_COMMENTS, getRatingInfo, isSubcategoryHidden } from "./mockTestData";
+import { Badge } from "@/components/ui/badge";
+
+function RatingButton({ value, current, onSelect }) {
+  const info = RATINGS.find(r => r.value === value);
+  const isSelected = current === value;
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(value)}
+      title={info?.title}
+      className={`min-w-[36px] h-9 px-2 rounded-lg text-xs font-bold border-2 transition-all duration-150
+        ${isSelected ? `${info?.color} border-transparent shadow-md scale-105` : `bg-white ${info?.border} ${info?.text} hover:opacity-80`}`}
+    >
+      {value}
+    </button>
+  );
+}
+
+function SubcategoryRow({ subcategory, item, onUpdate }) {
+  const [showComments, setShowComments] = useState(false);
+  const [showChips, setShowChips] = useState(false);
+  const currentRating = item?.rating || "NT";
+  const ratingInfo = getRatingInfo(currentRating);
+
+  const handleCommentChip = (chip) => {
+    const existing = item?.comments || "";
+    const newComment = existing ? `${existing}. ${chip}` : chip;
+    onUpdate({ comments: newComment });
+    setShowChips(false);
+  };
+
+  return (
+    <div className={`rounded-xl border p-3 mb-2 transition-all ${currentRating !== "NT" ? ratingInfo.bg : "bg-white border-slate-100"}`}>
+      <div className="flex items-center gap-2">
+        <span className="flex-1 text-sm font-medium text-slate-700">{subcategory}</span>
+        <div className="flex gap-1">
+          {RATINGS.map(r => (
+            <RatingButton key={r.value} value={r.value} current={currentRating} onSelect={(v) => onUpdate({ rating: v })} />
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => { setShowComments(!showComments); setShowChips(false); }}
+          className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
+          title="Add comment"
+        >
+          <ChevronDown className={`w-4 h-4 transition-transform ${showComments ? "rotate-180" : ""}`} />
+        </button>
+      </div>
+
+      {showComments && (
+        <div className="mt-3 space-y-2">
+          <Textarea
+            placeholder="Add comment..."
+            value={item?.comments || ""}
+            onChange={e => onUpdate({ comments: e.target.value })}
+            className="text-sm min-h-[60px] resize-none"
+            rows={2}
+          />
+          <button
+            type="button"
+            onClick={() => setShowChips(!showChips)}
+            className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+          >
+            {showChips ? "Hide quick comments" : "+ Quick comments"}
+          </button>
+          {showChips && (
+            <div className="flex flex-wrap gap-1 mt-1">
+              {QUICK_COMMENTS.map((chip, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => handleCommentChip(chip)}
+                  className="text-xs bg-slate-100 hover:bg-blue-100 text-slate-700 px-2 py-1 rounded-full border border-slate-200 transition-colors"
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function MockTestAssessmentCard({ category, subcategories, items, transmissionType, onUpdateItem }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const visibleSubs = subcategories.filter(sub => !isSubcategoryHidden(sub, transmissionType));
+  const rated = visibleSubs.filter(sub => {
+    const key = `${category}__${sub}`;
+    return items[key]?.rating && items[key].rating !== "NT";
+  });
+
+  const hasFaults = visibleSubs.some(sub => {
+    const key = `${category}__${sub}`;
+    const r = items[key]?.rating;
+    return r === "DF" || r === "S" || r === "D";
+  });
+
+  const hasSerious = visibleSubs.some(sub => {
+    const key = `${category}__${sub}`;
+    const r = items[key]?.rating;
+    return r === "S" || r === "D";
+  });
+
+  return (
+    <Card className={`mb-3 border-2 transition-all ${hasSerious ? "border-orange-300" : hasFaults ? "border-yellow-300" : "border-slate-100"}`}>
+      <CardHeader className="py-3 px-4 cursor-pointer" onClick={() => setExpanded(!expanded)}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-sm font-semibold text-[#071739]">{category}</CardTitle>
+            {rated.length > 0 && (
+              <Badge className="bg-[#071739] text-white text-xs">
+                {rated.length}/{visibleSubs.length}
+              </Badge>
+            )}
+            {rated.length === visibleSubs.length && visibleSubs.length > 0 && (
+              <CheckCircle2 className="w-4 h-4 text-green-500" />
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {hasFaults && !hasSerious && <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block" />}
+            {hasSerious && <span className="w-2 h-2 rounded-full bg-orange-500 inline-block" />}
+            {expanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+          </div>
+        </div>
+      </CardHeader>
+      {expanded && (
+        <CardContent className="px-4 pb-4">
+          {visibleSubs.map(sub => {
+            const key = `${category}__${sub}`;
+            return (
+              <SubcategoryRow
+                key={key}
+                subcategory={sub}
+                item={items[key]}
+                onUpdate={(updates) => onUpdateItem(key, updates)}
+              />
+            );
+          })}
+        </CardContent>
+      )}
+    </Card>
+  );
+}

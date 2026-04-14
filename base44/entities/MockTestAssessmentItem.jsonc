@@ -1,0 +1,46 @@
+{
+  "name": "MockTestAssessmentItem",
+  "type": "object",
+  "properties": {
+    "mockTestReportId": {
+      "type": "string",
+      "description": "Reference to MockTestReport"
+    },
+    "category": {
+      "type": "string"
+    },
+    "subcategory": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "string",
+      "enum": [
+        "P",
+        "DF",
+        "S",
+        "D",
+        "NT"
+      ],
+      "default": "NT"
+    },
+    "comments": {
+      "type": "string"
+    },
+    "severityScore": {
+      "type": "number",
+      "default": 0
+    },
+    "improvementTag": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "mockTestReportId",
+    "category",
+    "subcategory"
+  ]
+}
