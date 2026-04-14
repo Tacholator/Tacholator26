@@ -216,8 +216,8 @@ export default function MockTestReportForm() {
   };
 
   const handleContinueToSummary = () => {
-    if (!checks.independentDriving || !checks.showMeTellMe || !checks.controlledStop || !checks.emergencyStop) {
-      toast({ title: "Complete all manoeuvres", description: "Please tick all manoeuvre checkboxes before continuing." });
+    if (!checks.independentDriving && !checks.showMeTellMe && !checks.controlledStop && !checks.emergencyStop) {
+      toast({ title: "Complete at least one manoeuvre", description: "Please tick at least one manoeuvre checkbox before continuing." });
       return;
     }
     setStep(2);
