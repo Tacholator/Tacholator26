@@ -137,48 +137,50 @@ export default function MockTestsSection({ pupilId }) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Quick Results</p>
           {['mock_1', 'mock_2', 'mock_3'].map((mockId) => {
             const mock = mockTests.find(m => m.mockTestId === mockId);
+            const isPassed = mock?.result === 'pass';
             return (
-              <Card 
+              <div
                 key={mockId}
-                className={`border-2 ${mock ? (mock.result === 'pass' ? 'border-emerald-500 bg-emerald-50' : 'border-rose-500 bg-rose-50') : 'border-slate-200'}`}
+                className={`flex items-center justify-between px-4 py-3 rounded-lg border-2 ${
+                  mock
+                    ? isPassed
+                      ? 'border-emerald-300 bg-emerald-50'
+                      : 'border-rose-300 bg-rose-50'
+                    : 'border-slate-200 bg-white'
+                }`}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-slate-800">{mockTestLabels[mockId]}</h4>
-                    {mock ? (
-                      mock.result === 'pass' ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                      ) : (
-                        <XCircle className="w-5 h-5 text-rose-600" />
-                      )
-                    ) : null}
-                  </div>
+                <div className="flex items-center gap-3">
                   {mock ? (
-                    <div className="space-y-2">
-                      <Badge className={mock.result === 'pass' ? 'bg-emerald-600' : 'bg-rose-600'}>
-                        {mock.result === 'pass' ? 'Passed' : 'Failed'}
-                      </Badge>
-                      {mock.testDate && (
-                        <p className="text-sm text-slate-600">
-                          {moment(mock.testDate).format('D MMM YYYY')}
-                        </p>
-                      )}
-                      {mock.instructorComments && (
-                        <p className="text-xs text-slate-600 line-clamp-2">{mock.instructorComments}</p>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(mock)}
-                        className="w-full mt-2"
-                      >
-                        <Edit className="w-3 h-3 mr-2" />
-                        Edit
-                      </Button>
-                    </div>
+                    isPassed
+                      ? <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                      : <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 shrink-0" />
+                  )}
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{mockTestLabels[mockId]}</p>
+                    {mock?.testDate && (
+                      <p className="text-xs text-slate-500">{moment(mock.testDate).format('D MMM YYYY')}</p>
+                    )}
+                    {mock?.instructorComments && (
+                      <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{mock.instructorComments}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {mock && (
+                    <Badge className={isPassed ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}>
+                      {isPassed ? 'Pass' : 'Fail'}
+                    </Badge>
+                  )}
+                  {mock ? (
+                    <Button size="sm" variant="outline" onClick={() => handleEdit(mock)}>
+                      <Edit className="w-3 h-3 mr-1" /> Edit
+                    </Button>
                   ) : (
                     <Button
                       size="sm"
@@ -188,14 +190,12 @@ export default function MockTestsSection({ pupilId }) {
                         setFormData({ mockTestId: mockId, result: 'pass', instructorComments: '', pupilComments: '', testDate: '' });
                         setShowModal(true);
                       }}
-                      className="w-full"
                     >
-                      <Plus className="w-3 h-3 mr-2" />
-                      Add Result
+                      <Plus className="w-3 h-3 mr-1" /> Add
                     </Button>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>
