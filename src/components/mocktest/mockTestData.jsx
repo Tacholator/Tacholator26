@@ -142,7 +142,7 @@ export const buildInitialItems = (transmissionType = "Manual") => {
     cat.subcategories.forEach(sub => {
       if (!isSubcategoryHidden(sub, transmissionType)) {
         const key = `${cat.category}__${sub}`;
-        items[key] = { category: cat.category, subcategory: sub, rating: "NT", faultCount: 1, comments: "", improvementTag: "" };
+        items[key] = { category: cat.category, subcategory: sub, rating: "P", faultCount: 1, comments: "", improvementTag: "" };
       }
     });
   });

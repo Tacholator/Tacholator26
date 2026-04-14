@@ -344,10 +344,16 @@ export default function MockTestReportForm() {
         {/* Step 1: Assessment */}
         {step === 1 && (
           <div className="space-y-2">
+            <div className="flex items-start gap-2 bg-green-50 border border-green-200 rounded-xl p-3">
+              <AlertCircle className="w-4 h-4 text-green-700 shrink-0 mt-0.5" />
+              <p className="text-xs text-green-800 font-medium">
+                All items default to <strong>Pass (P)</strong>. Only mark items where a fault occurred — anything not changed will be treated as passed.
+              </p>
+            </div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-semibold text-slate-600">Rate each item using the buttons</p>
               <Badge className="bg-slate-200 text-slate-600 text-xs">
-                {Object.values(assessmentItems).filter(i => i.rating !== "NT").length} / {Object.keys(assessmentItems).length} rated
+                {Object.values(assessmentItems).filter(i => i.rating !== "P").length} fault(s) marked
               </Badge>
             </div>
             {ASSESSMENT_CATEGORIES.map(({ category, subcategories }) => (
