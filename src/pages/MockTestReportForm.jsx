@@ -216,6 +216,10 @@ export default function MockTestReportForm() {
   };
 
   const handleContinueToSummary = () => {
+    if (!checks.independentDriving || !checks.showMeTellMe || !checks.controlledStop || !checks.emergencyStop) {
+      toast({ title: "Complete all manoeuvres", description: "Please tick all manoeuvre checkboxes before continuing." });
+      return;
+    }
     setStep(2);
   };
 
@@ -229,6 +233,12 @@ export default function MockTestReportForm() {
 
   const learnerFullName = pupil ? `${pupil.firstName} ${pupil.lastName}` : existingReport?.learnerName || "Learner";
 
+  const formatDateDisplay = (dateStr) => {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
@@ -241,7 +251,7 @@ export default function MockTestReportForm() {
               </button>
               <div>
                 <h1 className="font-bold text-base leading-tight">Mock Driving Test Report</h1>
-                <p className="text-xs text-slate-300">{learnerFullName} · {reportMeta.date}</p>
+                <p className="text-xs text-slate-300">{learnerFullName} · {formatDateDisplay(reportMeta.date)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
