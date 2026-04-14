@@ -29,7 +29,6 @@ export default function InstructorDashboard() {
   const [selectedLessonId, setSelectedLessonId] = useState(null);
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
   const [selectedPupilForSummary, setSelectedPupilForSummary] = useState(null);
-  const [selectedItemForSummary, setSelectedItemForSummary] = useState(null);
   const [newLessonModalOpen, setNewLessonModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -336,9 +335,8 @@ export default function InstructorDashboard() {
     setOutcomeModalOpen(true);
   };
 
-  const handleViewSummary = (pupil, item = null) => {
+  const handleViewSummary = (pupil) => {
     setSelectedPupilForSummary(pupil);
-    setSelectedItemForSummary(item);
     setSummaryModalOpen(true);
   };
 
@@ -592,12 +590,12 @@ export default function InstructorDashboard() {
                                 <p className="text-xs text-rose-600 mt-1">Needs outcome</p>
                               </div>
                               <Button
-                                 size="sm"
-                                 onClick={() => handleViewSummary(pupil, item)}
-                                 className="bg-rose-600 hover:bg-rose-700 text-white"
-                               >
-                                 Lesson Summary
-                               </Button>
+                                size="sm"
+                                onClick={() => handleMarkLesson(item.id)}
+                                className="bg-rose-600 hover:bg-rose-700 text-white"
+                              >
+                                Set Outcome
+                              </Button>
                             </div>
                           </div>
                         );
@@ -760,13 +758,9 @@ export default function InstructorDashboard() {
         onClose={() => {
           setSummaryModalOpen(false);
           setSelectedPupilForSummary(null);
-          setSelectedItemForSummary(null);
         }}
         pupil={selectedPupilForSummary}
         lastDiaryEntry={selectedPupilForSummary?.id === nextPupil?.id ? lastDiaryEntry : null}
-        lesson={selectedItemForSummary?.type === 'lesson' ? selectedItemForSummary : null}
-        booking={selectedItemForSummary?.type === 'booking' ? selectedItemForSummary : null}
-        isEditMode={!!selectedItemForSummary}
       />
 
       <NewLessonModal
