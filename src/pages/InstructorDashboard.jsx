@@ -593,7 +593,7 @@ export default function InstructorDashboard() {
                               </div>
                               <Button
                                  size="sm"
-                                 onClick={() => handleViewSummary(pupil)}
+                                 onClick={() => handleViewSummary(pupil, item)}
                                  className="bg-rose-600 hover:bg-rose-700 text-white"
                                >
                                  Lesson Summary
