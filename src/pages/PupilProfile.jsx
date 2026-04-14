@@ -40,6 +40,7 @@ import LessonFormModal from '@/components/modals/LessonFormModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
 import ClassNotesTab from '@/components/classnotes/ClassNotesTab';
+import MockTestsSection from '@/components/progress/MockTestsSection';
 import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
@@ -639,6 +640,12 @@ export default function PupilProfile() {
               >
                 Class Notes
               </TabsTrigger>
+              <TabsTrigger 
+                value="mocktests"
+                className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-600 data-[state=active]:to-slate-800 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all text-xs sm:text-sm"
+              >
+                Mock Tests
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -1093,6 +1100,9 @@ export default function PupilProfile() {
                             pupilId={pupilId}
                             instructorId={currentUser?.id}
                           />
+                        </TabsContent>
+                        <TabsContent value="mocktests">
+                          <MockTestsSection pupilId={pupilId} />
                         </TabsContent>
                       </Tabs>
                     </div>
