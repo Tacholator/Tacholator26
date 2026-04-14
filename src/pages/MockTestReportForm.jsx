@@ -356,11 +356,12 @@ export default function MockTestReportForm() {
                 {Object.values(assessmentItems).filter(i => i.rating !== "P").length} fault(s) marked
               </Badge>
             </div>
-            {ASSESSMENT_CATEGORIES.map(({ category, subcategories }) => (
+            {ASSESSMENT_CATEGORIES.map(({ category, subcategories, manoeuvreGroups }) => (
               <MockTestAssessmentCard
                 key={category}
                 category={category}
                 subcategories={subcategories}
+                manoeuvreGroups={manoeuvreGroups}
                 items={assessmentItems}
                 transmissionType={reportMeta.transmissionType}
                 onUpdateItem={updateItem}
