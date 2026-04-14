@@ -215,14 +215,7 @@ export default function MockTestReportForm() {
     toast({ title: "Shared with learner", description: "The learner can now view this report." });
   };
 
-  const manoeuvresRef = useRef(null);
-
   const handleContinueToSummary = () => {
-    if (!checks.independentDriving && !checks.showMeTellMe && !checks.controlledStop && !checks.emergencyStop) {
-      toast({ title: "Complete at least one manoeuvre", description: "Please tick at least one manoeuvre checkbox before continuing." });
-      manoeuvresRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
     setStep(2);
   };
 
@@ -236,12 +229,6 @@ export default function MockTestReportForm() {
 
   const learnerFullName = pupil ? `${pupil.firstName} ${pupil.lastName}` : existingReport?.learnerName || "Learner";
 
-  const formatDateDisplay = (dateStr) => {
-    if (!dateStr) return "";
-    const [year, month, day] = dateStr.split("-");
-    return `${day}/${month}/${year}`;
-  };
-
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
@@ -254,7 +241,7 @@ export default function MockTestReportForm() {
               </button>
               <div>
                 <h1 className="font-bold text-base leading-tight">Mock Driving Test Report</h1>
-                <p className="text-xs text-slate-300">{learnerFullName} · {formatDateDisplay(reportMeta.date)}</p>
+                <p className="text-xs text-slate-300">{learnerFullName} · {reportMeta.date}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -395,22 +382,20 @@ export default function MockTestReportForm() {
         {/* Step 2: Summary & Feedback */}
         {step === 2 && (
           <div className="space-y-4">
-            <div ref={manoeuvresRef}>
-              <MockTestSummaryCard
-                totalDF={df}
-                totalS={s}
-                totalD={d}
-                overallResult={overallResult}
-                manualOverride={manualOverride}
-                onToggleOverride={() => setManualOverride(p => !p)}
-                onOverrideChange={setOverallResult}
-                independentDriving={checks.independentDriving}
-                showMeTellMe={checks.showMeTellMe}
-                controlledStop={checks.controlledStop}
-                emergencyStop={checks.emergencyStop}
-                onToggleCheck={toggleCheck}
-              />
-            </div>
+            <MockTestSummaryCard
+              totalDF={df}
+              totalS={s}
+              totalD={d}
+              overallResult={overallResult}
+              manualOverride={manualOverride}
+              onToggleOverride={() => setManualOverride(p => !p)}
+              onOverrideChange={setOverallResult}
+              independentDriving={checks.independentDriving}
+              showMeTellMe={checks.showMeTellMe}
+              controlledStop={checks.controlledStop}
+              emergencyStop={checks.emergencyStop}
+              onToggleCheck={toggleCheck}
+            />
 
             <MockTestFeedbackCard
               assessmentItems={assessmentItems}

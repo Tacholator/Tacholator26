@@ -85,26 +85,14 @@ export default function MockTestSummaryCard({
         )}
 
         {/* Fault Counts */}
-         <div className="grid grid-cols-3 gap-2">
-           <FaultBadge count={totalDF} label="Driver Faults" color="bg-yellow-50 text-yellow-700 border border-yellow-200" />
-           <FaultBadge count={totalS} label="Serious Faults" color="bg-orange-50 text-orange-700 border border-orange-200" />
-           <FaultBadge count={totalD} label="Dangerous Faults" color="bg-red-50 text-red-700 border border-red-200" />
-         </div>
+        <div className="grid grid-cols-3 gap-2">
+          <FaultBadge count={totalDF} label="Driver Faults" color="bg-yellow-50 text-yellow-700 border border-yellow-200" />
+          <FaultBadge count={totalS} label="Serious Faults" color="bg-orange-50 text-orange-700 border border-orange-200" />
+          <FaultBadge count={totalD} label="Dangerous Faults" color="bg-red-50 text-red-700 border border-red-200" />
+        </div>
 
-         {/* Manoeuvres */}
-         {!readOnly && (
-           <div className="pt-3 border-t border-slate-200">
-             <p className="text-xs font-semibold text-slate-600 mb-2">Manoeuvres Completed</p>
-             <div className="space-y-1">
-               <CheckItem label="Independent Driving" checked={independentDriving} onToggle={() => onToggleCheck('independentDriving')} />
-               <CheckItem label="Show Me / Tell Me" checked={showMeTellMe} onToggle={() => onToggleCheck('showMeTellMe')} />
-               <CheckItem label="Controlled Stop" checked={controlledStop} onToggle={() => onToggleCheck('controlledStop')} />
-               <CheckItem label="Emergency Stop" checked={emergencyStop} onToggle={() => onToggleCheck('emergencyStop')} />
-             </div>
-           </div>
-         )}
 
-        </CardContent>
+      </CardContent>
     </Card>
   );
 }
