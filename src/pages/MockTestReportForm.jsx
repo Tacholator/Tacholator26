@@ -55,7 +55,6 @@ export default function MockTestReportForm() {
   const [overallResult, setOverallResult] = useState("Needs More Practice");
   const [savedReportId, setSavedReportId] = useState(reportId || null);
   const [isSaving, setIsSaving] = useState(false);
-  const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
   const autosaveRef = useRef(null);
 
   const { data: currentUser } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
@@ -209,65 +208,8 @@ export default function MockTestReportForm() {
     toast({ title: "Shared with learner", description: "The learner can now view this report." });
   };
 
-  const handleContinueToSummary = async () => {
-    setIsGeneratingFeedback(true);
+  const handleContinueToSummary = () => {
     setStep(2);
-    try {
-      const items = Object.values(assessmentItems);
-      const faultedItems = items.filter(i => i.rating !== "P" && i.rating !== "NT");
-      const passedItems = items.filter(i => i.rating === "P");
-
-      const faultSummary = faultedItems.map(i =>
-        `${i.category} - ${i.subcategory}: ${i.rating}${i.faultCount > 1 ? ` (x${i.faultCount})` : ""}${i.comments ? ` — "${i.comments}"` : ""}`
-      ).join("\n");
-
-      const passedCategories = [...new Set(passedItems.map(i => i.category))].join(", ");
-
-      const prompt = `You are an experienced UK driving instructor writing feedback for a mock driving test report.
-
-Test result: ${autoResult}
-Total Driver Faults: ${df}, Serious Faults: ${s}, Dangerous Faults: ${d}
-Passed categories include: ${passedCategories || "none noted"}
-
-Faults recorded:
-${faultSummary || "No faults recorded — clean drive."}
-
-Write concise, professional, encouraging feedback for each of these 5 sections:
-1. Key Strengths: What the learner did well based on their passes and low fault count areas.
-2. Main Areas to Improve: Based on the faults recorded.
-3. Priority for Next Lesson: The single most important thing to work on next.
-4. Recommended Practice Focus: Independent practice suggestions.
-5. Instructor Overall Comment: A brief overall encouraging comment.
-
-Respond in JSON only, with keys: keyStrengths, mainAreasToImprove, priorityForNextLesson, recommendedPracticeFocus, instructorOverallComment`;
-
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            keyStrengths: { type: "string" },
-            mainAreasToImprove: { type: "string" },
-            priorityForNextLesson: { type: "string" },
-            recommendedPracticeFocus: { type: "string" },
-            instructorOverallComment: { type: "string" }
-          }
-        }
-      });
-
-      setFeedback(prev => ({
-        ...prev,
-        keyStrengths: result.keyStrengths || prev.keyStrengths,
-        mainAreasToImprove: result.mainAreasToImprove || prev.mainAreasToImprove,
-        priorityForNextLesson: result.priorityForNextLesson || prev.priorityForNextLesson,
-        recommendedPracticeFocus: result.recommendedPracticeFocus || prev.recommendedPracticeFocus,
-        instructorOverallComment: result.instructorOverallComment || prev.instructorOverallComment
-      }));
-    } catch (e) {
-      toast({ title: "AI generation failed", description: "Feedback fields left blank for manual entry.", variant: "destructive" });
-    } finally {
-      setIsGeneratingFeedback(false);
-    }
   };
 
   const updateItem = (key, updates) => {
@@ -449,9 +391,7 @@ Respond in JSON only, with keys: keyStrengths, mainAreasToImprove, priorityForNe
             />
 
             <MockTestFeedbackCard
-              data={feedback}
-              onChange={(key, val) => setFeedback(p => ({ ...p, [key]: val }))}
-              isGenerating={isGeneratingFeedback}
+              assessmentItems={assessmentItems}
             />
 
             <div className="flex gap-2 pt-2 flex-wrap">
