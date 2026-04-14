@@ -95,6 +95,10 @@ export const ASSESSMENT_CATEGORIES = [
     subcategories: ["Following sat nav", "Following traffic signs"]
   },
   {
+    category: "Judgment",
+    subcategories: ["Overtaking", "Meeting", "Crossing"]
+  },
+  {
     category: "Eco-safe / Smooth Driving",
     subcategories: ["Eco-safe / Smooth Driving"]
   }
