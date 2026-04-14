@@ -29,6 +29,7 @@ export default function InstructorDashboard() {
   const [selectedLessonId, setSelectedLessonId] = useState(null);
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
   const [selectedPupilForSummary, setSelectedPupilForSummary] = useState(null);
+  const [selectedItemForSummary, setSelectedItemForSummary] = useState(null);
   const [newLessonModalOpen, setNewLessonModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -335,8 +336,9 @@ export default function InstructorDashboard() {
     setOutcomeModalOpen(true);
   };
 
-  const handleViewSummary = (pupil) => {
+  const handleViewSummary = (pupil, item = null) => {
     setSelectedPupilForSummary(pupil);
+    setSelectedItemForSummary(item);
     setSummaryModalOpen(true);
   };
 
@@ -758,9 +760,13 @@ export default function InstructorDashboard() {
         onClose={() => {
           setSummaryModalOpen(false);
           setSelectedPupilForSummary(null);
+          setSelectedItemForSummary(null);
         }}
         pupil={selectedPupilForSummary}
         lastDiaryEntry={selectedPupilForSummary?.id === nextPupil?.id ? lastDiaryEntry : null}
+        lesson={selectedItemForSummary?.type === 'lesson' ? selectedItemForSummary : null}
+        booking={selectedItemForSummary?.type === 'booking' ? selectedItemForSummary : null}
+        isEditMode={!!selectedItemForSummary}
       />
 
       <NewLessonModal
