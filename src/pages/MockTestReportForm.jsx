@@ -29,14 +29,11 @@ export default function MockTestReportForm() {
   const [reportMeta, setReportMeta] = useState({
     date: new Date().toISOString().split("T")[0],
     startTime: "",
-    endTime: "",
     testCentreArea: "",
     routeName: "",
     vehicleRegistration: "",
     transmissionType: "Manual",
-    weatherConditions: "",
-    roadConditions: "",
-    trafficConditions: ""
+    weatherConditions: ""
   });
   const [feedback, setFeedback] = useState({
     keyStrengths: "",
@@ -88,14 +85,11 @@ export default function MockTestReportForm() {
       setReportMeta({
         date: existingReport.date || "",
         startTime: existingReport.startTime || "",
-        endTime: existingReport.endTime || "",
         testCentreArea: existingReport.testCentreArea || "",
         routeName: existingReport.routeName || "",
         vehicleRegistration: existingReport.vehicleRegistration || "",
         transmissionType: existingReport.transmissionType || "Manual",
-        weatherConditions: existingReport.weatherConditions || "",
-        roadConditions: existingReport.roadConditions || "",
-        trafficConditions: existingReport.trafficConditions || ""
+        weatherConditions: existingReport.weatherConditions || ""
       });
       setFeedback({
         keyStrengths: existingReport.keyStrengths || "",
@@ -299,38 +293,38 @@ export default function MockTestReportForm() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label className="text-xs font-semibold text-slate-600">Start Time</Label>
-                  <Input type="time" value={reportMeta.startTime} onChange={e => setReportMeta(p => ({ ...p, startTime: e.target.value }))} />
-                </div>
-                <div>
-                  <Label className="text-xs font-semibold text-slate-600">End Time</Label>
-                  <Input type="time" value={reportMeta.endTime} onChange={e => setReportMeta(p => ({ ...p, endTime: e.target.value }))} />
-                </div>
               </div>
               <div>
-                <Label className="text-xs font-semibold text-slate-600">Test Centre / Area</Label>
+                <Label className="text-xs font-semibold text-slate-600">Start Time</Label>
+                <Input type="time" value={reportMeta.startTime} onChange={e => setReportMeta(p => ({ ...p, startTime: e.target.value }))} />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-slate-600">Test Centre / Area <span className="text-slate-400 font-normal">(optional)</span></Label>
                 <Input placeholder="e.g. Birmingham South" value={reportMeta.testCentreArea} onChange={e => setReportMeta(p => ({ ...p, testCentreArea: e.target.value }))} />
               </div>
               <div>
-                <Label className="text-xs font-semibold text-slate-600">Route Name</Label>
+                <Label className="text-xs font-semibold text-slate-600">Route Name <span className="text-slate-400 font-normal">(optional)</span></Label>
                 <Input placeholder="e.g. Route A - Town Centre" value={reportMeta.routeName} onChange={e => setReportMeta(p => ({ ...p, routeName: e.target.value }))} />
               </div>
               <div>
-                <Label className="text-xs font-semibold text-slate-600">Vehicle Registration</Label>
+                <Label className="text-xs font-semibold text-slate-600">Vehicle Registration <span className="text-slate-400 font-normal">(optional)</span></Label>
                 <Input placeholder="e.g. AB12 CDE" value={reportMeta.vehicleRegistration} onChange={e => setReportMeta(p => ({ ...p, vehicleRegistration: e.target.value }))} />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {[
-                  { key: "weatherConditions", label: "Weather", placeholder: "e.g. Dry, Wet, Raining" },
-                  { key: "roadConditions", label: "Road Conditions", placeholder: "e.g. Good, Wet" },
-                  { key: "trafficConditions", label: "Traffic", placeholder: "e.g. Light, Heavy" }
-                ].map(({ key, label, placeholder }) => (
-                  <div key={key}>
-                    <Label className="text-xs font-semibold text-slate-600">{label}</Label>
-                    <Input placeholder={placeholder} value={reportMeta[key]} onChange={e => setReportMeta(p => ({ ...p, [key]: e.target.value }))} />
-                  </div>
-                ))}
+              <div>
+                <Label className="text-xs font-semibold text-slate-600">Weather Conditions</Label>
+                <Select value={reportMeta.weatherConditions} onValueChange={v => setReportMeta(p => ({ ...p, weatherConditions: v }))}>
+                  <SelectTrigger><SelectValue placeholder="Select weather conditions" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Bright / Dry roads">Bright / Dry roads</SelectItem>
+                    <SelectItem value="Bright / Wet roads">Bright / Wet roads</SelectItem>
+                    <SelectItem value="Raining through test">Raining through test</SelectItem>
+                    <SelectItem value="Showers">Showers</SelectItem>
+                    <SelectItem value="Foggy / Misty">Foggy / Misty</SelectItem>
+                    <SelectItem value="Snowing">Snowing</SelectItem>
+                    <SelectItem value="Icy">Icy</SelectItem>
+                    <SelectItem value="Windy">Windy</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="pt-2">
                 <Button className="w-full bg-[#071739] text-white hover:bg-[#071739]/90" onClick={() => setStep(1)}>
