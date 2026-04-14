@@ -92,7 +92,7 @@ export const ASSESSMENT_CATEGORIES = [
   },
   {
     category: "Independent Driving",
-    subcategories: ["Following sat nav", "Following traffic signs", "Route planning / staying on route"]
+    subcategories: ["Following sat nav", "Following traffic signs"]
   },
   {
     category: "Eco-safe / Smooth Driving",
