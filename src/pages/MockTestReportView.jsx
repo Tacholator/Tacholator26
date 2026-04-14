@@ -214,8 +214,8 @@ export default function MockTestReportView() {
           </CardContent>
         </Card>
 
-        {/* Feedback */}
-        <MockTestFeedbackCard data={feedbackData} onChange={() => {}} readOnly />
+        {/* Fault Summary */}
+        <MockTestFeedbackCard items={items} />
 
         {/* Actions */}
         {isInstructor && (
