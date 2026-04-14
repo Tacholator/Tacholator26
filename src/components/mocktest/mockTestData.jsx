@@ -66,6 +66,12 @@ export const ASSESSMENT_CATEGORIES = [
       "Reverse Park (Car Park) - Observation",
       "Forward Park - Control",
       "Forward Park - Observation"
+    ],
+    manoeuvreGroups: [
+      { name: "Reverse / Right", subs: ["Reverse / Right - Control", "Reverse / Right - Observation"] },
+      { name: "Reverse Park (Road)", subs: ["Reverse Park (Road) - Control", "Reverse Park (Road) - Observation"] },
+      { name: "Reverse Park (Car Park)", subs: ["Reverse Park (Car Park) - Control", "Reverse Park (Car Park) - Observation"] },
+      { name: "Forward Park", subs: ["Forward Park - Control", "Forward Park - Observation"] }
     ]
   },
   {

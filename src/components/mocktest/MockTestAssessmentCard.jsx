@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronDown, CheckCircle2 } from "lucide-react";
+import { ChevronDown, CheckCircle2, Square, CheckSquare } from "lucide-react";
 import { RATINGS, QUICK_COMMENTS, getRatingInfo, isSubcategoryHidden } from "./mockTestData";
 import { Badge } from "@/components/ui/badge";
 
@@ -110,7 +110,59 @@ function SubcategoryRow({ subcategory, item, onUpdate }) {
   );
 }
 
-export default function MockTestAssessmentCard({ category, subcategories, items, transmissionType, onUpdateItem }) {
+function ManoeuvreGroups({ category, manoeuvreGroups, items, onUpdateItem }) {
+  const [selectedGroup, setSelectedGroup] = useState(null);
+
+  const toggleGroup = (name) => {
+    setSelectedGroup(prev => prev === name ? null : name);
+  };
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs text-slate-500 mb-3">Select the manoeuvre that was performed:</p>
+      {manoeuvreGroups.map(group => {
+        const isSelected = selectedGroup === group.name;
+        return (
+          <div key={group.name}>
+            <button
+              type="button"
+              onClick={() => toggleGroup(group.name)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
+                isSelected
+                  ? "border-[#071739] bg-[#071739] text-white"
+                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+              }`}
+            >
+              {isSelected
+                ? <CheckSquare className="w-4 h-4 shrink-0" />
+                : <Square className="w-4 h-4 shrink-0" />
+              }
+              {group.name}
+            </button>
+            {isSelected && (
+              <div className="mt-2 ml-4 pl-3 border-l-2 border-[#071739]/20">
+                {group.subs.map(sub => {
+                  const key = `${category}__${sub}`;
+                  const label = sub.replace(`${group.name} - `, "");
+                  return (
+                    <SubcategoryRow
+                      key={key}
+                      subcategory={label}
+                      item={items[key]}
+                      onUpdate={(updates) => onUpdateItem(key, updates)}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function MockTestAssessmentCard({ category, subcategories, items, transmissionType, onUpdateItem, manoeuvreGroups }) {
   const visibleSubs = subcategories.filter(sub => !isSubcategoryHidden(sub, transmissionType));
   const rated = visibleSubs.filter(sub => {
     const key = `${category}__${sub}`;
@@ -135,12 +187,12 @@ export default function MockTestAssessmentCard({ category, subcategories, items,
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CardTitle className="text-sm font-semibold text-[#071739]">{category}</CardTitle>
-            {rated.length > 0 && (
+            {!manoeuvreGroups && rated.length > 0 && (
               <Badge className="bg-[#071739] text-white text-xs">
                 {rated.length}/{visibleSubs.length}
               </Badge>
             )}
-            {rated.length === visibleSubs.length && visibleSubs.length > 0 && (
+            {!manoeuvreGroups && rated.length === visibleSubs.length && visibleSubs.length > 0 && (
               <CheckCircle2 className="w-4 h-4 text-green-500" />
             )}
           </div>
@@ -151,17 +203,26 @@ export default function MockTestAssessmentCard({ category, subcategories, items,
         </div>
       </CardHeader>
       <CardContent className="px-4 pb-4">
-        {visibleSubs.map(sub => {
-          const key = `${category}__${sub}`;
-          return (
-            <SubcategoryRow
-              key={key}
-              subcategory={sub}
-              item={items[key]}
-              onUpdate={(updates) => onUpdateItem(key, updates)}
-            />
-          );
-        })}
+        {manoeuvreGroups ? (
+          <ManoeuvreGroups
+            category={category}
+            manoeuvreGroups={manoeuvreGroups}
+            items={items}
+            onUpdateItem={onUpdateItem}
+          />
+        ) : (
+          visibleSubs.map(sub => {
+            const key = `${category}__${sub}`;
+            return (
+              <SubcategoryRow
+                key={key}
+                subcategory={sub}
+                item={items[key]}
+                onUpdate={(updates) => onUpdateItem(key, updates)}
+              />
+            );
+          })
+        )}
       </CardContent>
     </Card>
   );
