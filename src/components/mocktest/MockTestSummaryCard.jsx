@@ -91,14 +91,7 @@ export default function MockTestSummaryCard({
           <FaultBadge count={totalD} label="Dangerous Faults" color="bg-red-50 text-red-700 border border-red-200" />
         </div>
 
-        {/* Checks */}
-        <div className="border-t pt-3 space-y-1">
-          <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Completed Elements</p>
-          <CheckItem label="Independent Driving" checked={independentDriving} onToggle={() => onToggleCheck("independentDriving")} disabled={readOnly} />
-          <CheckItem label="Show Me / Tell Me" checked={showMeTellMe} onToggle={() => onToggleCheck("showMeTellMe")} disabled={readOnly} />
-          <CheckItem label="Controlled Stop" checked={controlledStop} onToggle={() => onToggleCheck("controlledStop")} disabled={readOnly} />
-          <CheckItem label="Emergency Stop" checked={emergencyStop} onToggle={() => onToggleCheck("emergencyStop")} disabled={readOnly} />
-        </div>
+
       </CardContent>
     </Card>
   );
