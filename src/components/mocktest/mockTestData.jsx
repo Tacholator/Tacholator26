@@ -56,8 +56,17 @@ export const ASSESSMENT_CATEGORIES = [
     subcategories: ["Pedestrians", "Cyclists", "Motorcyclists", "Other vehicles"]
   },
   {
-    category: "Reverse Manoeuvre",
-    subcategories: ["Reverse Manoeuvre"]
+    category: "Manoeuvres",
+    subcategories: [
+      "Reverse / Right - Control",
+      "Reverse / Right - Observation",
+      "Reverse Park (Road) - Control",
+      "Reverse Park (Road) - Observation",
+      "Reverse Park (Car Park) - Control",
+      "Reverse Park (Car Park) - Observation",
+      "Forward Park - Control",
+      "Forward Park - Observation"
+    ]
   },
   {
     category: "Control",
