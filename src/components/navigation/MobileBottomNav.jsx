@@ -89,10 +89,10 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
   
   const pupilStatus = pupilProfile?.status || 'Active';
   
-  // For non-active pupils, only show booking
+  // For OnHold/Stopped pupils, only show booking. Passed pupils get full nav.
   const navItems = isInstructor 
     ? instructorNavItems 
-    : (pupilStatus !== 'Active' 
+    : (pupilStatus !== 'Active' && pupilStatus !== 'Passed'
         ? pupilNavItems.filter(item => item.id === 'book')
         : pupilNavItems);
 

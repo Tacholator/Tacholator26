@@ -155,8 +155,9 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
 
 
 
-  // For non-active pupils, only show: Home, Book a Lesson, Payments, Notifications
-  if (!isInstructor && pupilStatus !== 'Active') {
+  // For non-active pupils (OnHold/Stopped), only show: Home, Book a Lesson, Payments, Notifications
+  // Passed pupils retain full access so they can view their learning history and mock tests
+  if (!isInstructor && pupilStatus !== 'Active' && pupilStatus !== 'Passed') {
     const allowedIds = ['home', 'payments', 'notifications'];
     const allowedShared = shared.filter(link => 
       allowedIds.includes(sharedNavLinks.find(s => 
