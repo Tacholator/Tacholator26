@@ -36,6 +36,14 @@ export const ASSESSMENT_CATEGORIES = [
     subcategories: ["Appropriate speed", "Undue hesitation"]
   },
   {
+    category: "Use of Speed",
+    subcategories: ["Use of Speed"]
+  },
+  {
+    category: "Following Distance",
+    subcategories: ["Following Distance"]
+  },
+  {
     category: "Pedestrian Crossings",
     subcategories: ["Pedestrian Crossings"]
   },
