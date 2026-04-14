@@ -34,7 +34,7 @@ function FaultGroup({ ratingKey, items }) {
               )}
             </div>
             {item.comments && (
-              <p className="text-xs text-slate-600 mt-1.5 italic border-t border-slate-100 pt-1.5">
+              <p className="text-xs text-slate-600 mt-1.5 italic border-t border-slate-100 pt-1.5 whitespace-pre-wrap">
                 "{item.comments}"
               </p>
             )}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronDown, CheckCircle2, Square, CheckSquare } from "lucide-react";
+import { MessageSquarePlus, CheckCircle2, Square, CheckSquare } from "lucide-react";
 import { RATINGS, QUICK_COMMENTS, getRatingInfo, isSubcategoryHidden } from "./mockTestData";
 import { Badge } from "@/components/ui/badge";
 
@@ -67,10 +67,17 @@ function SubcategoryRow({ subcategory, item, onUpdate }) {
         <button
           type="button"
           onClick={() => { setShowComments(!showComments); setShowChips(false); }}
-          className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
+          className={`ml-1 flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg border transition-all ${
+            showComments
+              ? "bg-[#071739] text-white border-[#071739]"
+              : item?.comments
+              ? "bg-blue-50 text-blue-700 border-blue-200"
+              : "bg-slate-50 text-slate-500 border-slate-200 hover:border-slate-300 hover:text-slate-700"
+          }`}
           title="Add comment"
         >
-          <ChevronDown className={`w-4 h-4 transition-transform ${showComments ? "rotate-180" : ""}`} />
+          <MessageSquarePlus className="w-3 h-3" />
+          {item?.comments ? "Comment" : "Add Comment"}
         </button>
       </div>
 
