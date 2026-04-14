@@ -216,11 +216,15 @@ export default function MockTestReportForm() {
   };
 
   const handleContinueToSummary = () => {
+    setStep(2);
+  };
+
+  const handleFinaliseWithValidation = async () => {
     if (!checks.independentDriving && !checks.showMeTellMe && !checks.controlledStop && !checks.emergencyStop) {
-      toast({ title: "Complete at least one manoeuvre", description: "Please tick at least one manoeuvre checkbox before continuing." });
+      toast({ title: "Complete at least one manoeuvre", description: "Please tick at least one manoeuvre checkbox before finalising." });
       return;
     }
-    setStep(2);
+    await handleFinalise();
   };
 
   const updateItem = (key, updates) => {
@@ -423,7 +427,7 @@ export default function MockTestReportForm() {
               </Button>
               <Button
                 className="flex-1 min-w-[120px] bg-[#F7B602] text-[#071739] hover:bg-[#F7B602]/90 font-bold"
-                onClick={handleFinalise}
+                onClick={handleFinaliseWithValidation}
                 disabled={isSaving}
               >
                 <FileText className="w-4 h-4 mr-1" />
