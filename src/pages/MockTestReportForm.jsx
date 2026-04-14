@@ -215,16 +215,15 @@ export default function MockTestReportForm() {
     toast({ title: "Shared with learner", description: "The learner can now view this report." });
   };
 
-  const handleContinueToSummary = () => {
-    setStep(2);
-  };
+  const manoeuvresRef = useRef(null);
 
-  const handleFinaliseWithValidation = async () => {
+  const handleContinueToSummary = () => {
     if (!checks.independentDriving && !checks.showMeTellMe && !checks.controlledStop && !checks.emergencyStop) {
-      toast({ title: "Complete at least one manoeuvre", description: "Please tick at least one manoeuvre checkbox before finalising." });
+      toast({ title: "Complete at least one manoeuvre", description: "Please tick at least one manoeuvre checkbox before continuing." });
+      manoeuvresRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    await handleFinalise();
+    setStep(2);
   };
 
   const updateItem = (key, updates) => {
@@ -396,20 +395,22 @@ export default function MockTestReportForm() {
         {/* Step 2: Summary & Feedback */}
         {step === 2 && (
           <div className="space-y-4">
-            <MockTestSummaryCard
-              totalDF={df}
-              totalS={s}
-              totalD={d}
-              overallResult={overallResult}
-              manualOverride={manualOverride}
-              onToggleOverride={() => setManualOverride(p => !p)}
-              onOverrideChange={setOverallResult}
-              independentDriving={checks.independentDriving}
-              showMeTellMe={checks.showMeTellMe}
-              controlledStop={checks.controlledStop}
-              emergencyStop={checks.emergencyStop}
-              onToggleCheck={toggleCheck}
-            />
+            <div ref={manoeuvresRef}>
+              <MockTestSummaryCard
+                totalDF={df}
+                totalS={s}
+                totalD={d}
+                overallResult={overallResult}
+                manualOverride={manualOverride}
+                onToggleOverride={() => setManualOverride(p => !p)}
+                onOverrideChange={setOverallResult}
+                independentDriving={checks.independentDriving}
+                showMeTellMe={checks.showMeTellMe}
+                controlledStop={checks.controlledStop}
+                emergencyStop={checks.emergencyStop}
+                onToggleCheck={toggleCheck}
+              />
+            </div>
 
             <MockTestFeedbackCard
               assessmentItems={assessmentItems}
@@ -427,7 +428,7 @@ export default function MockTestReportForm() {
               </Button>
               <Button
                 className="flex-1 min-w-[120px] bg-[#F7B602] text-[#071739] hover:bg-[#F7B602]/90 font-bold"
-                onClick={handleFinaliseWithValidation}
+                onClick={handleFinalise}
                 disabled={isSaving}
               >
                 <FileText className="w-4 h-4 mr-1" />
