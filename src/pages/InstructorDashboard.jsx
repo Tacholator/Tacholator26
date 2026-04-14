@@ -12,6 +12,7 @@ import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 import NewLessonModal from '@/components/booking/NewLessonModal';
+import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
 
 // Warm color palette - stable per section
 const warmPalette = {
@@ -605,6 +606,9 @@ export default function InstructorDashboard() {
               )}
             </CardContent>
           </Card>
+
+          {/* 3b. DVLA Verification Card */}
+          <DvlaVerificationCard pupils={pupils} />
 
           {/* 4. Upcoming Tests Card */}
           {upcomingTests.length > 0 && (
