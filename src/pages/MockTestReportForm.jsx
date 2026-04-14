@@ -28,7 +28,7 @@ export default function MockTestReportForm() {
   const [step, setStep] = useState(0);
   const [reportMeta, setReportMeta] = useState({
     date: new Date().toISOString().split("T")[0],
-    startTime: "",
+    startTime: new Date().toTimeString().slice(0, 5),
     testCentreArea: "",
     routeName: "",
     vehicleRegistration: "",
