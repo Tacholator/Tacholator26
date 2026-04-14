@@ -345,7 +345,7 @@ export default function MockTestReportForm() {
         {step === 1 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-semibold text-slate-600">Tap a category to expand and rate</p>
+              <p className="text-sm font-semibold text-slate-600">Rate each item using the buttons</p>
               <Badge className="bg-slate-200 text-slate-600 text-xs">
                 {Object.values(assessmentItems).filter(i => i.rating !== "NT").length} / {Object.keys(assessmentItems).length} rated
               </Badge>

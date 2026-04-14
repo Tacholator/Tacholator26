@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronDown, ChevronUp, CheckCircle2 } from "lucide-react";
+import { ChevronDown, CheckCircle2 } from "lucide-react";
 import { RATINGS, QUICK_COMMENTS, getRatingInfo, isSubcategoryHidden } from "./mockTestData";
 import { Badge } from "@/components/ui/badge";
 
@@ -90,8 +90,6 @@ function SubcategoryRow({ subcategory, item, onUpdate }) {
 }
 
 export default function MockTestAssessmentCard({ category, subcategories, items, transmissionType, onUpdateItem }) {
-  const [expanded, setExpanded] = useState(false);
-
   const visibleSubs = subcategories.filter(sub => !isSubcategoryHidden(sub, transmissionType));
   const rated = visibleSubs.filter(sub => {
     const key = `${category}__${sub}`;
@@ -112,7 +110,7 @@ export default function MockTestAssessmentCard({ category, subcategories, items,
 
   return (
     <Card className={`mb-3 border-2 transition-all ${hasSerious ? "border-orange-300" : hasFaults ? "border-yellow-300" : "border-slate-100"}`}>
-      <CardHeader className="py-3 px-4 cursor-pointer" onClick={() => setExpanded(!expanded)}>
+      <CardHeader className="py-3 px-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CardTitle className="text-sm font-semibold text-[#071739]">{category}</CardTitle>
@@ -128,25 +126,22 @@ export default function MockTestAssessmentCard({ category, subcategories, items,
           <div className="flex items-center gap-2">
             {hasFaults && !hasSerious && <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block" />}
             {hasSerious && <span className="w-2 h-2 rounded-full bg-orange-500 inline-block" />}
-            {expanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
           </div>
         </div>
       </CardHeader>
-      {expanded && (
-        <CardContent className="px-4 pb-4">
-          {visibleSubs.map(sub => {
-            const key = `${category}__${sub}`;
-            return (
-              <SubcategoryRow
-                key={key}
-                subcategory={sub}
-                item={items[key]}
-                onUpdate={(updates) => onUpdateItem(key, updates)}
-              />
-            );
-          })}
-        </CardContent>
-      )}
+      <CardContent className="px-4 pb-4">
+        {visibleSubs.map(sub => {
+          const key = `${category}__${sub}`;
+          return (
+            <SubcategoryRow
+              key={key}
+              subcategory={sub}
+              item={items[key]}
+              onUpdate={(updates) => onUpdateItem(key, updates)}
+            />
+          );
+        })}
+      </CardContent>
     </Card>
   );
 }
