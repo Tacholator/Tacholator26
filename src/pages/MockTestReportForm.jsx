@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Save, Send, FileText, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import moment from "moment";
 import MockTestAssessmentCard from "@/components/mocktest/MockTestAssessmentCard";
 import MockTestSummaryCard from "@/components/mocktest/MockTestSummaryCard";
 import MockTestFeedbackCard from "@/components/mocktest/MockTestFeedbackCard";
@@ -241,7 +242,7 @@ export default function MockTestReportForm() {
               </button>
               <div>
                 <h1 className="font-bold text-base leading-tight">Mock Driving Test Report</h1>
-                <p className="text-xs text-slate-300">{learnerFullName} · {reportMeta.date}</p>
+                <p className="text-xs text-slate-300">{learnerFullName} · {moment(reportMeta.date).format("DD/MM/YYYY")}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
