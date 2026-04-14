@@ -103,37 +103,51 @@ export default function MockTestsSection({ pupilId }) {
 
         {/* Full Mock Test Reports */}
         {sortedReports.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Full Mock Test Reports</p>
-            {sortedReports.map(report => (
-              <div
-                key={report.id}
-                className="flex items-center justify-between p-3 rounded-xl border bg-white hover:bg-slate-50 cursor-pointer"
-                onClick={() => navigate(`/MockTestReportView?reportId=${report.id}`)}
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <FileText className="w-4 h-4 text-slate-400 shrink-0" />
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge className={`text-xs ${RESULT_STYLES[report.overallResult] || RESULT_STYLES["Needs More Practice"]}`}>
-                        {report.overallResult || "Pending"}
-                      </Badge>
-                      <span className="text-xs text-slate-400">DF: {report.totalDriverFaults || 0} · S: {report.totalSeriousFaults || 0} · D: {report.totalDangerousFaults || 0}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {sortedReports.map(report => (
+                <div
+                  key={report.id}
+                  className="rounded-xl border-2 border-slate-200 bg-white hover:border-[#071739]/30 hover:shadow-md cursor-pointer transition-all p-4"
+                  onClick={() => navigate(`/MockTestReportView?reportId=${report.id}`)}
+                >
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span className="text-sm font-semibold text-slate-700">
+                        {report.date ? moment(report.date).format("D MMM YYYY") : "No date"}
+                      </span>
                     </div>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      {report.date ? moment(report.date).format("D MMM YYYY") : "No date"}
-                      {report.testCentreArea ? ` · ${report.testCentreArea}` : ""}
-                    </p>
+                    <Badge className={`text-xs shrink-0 ${report.isSharedWithLearner ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500"}`}>
+                      {report.status || "Draft"}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Badge className={`text-xs font-semibold ${RESULT_STYLES[report.overallResult] || "bg-slate-100 text-slate-500"}`}>
+                      {report.overallResult || "Pending"}
+                    </Badge>
+                    {report.testCentreArea && (
+                      <span className="text-xs text-slate-400 truncate">{report.testCentreArea}</span>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg py-1.5">
+                      <p className="text-sm font-bold text-amber-700">{report.totalDriverFaults || 0}</p>
+                      <p className="text-xs text-amber-600">DF</p>
+                    </div>
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg py-1.5">
+                      <p className="text-sm font-bold text-orange-700">{report.totalSeriousFaults || 0}</p>
+                      <p className="text-xs text-orange-600">Serious</p>
+                    </div>
+                    <div className="bg-red-50 border border-red-200 rounded-lg py-1.5">
+                      <p className="text-sm font-bold text-red-700">{report.totalDangerousFaults || 0}</p>
+                      <p className="text-xs text-red-600">Dangerous</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Badge className={report.isSharedWithLearner ? "bg-green-100 text-green-700 text-xs" : "bg-slate-100 text-slate-500 text-xs"}>
-                    {report.status || "Draft"}
-                  </Badge>
-                  <Eye className="w-4 h-4 text-slate-400" />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
