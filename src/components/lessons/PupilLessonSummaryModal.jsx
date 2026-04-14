@@ -31,8 +31,6 @@ export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiar
   const [isSaving, setIsSaving] = useState(false);
   const queryClient = useQueryClient();
 
-  if (!pupil) return null;
-
   // Load existing entry if available
   React.useEffect(() => {
     if (lastDiaryEntry && isEditMode) {
@@ -47,6 +45,8 @@ export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiar
       });
     }
   }, [lastDiaryEntry, isEditMode, open]);
+
+  if (!pupil) return null;
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
