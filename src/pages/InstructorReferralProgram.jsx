@@ -227,8 +227,8 @@ export default function InstructorReferralProgram() {
                 </div>
 
                 {/* Preview */}
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                  <p className="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-1">Preview</p>
+                <div className="bg-sky-50 border border-sky-200 rounded-xl p-4">
+                  <p className="text-xs text-sky-600 font-semibold uppercase tracking-wider mb-1">Preview</p>
                   <p className="font-bold text-[#071739] text-sm">{promoHeading.trim() || DEFAULT_HEADING}</p>
                   <p className="text-slate-600 text-xs mt-1 leading-relaxed">{promoText.trim() || DEFAULT_TEXT}</p>
                 </div>
