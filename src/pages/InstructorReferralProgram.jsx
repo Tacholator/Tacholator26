@@ -24,6 +24,7 @@ export default function InstructorReferralProgram() {
   const [promoHeading, setPromoHeading] = useState('');
   const [promoText, setPromoText] = useState('');
   const [promoSaved, setPromoSaved] = useState(false);
+  const [useCustomMessage, setUseCustomMessage] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -55,6 +56,7 @@ export default function InstructorReferralProgram() {
     if (instructorProfile) {
       setPromoHeading(instructorProfile.referralPromoHeading || '');
       setPromoText(instructorProfile.referralPromoText || '');
+      setUseCustomMessage(!!(instructorProfile.referralPromoHeading || instructorProfile.referralPromoText));
     }
   }, [instructorProfile]);
 
@@ -62,8 +64,8 @@ export default function InstructorReferralProgram() {
     mutationFn: async () => {
       if (!instructorProfile?.id) throw new Error('Instructor profile not found');
       return base44.entities.Instructor.update(instructorProfile.id, {
-        referralPromoHeading: promoHeading.trim() || null,
-        referralPromoText: promoText.trim() || null,
+        referralPromoHeading: useCustomMessage ? (promoHeading.trim() || null) : null,
+        referralPromoText: useCustomMessage ? (promoText.trim() || null) : null,
       });
     },
     onSuccess: () => {
@@ -77,7 +79,8 @@ export default function InstructorReferralProgram() {
   const textWordCount = countWords(promoText);
   const headingOverLimit = headingWordCount > 8;
   const textOverLimit = textWordCount > 16;
-  const promoChanged = promoHeading !== (instructorProfile?.referralPromoHeading || '') || promoText !== (instructorProfile?.referralPromoText || '');
+  const savedIsCustom = !!(instructorProfile?.referralPromoHeading || instructorProfile?.referralPromoText);
+  const promoChanged = useCustomMessage !== savedIsCustom || promoHeading !== (instructorProfile?.referralPromoHeading || '') || promoText !== (instructorProfile?.referralPromoText || '');
 
   const { mutate: toggleReferralProgram, isPending: isTogglingProgram } = useMutation({
     mutationFn: async (enabled) => {
@@ -162,60 +165,75 @@ export default function InstructorReferralProgram() {
             <span className="text-white font-semibold text-sm">Promo Message for Learners</span>
           </div>
           <div className="p-6 space-y-4">
-            <p className="text-xs text-slate-500">
-              Customise the message your pupils see on the referral screen. Leave blank to use the default shown below.
-            </p>
+            {/* Default message always visible */}
             <div className="bg-[#d4f74e] border border-[#b8e030] rounded-xl p-4">
-              <p className="text-xs text-[#3a5c00] font-semibold uppercase tracking-wider mb-2">Default message (shown when blank)</p>
+              <p className="text-xs text-[#3a5c00] font-semibold uppercase tracking-wider mb-2">Default message</p>
               <p className="font-bold text-[#1a3300] text-sm">{DEFAULT_HEADING}</p>
               <p className="text-[#2d4d00] text-xs mt-1 leading-relaxed">{DEFAULT_TEXT}</p>
             </div>
 
-            {/* Heading */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-semibold text-[#071739]">Heading</label>
-                <span className={`text-xs font-medium ${headingOverLimit ? 'text-red-500' : 'text-slate-400'}`}>
-                  {headingWordCount}/8 words
-                </span>
+            {/* Toggle between default and custom */}
+            <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+              <div>
+                <p className="text-sm font-semibold text-[#071739]">Use custom message</p>
+                <p className="text-xs text-slate-400">Override the default with your own text</p>
               </div>
-              <Input
-                value={promoHeading}
-                onChange={e => setPromoHeading(e.target.value)}
-                placeholder={DEFAULT_HEADING}
-                className={`rounded-xl border ${headingOverLimit ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-200'}`}
+              <Switch
+                checked={useCustomMessage}
+                onCheckedChange={setUseCustomMessage}
               />
-              {headingOverLimit && (
-                <p className="text-xs text-red-500">Heading cannot exceed 8 words.</p>
-              )}
             </div>
 
-            {/* Body text */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-semibold text-[#071739]">Body Text</label>
-                <span className={`text-xs font-medium ${textOverLimit ? 'text-red-500' : 'text-slate-400'}`}>
-                  {textWordCount}/16 words
-                </span>
-              </div>
-              <Textarea
-                value={promoText}
-                onChange={e => setPromoText(e.target.value)}
-                placeholder={DEFAULT_TEXT}
-                rows={3}
-                className={`rounded-xl border resize-none ${textOverLimit ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-200'}`}
-              />
-              {textOverLimit && (
-                <p className="text-xs text-red-500">Body text cannot exceed 16 words.</p>
-              )}
-            </div>
+            {/* Custom message editor — only shown when toggled on */}
+            {useCustomMessage && (
+              <>
+                {/* Heading */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-[#071739]">Heading</label>
+                    <span className={`text-xs font-medium ${headingOverLimit ? 'text-red-500' : 'text-slate-400'}`}>
+                      {headingWordCount}/8 words
+                    </span>
+                  </div>
+                  <Input
+                    value={promoHeading}
+                    onChange={e => setPromoHeading(e.target.value)}
+                    placeholder="Enter custom heading..."
+                    className={`rounded-xl border ${headingOverLimit ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-200'}`}
+                  />
+                  {headingOverLimit && (
+                    <p className="text-xs text-red-500">Heading cannot exceed 8 words.</p>
+                  )}
+                </div>
 
-            {/* Preview */}
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-              <p className="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-1">Preview</p>
-              <p className="font-bold text-[#071739] text-sm">{promoHeading.trim() || DEFAULT_HEADING}</p>
-              <p className="text-slate-600 text-xs mt-1 leading-relaxed">{promoText.trim() || DEFAULT_TEXT}</p>
-            </div>
+                {/* Body text */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-[#071739]">Body Text</label>
+                    <span className={`text-xs font-medium ${textOverLimit ? 'text-red-500' : 'text-slate-400'}`}>
+                      {textWordCount}/16 words
+                    </span>
+                  </div>
+                  <Textarea
+                    value={promoText}
+                    onChange={e => setPromoText(e.target.value)}
+                    placeholder="Enter custom body text..."
+                    rows={3}
+                    className={`rounded-xl border resize-none ${textOverLimit ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-200'}`}
+                  />
+                  {textOverLimit && (
+                    <p className="text-xs text-red-500">Body text cannot exceed 16 words.</p>
+                  )}
+                </div>
+
+                {/* Preview */}
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                  <p className="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-1">Preview</p>
+                  <p className="font-bold text-[#071739] text-sm">{promoHeading.trim() || DEFAULT_HEADING}</p>
+                  <p className="text-slate-600 text-xs mt-1 leading-relaxed">{promoText.trim() || DEFAULT_TEXT}</p>
+                </div>
+              </>
+            )}
 
             <Button
               onClick={() => savePromo()}
@@ -223,7 +241,7 @@ export default function InstructorReferralProgram() {
               className="bg-[#071739] hover:bg-[#0a2050] text-white rounded-xl gap-2"
             >
               <Save className="w-4 h-4" />
-              {promoSaved ? 'Saved!' : isSavingPromo ? 'Saving...' : 'Save Promo Message'}
+              {promoSaved ? 'Saved!' : isSavingPromo ? 'Saving...' : 'Save'}
             </Button>
           </div>
         </div>
