@@ -32,6 +32,10 @@ Deno.serve(async (req) => {
 
     let accountId = instructor.stripeAccountId;
 
+    const nameParts = (user.full_name || '').trim().split(/\s+/);
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
     // Verify account exists on Stripe or create new one
     let accountExists = false;
     if (accountId) {
@@ -39,6 +43,13 @@ Deno.serve(async (req) => {
         await stripe.accounts.retrieve(accountId);
         accountExists = true;
         console.log('Existing Stripe account found:', accountId);
+        // Update name on existing account
+        if (firstName || lastName) {
+          await stripe.accounts.update(accountId, {
+            individual: { first_name: firstName, last_name: lastName }
+          });
+          console.log('Updated name on existing Stripe account');
+        }
       } catch (error) {
         console.log('Stored account does not exist on Stripe, creating new one');
         accountId = null;
@@ -47,10 +58,6 @@ Deno.serve(async (req) => {
 
     // Create new account if none exists or previous was invalid
     if (!accountExists) {
-      const nameParts = (user.full_name || '').trim().split(/\s+/);
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-
       const account = await stripe.accounts.create({
         type: 'express',
         country: 'GB',
