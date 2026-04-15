@@ -60,6 +60,12 @@ export default function InstructorDashboard() {
     }
   }, [pupilCheck, isPupilCheckLoading, navigate]);
 
+  const { data: calendarRules = [] } = useQuery({
+    queryKey: ['calendarRules', user?.id],
+    queryFn: () => base44.entities.CalendarRule.filter({ instructorId: user.id }),
+    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
+  });
+
   const { data: instructor } = useQuery({
     queryKey: ['instructor', user?.id],
     queryFn: async () => {
@@ -100,19 +106,22 @@ export default function InstructorDashboard() {
     if (!instructor.onboardingProfileCompleted && hasName && hasPhone) {
       updates.onboardingProfileCompleted = true;
     }
+    if (!instructor.onboardingCalendarCompleted && calendarRules.length > 0) {
+      updates.onboardingCalendarCompleted = true;
+    }
     if (!instructor.onboardingStripeCompleted && (instructor.stripeAccountId || instructor.stripeAccountStatus === 'active' || instructor.stripeAccountStatus === 'pending')) {
       updates.onboardingStripeCompleted = true;
     }
     if (Object.keys(updates).length > 0) {
       base44.entities.Instructor.update(instructor.id, updates);
     }
-  }, [instructor?.id, user?.id]);
+  }, [instructor?.id, user?.id, calendarRules.length]);
 
   // Show onboarding popup once instructor data is loaded
   useEffect(() => {
     if (instructor && !instructor.onboardingPopupDismissed) {
       const profileComplete = instructor.onboardingProfileCompleted || !!(instructor.name && (instructor.phone || user?.phone));
-      const calendarComplete = instructor.onboardingCalendarCompleted;
+      const calendarComplete = instructor.onboardingCalendarCompleted || calendarRules.length > 0;
       const stripeComplete = instructor.onboardingStripeCompleted || !!instructor.stripeAccountId || instructor.stripeAccountStatus === 'active' || instructor.stripeAccountStatus === 'pending';
       const allDone = profileComplete && calendarComplete && stripeComplete;
       if (!allDone) setShowOnboardingPopup(true);
@@ -426,7 +435,7 @@ export default function InstructorDashboard() {
           </Card>
 
           {/* 1b. Onboarding Progress Card */}
-          <OnboardingProgressCard instructor={instructor} user={user} />
+          <OnboardingProgressCard instructor={instructor} user={user} calendarRules={calendarRules} />
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (
