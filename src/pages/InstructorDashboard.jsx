@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles, Plus } from 'lucide-react';
+import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles, Plus, ClockIcon, UserCheck } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
@@ -609,6 +609,63 @@ export default function InstructorDashboard() {
 
           {/* 3b. DVLA Verification Card */}
           <DvlaVerificationCard pupils={pupils} />
+
+          {/* 3c. Pending Bookings Card */}
+          {(() => {
+            const pendingBookings = bookings.filter(b => b.status === 'pending' || b.status === 'reserved_pending_instructor');
+            if (pendingBookings.length === 0) return null;
+            return (
+              <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 shadow-sm overflow-hidden">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
+                      <ClockIcon className="w-5 h-5 text-amber-600" />
+                      Pending Bookings
+                    </h3>
+                    <Badge className="bg-amber-500 text-white">{pendingBookings.length} pending</Badge>
+                  </div>
+                  <div className="space-y-2 max-h-72 overflow-y-auto">
+                    {pendingBookings
+                      .sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)))
+                      .map(booking => {
+                        const pupil = pupils.find(p => p.id === booking.pupilId);
+                        return (
+                          <Link
+                            key={booking.id}
+                            to={createPageUrl('InstructorBookingCalendar')}
+                            className="block"
+                          >
+                            <div className="bg-white/80 rounded-lg p-3 hover:bg-white transition-colors border border-amber-100">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <UserCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                                  <div className="min-w-0">
+                                    <p className="text-sm font-medium text-slate-800 truncate">
+                                      {pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown Pupil'}
+                                    </p>
+                                    <p className="text-xs text-slate-500 mt-0.5">
+                                      {moment(booking.startAtUtc).local().format('ddd D MMM')} · {moment(booking.startAtUtc).local().format('HH:mm')}–{moment(booking.endAtUtc).local().format('HH:mm')}
+                                    </p>
+                                  </div>
+                                </div>
+                                <Badge className={getStatusColor(booking.status)}>
+                                  {booking.status === 'reserved_pending_instructor' ? 'Awaiting Approval' : 'Pending'}
+                                </Badge>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                  </div>
+                  <Link to={createPageUrl('InstructorBookingCalendar')}>
+                    <Button variant="outline" className="w-full mt-4 border-amber-300 text-amber-800 hover:bg-amber-50">
+                      Manage Bookings
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            );
+          })()}
 
           {/* 4. Upcoming Tests Card */}
           {upcomingTests.length > 0 && (
