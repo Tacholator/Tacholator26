@@ -16,6 +16,9 @@ export default function ReferralBanner({ pupilProfile }) {
     enabled: !!pupilProfile?.instructorEmail,
   });
 
+  const heading = instructorProfile?.referralPromoHeading?.trim() || 'Refer a Friend & Earn Free Lessons!';
+  const promoText = instructorProfile?.referralPromoText?.trim() || 'Bring a new pupil who commits to 10+ hours → Get a FREE 1.5-hour lesson!';
+
   if (isLoading || !instructorProfile || instructorProfile?.referralProgramEnabled === false) {
     return null;
   }
@@ -29,10 +32,8 @@ export default function ReferralBanner({ pupilProfile }) {
           <Gift className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-white text-sm">Refer a Friend & Earn Free Lessons!</p>
-          <p className="text-xs text-white/90">
-              Bring a new pupil who commits to 10+ hours → Get a FREE 1.5-hour lesson!
-          </p>
+          <p className="font-semibold text-white text-sm">{heading}</p>
+          <p className="text-xs text-white/90">{promoText}</p>
           <button
             onClick={() => window.location.href = createPageUrl('ReferAFriend')}
             className="mt-1.5 text-xs text-white font-semibold underline underline-offset-2 flex items-center gap-1 hover:text-white/80 transition-colors"
