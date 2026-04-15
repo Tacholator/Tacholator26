@@ -93,16 +93,16 @@ export default function LearnerDashboard() {
 
   // Show onboarding popup if profile is incomplete
   useEffect(() => {
-    if (pupil) {
-      const profileComplete = !!(pupil.firstName && pupil.lastName && pupil.phone);
-      if (!profileComplete && !pupil.onboardingProfileCompleted) {
-        setShowOnboardingPopup(true);
-      } else if (profileComplete && !pupil.onboardingProfileCompleted) {
-        // Auto-mark as complete for existing users who already have full profiles
-        base44.entities.Pupil.update(pupil.id, { onboardingProfileCompleted: true });
-      }
+    if (!pupil) return;
+    const profileComplete = !!(pupil.firstName && pupil.lastName && pupil.phone);
+    if (!profileComplete) {
+      // Always show popup if phone/name is missing, regardless of the flag
+      setShowOnboardingPopup(true);
+    } else if (!pupil.onboardingProfileCompleted) {
+      // Auto-mark as complete for existing users who already have full profiles
+      base44.entities.Pupil.update(pupil.id, { onboardingProfileCompleted: true });
     }
-  }, [pupil?.id]);
+  }, [pupil]);
 
   useEffect(() => {
     if (pupil && user) {
