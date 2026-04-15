@@ -12,11 +12,8 @@ function generateCode(name) {
   return `${prefix}-${suffix}`;
 }
 
-const steps = [
-  { number: '1', emoji: '👋', title: 'Share Your Code', desc: 'Send your unique referral code to a friend who wants to start driving lessons.' },
-  { number: '2', emoji: '📋', title: 'They Sign Up', desc: 'Your friend shows the code to their instructor when booking their first lessons.' },
-  { number: '3', emoji: '🎉', title: 'You Both Win', desc: 'Once they commit to 10+ hours, you receive a FREE 1.5-hour driving lesson!' },
-];
+const DEFAULT_PROMO_HEADING = 'You Both Win';
+const DEFAULT_PROMO_TEXT = 'Once they commit to 10+ hours, you receive a FREE 1.5-hour driving lesson!';
 
 export default function ReferAFriend() {
   const navigate = useNavigate();
@@ -38,6 +35,24 @@ export default function ReferAFriend() {
     },
     enabled: !!user?.id,
   });
+
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['referralInstructorProfile', pupilProfile?.instructorId],
+    queryFn: async () => {
+      const results = await base44.entities.Instructor.filter({ created_by: pupilProfile.instructorEmail });
+      return results[0] || null;
+    },
+    enabled: !!pupilProfile?.instructorEmail,
+  });
+
+  const promoHeading = instructorProfile?.referralPromoHeading?.trim() || DEFAULT_PROMO_HEADING;
+  const promoText = instructorProfile?.referralPromoText?.trim() || DEFAULT_PROMO_TEXT;
+
+  const steps = [
+    { number: '1', emoji: '👋', title: 'Share Your Code', desc: 'Send your unique referral code to a friend who wants to start driving lessons.' },
+    { number: '2', emoji: '📋', title: 'They Sign Up', desc: 'Your friend shows the code to their instructor when booking their first lessons.' },
+    { number: '3', emoji: '🎉', title: promoHeading, desc: promoText },
+  ];
 
   const { data: referral, isLoading } = useQuery({
     queryKey: ['myReferral', pupilProfile?.id],

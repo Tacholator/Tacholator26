@@ -1,18 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Users, Search, CheckCircle, Clock, Gift, Sparkles } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Users, Search, CheckCircle, Clock, Gift, Sparkles, Save, MessageSquare } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { format } from 'date-fns';
+
+const DEFAULT_HEADING = 'You Both Win';
+const DEFAULT_TEXT = 'Once they commit to 10+ hours, you receive a FREE 1.5-hour driving lesson!';
+
+function countWords(str) {
+  return str.trim() === '' ? 0 : str.trim().split(/\s+/).length;
+}
 
 export default function InstructorReferralProgram() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [redeemingId, setRedeemingId] = useState(null);
   const [redeemName, setRedeemName] = useState('');
+  const [promoHeading, setPromoHeading] = useState('');
+  const [promoText, setPromoText] = useState('');
+  const [promoSaved, setPromoSaved] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -38,6 +49,35 @@ export default function InstructorReferralProgram() {
     },
     enabled: !!user?.id,
   });
+
+  // Sync promo fields when instructor profile loads
+  useEffect(() => {
+    if (instructorProfile) {
+      setPromoHeading(instructorProfile.referralPromoHeading || '');
+      setPromoText(instructorProfile.referralPromoText || '');
+    }
+  }, [instructorProfile]);
+
+  const { mutate: savePromo, isPending: isSavingPromo } = useMutation({
+    mutationFn: async () => {
+      if (!instructorProfile?.id) throw new Error('Instructor profile not found');
+      return base44.entities.Instructor.update(instructorProfile.id, {
+        referralPromoHeading: promoHeading.trim() || null,
+        referralPromoText: promoText.trim() || null,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['instructorProfile', user?.email] });
+      setPromoSaved(true);
+      setTimeout(() => setPromoSaved(false), 2500);
+    },
+  });
+
+  const headingWordCount = countWords(promoHeading);
+  const textWordCount = countWords(promoText);
+  const headingOverLimit = headingWordCount > 8;
+  const textOverLimit = textWordCount > 16;
+  const promoChanged = promoHeading !== (instructorProfile?.referralPromoHeading || '') || promoText !== (instructorProfile?.referralPromoText || '');
 
   const { mutate: toggleReferralProgram, isPending: isTogglingProgram } = useMutation({
     mutationFn: async (enabled) => {
@@ -112,6 +152,74 @@ export default function InstructorReferralProgram() {
               <p className="text-3xl font-black text-[#071739]">{redeemedCount}</p>
               <p className="text-xs text-slate-500 font-medium">Redeemed</p>
             </div>
+          </div>
+        </div>
+
+        {/* Promo Message Editor */}
+        <div className="bg-white rounded-3xl shadow-md overflow-hidden">
+          <div className="bg-[#071739] px-6 py-4 flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-[#F7B602]" />
+            <span className="text-white font-semibold text-sm">Promo Message for Learners</span>
+          </div>
+          <div className="p-6 space-y-4">
+            <p className="text-xs text-slate-500">
+              Customise the message your pupils see on the referral screen. Leave blank to use the default.
+            </p>
+
+            {/* Heading */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-semibold text-[#071739]">Heading</label>
+                <span className={`text-xs font-medium ${headingOverLimit ? 'text-red-500' : 'text-slate-400'}`}>
+                  {headingWordCount}/8 words
+                </span>
+              </div>
+              <Input
+                value={promoHeading}
+                onChange={e => setPromoHeading(e.target.value)}
+                placeholder={DEFAULT_HEADING}
+                className={`rounded-xl border ${headingOverLimit ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-200'}`}
+              />
+              {headingOverLimit && (
+                <p className="text-xs text-red-500">Heading cannot exceed 8 words.</p>
+              )}
+            </div>
+
+            {/* Body text */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-semibold text-[#071739]">Body Text</label>
+                <span className={`text-xs font-medium ${textOverLimit ? 'text-red-500' : 'text-slate-400'}`}>
+                  {textWordCount}/16 words
+                </span>
+              </div>
+              <Textarea
+                value={promoText}
+                onChange={e => setPromoText(e.target.value)}
+                placeholder={DEFAULT_TEXT}
+                rows={3}
+                className={`rounded-xl border resize-none ${textOverLimit ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-200'}`}
+              />
+              {textOverLimit && (
+                <p className="text-xs text-red-500">Body text cannot exceed 16 words.</p>
+              )}
+            </div>
+
+            {/* Preview */}
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <p className="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-1">Preview</p>
+              <p className="font-bold text-[#071739] text-sm">{promoHeading.trim() || DEFAULT_HEADING}</p>
+              <p className="text-slate-600 text-xs mt-1 leading-relaxed">{promoText.trim() || DEFAULT_TEXT}</p>
+            </div>
+
+            <Button
+              onClick={() => savePromo()}
+              disabled={isSavingPromo || headingOverLimit || textOverLimit || !promoChanged}
+              className="bg-[#071739] hover:bg-[#0a2050] text-white rounded-xl gap-2"
+            >
+              <Save className="w-4 h-4" />
+              {promoSaved ? 'Saved!' : isSavingPromo ? 'Saving...' : 'Save Promo Message'}
+            </Button>
           </div>
         </div>
 

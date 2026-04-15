@@ -142,6 +142,14 @@
       "default": true,
       "description": "Whether pupils see the referral program banner and popup"
     },
+    "referralPromoHeading": {
+      "type": "string",
+      "description": "Custom promo heading shown to learners (max 8 words)"
+    },
+    "referralPromoText": {
+      "type": "string",
+      "description": "Custom promo body text shown to learners (max 16 words)"
+    },
     "onboardingProfileCompleted": {
       "type": "boolean",
       "default": false,
