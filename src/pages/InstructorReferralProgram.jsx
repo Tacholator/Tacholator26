@@ -163,8 +163,13 @@ export default function InstructorReferralProgram() {
           </div>
           <div className="p-6 space-y-4">
             <p className="text-xs text-slate-500">
-              Customise the message your pupils see on the referral screen. Leave blank to use the default.
+              Customise the message your pupils see on the referral screen. Leave blank to use the default shown below.
             </p>
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Default message (shown when blank)</p>
+              <p className="font-bold text-slate-600 text-sm">{DEFAULT_HEADING}</p>
+              <p className="text-slate-500 text-xs mt-1 leading-relaxed">{DEFAULT_TEXT}</p>
+            </div>
 
             {/* Heading */}
             <div className="space-y-1.5">
