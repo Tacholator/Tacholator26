@@ -519,7 +519,7 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="lg:pl-64" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom) + env(safe-area-inset-bottom))' }}>
+      <main className="lg:pl-64 pb-nav-safe">
         <AppDownloadBanner />
         {children}
       </main>
