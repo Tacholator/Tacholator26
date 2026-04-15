@@ -615,14 +615,14 @@ export default function InstructorDashboard() {
             const pendingBookings = bookings.filter(b => b.status === 'pending' || b.status === 'reserved_pending_instructor');
             if (pendingBookings.length === 0) return null;
             return (
-              <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 shadow-sm overflow-hidden">
+              <Card className="bg-gradient-to-br from-violet-50 to-purple-100 border border-violet-200 shadow-sm overflow-hidden">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-                      <ClockIcon className="w-5 h-5 text-amber-600" />
+                      <ClockIcon className="w-5 h-5 text-violet-600" />
                       Pending Bookings
                     </h3>
-                    <Badge className="bg-amber-500 text-white">{pendingBookings.length} pending</Badge>
+                    <Badge className="bg-violet-600 text-white">{pendingBookings.length} pending</Badge>
                   </div>
                   <div className="space-y-2 max-h-72 overflow-y-auto">
                     {pendingBookings
@@ -635,10 +635,10 @@ export default function InstructorDashboard() {
                             to={createPageUrl('InstructorBookingCalendar')}
                             className="block"
                           >
-                            <div className="bg-white/80 rounded-lg p-3 hover:bg-white transition-colors border border-amber-100">
+                            <div className="bg-white/80 rounded-lg p-3 hover:bg-white transition-colors border border-violet-100">
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex items-center gap-2 min-w-0">
-                                  <UserCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                                  <UserCheck className="w-4 h-4 text-violet-600 shrink-0" />
                                   <div className="min-w-0">
                                     <p className="text-sm font-medium text-slate-800 truncate">
                                       {pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown Pupil'}
@@ -658,7 +658,7 @@ export default function InstructorDashboard() {
                       })}
                   </div>
                   <Link to={createPageUrl('InstructorBookingCalendar')}>
-                    <Button variant="outline" className="w-full mt-4 border-amber-300 text-amber-800 hover:bg-amber-50">
+                    <Button variant="outline" className="w-full mt-4 border-violet-300 text-violet-800 hover:bg-violet-50">
                       Manage Bookings
                     </Button>
                   </Link>
