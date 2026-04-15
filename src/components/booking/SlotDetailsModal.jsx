@@ -74,7 +74,7 @@ export default function SlotDetailsModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+        <DialogContent className="max-w-md w-[calc(100vw-2rem)] sm:w-full" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Slot Details</DialogTitle>
           </DialogHeader>
