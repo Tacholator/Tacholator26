@@ -90,7 +90,7 @@ export const ASSESSMENT_CATEGORIES = [
       "Steering",
       "Gears",
       "Clutch",
-      "Automatic vehicle control",
+      "Automatic Gears",
       "Parking brake / secure vehicle"
     ]
   },
@@ -158,7 +158,7 @@ export const isSubcategoryHidden = (subcategory, transmissionType) => {
     return subcategory === "Gears" || subcategory === "Clutch";
   }
   if (transmissionType === "Manual") {
-    return subcategory === "Automatic vehicle control";
+    return subcategory === "Automatic Gears";
   }
   return false;
 };
