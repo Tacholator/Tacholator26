@@ -85,10 +85,17 @@ export default function InstructorBookingCalendar() {
   });
 
   const createRuleMutation = useMutation({
-    mutationFn: (data) => base44.entities.CalendarRule.create({
-      ...data,
-      instructorId: user.id
-    }),
+    mutationFn: async (data) => {
+      await base44.entities.CalendarRule.create({ ...data, instructorId: user.id });
+      // Mark calendar onboarding step as complete when working hours are saved
+      if (data.ruleType === 'working_hours') {
+        const instructors = await base44.entities.Instructor.filter({ created_by: user.email });
+        if (instructors.length > 0 && !instructors[0].onboardingCalendarCompleted) {
+          await base44.entities.Instructor.update(instructors[0].id, { onboardingCalendarCompleted: true });
+          queryClient.invalidateQueries(['instructor']);
+        }
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['calendarRules']);
       toast({ title: 'Rule saved successfully' });

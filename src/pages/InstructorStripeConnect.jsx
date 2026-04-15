@@ -144,6 +144,11 @@ export default function InstructorStripeConnect() {
           queryClient.invalidateQueries({ queryKey: ['myInstructorProfile'] });
           
           if (status === 'active') {
+            // Mark Stripe onboarding step as complete
+            const instructors = await base44.entities.Instructor.filter({ created_by: (await base44.auth.me()).email });
+            if (instructors.length > 0) {
+              await base44.entities.Instructor.update(instructors[0].id, { onboardingStripeCompleted: true });
+            }
             toast({
               title: '✓ Account Connected Successfully',
               description: 'Your Stripe account is active and ready to receive payouts.',

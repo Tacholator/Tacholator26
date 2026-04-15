@@ -13,6 +13,8 @@ import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 import NewLessonModal from '@/components/booking/NewLessonModal';
 import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
+import OnboardingProgressCard from '@/components/onboarding/OnboardingProgressCard';
+import OnboardingPopup from '@/components/onboarding/OnboardingPopup';
 
 // Warm color palette - stable per section
 const warmPalette = {
@@ -30,6 +32,7 @@ export default function InstructorDashboard() {
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
   const [selectedPupilForSummary, setSelectedPupilForSummary] = useState(null);
   const [newLessonModalOpen, setNewLessonModalOpen] = useState(false);
+  const [showOnboardingPopup, setShowOnboardingPopup] = useState(false);
   const navigate = useNavigate();
 
   const { data: user } = useQuery({
@@ -86,6 +89,14 @@ export default function InstructorDashboard() {
     },
     enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
+
+  // Show onboarding popup once instructor data is loaded
+  useEffect(() => {
+    if (instructor && !instructor.onboardingPopupDismissed) {
+      const allDone = instructor.onboardingProfileCompleted && instructor.onboardingCalendarCompleted && instructor.onboardingStripeCompleted;
+      if (!allDone) setShowOnboardingPopup(true);
+    }
+  }, [instructor?.id]);
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['pupils', instructor?.id, user?.id],
@@ -392,6 +403,9 @@ export default function InstructorDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* 1b. Onboarding Progress Card */}
+          <OnboardingProgressCard instructor={instructor} />
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (
@@ -799,6 +813,14 @@ export default function InstructorDashboard() {
 
         </div>
       </div>
+
+      {instructor && (
+        <OnboardingPopup
+          instructor={instructor}
+          open={showOnboardingPopup}
+          onDismiss={() => setShowOnboardingPopup(false)}
+        />
+      )}
 
       <LessonOutcomeModal
         open={outcomeModalOpen}

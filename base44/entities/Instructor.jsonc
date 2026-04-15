@@ -141,6 +141,26 @@
       "type": "boolean",
       "default": true,
       "description": "Whether pupils see the referral program banner and popup"
+    },
+    "onboardingProfileCompleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether instructor has completed personal & business profile setup"
+    },
+    "onboardingCalendarCompleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether instructor has completed calendar setup"
+    },
+    "onboardingStripeCompleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether instructor has completed Stripe payout setup"
+    },
+    "onboardingPopupDismissed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the instructor has dismissed the onboarding popup"
     }
   },
   "required": [

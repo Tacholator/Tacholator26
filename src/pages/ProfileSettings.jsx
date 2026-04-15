@@ -158,7 +158,12 @@ export default function ProfileSettings() {
       await base44.auth.updateMe(formData);
       
       if (isInstructor && instructorProfile) {
-        await base44.entities.Instructor.update(instructorProfile.id, businessData);
+        // Mark profile onboarding step complete if name and phone are set
+        const profileComplete = !!(formData.firstName && formData.lastName && formData.phone);
+        await base44.entities.Instructor.update(instructorProfile.id, {
+          ...businessData,
+          ...(profileComplete ? { onboardingProfileCompleted: true } : {})
+        });
       }
       
       queryClient.invalidateQueries(['currentUser']);
@@ -195,7 +200,11 @@ export default function ProfileSettings() {
     setIsSavingBusiness(true);
     try {
       if (instructorProfile) {
-        await base44.entities.Instructor.update(instructorProfile.id, businessData);
+        const businessComplete = !!(businessData.businessName && businessData.businessCity);
+        await base44.entities.Instructor.update(instructorProfile.id, {
+          ...businessData,
+          ...(businessComplete ? { onboardingProfileCompleted: true } : {})
+        });
       }
       setBusinessSaveSuccess(true);
       setIsBusinessEditing(false);
