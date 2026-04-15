@@ -290,7 +290,7 @@ export default function MockTestReportForm() {
               <CardTitle className="text-[#071739] text-base">Test Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs font-semibold text-slate-600">Date</Label>
                   <Input type="date" value={reportMeta.date} onChange={e => setReportMeta(p => ({ ...p, date: e.target.value }))} />
