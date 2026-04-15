@@ -394,10 +394,10 @@ export default function LearnerDashboard() {
         onDismiss={() => setShowOnboardingPopup(false)}
         pupilId={pupil?.id}
       />
-      <ReferralPopup />
+      <ReferralPopup pupilProfile={pupil} />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Referral Banner */}
-        <ReferralBanner />
+        <ReferralBanner pupilProfile={pupil} />
 
         {/* Congratulations Banner for Passed Pupils */}
         {pupil.status === 'Passed' && (
