@@ -31,7 +31,7 @@ export default function ReferralBanner({ pupilProfile }) {
         <div className="flex-1">
           <p className="font-semibold text-white text-sm">Refer a Friend & Earn Free Lessons!</p>
           <p className="text-xs text-white/90">
-              Bring a new pupil who commits to 10+ hours \u2192 Get a FREE 1.5-hour lesson!
+              Bring a new pupil who commits to 10+ hours → Get a FREE 1.5-hour lesson!
           </p>
           <button
             onClick={() => window.location.href = createPageUrl('ReferAFriend')}
