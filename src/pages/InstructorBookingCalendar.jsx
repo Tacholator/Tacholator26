@@ -25,6 +25,7 @@ import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
 import InstructorScheduleLessonModal from '@/components/booking/InstructorScheduleLessonModal';
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
 import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModal';
+import SlotDetailsModal from '@/components/booking/SlotDetailsModal';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 
@@ -43,6 +44,8 @@ export default function InstructorBookingCalendar() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [showCreateSlotModal, setShowCreateSlotModal] = useState(false);
   const [clickedSlotDateTime, setClickedSlotDateTime] = useState(null);
+  const [showSlotDetailsModal, setShowSlotDetailsModal] = useState(false);
+  const [selectedSlotDetails, setSelectedSlotDetails] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -180,9 +183,9 @@ export default function InstructorBookingCalendar() {
 
   const handleSlotClick = (slotDateTime, slotInstance) => {
     if (typeof slotInstance === 'object' && slotInstance.status === 'available') {
-      // Available slot clicked - open schedule modal
-      setSelectedSlotForSchedule(slotInstance);
-      setShowScheduleLessonModal(true);
+      // Available slot clicked - open slot details first
+      setSelectedSlotDetails(slotInstance);
+      setShowSlotDetailsModal(true);
     } else if (typeof slotInstance === 'string' || !slotInstance) {
       // Empty area clicked - open create slot modal
       setClickedSlotDateTime(slotDateTime);
@@ -557,6 +560,23 @@ export default function InstructorBookingCalendar() {
           onConfirm={confirmBookingMutation.mutate}
           onDecline={(reason) => declineBookingMutation.mutate({ bookingId: selectedBooking?.id, reason })}
           isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending}
+        />
+
+        <SlotDetailsModal
+          open={showSlotDetailsModal}
+          onOpenChange={setShowSlotDetailsModal}
+          slotInstance={selectedSlotDetails}
+          isInstructor={true}
+          onBookForPupil={(slot) => {
+            setSelectedSlotForSchedule(slot);
+            setShowScheduleLessonModal(true);
+          }}
+          onDeleteSlot={({ slotInstanceId, sourceTemplateId, deleteOption, startAtUtc }) => {
+            const slot = selectedSlotDetails;
+            deleteBookingMutation.mutate({ booking: null, slotInstance: slot });
+            setShowSlotDetailsModal(false);
+          }}
+          isDeleting={deleteBookingMutation.isPending}
         />
 
         <CreateBookableSlotModal
