@@ -180,7 +180,16 @@ export default function InstructorReferralProgram() {
               </div>
               <Switch
                 checked={useCustomMessage}
-                onCheckedChange={setUseCustomMessage}
+                onCheckedChange={(checked) => {
+                  setUseCustomMessage(checked);
+                  if (!checked && instructorProfile?.id) {
+                    // Auto-save: clear custom fields immediately when toggled OFF
+                    base44.entities.Instructor.update(instructorProfile.id, {
+                      referralPromoHeading: null,
+                      referralPromoText: null,
+                    }).then(() => queryClient.invalidateQueries({ queryKey: ['instructorProfile', user?.email] }));
+                  }
+                }}
               />
             </div>
 
