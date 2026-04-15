@@ -47,6 +47,10 @@ Deno.serve(async (req) => {
 
     // Create new account if none exists or previous was invalid
     if (!accountExists) {
+      const nameParts = (user.full_name || '').trim().split(/\s+/);
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
       const account = await stripe.accounts.create({
         type: 'express',
         country: 'GB',
@@ -56,6 +60,10 @@ Deno.serve(async (req) => {
           transfers: { requested: true }
         },
         business_type: 'individual',
+        individual: {
+          first_name: firstName,
+          last_name: lastName
+        },
         settings: {
           payouts: {
             schedule: {
