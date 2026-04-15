@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import moment from 'moment';
 
 const SLOT_COLORS = {
@@ -447,13 +447,7 @@ export default function Calendar24Hour({
                     }
                   };
 
-                  // Show delete icon for instructors on available, confirmed, confirmed_test, and completed slots
-                  const showDeleteIcon = isInstructor && (
-                    state === 'available' || 
-                    state === 'confirmed' || 
-                    state === 'confirmed_test' ||
-                    state === 'completed'
-                  );
+                  const showDeleteIcon = false;
 
                   return (
                     <div
@@ -533,16 +527,7 @@ export default function Calendar24Hour({
                           </div>
                         </div>
 
-                        {/* Delete Icon */}
-                        {showDeleteIcon && (
-                          <button
-                            onClick={handleDelete}
-                            className="absolute top-0.5 sm:top-1 right-0.5 sm:right-1 p-0.5 sm:p-1 rounded bg-white/80 hover:bg-rose-100 transition-colors opacity-0 group-hover:opacity-100 z-20"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-rose-600" />
-                          </button>
-                        )}
+
 
                         {/* Hover outline for clickable slots */}
                         {clickable && !isOthersReserved && (
