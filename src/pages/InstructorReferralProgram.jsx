@@ -126,7 +126,7 @@ export default function InstructorReferralProgram() {
           <div className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl shadow-md">
             <span className="text-sm font-medium text-[#071739]">Show to Pupils</span>
             <Switch
-              checked={instructorProfile?.referralProgramEnabled !== false}
+              checked={instructorProfile?.referralProgramEnabled === true}
               onCheckedChange={(checked) => toggleReferralProgram(checked)}
               disabled={isTogglingProgram}
             />
