@@ -38,10 +38,12 @@ import {
 import moment from 'moment';
 import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
+import LearnerOnboardingPopup from '@/components/onboarding/LearnerOnboardingPopup';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
   const [summaryModalOpen, setSummaryModalOpen] = React.useState(false);
+  const [showOnboardingPopup, setShowOnboardingPopup] = React.useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
@@ -88,6 +90,19 @@ export default function LearnerDashboard() {
       base44.entities.Pupil.update(pupilId, data),
     onSuccess: () => queryClient.invalidateQueries(['myPupilProfile'])
   });
+
+  // Show onboarding popup if profile is incomplete
+  useEffect(() => {
+    if (pupil) {
+      const profileComplete = !!(pupil.firstName && pupil.lastName && pupil.phone);
+      if (!profileComplete && !pupil.onboardingProfileCompleted) {
+        setShowOnboardingPopup(true);
+      } else if (profileComplete && !pupil.onboardingProfileCompleted) {
+        // Auto-mark as complete for existing users who already have full profiles
+        base44.entities.Pupil.update(pupil.id, { onboardingProfileCompleted: true });
+      }
+    }
+  }, [pupil?.id]);
 
   useEffect(() => {
     if (pupil && user) {
@@ -374,6 +389,11 @@ export default function LearnerDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
+      <LearnerOnboardingPopup
+        open={showOnboardingPopup}
+        onDismiss={() => setShowOnboardingPopup(false)}
+        pupilId={pupil?.id}
+      />
       <ReferralPopup />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Referral Banner */}

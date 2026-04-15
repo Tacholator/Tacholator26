@@ -1,0 +1,223 @@
+{
+  "name": "Pupil",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor user ID"
+    },
+    "instructorEmail": {
+      "type": "string",
+      "description": "Instructor's email address"
+    },
+    "instructorName": {
+      "type": "string",
+      "description": "Instructor's full name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Active",
+        "OnHold",
+        "Passed",
+        "Stopped"
+      ],
+      "default": "Active"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "pickupAddress": {
+      "type": "string"
+    },
+    "preferredDaysTimes": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "provisionalLicenceNumber": {
+      "type": "string"
+    },
+    "theoryTestDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "theoryTestNotBooked": {
+      "type": "boolean",
+      "default": false
+    },
+    "theoryTestPassed": {
+      "type": "boolean",
+      "default": false
+    },
+    "practicalTestDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "practicalTestTime": {
+      "type": "string",
+      "description": "Practical test time in 24hr format (e.g. 14:30)"
+    },
+    "practicalTestNotBooked": {
+      "type": "boolean",
+      "default": false
+    },
+    "practicalTestPassed": {
+      "type": "boolean",
+      "default": false
+    },
+    "practicalTestCentre": {
+      "type": "string"
+    },
+    "targetHours": {
+      "type": "number",
+      "default": 45
+    },
+    "hoursCompleted": {
+      "type": "number",
+      "default": 0,
+      "description": "Actual completed lesson hours (excludes audit hours)"
+    },
+    "hourlyRate": {
+      "type": "number",
+      "default": 0,
+      "description": "Hourly lesson rate in currency"
+    },
+    "payAsYouGo": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pupil prefers to pay per lesson rather than in bulk"
+    },
+    "bulkAmountPaid": {
+      "type": "number",
+      "default": 0,
+      "description": "Total bulk payment amount received"
+    },
+    "bulkPaymentBalance": {
+      "type": "number",
+      "default": 0,
+      "description": "Current remaining bulk payment balance"
+    },
+    "auditNoShowHours": {
+      "type": "number",
+      "default": 0
+    },
+    "auditLateCancellationHours": {
+      "type": "number",
+      "default": 0
+    },
+    "allowBookingWithoutBalance": {
+      "type": "boolean",
+      "default": false
+    },
+    "requireBookingApproval": {
+      "type": "boolean",
+      "default": false
+    },
+    "googleSheetUrl": {
+      "type": "string"
+    },
+    "linkedUserId": {
+      "type": "string",
+      "description": "Reference to User entity for learner login"
+    },
+    "hasSignedUp": {
+      "type": "boolean",
+      "default": false
+    },
+    "signupStatus": {
+      "type": "string",
+      "enum": [
+        "not_signed_up",
+        "signed_up_only",
+        "active_recently",
+        "active_but_quiet",
+        "inactive"
+      ],
+      "default": "not_signed_up"
+    },
+    "firstLoginTimestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastLoginTimestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastActivityTimestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "licenseChecked": {
+      "type": "boolean",
+      "default": false
+    },
+    "licenseCheckDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "licenseCheckNotes": {
+      "type": "string"
+    },
+    "eyeTestChecked": {
+      "type": "boolean",
+      "default": false
+    },
+    "eyeTestCheckDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "eyeTestCheckNotes": {
+      "type": "string"
+    },
+    "dvlaCheckCode": {
+      "type": "string"
+    },
+    "licenceSuffix": {
+      "type": "string"
+    },
+    "dvlaSubmissionDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dvlaExpiryDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "instructorDvlaVerified": {
+      "type": "boolean",
+      "default": false
+    },
+    "instructorDvlaVerifiedDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "testRoutesAccessEnabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether instructor has granted this pupil access to test route videos"
+    },
+    "onboardingProfileCompleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the learner has completed their profile (firstName, lastName, phone)"
+    }
+  },
+  "required": [
+    "firstName",
+    "lastName"
+  ]
+}

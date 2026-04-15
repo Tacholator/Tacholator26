@@ -164,6 +164,12 @@ export default function ProfileSettings() {
           ...businessData,
           ...(profileComplete ? { onboardingProfileCompleted: true } : {})
         });
+      } else if (!isInstructor && pupil) {
+        // Mark learner profile onboarding complete if name and phone are set
+        const profileComplete = !!(formData.firstName && formData.lastName && formData.phone);
+        if (profileComplete && !pupil.onboardingProfileCompleted) {
+          await base44.entities.Pupil.update(pupil.id, { onboardingProfileCompleted: true });
+        }
       }
       
       queryClient.invalidateQueries(['currentUser']);
