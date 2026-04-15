@@ -32,7 +32,17 @@ const steps = [
 export default function OnboardingProgressCard({ instructor }) {
   if (!instructor) return null;
 
-  const completedCount = steps.filter(s => instructor[s.key]).length;
+  // For profile step: also check actual field values as fallback for existing instructors
+  // whose onboardingProfileCompleted flag was never set despite having filled profiles
+  const isProfileComplete = instructor.onboardingProfileCompleted || !!(instructor.name && instructor.phone);
+
+  const stepCompletion = {
+    onboardingProfileCompleted: isProfileComplete,
+    onboardingCalendarCompleted: !!instructor.onboardingCalendarCompleted,
+    onboardingStripeCompleted: !!instructor.onboardingStripeCompleted,
+  };
+
+  const completedCount = steps.filter(s => stepCompletion[s.key]).length;
   const totalCount = steps.length;
   const percentage = Math.round((completedCount / totalCount) * 100);
 
@@ -68,7 +78,7 @@ export default function OnboardingProgressCard({ instructor }) {
         {/* Steps */}
         <div className="space-y-3">
           {steps.map((step) => {
-            const done = !!instructor[step.key];
+            const done = !!stepCompletion[step.key];
             const Icon = step.icon;
             return (
               <div key={step.key} className="flex items-center gap-3">

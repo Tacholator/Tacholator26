@@ -90,10 +90,21 @@ export default function InstructorDashboard() {
     enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
 
+  // Auto-backfill onboardingProfileCompleted for existing instructors who already have all fields set
+  useEffect(() => {
+    if (instructor && !instructor.onboardingProfileCompleted) {
+      const profileComplete = !!(instructor.name && instructor.phone);
+      if (profileComplete) {
+        base44.entities.Instructor.update(instructor.id, { onboardingProfileCompleted: true });
+      }
+    }
+  }, [instructor?.id]);
+
   // Show onboarding popup once instructor data is loaded
   useEffect(() => {
     if (instructor && !instructor.onboardingPopupDismissed) {
-      const allDone = instructor.onboardingProfileCompleted && instructor.onboardingCalendarCompleted && instructor.onboardingStripeCompleted;
+      const profileComplete = instructor.onboardingProfileCompleted || !!(instructor.name && instructor.phone);
+      const allDone = profileComplete && instructor.onboardingCalendarCompleted && instructor.onboardingStripeCompleted;
       if (!allDone) setShowOnboardingPopup(true);
     }
   }, [instructor?.id]);
