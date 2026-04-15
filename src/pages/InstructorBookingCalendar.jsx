@@ -44,6 +44,7 @@ export default function InstructorBookingCalendar() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [showCreateSlotModal, setShowCreateSlotModal] = useState(false);
   const [clickedSlotDateTime, setClickedSlotDateTime] = useState(null);
+  const [editingSlot, setEditingSlot] = useState(null);
   const [showSlotDetailsModal, setShowSlotDetailsModal] = useState(false);
   const [selectedSlotDetails, setSelectedSlotDetails] = useState(null);
   const queryClient = useQueryClient();
@@ -571,6 +572,11 @@ export default function InstructorBookingCalendar() {
             setSelectedSlotForSchedule(slot);
             setShowScheduleLessonModal(true);
           }}
+          onEditSlot={(slot) => {
+            setEditingSlot(slot);
+            setClickedSlotDateTime(null);
+            setShowCreateSlotModal(true);
+          }}
           onDeleteSlot={({ slotInstanceId, sourceTemplateId, deleteOption, startAtUtc }) => {
             const slot = selectedSlotDetails;
             deleteBookingMutation.mutate({ booking: null, slotInstance: slot });
@@ -581,10 +587,14 @@ export default function InstructorBookingCalendar() {
 
         <CreateBookableSlotModal
           open={showCreateSlotModal}
-          onOpenChange={setShowCreateSlotModal}
+          onOpenChange={(val) => {
+            setShowCreateSlotModal(val);
+            if (!val) setEditingSlot(null);
+          }}
           onSave={(data) => createSlotMutation.mutate(data)}
           isSaving={createSlotMutation.isPending}
           slotDateTime={clickedSlotDateTime}
+          existingSlot={editingSlot}
         />
 
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
