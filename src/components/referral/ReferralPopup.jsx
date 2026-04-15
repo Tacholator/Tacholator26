@@ -15,13 +15,13 @@ export default function ReferralPopup({ pupilProfile }) {
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
   const { data: instructorProfile, isLoading } = useQuery({
-    queryKey: ['instructorProfilePopup', pupilProfile?.instructorId],
+    queryKey: ['instructorProfilePopup', pupilProfile?.instructorEmail],
     queryFn: async () => {
-      if (!pupilProfile?.instructorId) return null;
-      const results = await base44.entities.Instructor.filter({ id: pupilProfile.instructorId });
+      if (!pupilProfile?.instructorEmail) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: pupilProfile.instructorEmail });
       return results[0] || null;
     },
-    enabled: !!pupilProfile?.instructorId,
+    enabled: !!pupilProfile?.instructorEmail,
   });
 
   useEffect(() => {

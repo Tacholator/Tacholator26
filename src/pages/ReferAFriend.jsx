@@ -45,6 +45,7 @@ export default function ReferAFriend() {
     enabled: !!pupilProfile?.instructorEmail,
   });
 
+  const referralEnabled = !instructorProfile || instructorProfile?.referralProgramEnabled !== false;
   const promoHeading = instructorProfile?.referralPromoHeading?.trim() || DEFAULT_PROMO_HEADING;
   const promoText = instructorProfile?.referralPromoText?.trim() || DEFAULT_PROMO_TEXT;
 
@@ -86,6 +87,20 @@ export default function ReferAFriend() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  if (instructorProfile && !referralEnabled) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <div className="text-center max-w-sm">
+          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Gift className="w-8 h-8 text-slate-400" />
+          </div>
+          <h2 className="text-lg font-bold text-[#071739] mb-2">Referral Programme Unavailable</h2>
+          <p className="text-slate-500 text-sm">Your instructor hasn't enabled the referral programme yet. Check back later.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">

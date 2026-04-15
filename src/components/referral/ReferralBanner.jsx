@@ -7,16 +7,16 @@ import { base44 } from '@/api/base44Client';
 
 export default function ReferralBanner({ pupilProfile }) {
   const { data: instructorProfile, isLoading } = useQuery({
-    queryKey: ['instructorProfileReferral', pupilProfile?.instructorId],
+    queryKey: ['instructorProfileReferral', pupilProfile?.instructorEmail],
     queryFn: async () => {
-      if (!pupilProfile?.instructorId) return null;
-      const results = await base44.entities.Instructor.filter({ id: pupilProfile.instructorId });
+      if (!pupilProfile?.instructorEmail) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: pupilProfile.instructorEmail });
       return results[0] || null;
     },
-    enabled: !!pupilProfile?.instructorId,
+    enabled: !!pupilProfile?.instructorEmail,
   });
 
-  if (isLoading || instructorProfile?.referralProgramEnabled === false) {
+  if (isLoading || !instructorProfile || instructorProfile?.referralProgramEnabled === false) {
     return null;
   }
   return (
