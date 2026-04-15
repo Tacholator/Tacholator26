@@ -90,13 +90,18 @@ export default function InstructorDashboard() {
     enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
 
-  // Auto-backfill onboardingProfileCompleted for existing instructors who already have all fields set
+  // Auto-backfill onboarding flags for existing instructors whose steps are done but flags were never set
   useEffect(() => {
-    if (instructor && !instructor.onboardingProfileCompleted) {
-      const profileComplete = !!(instructor.name && instructor.phone);
-      if (profileComplete) {
-        base44.entities.Instructor.update(instructor.id, { onboardingProfileCompleted: true });
-      }
+    if (!instructor) return;
+    const updates = {};
+    if (!instructor.onboardingProfileCompleted && instructor.name && instructor.phone) {
+      updates.onboardingProfileCompleted = true;
+    }
+    if (!instructor.onboardingStripeCompleted && (instructor.stripeAccountId || instructor.stripeAccountStatus === 'active' || instructor.stripeAccountStatus === 'pending')) {
+      updates.onboardingStripeCompleted = true;
+    }
+    if (Object.keys(updates).length > 0) {
+      base44.entities.Instructor.update(instructor.id, updates);
     }
   }, [instructor?.id]);
 
@@ -104,7 +109,9 @@ export default function InstructorDashboard() {
   useEffect(() => {
     if (instructor && !instructor.onboardingPopupDismissed) {
       const profileComplete = instructor.onboardingProfileCompleted || !!(instructor.name && instructor.phone);
-      const allDone = profileComplete && instructor.onboardingCalendarCompleted && instructor.onboardingStripeCompleted;
+      const calendarComplete = instructor.onboardingCalendarCompleted;
+      const stripeComplete = instructor.onboardingStripeCompleted || !!instructor.stripeAccountId || instructor.stripeAccountStatus === 'active' || instructor.stripeAccountStatus === 'pending';
+      const allDone = profileComplete && calendarComplete && stripeComplete;
       if (!allDone) setShowOnboardingPopup(true);
     }
   }, [instructor?.id]);

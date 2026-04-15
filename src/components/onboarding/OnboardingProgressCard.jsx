@@ -32,14 +32,19 @@ const steps = [
 export default function OnboardingProgressCard({ instructor }) {
   if (!instructor) return null;
 
-  // For profile step: also check actual field values as fallback for existing instructors
-  // whose onboardingProfileCompleted flag was never set despite having filled profiles
+  // Derive completion from actual data fields as fallback for existing instructors
+  // whose flags were never written despite completing the steps
   const isProfileComplete = instructor.onboardingProfileCompleted || !!(instructor.name && instructor.phone);
+  const isCalendarComplete = instructor.onboardingCalendarCompleted || instructor.calendarConfigured === true;
+  const isStripeComplete = instructor.onboardingStripeCompleted || 
+    instructor.stripeAccountStatus === 'active' || 
+    instructor.stripeAccountStatus === 'pending' ||
+    !!instructor.stripeAccountId;
 
   const stepCompletion = {
     onboardingProfileCompleted: isProfileComplete,
-    onboardingCalendarCompleted: !!instructor.onboardingCalendarCompleted,
-    onboardingStripeCompleted: !!instructor.onboardingStripeCompleted,
+    onboardingCalendarCompleted: isCalendarComplete,
+    onboardingStripeCompleted: isStripeComplete,
   };
 
   const completedCount = steps.filter(s => stepCompletion[s.key]).length;
