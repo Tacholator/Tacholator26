@@ -278,11 +278,11 @@ export default function InstructorStripeConnect() {
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     onClick={handleRefreshStatus}
                     disabled={isRefreshing}
-                    className="flex-1 bg-teal-600 hover:bg-teal-700"
+                    className="w-full sm:flex-1 bg-teal-600 hover:bg-teal-700"
                     size="lg"
                   >
                     {isRefreshing ? (
@@ -300,7 +300,7 @@ export default function InstructorStripeConnect() {
                   <Button
                     onClick={handleConnect}
                     disabled={isConnecting || connectMutation.isPending}
-                    className="flex-1 bg-slate-600 hover:bg-slate-700"
+                    className="w-full sm:flex-1 bg-slate-600 hover:bg-slate-700"
                     size="lg"
                     variant="outline"
                   >
