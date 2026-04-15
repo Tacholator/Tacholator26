@@ -12,8 +12,8 @@ function generateCode(name) {
   return `${prefix}-${suffix}`;
 }
 
-const DEFAULT_PROMO_HEADING = 'You Both Win';
-const DEFAULT_PROMO_TEXT = 'Once they commit to 10+ hours, you receive a FREE 1.5-hour driving lesson!';
+const DEFAULT_PROMO_HEADING = 'Refer a Friend & Earn Free Lessons!';
+const DEFAULT_PROMO_TEXT = 'Bring a new pupil who commits to 10+ hours → Get a FREE 1.5-hour lesson!';
 
 export default function ReferAFriend() {
   const navigate = useNavigate();

@@ -9,8 +9,8 @@ import { Users, Search, CheckCircle, Clock, Gift, Sparkles, Save, MessageSquare 
 import { Switch } from '@/components/ui/switch';
 import { format } from 'date-fns';
 
-const DEFAULT_HEADING = 'You Both Win';
-const DEFAULT_TEXT = 'Once they commit to 10+ hours, you receive a FREE 1.5-hour driving lesson!';
+const DEFAULT_HEADING = 'Refer a Friend & Earn Free Lessons!';
+const DEFAULT_TEXT = 'Bring a new pupil who commits to 10+ hours → Get a FREE 1.5-hour lesson!';
 
 function countWords(str) {
   return str.trim() === '' ? 0 : str.trim().split(/\s+/).length;
@@ -165,10 +165,10 @@ export default function InstructorReferralProgram() {
             <p className="text-xs text-slate-500">
               Customise the message your pupils see on the referral screen. Leave blank to use the default shown below.
             </p>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Default message (shown when blank)</p>
-              <p className="font-bold text-slate-600 text-sm">{DEFAULT_HEADING}</p>
-              <p className="text-slate-500 text-xs mt-1 leading-relaxed">{DEFAULT_TEXT}</p>
+            <div className="bg-[#d4f74e] border border-[#b8e030] rounded-xl p-4">
+              <p className="text-xs text-[#3a5c00] font-semibold uppercase tracking-wider mb-2">Default message (shown when blank)</p>
+              <p className="font-bold text-[#1a3300] text-sm">{DEFAULT_HEADING}</p>
+              <p className="text-[#2d4d00] text-xs mt-1 leading-relaxed">{DEFAULT_TEXT}</p>
             </div>
 
             {/* Heading */}
