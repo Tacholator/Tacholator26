@@ -32,11 +32,11 @@ export default function InstructorReferralProgram() {
   const { data: referrals = [], isLoading } = useQuery({
     queryKey: ['instructorReferrals', user?.id],
     queryFn: async () => {
-      const instructorProfile = await base44.entities.Instructor.filter({ created_by: user.email });
-      if (!instructorProfile[0]) return [];
-      return base44.entities.Referral.filter({ instructorId: instructorProfile[0].id });
+      if (!user?.id) return [];
+      // Referrals store instructorId as the instructor's User ID (not Instructor entity ID)
+      return base44.entities.Referral.filter({ instructorId: user.id });
     },
-    enabled: !!user?.email,
+    enabled: !!user?.id,
   });
 
   const { mutate: toggleReferralProgram, isPending: isTogglingProgram } = useMutation({
