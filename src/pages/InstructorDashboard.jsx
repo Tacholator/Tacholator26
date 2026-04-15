@@ -92,9 +92,12 @@ export default function InstructorDashboard() {
 
   // Auto-backfill onboarding flags for existing instructors whose steps are done but flags were never set
   useEffect(() => {
-    if (!instructor) return;
+    if (!instructor || !user) return;
     const updates = {};
-    if (!instructor.onboardingProfileCompleted && instructor.name && instructor.phone) {
+    // Profile is complete if the instructor has a name AND either instructor.phone or user.phone is set
+    const hasName = !!instructor.name;
+    const hasPhone = !!(instructor.phone || user.phone);
+    if (!instructor.onboardingProfileCompleted && hasName && hasPhone) {
       updates.onboardingProfileCompleted = true;
     }
     if (!instructor.onboardingStripeCompleted && (instructor.stripeAccountId || instructor.stripeAccountStatus === 'active' || instructor.stripeAccountStatus === 'pending')) {
@@ -103,12 +106,12 @@ export default function InstructorDashboard() {
     if (Object.keys(updates).length > 0) {
       base44.entities.Instructor.update(instructor.id, updates);
     }
-  }, [instructor?.id]);
+  }, [instructor?.id, user?.id]);
 
   // Show onboarding popup once instructor data is loaded
   useEffect(() => {
     if (instructor && !instructor.onboardingPopupDismissed) {
-      const profileComplete = instructor.onboardingProfileCompleted || !!(instructor.name && instructor.phone);
+      const profileComplete = instructor.onboardingProfileCompleted || !!(instructor.name && (instructor.phone || user?.phone));
       const calendarComplete = instructor.onboardingCalendarCompleted;
       const stripeComplete = instructor.onboardingStripeCompleted || !!instructor.stripeAccountId || instructor.stripeAccountStatus === 'active' || instructor.stripeAccountStatus === 'pending';
       const allDone = profileComplete && calendarComplete && stripeComplete;
@@ -423,7 +426,7 @@ export default function InstructorDashboard() {
           </Card>
 
           {/* 1b. Onboarding Progress Card */}
-          <OnboardingProgressCard instructor={instructor} />
+          <OnboardingProgressCard instructor={instructor} user={user} />
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (

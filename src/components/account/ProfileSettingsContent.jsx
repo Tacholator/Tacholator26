@@ -101,9 +101,11 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
       
       if (isInstructor && instructorProfile) {
         const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+        const profileComplete = !!(fullName && formData.phone);
         await base44.entities.Instructor.update(instructorProfile.id, {
           ...businessData,
-          ...(fullName ? { name: fullName } : {})
+          ...(fullName ? { name: fullName } : {}),
+          ...(profileComplete ? { onboardingProfileCompleted: true } : {})
         });
       }
       

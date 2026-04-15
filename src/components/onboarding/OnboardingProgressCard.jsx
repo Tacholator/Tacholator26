@@ -29,12 +29,14 @@ const steps = [
   },
 ];
 
-export default function OnboardingProgressCard({ instructor }) {
+export default function OnboardingProgressCard({ instructor, user }) {
   if (!instructor) return null;
 
   // Derive completion from actual data fields as fallback for existing instructors
-  // whose flags were never written despite completing the steps
-  const isProfileComplete = instructor.onboardingProfileCompleted || !!(instructor.name && instructor.phone);
+  // whose flags were never written despite completing the steps.
+  // Phone may be stored on the User entity, not the Instructor entity — check both.
+  const hasPhone = !!(instructor.phone || user?.phone);
+  const isProfileComplete = instructor.onboardingProfileCompleted || !!(instructor.name && hasPhone);
   const isCalendarComplete = instructor.onboardingCalendarCompleted || instructor.calendarConfigured === true;
   const isStripeComplete = instructor.onboardingStripeCompleted || 
     instructor.stripeAccountStatus === 'active' || 
