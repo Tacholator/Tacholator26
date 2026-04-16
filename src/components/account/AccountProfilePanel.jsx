@@ -30,13 +30,13 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
   const [legalOpen, setLegalOpen] = useState(false);
 
   const menuItems = [
-    { icon: UserCircle, label: 'My Account', page: 'ProfileSettings', component: 'profile' },
-    { icon: Settings, label: 'Settings', page: 'Settings' },
+    { icon: UserCircle, label: 'My Account', page: 'ProfileSettings', component: 'profile', iconBg: 'bg-violet-500' },
+    { icon: Settings, label: 'Settings', page: 'Settings', iconBg: 'bg-slate-500' },
   ];
 
   const quickLinks = [
-    { icon: MessageSquare, label: 'Contact Support', page: 'ContactSupport' },
-    { icon: ThumbsUp, label: 'App Feedback', page: 'AppFeedback' },
+    { icon: MessageSquare, label: 'Contact Support', page: 'ContactSupport', iconBg: 'bg-blue-500' },
+    { icon: ThumbsUp, label: 'App Feedback', page: 'AppFeedback', iconBg: 'bg-green-500' },
   ];
 
   const legalItems = [
@@ -78,12 +78,12 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
           return (
             <button
               key={item.page}
-              onClick={() => {
-                window.location.href = createPageUrl(item.page);
-              }}
-              className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+              onClick={() => { window.location.href = createPageUrl(item.page); }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
             >
-              <Icon className="w-5 h-5 group-hover:text-[#F7B602]" />
+              <span className={`flex items-center justify-center w-9 h-9 rounded-xl ${item.iconBg} shrink-0`}>
+                <Icon className="w-4 h-4 text-white" />
+              </span>
               <span className="text-sm font-medium">{item.label}</span>
             </button>
           );
@@ -96,9 +96,11 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             <button
               key={item.page}
               onClick={() => { window.location.href = createPageUrl(item.page); }}
-              className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
             >
-              <Icon className="w-5 h-5 group-hover:text-[#F7B602]" />
+              <span className={`flex items-center justify-center w-9 h-9 rounded-xl ${item.iconBg} shrink-0`}>
+                <Icon className="w-4 h-4 text-white" />
+              </span>
               <span className="text-sm font-medium">{item.label}</span>
             </button>
           );
@@ -113,17 +115,21 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             }
             window.location.href = '/';
           }}
-          className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
         >
-          <HelpCircle className="w-5 h-5 group-hover:text-[#F7B602]" />
+          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-amber-500 shrink-0">
+            <HelpCircle className="w-4 h-4 text-white" />
+          </span>
           <span className="text-sm font-medium">App Tour</span>
         </button>
 
         <button
           onClick={() => { window.location.href = createPageUrl('ReferAFriend'); }}
-          className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
         >
-          <Users className="w-5 h-5 group-hover:text-[#F7B602]" />
+          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-pink-500 shrink-0">
+            <Users className="w-4 h-4 text-white" />
+          </span>
           <span className="text-sm font-medium">Refer a Friend</span>
         </button>
 
@@ -140,18 +146,22 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
           })()}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
         >
-          <Smartphone className="w-5 h-5 group-hover:text-[#F7B602]" />
+          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-cyan-500 shrink-0">
+            <Smartphone className="w-4 h-4 text-white" />
+          </span>
           <span className="text-sm font-medium">Download our App</span>
         </a>
 
         {/* Legal Section */}
         <button
           onClick={() => setLegalOpen(!legalOpen)}
-          className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
         >
-          <Scale className="w-5 h-5 group-hover:text-[#F7B602]" />
+          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-orange-500 shrink-0">
+            <Scale className="w-4 h-4 text-white" />
+          </span>
           <span className="text-sm font-medium flex-1 text-left">Legal</span>
           <ChevronDown className={`w-4 h-4 transition-transform ${legalOpen ? 'rotate-180' : ''}`} />
         </button>
