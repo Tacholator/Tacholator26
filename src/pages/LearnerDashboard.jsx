@@ -33,17 +33,21 @@ import {
   Mail,
   Phone,
   Users,
-  Wallet
+  Wallet,
+  HelpCircle
 } from 'lucide-react';
 import moment from 'moment';
 import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 import LearnerOnboardingPopup from '@/components/onboarding/LearnerOnboardingPopup';
+import LearnerAppTour from '@/components/onboarding/LearnerAppTour';
+import GettingStartedChecklist from '@/components/onboarding/GettingStartedChecklist';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
   const [summaryModalOpen, setSummaryModalOpen] = React.useState(false);
   const [showOnboardingPopup, setShowOnboardingPopup] = React.useState(false);
+  const [showAppTour, setShowAppTour] = React.useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
@@ -96,13 +100,22 @@ export default function LearnerDashboard() {
     if (!pupil) return;
     const profileComplete = !!(pupil.firstName && pupil.lastName && pupil.phone);
     if (!profileComplete) {
-      // Always show popup if phone/name is missing, regardless of the flag
       setShowOnboardingPopup(true);
     } else if (!pupil.onboardingProfileCompleted) {
-      // Auto-mark as complete for existing users who already have full profiles
       base44.entities.Pupil.update(pupil.id, { onboardingProfileCompleted: true });
     }
+    // Show app tour on first login if not seen before
+    if (profileComplete && !pupil.appTourSeen) {
+      setShowAppTour(true);
+    }
   }, [pupil]);
+
+  const handleTourClose = () => {
+    setShowAppTour(false);
+    if (pupil?.id && !pupil.appTourSeen) {
+      base44.entities.Pupil.update(pupil.id, { appTourSeen: true });
+    }
+  };
 
   useEffect(() => {
     if (pupil && user) {
@@ -394,6 +407,7 @@ export default function LearnerDashboard() {
         onDismiss={() => setShowOnboardingPopup(false)}
         pupilId={pupil?.id}
       />
+      <LearnerAppTour open={showAppTour} onClose={handleTourClose} />
       <ReferralPopup pupilProfile={pupil} />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Referral Banner */}
@@ -444,7 +458,7 @@ export default function LearnerDashboard() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center"
+          className="text-center relative"
         >
           <h1 className="text-3xl font-bold text-slate-800">
             Good {getTimeOfDay()}, {user?.firstName || pupil.firstName}
@@ -454,7 +468,22 @@ export default function LearnerDashboard() {
               ? 'Welcome back, qualified driver! 🚗✨' 
               : "Let's keep you moving towards test success 🚗"}
           </p>
+          <button
+            onClick={() => setShowAppTour(true)}
+            className="absolute right-0 top-1 flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors"
+          >
+            <HelpCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">Help</span>
+          </button>
         </motion.div>
+
+        {/* Getting Started Checklist */}
+        <GettingStartedChecklist
+          pupil={pupil}
+          bookings={bookings}
+          lessons={lessons}
+          onOpenTour={() => setShowAppTour(true)}
+        />
 
         {/* Arrival Notification Banner */}
         {arrivalNotification && (

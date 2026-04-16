@@ -214,6 +214,11 @@
       "type": "boolean",
       "default": false,
       "description": "Whether the learner has completed their profile (firstName, lastName, phone)"
+    },
+    "appTourSeen": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the learner has seen the app tour"
     }
   },
   "required": [
