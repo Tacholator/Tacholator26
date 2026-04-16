@@ -282,14 +282,14 @@ export default function PupilList() {
     return matchesSearch && matchesStatus && matchesGroup;
   });
 
+  const activePupils = pupils.filter(p => p.status === 'Active');
+
   const groupCounts = {
     beginner: activePupils.filter(p => !p.learnerGroup || p.learnerGroup === 'beginner').length,
     intermediate: activePupils.filter(p => p.learnerGroup === 'intermediate').length,
     advanced: activePupils.filter(p => p.learnerGroup === 'advanced').length,
     test_ready: activePupils.filter(p => p.learnerGroup === 'test_ready').length,
   };
-
-  const activePupils = pupils.filter(p => p.status === 'Active');
   const onHoldPupils = pupils.filter(p => p.status === 'OnHold');
   const passedPupils = pupils.filter(p => p.status === 'Passed');
   const oneOffPupils = pupils.filter(p => p.status === 'Stopped');
