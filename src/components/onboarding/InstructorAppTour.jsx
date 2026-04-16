@@ -9,7 +9,6 @@ import {
   CreditCard,
   Bell,
   BarChart2,
-  MessageCircle,
   Map,
   X,
   ChevronRight,
@@ -44,13 +43,6 @@ const steps = [
     title: 'Progress Tracking',
     description: 'Track each pupil\'s driving skills across all DVSA categories and mark progress after every lesson.',
     tip: 'Open a pupil\'s profile and go to the Progress tab.',
-  },
-  {
-    icon: MessageCircle,
-    color: 'bg-teal-100 text-teal-700',
-    title: 'Chats',
-    description: 'Send and receive messages with your pupils directly in the app. Get notified in real time.',
-    tip: 'Tap Chats in the sidebar to start a conversation.',
   },
   {
     icon: CreditCard,
