@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles, Plus, ClockIcon, UserCheck, HelpCircle } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
-import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 import NewLessonModal from '@/components/booking/NewLessonModal';
 import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
@@ -504,24 +503,12 @@ export default function InstructorDashboard() {
                       {nextRelevantBooking.pickupLocation && (
                         <p className="text-sm text-slate-500 mt-1 truncate">{nextRelevantBooking.pickupLocation}</p>
                       )}
-                      <div className="space-y-2 mt-3">
-                        <div className="flex gap-2">
-                          <Link to={createPageUrl('Calendar')} className="flex-1">
-                            <Button size="sm" variant="outline" className="w-full">View Lesson</Button>
-                          </Link>
-                          <NotifyArrivalButton
-                            lessonId={nextRelevantBooking.type === 'lesson' ? nextRelevantBooking.id : null}
-                            bookingId={nextRelevantBooking.type === 'booking' ? nextRelevantBooking.id : null}
-                            pupilId={nextRelevantBooking.pupilId}
-                          />
-                        </div>
-                        <Button
-                          size="sm"
-                          onClick={() => handleMarkLesson(nextRelevantBooking.id)}
-                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                        >
-                          Set Outcome
-                        </Button>
+                      <div className="mt-3">
+                        <Link to={createPageUrl('PupilProfile') + `?id=${nextRelevantBooking.pupilId}`}>
+                          <Button size="sm" className="w-full bg-[#071739] hover:bg-[#0e2a5a] text-white">
+                            View Pupil Profile
+                          </Button>
+                        </Link>
                       </div>
                     </div>
 
@@ -652,13 +639,11 @@ export default function InstructorDashboard() {
                                 </p>
                                 <p className="text-xs text-rose-600 mt-1">Needs outcome</p>
                               </div>
-                              <Button
-                                size="sm"
-                                onClick={() => handleMarkLesson(item.id)}
-                                className="bg-rose-600 hover:bg-rose-700 text-white"
-                              >
-                                Set Outcome
-                              </Button>
+                              <Link to={createPageUrl('PupilProfile') + `?id=${item.pupilId}`}>
+                                <Button size="sm" className="bg-[#071739] hover:bg-[#0e2a5a] text-white">
+                                  View Profile
+                                </Button>
+                              </Link>
                             </div>
                           </div>
                         );
