@@ -104,8 +104,9 @@ export default function LearnerDashboard() {
     } else if (!pupil.onboardingProfileCompleted) {
       base44.entities.Pupil.update(pupil.id, { onboardingProfileCompleted: true });
     }
-    // Show app tour on first login if not seen before
-    if (profileComplete && !pupil.appTourSeen) {
+    // Show app tour on first login if not seen before, or if triggered from account menu
+    if (profileComplete && (!pupil.appTourSeen || sessionStorage.getItem('openAppTour') === '1')) {
+      sessionStorage.removeItem('openAppTour');
       setShowAppTour(true);
     }
   }, [pupil]);

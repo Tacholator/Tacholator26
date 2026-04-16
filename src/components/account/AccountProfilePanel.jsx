@@ -20,7 +20,8 @@ import {
   MessageSquare,
   ThumbsUp,
   Users,
-  Smartphone
+  Smartphone,
+  HelpCircle
 } from 'lucide-react';
 import ProfileSettingsContent from './ProfileSettingsContent.jsx';
 
@@ -102,6 +103,19 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             </button>
           );
         })}
+
+        {!isInstructor && (
+          <button
+            onClick={() => {
+              sessionStorage.setItem('openAppTour', '1');
+              window.location.href = '/';
+            }}
+            className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors group"
+          >
+            <HelpCircle className="w-5 h-5 group-hover:text-[#F7B602]" />
+            <span className="text-sm font-medium">App Tour</span>
+          </button>
+        )}
 
         <button
           onClick={() => { window.location.href = createPageUrl('ReferAFriend'); }}
