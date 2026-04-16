@@ -172,7 +172,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
   return (
     <div className="p-4 space-y-4">
       {/* Profile Card */}
-      <Card className="border-0 shadow-sm overflow-hidden">
+      <Card className={`border-0 shadow-md overflow-hidden ${isInstructor ? 'ring-2 ring-violet-300' : 'ring-2 ring-teal-300'}`}>
         <CardHeader className={`${isInstructor ? 'bg-gradient-to-br from-violet-500 to-indigo-600' : 'bg-gradient-to-br from-teal-400 to-cyan-500'} text-white pb-6`}>
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -189,7 +189,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6 space-y-6">
+        <CardContent className={`p-6 space-y-6 ${isInstructor ? 'bg-violet-50/40' : 'bg-teal-50/40'}`}>
           {!isPersonalEditing ? (
             /* Read-only view */
             <>
@@ -272,7 +272,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
 
       {/* Business Information - Instructors Only */}
       {isInstructor && (
-        <Card className="border-0 shadow-sm overflow-hidden">
+        <Card className="border-0 shadow-md overflow-hidden ring-2 ring-amber-300">
           <CardHeader className="bg-gradient-to-br from-amber-400 to-orange-500 text-white pb-6">
             <CardTitle className="text-xl flex items-center gap-2 text-white">
               <Building2 className="w-5 h-5" />
@@ -282,7 +282,7 @@ export default function ProfileSettingsContent({ user, isInstructor }) {
               This information will appear on your invoices
             </p>
           </CardHeader>
-          <CardContent className="p-6 space-y-6">
+          <CardContent className="p-6 space-y-6 bg-amber-50/40">
             {!isBusinessEditing ? (
               /* Read-only view */
               <>

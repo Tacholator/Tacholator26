@@ -258,7 +258,7 @@ export default function ProfileSettings() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="border-0 shadow-sm overflow-hidden">
+          <Card className={`border-0 shadow-md overflow-hidden ${isInstructor ? 'ring-2 ring-violet-300' : 'ring-2 ring-teal-300'}`}>
             <CardHeader className={`${isInstructor ? 'bg-gradient-to-br from-violet-500 to-indigo-600' : 'bg-gradient-to-br from-teal-400 to-cyan-500'} text-white pb-6`}>
               <div className="flex items-center gap-4">
                 <div className="relative">
@@ -275,7 +275,7 @@ export default function ProfileSettings() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
+            <CardContent className={`p-6 space-y-6 ${isInstructor ? 'bg-violet-50/40' : 'bg-teal-50/40'}`}>
               {!isPersonalEditing ? (
                 <>
                   <div className="space-y-3">
@@ -363,7 +363,7 @@ export default function ProfileSettings() {
             transition={{ delay: 0.2 }}
             className="mt-6"
           >
-            <Card className="border-0 shadow-sm overflow-hidden">
+            <Card className="border-0 shadow-md overflow-hidden ring-2 ring-amber-300">
               <CardHeader className="bg-gradient-to-br from-amber-400 to-orange-500 text-white pb-6">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">
                   <Building2 className="w-5 h-5" />
@@ -373,7 +373,7 @@ export default function ProfileSettings() {
                   This information will appear on your invoices
                 </p>
               </CardHeader>
-              <CardContent className="p-6 space-y-6">
+              <CardContent className="p-6 space-y-6 bg-amber-50/40">
                 {!isBusinessEditing ? (
                   <>
                     <div className="space-y-3">
@@ -488,7 +488,7 @@ export default function ProfileSettings() {
             transition={{ delay: 0.3 }}
             className="mt-6"
           >
-            <Card className="border-0 shadow-sm overflow-hidden">
+            <Card className="border-0 shadow-md overflow-hidden ring-2 ring-blue-300">
               <CardHeader className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white pb-6">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">
                   <Shield className="w-5 h-5" />
@@ -507,7 +507,7 @@ export default function ProfileSettings() {
                 </CardTitle>
                 <p className="text-sm text-white/80 mt-1">Share your DVLA check code with your instructor so they can verify your licence online before your lesson.</p>
               </CardHeader>
-              <CardContent className="p-6 space-y-4">
+              <CardContent className="p-6 space-y-4 bg-blue-50/40">
                 {(!pupil.licenseChecked || !pupil.eyeTestChecked) && (
                   <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
@@ -614,14 +614,14 @@ export default function ProfileSettings() {
           transition={{ delay: 0.4 }}
           className="mt-6"
         >
-          <Card className="border-0 shadow-sm overflow-hidden">
+          <Card className="border-0 shadow-md overflow-hidden ring-2 ring-rose-300">
             <CardHeader className="bg-gradient-to-br from-rose-500 to-red-600 text-white pb-6">
               <CardTitle className="text-lg text-white flex items-center gap-2">
                 <Trash2 className="w-5 h-5" />
                 Delete Account
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="bg-rose-50/40">
               <p className="text-sm text-slate-600 mb-4">
                 Permanently delete your account and all associated data. This cannot be undone.
               </p>
