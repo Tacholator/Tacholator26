@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Calendar, MapPin, AlertCircle, User, WalletMinimal, CreditCard } from 'lucide-react';
+import { Loader2, Calendar, MapPin, AlertCircle, User, WalletMinimal, CreditCard, Phone, MessageSquare } from 'lucide-react';
 import moment from 'moment';
 
 export default function PupilReserveLessonModal({ 
@@ -287,6 +287,35 @@ export default function PupilReserveLessonModal({
               </div>
             </div>
           )}
+
+          {/* Contact Instructor */}
+          {(instructorProfile?.phone || instructorProfile?.businessPhone || pupil?.phone) && (() => {
+            const phone = instructorProfile?.businessPhone || instructorProfile?.phone || pupil?.phone;
+            const cleanPhone = phone.replace(/\s/g, '');
+            return (
+              <div className="space-y-3 bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  Contact Instructor
+                </h3>
+                <p className="text-sm text-slate-600">Have a question before booking?</p>
+                <div className="flex gap-3">
+                  <a href={`tel:${cleanPhone}`} className="flex-1">
+                    <button className="w-full flex items-center justify-center gap-2 bg-[#071739] text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#0a2155] transition-colors">
+                      <Phone className="w-4 h-4" />
+                      Call
+                    </button>
+                  </a>
+                  <a href={`sms:${cleanPhone}`} className="flex-1">
+                    <button className="w-full flex items-center justify-center gap-2 border border-[#071739] text-[#071739] text-sm font-medium py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors">
+                      <MessageSquare className="w-4 h-4" />
+                      Message
+                    </button>
+                  </a>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Payment & Cancellation Info */}
           <div className="space-y-3 bg-slate-50 border border-slate-200 rounded-lg p-4">
