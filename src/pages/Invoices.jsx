@@ -524,13 +524,6 @@ export default function Invoices() {
                 {/* Business Letterhead */}
                 {instructorProfile && (
                   <div className="text-center pb-4 border-b border-[#F7B602]">
-                    {instructorProfile.businessLogoUrl && (
-                      <img 
-                        src={instructorProfile.businessLogoUrl} 
-                        alt="Business Logo" 
-                        className="h-16 mx-auto mb-3 object-contain"
-                      />
-                    )}
                     <div className="text-xl font-bold text-[#071739]">
                       {instructorProfile.businessName || selectedInvoice.instructorName}
                     </div>
