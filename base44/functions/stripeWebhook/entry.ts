@@ -147,41 +147,87 @@ async function processWebhookEvent(event, base44) {
 async function handleCheckoutSessionCompleted(session, base44) {
   console.log('Processing checkout.session.completed:', session.id);
   
-  // Extract relevant data
-  const {
-    id,
-    payment_intent,
-    customer,
-    customer_email,
-    amount_total,
-    currency,
-    metadata
-  } = session;
+  const { id, amount_total, metadata } = session;
+  const amountGbp = amount_total / 100;
 
-  // Create a payment ledger entry
   try {
+    // Create a payment ledger entry
     const payment = await base44.asServiceRole.entities.PaymentLedger.create({
       userId: metadata?.pupilId || 'unknown',
       type: 'payment',
       reason: 'balance_top_up',
-      amountGbp: amount_total / 100,
+      amountGbp,
       createdByRole: 'system',
-      note: `Stripe checkout payment - Session ${id}`
+      note: `Stripe card payment - Session ${id}`
     });
 
-    // If there's a pupil ID in metadata, update their balance
+    // If there's a pupil ID in metadata, update their balance and create invoice
     if (metadata?.pupilId) {
-      const pupils = await base44.asServiceRole.entities.Pupil.filter({
-        id: metadata.pupilId
-      });
+      const pupils = await base44.asServiceRole.entities.Pupil.filter({ id: metadata.pupilId });
       
       if (pupils.length > 0) {
         const pupil = pupils[0];
-        const newBalance = (pupil.bulkPaymentBalance || 0) + (amount_total / 100);
+
+        // Update pupil balance
         await base44.asServiceRole.entities.Pupil.update(pupil.id, {
-          bulkAmountPaid: (pupil.bulkAmountPaid || 0) + (amount_total / 100),
-          bulkPaymentBalance: newBalance
+          bulkAmountPaid: (pupil.bulkAmountPaid || 0) + amountGbp,
+          bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + amountGbp
         });
+
+        // Get instructor info for the invoice
+        let instructorName = pupil.instructorName || '';
+        let instructorEmail = pupil.instructorEmail || '';
+        let instructorPhone = '';
+        let instructorId = metadata?.instructorId || pupil.instructorId || '';
+
+        if (instructorEmail) {
+          const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by: instructorEmail });
+          if (instructors.length > 0) {
+            const inst = instructors[0];
+            instructorName = inst.name || instructorName;
+            instructorPhone = inst.phone || '';
+          }
+        }
+
+        // Get or create invoice sequence for this instructor+year
+        const currentYear = new Date().getFullYear();
+        const sequences = await base44.asServiceRole.entities.InvoiceSequence.filter({
+          instructorId,
+          year: currentYear
+        });
+
+        let nextSeq = 1;
+        if (sequences.length > 0) {
+          nextSeq = sequences[0].nextSeq;
+          await base44.asServiceRole.entities.InvoiceSequence.update(sequences[0].id, { nextSeq: nextSeq + 1 });
+        } else {
+          await base44.asServiceRole.entities.InvoiceSequence.create({ instructorId, year: currentYear, nextSeq: 2 });
+        }
+
+        const invoiceNumber = `${currentYear}${String(nextSeq).padStart(6, '0')}`;
+
+        // Create a single invoice record visible to both instructor and pupil
+        await base44.asServiceRole.entities.Invoice.create({
+          invoiceNumber,
+          status: 'PAID',
+          type: 'STRIPE_CARD',
+          pupilId: pupil.id,
+          pupilName: `${pupil.firstName} ${pupil.lastName}`,
+          pupilEmail: pupil.email || '',
+          instructorId,
+          instructorName,
+          instructorEmail,
+          instructorPhone,
+          amount: amountGbp,
+          hours: 0,
+          description: 'Lesson credits top-up (card payment)',
+          paymentMethod: 'STRIPE_CARD',
+          paymentDate: new Date().toISOString(),
+          stripePaymentIntentId: id,
+          isLocked: true
+        });
+
+        console.log(`Invoice ${invoiceNumber} created for card payment - Session ${id}`);
       }
     }
 
