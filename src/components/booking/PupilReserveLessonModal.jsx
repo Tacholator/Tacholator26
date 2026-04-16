@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Calendar, MapPin, AlertCircle, User, MessageCircle, WalletMinimal } from 'lucide-react';
+import { Loader2, Calendar, MapPin, AlertCircle, User, MessageCircle, WalletMinimal, CreditCard } from 'lucide-react';
 import moment from 'moment';
 
 export default function PupilReserveLessonModal({ 
@@ -180,7 +180,12 @@ export default function PupilReserveLessonModal({
                     <WalletMinimal className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
                     <div className="text-sm text-rose-700">
                       <p className="font-medium">Insufficient balance</p>
-                      <p>You need £{(totalPrice - availableBalance).toFixed(2)} more to book this slot. Please top up your balance or contact your instructor.</p>
+                      <p>You need £{(totalPrice - availableBalance).toFixed(2)} more to book this slot.{' '}
+                        <Link to={createPageUrl('LearnerPayments')} className="underline font-semibold hover:text-rose-800">
+                          Top up your balance
+                        </Link>
+                        {' '}or contact your instructor.
+                      </p>
                     </div>
                   </div>
                 )}
@@ -320,12 +325,20 @@ export default function PupilReserveLessonModal({
         <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           {!hasEnoughBalance ? (
-            <Link to={createPageUrl('LearnerChats')}>
-              <Button className="bg-[#071739] hover:bg-[#0a2155] gap-2 w-full sm:w-auto">
-                <MessageCircle className="w-4 h-4" />
-                Contact Instructor
-              </Button>
-            </Link>
+            <>
+              <Link to={createPageUrl('LearnerPayments')}>
+                <Button className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2 w-full sm:w-auto">
+                  <CreditCard className="w-4 h-4" />
+                  Top Up Balance
+                </Button>
+              </Link>
+              <Link to={createPageUrl('LearnerChats')}>
+                <Button variant="outline" className="gap-2 w-full sm:w-auto">
+                  <MessageCircle className="w-4 h-4" />
+                  Contact Instructor
+                </Button>
+              </Link>
+            </>
           ) : (
             <Button 
               onClick={handleReserve} 
