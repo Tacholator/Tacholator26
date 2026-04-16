@@ -487,9 +487,9 @@ export default function ProfileSettings() {
             transition={{ delay: 0.3 }}
             className="mt-6"
           >
-            <Card className="border-0 shadow-sm">
-              <CardHeader className="border-b border-slate-100">
-                <CardTitle className="text-xl flex items-center gap-2">
+            <Card className="border-0 shadow-sm overflow-hidden">
+              <CardHeader className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white pb-6">
+                <CardTitle className="text-xl flex items-center gap-2 text-white">
                   <Shield className="w-5 h-5" />
                   DVLA Licence Verification
                   {pupil.dvlaCheckCode && (
@@ -504,7 +504,7 @@ export default function ProfileSettings() {
                     })()
                   )}
                 </CardTitle>
-                <p className="text-sm text-slate-500 mt-1">Share your DVLA check code with your instructor so they can verify your licence online before your lesson.</p>
+                <p className="text-sm text-white/80 mt-1">Share your DVLA check code with your instructor so they can verify your licence online before your lesson.</p>
               </CardHeader>
               <CardContent className="p-6 space-y-4">
                 {(!pupil.licenseChecked || !pupil.eyeTestChecked) && (
@@ -613,13 +613,16 @@ export default function ProfileSettings() {
           transition={{ delay: 0.4 }}
           className="mt-6"
         >
-          <Card className="border-0 shadow-sm border-rose-200">
-            <CardHeader>
-              <CardTitle className="text-lg text-rose-700">Delete Account</CardTitle>
+          <Card className="border-0 shadow-sm overflow-hidden">
+            <CardHeader className="bg-gradient-to-br from-rose-500 to-red-600 text-white pb-6">
+              <CardTitle className="text-lg text-white flex items-center gap-2">
+                <Trash2 className="w-5 h-5" />
+                Delete Account
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-slate-600 mb-4">
-                Permanently delete your account and all associated data. This action cannot be undone.
+                Permanently delete your account and all associated data. This cannot be undone.
               </p>
               <Link to={createPageUrl('AccountDeletionRequest')}>
                 <Button variant="outline" className="text-rose-600 border-rose-300 hover:bg-rose-50 gap-2">
