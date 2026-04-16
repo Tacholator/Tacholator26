@@ -258,19 +258,20 @@ export default function ProfileSettings() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="border-b border-slate-100">
+          <Card className="border-0 shadow-sm overflow-hidden">
+            <CardHeader className={`${isInstructor ? 'bg-gradient-to-br from-violet-500 to-indigo-600' : 'bg-gradient-to-br from-teal-400 to-cyan-500'} text-white pb-6`}>
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <Avatar className="h-16 w-16">
-                    <AvatarFallback className={`text-white text-xl font-semibold ${isInstructor ? 'bg-gradient-to-br from-[#071739] to-[#1a3a6b]' : 'bg-gradient-to-br from-teal-400 to-teal-600'}`}>
+                  <Avatar className="h-16 w-16 ring-4 ring-white/30">
+                    <AvatarFallback className="text-white text-xl font-semibold bg-white/20">
                       {displayName[0]?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </div>
                 <div className="flex-1">
-                  <CardTitle className="text-xl">{displayName}</CardTitle>
-                  <p className="text-sm text-slate-500">{isInstructor ? 'Instructor' : 'Learner'}</p>
+                  <CardTitle className="text-xl text-white">{displayName}</CardTitle>
+                  <p className="text-sm text-white/80">{isInstructor ? 'Instructor' : 'Learner'}</p>
+                  <p className="text-xs text-white/60 mt-0.5">Personal Information</p>
                 </div>
               </div>
             </CardHeader>
@@ -362,13 +363,13 @@ export default function ProfileSettings() {
             transition={{ delay: 0.2 }}
             className="mt-6"
           >
-            <Card className="border-0 shadow-sm">
-              <CardHeader className="border-b border-slate-100">
-                <CardTitle className="text-xl flex items-center gap-2">
+            <Card className="border-0 shadow-sm overflow-hidden">
+              <CardHeader className="bg-gradient-to-br from-amber-400 to-orange-500 text-white pb-6">
+                <CardTitle className="text-xl flex items-center gap-2 text-white">
                   <Building2 className="w-5 h-5" />
                   Business Information
                 </CardTitle>
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm text-white/80 mt-1">
                   This information will appear on your invoices
                 </p>
               </CardHeader>
