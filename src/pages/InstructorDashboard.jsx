@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles, Plus, ClockIcon, UserCheck } from 'lucide-react';
+import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles, Plus, ClockIcon, UserCheck, HelpCircle } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import NotifyArrivalButton from '@/components/lessons/NotifyArrivalButton';
@@ -15,6 +15,7 @@ import NewLessonModal from '@/components/booking/NewLessonModal';
 import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
 import OnboardingProgressCard from '@/components/onboarding/OnboardingProgressCard';
 import OnboardingPopup from '@/components/onboarding/OnboardingPopup';
+import InstructorAppTour from '@/components/onboarding/InstructorAppTour';
 
 // Warm color palette - stable per section
 const warmPalette = {
@@ -33,6 +34,7 @@ export default function InstructorDashboard() {
   const [selectedPupilForSummary, setSelectedPupilForSummary] = useState(null);
   const [newLessonModalOpen, setNewLessonModalOpen] = useState(false);
   const [showOnboardingPopup, setShowOnboardingPopup] = useState(false);
+  const [showAppTour, setShowAppTour] = useState(false);
   const navigate = useNavigate();
 
   const { data: user } = useQuery({
@@ -116,6 +118,14 @@ export default function InstructorDashboard() {
       base44.entities.Instructor.update(instructor.id, updates);
     }
   }, [instructor?.id, user?.id, calendarRules.length]);
+
+  // Show app tour if triggered from account menu
+  useEffect(() => {
+    if (instructor && sessionStorage.getItem('openInstructorAppTour') === '1') {
+      sessionStorage.removeItem('openInstructorAppTour');
+      setShowAppTour(true);
+    }
+  }, [instructor?.id]);
 
   // Show onboarding popup once instructor data is loaded
   useEffect(() => {
@@ -422,14 +432,23 @@ export default function InstructorDashboard() {
                     {nextRelevantBooking && ` • Next at ${moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')}`}
                   </p>
                 </div>
-                <Button
-                  onClick={() => setNewLessonModalOpen(true)}
-                  className="bg-[#071739] hover:bg-[#0e2a5a] text-white shrink-0"
-                  size="sm"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  New Lesson
-                </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => setShowAppTour(true)}
+                    className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 transition-colors"
+                  >
+                    <HelpCircle className="w-4 h-4" />
+                    <span className="hidden sm:inline">Help</span>
+                  </button>
+                  <Button
+                    onClick={() => setNewLessonModalOpen(true)}
+                    className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    New Lesson
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -843,6 +862,8 @@ export default function InstructorDashboard() {
 
         </div>
       </div>
+
+      <InstructorAppTour open={showAppTour} onClose={() => setShowAppTour(false)} />
 
       {instructor && (
         <OnboardingPopup
