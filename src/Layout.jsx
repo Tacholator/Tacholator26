@@ -345,7 +345,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden sticky top-0 z-40 flex h-16 items-center gap-x-4 bg-[#071739] border-b border-[#071739] px-4 shadow-sm" style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(4rem + env(safe-area-inset-top))' }}>
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-x-4 bg-[#071739] border-b border-[#071739] px-4 shadow-sm" style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(4rem + env(safe-area-inset-top))', willChange: 'transform', transform: 'translateZ(0)' }}>
         <button
           onClick={() => setMobileMenuOpen(true)}
           className="p-2 -m-2 text-white"
@@ -519,7 +519,7 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="lg:pl-64 pb-nav-safe">
+      <main className="lg:pl-64 pb-nav-safe lg:pt-0" style={{ paddingTop: 'calc(4rem + env(safe-area-inset-top))' }}>
         <AppDownloadBanner />
         {children}
       </main>
