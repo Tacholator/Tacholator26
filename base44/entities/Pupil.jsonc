@@ -24,6 +24,16 @@
       ],
       "default": "Active"
     },
+    "learnerGroup": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "test_ready"
+      ],
+      "description": "Instructor-assigned group for active pupils"
+    },
     "firstName": {
       "type": "string"
     },

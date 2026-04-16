@@ -85,5 +85,8 @@ module.exports = {
   		}
   	}
   },
+  safelist: [
+    'text-slate-600', 'text-green-600', 'text-blue-600', 'text-purple-600', 'text-rose-600',
+  ],
   plugins: [require("tailwindcss-animate")],
 }

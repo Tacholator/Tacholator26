@@ -53,6 +53,7 @@ import moment from 'moment';
 export default function PupilList() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('Active');
+  const [groupFilter, setGroupFilter] = useState('all');
   const [showPupilModal, setShowPupilModal] = useState(false);
   const [showOneOffModal, setShowOneOffModal] = useState(false);
   const [editingPupil, setEditingPupil] = useState(null);
@@ -277,8 +278,16 @@ export default function PupilList() {
   const filteredPupils = pupils.filter(pupil => {
     const matchesSearch = `${pupil.firstName} ${pupil.lastName}`.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = pupil.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesGroup = statusFilter !== 'Active' || groupFilter === 'all' || (pupil.learnerGroup || 'beginner') === groupFilter;
+    return matchesSearch && matchesStatus && matchesGroup;
   });
+
+  const groupCounts = {
+    beginner: activePupils.filter(p => !p.learnerGroup || p.learnerGroup === 'beginner').length,
+    intermediate: activePupils.filter(p => p.learnerGroup === 'intermediate').length,
+    advanced: activePupils.filter(p => p.learnerGroup === 'advanced').length,
+    test_ready: activePupils.filter(p => p.learnerGroup === 'test_ready').length,
+  };
 
   const activePupils = pupils.filter(p => p.status === 'Active');
   const onHoldPupils = pupils.filter(p => p.status === 'OnHold');
@@ -403,6 +412,31 @@ export default function PupilList() {
           </div>
         </div>
 
+        {/* Active Pupil Group Cards */}
+        {statusFilter === 'Active' && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            {[
+              { key: 'all', label: 'All Active', count: activePupils.length, color: 'slate', activeColor: 'border-slate-500 bg-slate-50', icon: '👥' },
+              { key: 'beginner', label: 'Beginner', count: groupCounts.beginner, color: 'green', activeColor: 'border-green-500 bg-green-50', icon: '🌱' },
+              { key: 'intermediate', label: 'Intermediate', count: groupCounts.intermediate, color: 'blue', activeColor: 'border-blue-500 bg-blue-50', icon: '📈' },
+              { key: 'advanced', label: 'Advanced', count: groupCounts.advanced, color: 'purple', activeColor: 'border-purple-500 bg-purple-50', icon: '⭐' },
+              { key: 'test_ready', label: 'Test Ready', count: groupCounts.test_ready, color: 'rose', activeColor: 'border-rose-500 bg-rose-50', icon: '🏁' },
+            ].map(g => (
+              <button
+                key={g.key}
+                onClick={() => setGroupFilter(g.key)}
+                className={`p-3 rounded-xl border-2 text-left transition-all ${
+                  groupFilter === g.key ? g.activeColor : 'border-slate-100 bg-white hover:border-slate-300'
+                }`}
+              >
+                <div className="text-xl mb-1">{g.icon}</div>
+                <div className={`text-xl font-bold text-${g.color}-600`}>{g.count}</div>
+                <div className="text-xs text-slate-500 mt-0.5">{g.label}</div>
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Search */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
@@ -481,12 +515,28 @@ export default function PupilList() {
                             </Badge>
                           )}
                           {pupil.lastLoginTimestamp && (
-                            <p className="text-xs text-slate-400">
-                              Last login: {moment(pupil.lastLoginTimestamp).fromNow()}
-                            </p>
+                              <p className="text-xs text-slate-400">
+                                Last login: {moment(pupil.lastLoginTimestamp).fromNow()}
+                              </p>
+                            )}
+                          {pupil.status === 'Active' && (
+                            <select
+                              value={pupil.learnerGroup || 'beginner'}
+                              onClick={e => e.stopPropagation()}
+                              onChange={e => {
+                                e.stopPropagation();
+                                updatePupilMutation.mutate({ id: pupil.id, data: { learnerGroup: e.target.value } });
+                              }}
+                              className="mt-1 text-xs border border-slate-200 rounded-lg px-1.5 py-0.5 bg-white text-slate-600 cursor-pointer"
+                            >
+                              <option value="beginner">🌱 Beginner</option>
+                              <option value="intermediate">📈 Intermediate</option>
+                              <option value="advanced">⭐ Advanced</option>
+                              <option value="test_ready">🏁 Test Ready</option>
+                            </select>
                           )}
-                        </div>
-                      </TableCell>
+                          </div>
+                          </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
