@@ -523,7 +523,7 @@ export default function Invoices() {
               <div className="space-y-4">
                 {/* Business Letterhead */}
                 {instructorProfile && (
-                  <div className="text-center pb-4 border-b border-[#F7B602]">
+                  <div className="text-left pb-4 border-b border-[#F7B602]">
                     <div className="text-xl font-bold text-[#071739]">
                       {instructorProfile.businessName || selectedInvoice.instructorName}
                     </div>
@@ -536,7 +536,7 @@ export default function Invoices() {
                           {[instructorProfile.businessCity, instructorProfile.businessPostcode].filter(Boolean).join(', ')}
                         </div>
                       )}
-                      <div className="flex items-center justify-center gap-3 mt-2">
+                      <div className="flex items-center gap-3 mt-2">
                         {(instructorProfile.usePersonalEmailForBusiness ? selectedInvoice.instructorEmail : instructorProfile.businessEmail) && (
                           <span>
                             {instructorProfile.usePersonalEmailForBusiness ? selectedInvoice.instructorEmail : instructorProfile.businessEmail}
