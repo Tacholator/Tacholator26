@@ -127,7 +127,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
           <span className="text-sm font-medium">Refer a Friend</span>
         </button>
 
-        <
+        <a
           href={(() => {
             const ua = navigator.userAgent || '';
             const isIOS = /iPhone|iPad|iPod/i.test(ua);
