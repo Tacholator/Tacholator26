@@ -40,12 +40,12 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
   ];
 
   const legalItems = [
-    { icon: FileText, label: 'Lesson T&Cs', page: 'LessonTermsAndConditions' },
-    { icon: Receipt, label: 'Subscription T&Cs', page: 'SubscriptionTerms' },
-    { icon: MapPin, label: 'Test Route T&Cs', page: 'TestRouteTerms' },
-    { icon: Receipt, label: 'Refund Policy', page: 'RefundPolicy' },
-    { icon: FileText, label: 'Terms & Conditions', page: 'TermsAndConditions' },
-    { icon: Shield, label: 'Privacy Policy', page: 'PrivacyPolicy' },
+    { icon: FileText, label: 'Lesson T&Cs', page: 'LessonTermsAndConditions', iconBg: 'bg-indigo-500' },
+    { icon: Receipt, label: 'Subscription T&Cs', page: 'SubscriptionTerms', iconBg: 'bg-emerald-500' },
+    { icon: MapPin, label: 'Test Route T&Cs', page: 'TestRouteTerms', iconBg: 'bg-rose-500' },
+    { icon: Receipt, label: 'Refund Policy', page: 'RefundPolicy', iconBg: 'bg-amber-500' },
+    { icon: FileText, label: 'Terms & Conditions', page: 'TermsAndConditions', iconBg: 'bg-blue-500' },
+    { icon: Shield, label: 'Privacy Policy', page: 'PrivacyPolicy', iconBg: 'bg-violet-500' },
   ];
 
   const userName = user?.firstName 
@@ -173,9 +173,11 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
                 <button
                   key={item.page}
                   onClick={() => { window.location.href = createPageUrl(item.page); }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors group"
+                  className="w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
                 >
-                  <Icon className="w-4 h-4 group-hover:text-[#F7B602]" />
+                  <span className={`flex items-center justify-center w-8 h-8 rounded-xl ${item.iconBg} shrink-0`}>
+                    <Icon className="w-3.5 h-3.5 text-white" />
+                  </span>
                   <span className="text-sm">{item.label}</span>
                 </button>
               );
