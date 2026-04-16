@@ -50,8 +50,9 @@ export default function GettingStartedChecklist({ pupil, bookings, lessons, onOp
   const completedCount = steps.filter(s => s.done).length;
   const allDone = completedCount === steps.length;
 
-  // Hide once everything is complete
-  if (allDone) return null;
+  // Hide once everything is complete, or if the learner has already completed a lesson
+  const hasCompletedLesson = lessons?.some(l => l.status === 'Completed') || false;
+  if (allDone || hasCompletedLesson) return null;
 
   return (
     <Card className="border-0 shadow-sm bg-gradient-to-br from-[#071739] to-[#0d2a5e] text-white overflow-hidden">
