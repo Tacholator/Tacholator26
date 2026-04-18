@@ -34,7 +34,8 @@ import {
   Phone,
   Users,
   Wallet,
-  HelpCircle
+  HelpCircle,
+  NotebookPen
 } from 'lucide-react';
 import moment from 'moment';
 import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
@@ -774,14 +775,25 @@ export default function LearnerDashboard() {
                         )}
                       </div>
                     )}
-                    <Button
-                      variant="outline"
-                      className="w-full gap-2 bg-white/50 hover:bg-white/80 border-purple-200"
-                      onClick={() => setSummaryModalOpen(true)}
-                    >
-                      <Sparkles className="w-4 h-4" />
-                      View Full Summary
-                    </Button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant="outline"
+                        className="w-full gap-2 bg-white/50 hover:bg-white/80 border-purple-200"
+                        onClick={() => setSummaryModalOpen(true)}
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        Full Summary
+                      </Button>
+                      <Link to={createPageUrl('LearnerDiary')} className="w-full">
+                        <Button
+                          variant="outline"
+                          className="w-full gap-2 bg-white/50 hover:bg-white/80 border-purple-200"
+                        >
+                          <NotebookPen className="w-4 h-4" />
+                          View Diary
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-8">
