@@ -89,8 +89,8 @@ export default function LearnerMyLearning() {
             </CardContent>
           </Card>
 
-          {/* Mock Tests card — mobile shortcut */}
-          <Link to="/LearnerMockTests" className="block lg:hidden">
+          {/* Mock Tests card */}
+          <Link to="/LearnerMockTests" className="block">
             <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -107,8 +107,8 @@ export default function LearnerMyLearning() {
             </Card>
           </Link>
 
-          {/* Learning Diary card — mobile shortcut */}
-          <Link to="/LearnerDiary" className="block lg:hidden">
+          {/* Learning Diary card */}
+          <Link to="/LearnerDiary" className="block">
             <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -125,8 +125,8 @@ export default function LearnerMyLearning() {
             </Card>
           </Link>
 
-          {/* Class Notes card — visible on all screens, acts as nav shortcut on mobile */}
-          <Link to="/LearnerClassNotes" className="block lg:hidden">
+          {/* Class Notes card */}
+          <Link to="/LearnerClassNotes" className="block">
             <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
