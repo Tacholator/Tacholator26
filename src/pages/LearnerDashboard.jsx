@@ -863,7 +863,7 @@ export default function LearnerDashboard() {
                         )}
                       </div>
                       <Link to={createPageUrl('LearnerPayments')}>
-                        <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
+                        <Button className="w-full bg-white text-slate-800 hover:bg-white/90 font-semibold">
                           {isNegative ? 'Make Payment' : 'View Payments'}
                         </Button>
                       </Link>
