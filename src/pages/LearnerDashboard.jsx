@@ -863,7 +863,7 @@ export default function LearnerDashboard() {
                         )}
                       </div>
                       <Link to={createPageUrl('LearnerPayments')}>
-                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
+                        <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
                           {isNegative ? 'Make Payment' : 'View Payments'}
                         </Button>
                       </Link>
@@ -915,7 +915,7 @@ export default function LearnerDashboard() {
                   </div>
                 </div>
                 <Link to={createPageUrl('LearnerProgress')}>
-                  <Button variant="outline" className="w-full gap-2 bg-white/50 hover:bg-white/80 border-orange-200">
+                  <Button className="w-full gap-2 bg-orange-500 hover:bg-orange-600 text-white">
                     <TrendingUp className="w-4 h-4" />
                     View Progress
                   </Button>
@@ -1057,7 +1057,7 @@ export default function LearnerDashboard() {
                     </div>
                   ))}
                   <Link to={createPageUrl('LearnerNotifications')}>
-                    <Button variant="outline" className="w-full gap-2 mt-2 bg-white/50 hover:bg-white/80 border-indigo-200">
+                    <Button className="w-full gap-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white">
                       View All Notifications <ChevronRight className="w-4 h-4" />
                     </Button>
                   </Link>
