@@ -106,6 +106,7 @@ export const learnerOnlyLinks = [
     page: 'LearnerMyLearning',
     isCollapsible: true,
     children: [
+      { name: 'Overview', icon: BookOpen, page: 'LearnerMyLearning' },
       { name: 'Course Work', icon: FileText, page: 'CourseWork' },
       { name: 'My Notes', icon: StickyNote, page: 'LearnerNotes' },
       { name: 'Driving Progress', icon: GraduationCap, page: 'LearnerProgress' },
