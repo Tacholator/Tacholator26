@@ -36,6 +36,7 @@ import MockTestReportForm from './pages/MockTestReportForm';
 import MockTestReportList from './pages/MockTestReportList';
 import MockTestReportView from './pages/MockTestReportView';
 import LearnerMockTests from './pages/LearnerMockTests';
+import LearnerDiary from './pages/LearnerDiary';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -220,6 +221,11 @@ const AuthenticatedApp = () => {
       <Route path="/LearnerMockTests" element={
         <LayoutWrapper currentPageName="LearnerMockTests">
           <LearnerMockTests />
+        </LayoutWrapper>
+      } />
+      <Route path="/LearnerDiary" element={
+        <LayoutWrapper currentPageName="LearnerDiary">
+          <LearnerDiary />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

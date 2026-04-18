@@ -112,7 +112,8 @@ export const learnerOnlyLinks = [
       { name: 'Resources', icon: FolderOpen, page: 'LearnerResources' },
       { name: 'Homework', icon: ClipboardList, page: 'LearnerHomework' },
       { name: 'Class Notes', icon: Notebook, page: 'LearnerClassNotes' },
-      { name: 'Mock Tests', icon: ClipboardList, page: 'LearnerMockTests' }
+      { name: 'Mock Tests', icon: ClipboardList, page: 'LearnerMockTests' },
+      { name: 'Lesson Diary', icon: BookOpen, page: 'LearnerDiary' }
     ]
   },
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
