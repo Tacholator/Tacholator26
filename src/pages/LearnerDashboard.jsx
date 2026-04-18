@@ -777,8 +777,7 @@ export default function LearnerDashboard() {
                     )}
                     <div className="grid grid-cols-2 gap-2">
                       <Button
-                        variant="outline"
-                        className="w-full gap-2 bg-white/50 hover:bg-white/80 border-purple-200"
+                        className="w-full gap-2 bg-purple-600 hover:bg-purple-700 text-white"
                         onClick={() => setSummaryModalOpen(true)}
                       >
                         <Sparkles className="w-4 h-4" />
@@ -786,8 +785,7 @@ export default function LearnerDashboard() {
                       </Button>
                       <Link to={createPageUrl('LearnerDiary')} className="w-full">
                         <Button
-                          variant="outline"
-                          className="w-full gap-2 bg-white/50 hover:bg-white/80 border-purple-200"
+                          className="w-full gap-2 bg-indigo-500 hover:bg-indigo-600 text-white"
                         >
                           <NotebookPen className="w-4 h-4" />
                           View Diary
