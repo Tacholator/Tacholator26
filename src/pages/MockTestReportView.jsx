@@ -189,11 +189,23 @@ export default function MockTestReportView() {
               const catItems = visibleSubs.map(sub => itemsMap[`${category}__${sub}`]).filter(Boolean);
               if (catItems.length === 0) return null;
 
+              const gradedItems = catItems.filter(item => item.rating !== "NT");
+              const ntItems = catItems.filter(item => item.rating === "NT");
+
+              if (gradedItems.length === 0) {
+                return (
+                  <div key={category}>
+                    <h3 className="font-semibold text-[#071739] text-sm mb-1 border-b border-slate-100 pb-1">{category}</h3>
+                    <p className="text-xs text-slate-400 italic px-1">Not tested</p>
+                  </div>
+                );
+              }
+
               return (
                 <div key={category}>
                   <h3 className="font-semibold text-[#071739] text-sm mb-2 border-b border-slate-100 pb-1">{category}</h3>
                   <div className="space-y-1">
-                    {catItems.map(item => {
+                    {gradedItems.map(item => {
                       const ratingInfo = getRatingInfo(item.rating);
                       return (
                         <div key={item.subcategory} className={`flex items-start gap-3 p-2 rounded-lg ${ratingInfo.bg}`}>
@@ -207,6 +219,11 @@ export default function MockTestReportView() {
                         </div>
                       );
                     })}
+                    {ntItems.length > 0 && (
+                      <p className="text-xs text-slate-400 italic px-1 pt-0.5">
+                        Not tested: {ntItems.map(i => i.subcategory).join(", ")}
+                      </p>
+                    )}
                   </div>
                 </div>
               );

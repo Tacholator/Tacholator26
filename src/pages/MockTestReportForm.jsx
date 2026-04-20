@@ -359,7 +359,7 @@ export default function MockTestReportForm() {
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-semibold text-slate-600">Rate each item using the buttons</p>
               <Badge className="bg-slate-200 text-slate-600 text-xs">
-                {Object.values(assessmentItems).filter(i => i.rating !== "P").length} fault(s) marked
+                {Object.values(assessmentItems).filter(i => i.rating !== "P" && i.rating !== "NT").length} fault(s) marked
               </Badge>
             </div>
             {ASSESSMENT_CATEGORIES.map(({ category, subcategories, manoeuvreGroups }) => (
