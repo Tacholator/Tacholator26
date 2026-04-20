@@ -177,20 +177,21 @@ export default function MockTestReportForm() {
         setSavedReportId(rId);
       }
 
-      // Save assessment items
+      // Save assessment items in parallel
       const itemEntries = Object.values(assessmentItems);
       const existingDbItems = rId && existingItems ? existingItems : [];
+      const scoreMap = { P: 0, DF: 1, S: 2, D: 3, NT: 0 };
+      const timestamp = new Date().toISOString();
 
-      for (const item of itemEntries) {
+      await Promise.all(itemEntries.map(item => {
         const existing = existingDbItems.find(i => i.category === item.category && i.subcategory === item.subcategory);
-        const scoreMap = { P: 0, DF: 1, S: 2, D: 3, NT: 0 };
-        const itemPayload = { mockTestReportId: rId, ...item, severityScore: scoreMap[item.rating] || 0, timestamp: new Date().toISOString() };
+        const itemPayload = { mockTestReportId: rId, ...item, severityScore: scoreMap[item.rating] || 0, timestamp };
         if (existing) {
-          await base44.entities.MockTestAssessmentItem.update(existing.id, itemPayload);
+          return base44.entities.MockTestAssessmentItem.update(existing.id, itemPayload);
         } else {
-          await base44.entities.MockTestAssessmentItem.create(itemPayload);
+          return base44.entities.MockTestAssessmentItem.create(itemPayload);
         }
-      }
+      }));
       queryClient.invalidateQueries({ queryKey: ["mockTestReports"] });
       return rId;
     } finally {
