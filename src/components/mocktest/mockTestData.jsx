@@ -169,7 +169,9 @@ export const buildInitialItems = (transmissionType = "Manual") => {
     cat.subcategories.forEach(sub => {
       if (!isSubcategoryHidden(sub, transmissionType)) {
         const key = `${cat.category}__${sub}`;
-        items[key] = { category: cat.category, subcategory: sub, rating: "P", faultCount: 1, comments: "", improvementTag: "" };
+        // Manoeuvre subs start as NT (not tested) until the instructor selects a group
+        const defaultRating = cat.manoeuvreGroups ? "NT" : "P";
+        items[key] = { category: cat.category, subcategory: sub, rating: defaultRating, faultCount: 1, comments: "", improvementTag: "" };
       }
     });
   });

@@ -118,10 +118,47 @@ function SubcategoryRow({ subcategory, item, onUpdate }) {
 }
 
 function ManoeuvreGroups({ category, manoeuvreGroups, items, onUpdateItem }) {
-  const [selectedGroup, setSelectedGroup] = useState(null);
+  // Derive selected group from items: whichever group has at least one non-NT sub
+  const getActiveGroup = () => {
+    for (const group of manoeuvreGroups) {
+      const hasRating = group.subs.some(sub => {
+        const item = items[`${category}__${sub}`];
+        return item && item.rating !== "NT";
+      });
+      if (hasRating) return group.name;
+    }
+    return null;
+  };
+
+  const [selectedGroup, setSelectedGroup] = useState(() => getActiveGroup());
 
   const toggleGroup = (name) => {
-    setSelectedGroup(prev => prev === name ? null : name);
+    const newGroup = selectedGroup === name ? null : name;
+    setSelectedGroup(newGroup);
+
+    // When deselecting: set all subs of the old group back to NT
+    if (selectedGroup) {
+      const oldGroup = manoeuvreGroups.find(g => g.name === selectedGroup);
+      if (oldGroup) {
+        oldGroup.subs.forEach(sub => {
+          onUpdateItem(`${category}__${sub}`, { rating: "NT", faultCount: 1, comments: "" });
+        });
+      }
+    }
+
+    // When selecting: set subs of the new group to P (default pass) if currently NT
+    if (newGroup) {
+      const grp = manoeuvreGroups.find(g => g.name === newGroup);
+      if (grp) {
+        grp.subs.forEach(sub => {
+          const key = `${category}__${sub}`;
+          const current = items[key];
+          if (!current || current.rating === "NT") {
+            onUpdateItem(key, { rating: "P", faultCount: 1 });
+          }
+        });
+      }
+    }
   };
 
   return (
