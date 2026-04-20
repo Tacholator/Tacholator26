@@ -11,6 +11,22 @@ import MockTestSummaryCard from "@/components/mocktest/MockTestSummaryCard";
 import MockTestFeedbackCard from "@/components/mocktest/MockTestFeedbackCard";
 import { ASSESSMENT_CATEGORIES, getRatingInfo, isSubcategoryHidden } from "@/components/mocktest/mockTestData";
 
+// For Manoeuvres: only show subs from groups where at least one sub was rated (non-NT)
+function getVisibleManoeuvreSubcategories(manoeuvreGroups, subcategories, itemsMap) {
+  if (!manoeuvreGroups) return subcategories;
+  const visible = [];
+  manoeuvreGroups.forEach(group => {
+    const groupHasRating = group.subs.some(sub => {
+      const item = itemsMap[`Manoeuvres__${sub}`];
+      return item && item.rating !== "NT";
+    });
+    if (groupHasRating) {
+      visible.push(...group.subs);
+    }
+  });
+  return visible;
+}
+
 const STATUS_COLORS = {
   Draft: "bg-slate-100 text-slate-600",
   Finalised: "bg-blue-100 text-blue-700",
@@ -184,8 +200,11 @@ export default function MockTestReportView() {
             <CardTitle className="text-white text-base">Assessment Details</CardTitle>
           </CardHeader>
           <CardContent className="pt-4 space-y-4">
-            {ASSESSMENT_CATEGORIES.map(({ category, subcategories }) => {
-              const visibleSubs = subcategories.filter(sub => !isSubcategoryHidden(sub, report.transmissionType));
+            {ASSESSMENT_CATEGORIES.map(({ category, subcategories, manoeuvreGroups }) => {
+              const baseSubs = manoeuvreGroups
+                ? getVisibleManoeuvreSubcategories(manoeuvreGroups, subcategories, itemsMap)
+                : subcategories;
+              const visibleSubs = baseSubs.filter(sub => !isSubcategoryHidden(sub, report.transmissionType));
               const catItems = visibleSubs.map(sub => itemsMap[`${category}__${sub}`]).filter(Boolean);
               if (catItems.length === 0) return null;
 
