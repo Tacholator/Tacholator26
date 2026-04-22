@@ -1,0 +1,113 @@
+{
+  "name": "Invoice",
+  "type": "object",
+  "properties": {
+    "invoiceNumber": {
+      "type": "string",
+      "description": "Unique invoice number (e.g., MDA-2026-0001)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PAID",
+        "PENDING",
+        "PARTIALLY_PAID",
+        "REFUNDED",
+        "VOID"
+      ],
+      "default": "PAID",
+      "description": "Invoice status"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "STRIPE_CARD",
+        "MANUAL_CASH",
+        "MANUAL_BACS"
+      ],
+      "description": "Invoice type/source"
+    },
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to pupil"
+    },
+    "pupilName": {
+      "type": "string"
+    },
+    "pupilEmail": {
+      "type": "string"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor"
+    },
+    "instructorName": {
+      "type": "string"
+    },
+    "instructorEmail": {
+      "type": "string"
+    },
+    "instructorPhone": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Total amount in GBP"
+    },
+    "hours": {
+      "type": "number",
+      "description": "Lesson hours covered"
+    },
+    "description": {
+      "type": "string",
+      "default": "Driving lessons"
+    },
+    "paymentMethod": {
+      "type": "string",
+      "enum": [
+        "STRIPE_CARD",
+        "CASH",
+        "BACS"
+      ],
+      "description": "How payment was made"
+    },
+    "paymentDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When payment was received"
+    },
+    "stripePaymentIntentId": {
+      "type": "string",
+      "description": "Stripe payment intent ID"
+    },
+    "stripeChargeId": {
+      "type": "string",
+      "description": "Stripe charge ID"
+    },
+    "manualReference": {
+      "type": "string",
+      "description": "Reference for manual payments"
+    },
+    "pdfUrl": {
+      "type": "string",
+      "description": "URL to generated PDF invoice"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "isLocked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether invoice is locked from editing"
+    }
+  },
+  "required": [
+    "invoiceNumber",
+    "pupilId",
+    "instructorId",
+    "amount",
+    "type",
+    "paymentMethod"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "UserPolicyConsent",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "Reference to user ID"
+    },
+    "policyKey": {
+      "type": "string",
+      "enum": [
+        "lesson_terms_and_conditions",
+        "refund_policy"
+      ],
+      "description": "Type of policy accepted"
+    },
+    "policyVersion": {
+      "type": "string",
+      "default": "v1",
+      "description": "Version of the policy"
+    },
+    "acceptedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the policy was accepted"
+    },
+    "acceptanceSource": {
+      "type": "string",
+      "enum": [
+        "pre_booking_modal",
+        "policy_page"
+      ],
+      "description": "Where the policy was accepted from"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata about acceptance"
+    }
+  },
+  "required": [
+    "userId",
+    "policyKey",
+    "policyVersion",
+    "acceptanceSource"
+  ]
+}

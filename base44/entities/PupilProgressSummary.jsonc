@@ -1,0 +1,38 @@
+{
+  "name": "PupilProgressSummary",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to pupil"
+    },
+    "totalParentSkills": {
+      "type": "number",
+      "default": 24,
+      "description": "Fixed at 24 skills"
+    },
+    "completedParentSkills": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of completed parent skills"
+    },
+    "overallProgressRatio": {
+      "type": "number",
+      "default": 0,
+      "description": "Progress ratio 0-1"
+    },
+    "overallProgressPercent": {
+      "type": "number",
+      "default": 0,
+      "description": "Progress percentage 0-100"
+    },
+    "lastUpdatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  },
+  "required": [
+    "pupilId"
+  ]
+}

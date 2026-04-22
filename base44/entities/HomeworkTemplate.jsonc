@@ -1,0 +1,46 @@
+{
+  "name": "HomeworkTemplate",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string"
+    },
+    "templateName": {
+      "type": "string"
+    },
+    "templateDescription": {
+      "type": "string"
+    },
+    "formatType": {
+      "type": "string",
+      "enum": [
+        "text",
+        "checklist",
+        "image",
+        "video",
+        "audio",
+        "link",
+        "attachment"
+      ],
+      "default": "text"
+    },
+    "formatPayload": {
+      "type": "object",
+      "description": "Format-specific content"
+    },
+    "skillTags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "templateName",
+    "formatType"
+  ]
+}

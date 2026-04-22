@@ -1,0 +1,42 @@
+{
+  "name": "StripeWebhookEvent",
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "description": "Stripe event ID (for idempotency)"
+    },
+    "eventType": {
+      "type": "string",
+      "description": "Stripe event type (e.g., 'checkout.session.completed')"
+    },
+    "processedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the event was processed"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "received",
+        "processed",
+        "ignored",
+        "failed"
+      ],
+      "default": "received",
+      "description": "Processing status"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if failed"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Full Stripe event payload"
+    }
+  },
+  "required": [
+    "eventId",
+    "eventType"
+  ]
+}

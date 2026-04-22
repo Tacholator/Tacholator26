@@ -1,0 +1,27 @@
+{
+  "name": "TopicHoursLog",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor"
+    },
+    "topicId": {
+      "type": "string",
+      "description": "Topic identifier from coursework topics"
+    },
+    "totalHours": {
+      "type": "number",
+      "default": 0,
+      "description": "Total hours spent on this topic"
+    }
+  },
+  "required": [
+    "pupilId",
+    "topicId"
+  ]
+}

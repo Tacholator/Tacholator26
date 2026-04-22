@@ -1,0 +1,40 @@
+{
+  "name": "DrivingSkillProgress",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor"
+    },
+    "skillId": {
+      "type": "string",
+      "description": "Unique identifier for the skill/topic (e.g., 'cockpit_drill', 'accelerator')"
+    },
+    "progressState": {
+      "type": "string",
+      "enum": [
+        "full_talk_through",
+        "prompted",
+        "independent"
+      ],
+      "description": "Current progress level"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes from instructor"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this progress was last updated"
+    }
+  },
+  "required": [
+    "pupilId",
+    "skillId"
+  ]
+}

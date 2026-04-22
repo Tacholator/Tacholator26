@@ -1,0 +1,48 @@
+{
+  "name": "MockTestResult",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor"
+    },
+    "mockTestId": {
+      "type": "string",
+      "enum": [
+        "mock_1",
+        "mock_2",
+        "mock_3"
+      ],
+      "description": "Which mock test"
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail"
+      ],
+      "description": "Test result"
+    },
+    "instructorComments": {
+      "type": "string",
+      "description": "Instructor's comments"
+    },
+    "pupilComments": {
+      "type": "string",
+      "description": "Pupil's comments"
+    },
+    "testDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the mock test"
+    }
+  },
+  "required": [
+    "pupilId",
+    "mockTestId"
+  ]
+}

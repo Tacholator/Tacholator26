@@ -1,0 +1,27 @@
+{
+  "name": "TestCentre",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Test centre name"
+    },
+    "town": {
+      "type": "string",
+      "description": "Town or city"
+    },
+    "postcode": {
+      "type": "string",
+      "description": "Postcode"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this test centre is active"
+    }
+  },
+  "required": [
+    "name",
+    "town"
+  ]
+}

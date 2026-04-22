@@ -228,7 +228,9 @@ export default function LearnerBookingCalendar() {
 
   const cancelBookingMutation = useMutation({
     mutationFn: async ({ bookingId, isLate }) => {
-      const booking = myBookings.find(b => b.id === bookingId);
+      // Fetch fresh booking data to ensure slotInstanceId and escrow are up to date
+      const freshBookings = await base44.entities.LessonBooking.filter({ id: bookingId });
+      const booking = freshBookings[0] || myBookings.find(b => b.id === bookingId);
       const escrowAmount = booking.escrowAmountGbp || 0;
 
       const updates = {

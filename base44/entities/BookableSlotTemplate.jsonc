@@ -1,0 +1,72 @@
+{
+  "name": "BookableSlotTemplate",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor user ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Optional label for the slot"
+    },
+    "dayOfWeek": {
+      "type": "string",
+      "enum": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "description": "Day of week this slot occurs"
+    },
+    "startTimeLocal": {
+      "type": "string",
+      "description": "Start time in HH:mm format (local time)"
+    },
+    "endTimeLocal": {
+      "type": "string",
+      "description": "End time in HH:mm format (local time)"
+    },
+    "recurrence": {
+      "type": "string",
+      "enum": [
+        "none",
+        "weekly"
+      ],
+      "default": "weekly",
+      "description": "Recurrence pattern"
+    },
+    "interval": {
+      "type": "number",
+      "default": 1,
+      "description": "Recurrence interval (1 = every week, 2 = every 2 weeks, etc.)"
+    },
+    "startDate": {
+      "type": "string",
+      "format": "date",
+      "description": "First date this slot should occur"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional stop date for recurring slots"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this template is active"
+    }
+  },
+  "required": [
+    "instructorId",
+    "dayOfWeek",
+    "startTimeLocal",
+    "endTimeLocal",
+    "recurrence",
+    "startDate"
+  ]
+}

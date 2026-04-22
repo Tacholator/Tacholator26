@@ -1,0 +1,61 @@
+{
+  "name": "WhiteboardBoard",
+  "type": "object",
+  "properties": {
+    "ownerInstructorId": {
+      "type": "string",
+      "description": "Reference to instructor user ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Whiteboard title"
+    },
+    "topicTags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Topic tags for organization"
+    },
+    "backgroundTemplateId": {
+      "type": "string",
+      "description": "Reference to background template"
+    },
+    "snapshotUrl": {
+      "type": "string",
+      "description": "URL to board snapshot image"
+    },
+    "linkedLessonId": {
+      "type": "string",
+      "description": "Reference to lesson if linked"
+    },
+    "linkedPupilId": {
+      "type": "string",
+      "description": "Reference to pupil if linked"
+    },
+    "isSharedWithPupil": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether pupil can view this board"
+    },
+    "allowPupilNotes": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether pupil can add notes"
+    },
+    "stepsEnabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether explain mode steps are enabled"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Board version number"
+    }
+  },
+  "required": [
+    "ownerInstructorId",
+    "title"
+  ]
+}

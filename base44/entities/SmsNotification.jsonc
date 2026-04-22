@@ -1,0 +1,64 @@
+{
+  "name": "SmsNotification",
+  "type": "object",
+  "properties": {
+    "bookingId": {
+      "type": "string",
+      "description": "Reference to the LessonBooking"
+    },
+    "userId": {
+      "type": "string",
+      "description": "Reference to the User receiving the SMS"
+    },
+    "toE164": {
+      "type": "string",
+      "description": "Phone number in E.164 format"
+    },
+    "templateKey": {
+      "type": "string",
+      "enum": [
+        "booking_confirmed",
+        "lesson_reminder_24h",
+        "lesson_reminder_1h",
+        "booking_cancelled"
+      ],
+      "description": "SMS template to use"
+    },
+    "variablesJson": {
+      "type": "object",
+      "description": "Template variables"
+    },
+    "sendAtUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to send the SMS"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Sending",
+        "Sent",
+        "Delivered",
+        "Failed",
+        "Cancelled"
+      ],
+      "default": "Pending",
+      "description": "SMS status"
+    },
+    "twilioMessageSid": {
+      "type": "string",
+      "description": "Twilio message SID"
+    },
+    "lastError": {
+      "type": "string",
+      "description": "Error message if failed"
+    }
+  },
+  "required": [
+    "userId",
+    "toE164",
+    "templateKey",
+    "sendAtUtc"
+  ]
+}

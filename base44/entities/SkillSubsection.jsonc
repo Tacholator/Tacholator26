@@ -1,0 +1,51 @@
+{
+  "name": "SkillSubsection",
+  "type": "object",
+  "properties": {
+    "skillId": {
+      "type": "string",
+      "description": "Reference to parent Skill"
+    },
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to pupil"
+    },
+    "title": {
+      "type": "string",
+      "description": "Subsection name"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order within skill"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started",
+      "description": "Subsection status"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When subsection was completed"
+    },
+    "completedByUserId": {
+      "type": "string",
+      "description": "Who marked it complete"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes"
+    }
+  },
+  "required": [
+    "skillId",
+    "pupilId",
+    "title",
+    "order"
+  ]
+}

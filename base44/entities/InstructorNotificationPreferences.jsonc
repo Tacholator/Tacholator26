@@ -1,0 +1,68 @@
+{
+  "name": "InstructorNotificationPreferences",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor user ID"
+    },
+    "notifBookingEvents": {
+      "type": "boolean",
+      "default": true,
+      "description": "Lesson bookings and changes"
+    },
+    "notifPupilMessages": {
+      "type": "boolean",
+      "default": true,
+      "description": "New messages from pupils"
+    },
+    "notifArrivalResponses": {
+      "type": "boolean",
+      "default": true,
+      "description": "Pupil responses to arrival notifications"
+    },
+    "notifHomeworkEvents": {
+      "type": "boolean",
+      "default": true,
+      "description": "Homework submissions and updates"
+    },
+    "notifStudyEngagement": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pupil engagement with study material"
+    },
+    "notifProgressUpdates": {
+      "type": "boolean",
+      "default": true,
+      "description": "Pupil progress milestones"
+    },
+    "notifPaymentEvents": {
+      "type": "boolean",
+      "default": true,
+      "description": "Payments and balance updates"
+    },
+    "notifSystemUpdates": {
+      "type": "boolean",
+      "default": true,
+      "description": "System updates and announcements"
+    },
+    "soundMessageAlert": {
+      "type": "boolean",
+      "default": true,
+      "description": "Play sound for new messages"
+    },
+    "soundNotificationAlert": {
+      "type": "boolean",
+      "default": true,
+      "description": "Play sound for new notifications"
+    },
+    "soundMuteMode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Mute all sounds"
+    }
+  },
+  "required": [
+    "instructorId"
+  ]
+}

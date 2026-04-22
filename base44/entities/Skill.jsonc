@@ -1,0 +1,79 @@
+{
+  "name": "Skill",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor"
+    },
+    "title": {
+      "type": "string",
+      "description": "Skill name"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started",
+      "description": "Derived from subsections unless overridden"
+    },
+    "subsectionsTotal": {
+      "type": "number",
+      "default": 0,
+      "description": "Total subsections count"
+    },
+    "subsectionsCompleted": {
+      "type": "number",
+      "default": 0,
+      "description": "Completed subsections count"
+    },
+    "subsectionsCompletionRatio": {
+      "type": "number",
+      "default": 0,
+      "description": "Completion ratio 0-1"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When skill was completed"
+    },
+    "completedByUserId": {
+      "type": "string",
+      "description": "Who marked it complete"
+    },
+    "overrideCompleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Instructor override flag"
+    },
+    "overrideReason": {
+      "type": "string",
+      "description": "Reason for override"
+    },
+    "overrideByUserId": {
+      "type": "string",
+      "description": "Who overrode"
+    },
+    "overrideAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When overridden"
+    }
+  },
+  "required": [
+    "pupilId",
+    "title",
+    "order"
+  ]
+}

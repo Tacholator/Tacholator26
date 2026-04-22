@@ -1,0 +1,39 @@
+{
+  "name": "WhiteboardStep",
+  "type": "object",
+  "properties": {
+    "boardId": {
+      "type": "string",
+      "description": "Reference to WhiteboardBoard"
+    },
+    "stepIndex": {
+      "type": "number",
+      "description": "Order of step"
+    },
+    "title": {
+      "type": "string",
+      "description": "Step title"
+    },
+    "caption": {
+      "type": "string",
+      "description": "Optional caption text"
+    },
+    "boardStateRef": {
+      "type": "object",
+      "description": "Snapshot of board state at this step"
+    },
+    "voiceNoteUrl": {
+      "type": "string",
+      "description": "URL to voice note audio"
+    },
+    "durationSec": {
+      "type": "number",
+      "description": "Duration in seconds"
+    }
+  },
+  "required": [
+    "boardId",
+    "stepIndex",
+    "title"
+  ]
+}

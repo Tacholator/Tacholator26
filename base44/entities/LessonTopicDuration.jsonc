@@ -1,0 +1,40 @@
+{
+  "name": "LessonTopicDuration",
+  "type": "object",
+  "properties": {
+    "lessonId": {
+      "type": "string",
+      "description": "Reference to the lesson booking"
+    },
+    "diaryEntryId": {
+      "type": "string",
+      "description": "Reference to the diary entry"
+    },
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor"
+    },
+    "topicId": {
+      "type": "string",
+      "description": "Topic identifier (skill ID or custom topic name)"
+    },
+    "topicName": {
+      "type": "string",
+      "description": "Display name of the topic"
+    },
+    "durationMinutes": {
+      "type": "number",
+      "description": "Duration spent on this topic in minutes (15-minute intervals)"
+    }
+  },
+  "required": [
+    "lessonId",
+    "pupilId",
+    "topicId",
+    "durationMinutes"
+  ]
+}

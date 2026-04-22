@@ -1,0 +1,101 @@
+{
+  "name": "UserSubscription",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "Reference to User entity"
+    },
+    "planId": {
+      "type": "string",
+      "description": "Reference to SubscriptionPlan"
+    },
+    "billingPeriod": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "description": "Current billing period"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "trialing",
+        "active",
+        "past_due",
+        "grace",
+        "expired",
+        "cancelled"
+      ],
+      "default": "none",
+      "description": "Subscription status"
+    },
+    "trialStartAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trial start date"
+    },
+    "trialEndAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trial end date"
+    },
+    "currentPeriodStartAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Current billing period start"
+    },
+    "currentPeriodEndAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Current billing period end"
+    },
+    "cancelAtPeriodEnd": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether subscription will cancel at period end"
+    },
+    "cancelledAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When subscription was cancelled"
+    },
+    "graceEndAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Grace period end date after payment failure"
+    },
+    "expiredAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When subscription expired"
+    },
+    "stripeCustomerId": {
+      "type": "string",
+      "description": "Stripe Customer ID"
+    },
+    "stripeSubscriptionId": {
+      "type": "string",
+      "description": "Stripe Subscription ID"
+    },
+    "lastPaymentAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last payment attempt date"
+    },
+    "lastPaymentStatus": {
+      "type": "string",
+      "enum": [
+        "none",
+        "succeeded",
+        "failed"
+      ],
+      "description": "Last payment status"
+    }
+  },
+  "required": [
+    "userId"
+  ]
+}

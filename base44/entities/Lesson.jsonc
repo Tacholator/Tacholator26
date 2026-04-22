@@ -1,0 +1,113 @@
+{
+  "name": "Lesson",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string"
+    },
+    "pupilId": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "startTime": {
+      "type": "string",
+      "description": "Start time in HH:mm format"
+    },
+    "endTime": {
+      "type": "string",
+      "description": "End time in HH:mm format"
+    },
+    "durationMinutes": {
+      "type": "number",
+      "default": 60
+    },
+    "location": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Scheduled",
+        "Completed",
+        "Cancelled",
+        "no_show"
+      ],
+      "default": "Scheduled"
+    },
+    "completionOutcome": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "description": "Final outcome of the lesson"
+    },
+    "mainTopic": {
+      "type": "string",
+      "description": "Main topic covered in the lesson"
+    },
+    "completionNote": {
+      "type": "string",
+      "description": "Notes about lesson outcome"
+    },
+    "chargesApplied": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether charges were applied for this lesson"
+    },
+    "chargesDecisionReason": {
+      "type": "string",
+      "description": "Reason for charge decision (for cancelled/no show)"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the lesson was marked complete/cancelled"
+    },
+    "bufferBeforeMinutes": {
+      "type": "number",
+      "default": 0
+    },
+    "bufferAfterMinutes": {
+      "type": "number",
+      "default": 0
+    },
+    "notes": {
+      "type": "string"
+    },
+    "arrivalNotified": {
+      "type": "boolean",
+      "default": false
+    },
+    "arrivalNotifiedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pupilAcknowledged": {
+      "type": "boolean",
+      "default": false
+    },
+    "pupilAcknowledgedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pupilAcknowledgementOption": {
+      "type": "string",
+      "enum": [
+        "on_my_way",
+        "got_it"
+      ],
+      "description": "Pupil's response option"
+    }
+  },
+  "required": [
+    "pupilId",
+    "date",
+    "startTime",
+    "endTime"
+  ]
+}

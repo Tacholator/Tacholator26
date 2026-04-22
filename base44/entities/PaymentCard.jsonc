@@ -1,0 +1,54 @@
+{
+  "name": "PaymentCard",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "Reference to the user who owns this card"
+    },
+    "stripePaymentMethodId": {
+      "type": "string",
+      "description": "Stripe payment method ID"
+    },
+    "cardholderName": {
+      "type": "string",
+      "description": "Name on the card"
+    },
+    "lastFourDigits": {
+      "type": "string",
+      "description": "Last 4 digits of card number"
+    },
+    "cardBrand": {
+      "type": "string",
+      "enum": [
+        "visa",
+        "mastercard",
+        "amex",
+        "discover",
+        "other"
+      ],
+      "default": "other",
+      "description": "Card brand/type"
+    },
+    "expiryMonth": {
+      "type": "string",
+      "description": "Expiry month (MM)"
+    },
+    "expiryYear": {
+      "type": "string",
+      "description": "Expiry year (YY)"
+    },
+    "isDefault": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is the default payment method"
+    }
+  },
+  "required": [
+    "userId",
+    "cardholderName",
+    "lastFourDigits",
+    "expiryMonth",
+    "expiryYear"
+  ]
+}

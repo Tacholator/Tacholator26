@@ -1,0 +1,69 @@
+{
+  "name": "McqAttempt",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor"
+    },
+    "topicId": {
+      "type": "string",
+      "description": "Topic identifier (e.g., 'legal_responsibilities')"
+    },
+    "mcqPackId": {
+      "type": "string",
+      "description": "MCQ pack identifier"
+    },
+    "attemptNumber": {
+      "type": "number",
+      "description": "Sequential attempt number for this pupil+pack"
+    },
+    "questionIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Order of questions presented during this attempt"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array of {questionId, selectedOptionIndex}"
+    },
+    "score": {
+      "type": "number",
+      "description": "Number of correct answers"
+    },
+    "totalQuestions": {
+      "type": "number"
+    },
+    "passMark": {
+      "type": "number"
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "submittedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "pupilId",
+    "topicId",
+    "mcqPackId",
+    "attemptNumber",
+    "score",
+    "passed"
+  ]
+}

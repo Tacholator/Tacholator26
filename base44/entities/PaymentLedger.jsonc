@@ -1,0 +1,62 @@
+{
+  "name": "PaymentLedger",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "Reference to user (pupil) ID"
+    },
+    "bookingId": {
+      "type": "string",
+      "description": "Reference to lesson booking ID"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "charge",
+        "payment",
+        "refund",
+        "adjustment"
+      ],
+      "description": "Type of ledger entry"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "lesson_confirmed_charge",
+        "late_cancellation_penalty",
+        "balance_top_up",
+        "manual_adjustment",
+        "refund_issued"
+      ],
+      "description": "Reason for the entry"
+    },
+    "amountGbp": {
+      "type": "number",
+      "description": "Amount in GBP"
+    },
+    "hours": {
+      "type": "number",
+      "description": "Number of hours (for tracking)"
+    },
+    "createdByRole": {
+      "type": "string",
+      "enum": [
+        "system",
+        "instructor",
+        "admin"
+      ],
+      "description": "Who created this entry"
+    },
+    "note": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "userId",
+    "type",
+    "reason",
+    "createdByRole"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "name": "CalendarRule",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor user ID"
+    },
+    "ruleType": {
+      "type": "string",
+      "enum": [
+        "working_hours",
+        "available",
+        "unavailable",
+        "lunch_break"
+      ],
+      "description": "Type of calendar rule"
+    },
+    "startTimeLocal": {
+      "type": "string",
+      "description": "Start time in HH:mm format (local time)"
+    },
+    "endTimeLocal": {
+      "type": "string",
+      "description": "End time in HH:mm format (local time)"
+    },
+    "daysOfWeek": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri",
+          "sat",
+          "sun"
+        ]
+      },
+      "description": "Days this rule applies to"
+    },
+    "isRecurring": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this rule repeats"
+    },
+    "rrule": {
+      "type": "string",
+      "description": "Recurrence rule (e.g., FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR)"
+    },
+    "startDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional start date for the rule"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional end date for the rule"
+    },
+    "excludeDates": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "date"
+      },
+      "description": "Specific dates to exclude from recurring rule"
+    }
+  },
+  "required": [
+    "instructorId",
+    "ruleType",
+    "startTimeLocal",
+    "endTimeLocal",
+    "daysOfWeek"
+  ]
+}

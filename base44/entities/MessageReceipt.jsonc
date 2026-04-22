@@ -1,0 +1,32 @@
+{
+  "name": "MessageReceipt",
+  "type": "object",
+  "properties": {
+    "messageId": {
+      "type": "string",
+      "description": "Reference to message ID"
+    },
+    "userId": {
+      "type": "string",
+      "description": "Recipient of this receipt"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "delivered",
+        "read"
+      ],
+      "description": "Receipt status"
+    },
+    "at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When status occurred"
+    }
+  },
+  "required": [
+    "messageId",
+    "userId",
+    "status"
+  ]
+}

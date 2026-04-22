@@ -1,0 +1,63 @@
+{
+  "name": "TestRouteCentre",
+  "type": "object",
+  "properties": {
+    "centreName": {
+      "type": "string",
+      "description": "Name of the test centre"
+    },
+    "subLocation": {
+      "type": "string",
+      "description": "Specific area or sub-location"
+    },
+    "published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this test route area is published and visible to instructors/learners"
+    },
+    "youtubeUrl": {
+      "type": "string",
+      "description": "Full YouTube URL"
+    },
+    "youtubeVideoId": {
+      "type": "string",
+      "description": "Extracted YouTube video ID"
+    },
+    "gpsRouteType": {
+      "type": "string",
+      "enum": [
+        "gpx_url",
+        "geojson_url",
+        "external_map_url"
+      ],
+      "default": "gpx_url",
+      "description": "Type of GPS route data"
+    },
+    "gpsRouteUrl": {
+      "type": "string",
+      "description": "URL to GPS route file or map"
+    },
+    "gpsGeoJson": {
+      "type": "object",
+      "description": "GeoJSON Feature with LineString geometry for GPS follow-along"
+    },
+    "gpsStartMinYardsFromCentre": {
+      "type": "number",
+      "default": 100,
+      "description": "Minimum yards from centre at start"
+    },
+    "gpsMustReturnToCentre": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether route must return to centre"
+    },
+    "createdByInstructorId": {
+      "type": "string",
+      "description": "Instructor who created/manages this route"
+    }
+  },
+  "required": [
+    "centreName",
+    "subLocation"
+  ]
+}

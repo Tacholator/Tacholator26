@@ -1,0 +1,67 @@
+{
+  "name": "McqStatus",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor"
+    },
+    "topicId": {
+      "type": "string",
+      "description": "Topic identifier"
+    },
+    "mcqPackId": {
+      "type": "string",
+      "description": "MCQ pack identifier"
+    },
+    "attemptCount": {
+      "type": "number",
+      "default": 0
+    },
+    "lastAttemptId": {
+      "type": "string"
+    },
+    "lastScore": {
+      "type": "number"
+    },
+    "totalQuestions": {
+      "type": "number"
+    },
+    "passMark": {
+      "type": "number"
+    },
+    "lastPassed": {
+      "type": "boolean"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "True once any attempt passes"
+    },
+    "firstCompletedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastAttemptAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "instructorComment": {
+      "type": "string",
+      "description": "Instructor's encouragement or acknowledgement comment"
+    },
+    "instructorCommentedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "pupilId",
+    "topicId",
+    "mcqPackId"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "description": "Unique identifier for the conversation (pupilId_instructorId)"
+    },
+    "instructorId": {
+      "type": "string"
+    },
+    "pupilId": {
+      "type": "string"
+    },
+    "senderId": {
+      "type": "string",
+      "description": "User ID of sender"
+    },
+    "senderRole": {
+      "type": "string",
+      "enum": [
+        "instructor",
+        "pupil"
+      ],
+      "description": "Who sent the message"
+    },
+    "senderName": {
+      "type": "string"
+    },
+    "messageText": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "delivered",
+        "read"
+      ],
+      "default": "sent",
+      "description": "Message delivery status"
+    },
+    "deliveredAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was delivered to the recipient's device"
+    },
+    "readAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was read by the recipient"
+    },
+    "clientMessageId": {
+      "type": "string",
+      "description": "For dedupe on retries"
+    },
+    "contextType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "booking"
+      ],
+      "default": "none"
+    },
+    "contextBookingId": {
+      "type": "string",
+      "description": "Reference to booking if context is booking"
+    }
+  },
+  "required": [
+    "conversationId",
+    "instructorId",
+    "pupilId",
+    "senderId",
+    "senderRole",
+    "messageText"
+  ]
+}

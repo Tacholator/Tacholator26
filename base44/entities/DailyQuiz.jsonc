@@ -1,0 +1,49 @@
+{
+  "name": "DailyQuiz",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date this quiz is scheduled for"
+    },
+    "title": {
+      "type": "string",
+      "description": "Quiz title (max 120 chars)"
+    },
+    "questionIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of McqQuestion IDs (1-20 questions)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "published",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Quiz publication status"
+    },
+    "publishAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the quiz should be published (optional)"
+    },
+    "createdByAdminId": {
+      "type": "string",
+      "description": "ID of the admin who created this quiz"
+    }
+  },
+  "required": [
+    "date",
+    "title",
+    "questionIds",
+    "status",
+    "createdByAdminId"
+  ]
+}

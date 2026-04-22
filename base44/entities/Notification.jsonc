@@ -1,0 +1,72 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "User ID of the notification recipient"
+    },
+    "title": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "message",
+        "system",
+        "booking",
+        "payment",
+        "homework",
+        "skill",
+        "lesson_arrival"
+      ],
+      "default": "system"
+    },
+    "readAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the notification was read"
+    },
+    "acknowledged": {
+      "type": "boolean",
+      "default": false
+    },
+    "acknowledgedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "acknowledgementOption": {
+      "type": "string",
+      "enum": [
+        "on_my_way",
+        "got_it"
+      ],
+      "description": "Pupil's chosen response option"
+    },
+    "linkTarget": {
+      "type": "string",
+      "description": "Page or URL to navigate to when clicked"
+    },
+    "linkParams": {
+      "type": "string",
+      "description": "URL parameters for navigation"
+    },
+    "linkTargetType": {
+      "type": "string",
+      "description": "Type of entity being linked (e.g. lesson, booking)"
+    },
+    "linkTargetId": {
+      "type": "string",
+      "description": "ID of the linked entity"
+    }
+  },
+  "required": [
+    "userId",
+    "title",
+    "message",
+    "type"
+  ]
+}

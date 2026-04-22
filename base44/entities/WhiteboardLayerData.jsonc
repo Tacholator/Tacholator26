@@ -1,0 +1,41 @@
+{
+  "name": "WhiteboardLayerData",
+  "type": "object",
+  "properties": {
+    "boardId": {
+      "type": "string",
+      "description": "Reference to WhiteboardBoard"
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Canvas objects (shapes, text, etc)"
+    },
+    "strokes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Pen/highlighter strokes"
+    },
+    "texts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Text elements on canvas"
+    },
+    "pupilNotes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Pupil's annotation layer"
+    }
+  },
+  "required": [
+    "boardId"
+  ]
+}

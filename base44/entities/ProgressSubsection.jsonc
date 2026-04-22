@@ -1,0 +1,55 @@
+{
+  "name": "ProgressSubsection",
+  "type": "object",
+  "properties": {
+    "skillId": {
+      "type": "string",
+      "description": "Reference to parent ProgressSkill"
+    },
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to pupil"
+    },
+    "title": {
+      "type": "string",
+      "description": "Subsection name"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order within skill"
+    },
+    "isCompleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Derived from completedMethod"
+    },
+    "completedMethod": {
+      "type": "string",
+      "enum": [
+        "full_talkthrough",
+        "prompt",
+        "independent"
+      ],
+      "description": "How subsection was completed"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When subsection was completed"
+    },
+    "completedByUserId": {
+      "type": "string",
+      "description": "Who marked it complete"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes"
+    }
+  },
+  "required": [
+    "skillId",
+    "pupilId",
+    "title",
+    "order"
+  ]
+}

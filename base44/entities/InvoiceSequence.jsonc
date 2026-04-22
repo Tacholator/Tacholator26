@@ -1,0 +1,23 @@
+{
+  "name": "InvoiceSequence",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor (for per-instructor sequences)"
+    },
+    "year": {
+      "type": "number",
+      "description": "Year for this sequence"
+    },
+    "nextSeq": {
+      "type": "number",
+      "default": 1,
+      "description": "Next sequence number to use"
+    }
+  },
+  "required": [
+    "instructorId",
+    "year"
+  ]
+}

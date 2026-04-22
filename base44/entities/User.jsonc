@@ -1,0 +1,22 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "stripeCustomerId": {
+      "type": "string",
+      "description": "Stripe customer ID for payments"
+    },
+    "userType": {
+      "type": "string",
+      "enum": [
+        "instructor",
+        "learner"
+      ],
+      "description": "Role selected during signup"
+    }
+  },
+  "required": [
+    "stripeCustomerId",
+    "userType"
+  ]
+}

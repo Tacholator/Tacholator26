@@ -1,0 +1,50 @@
+{
+  "name": "DiaryEntry",
+  "type": "object",
+  "properties": {
+    "lessonId": {
+      "type": "string"
+    },
+    "instructorId": {
+      "type": "string"
+    },
+    "pupilId": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "mainTopic": {
+      "type": "string",
+      "description": "Main topic covered in the lesson"
+    },
+    "whatWentWell": {
+      "type": "string"
+    },
+    "areasToImprove": {
+      "type": "string"
+    },
+    "instructorComments": {
+      "type": "string"
+    },
+    "homeworkSuggestions": {
+      "type": "string"
+    },
+    "aiSummary": {
+      "type": "string"
+    },
+    "aiSummaryGeneratedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "pupilId",
+    "date",
+    "mainTopic"
+  ]
+}

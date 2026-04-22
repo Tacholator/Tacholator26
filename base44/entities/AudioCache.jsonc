@@ -1,0 +1,32 @@
+{
+  "name": "AudioCache",
+  "type": "object",
+  "properties": {
+    "contentHash": {
+      "type": "string",
+      "description": "Hash of text + voice + speakingRate for caching"
+    },
+    "audioUrl": {
+      "type": "string",
+      "description": "URL to the generated MP3 audio file"
+    },
+    "textLength": {
+      "type": "number",
+      "description": "Length of the original text"
+    },
+    "voiceGender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female"
+      ]
+    },
+    "speakingRate": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "contentHash",
+    "audioUrl"
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "name": "SubscriptionPlan",
+  "type": "object",
+  "properties": {
+    "planId": {
+      "type": "string",
+      "description": "Unique plan identifier (e.g., 'instructor_pro')"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the plan"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "instructor",
+        "guide_user",
+        "test_route_user"
+      ],
+      "description": "User role this plan is for"
+    },
+    "trialDays": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of trial days"
+    },
+    "billingPeriods": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "monthly",
+          "yearly"
+        ]
+      },
+      "description": "Available billing periods"
+    },
+    "monthlyPrice": {
+      "type": "number",
+      "description": "Monthly price in GBP"
+    },
+    "yearlyPrice": {
+      "type": "number",
+      "description": "Yearly price in GBP (null if not available)"
+    },
+    "discountYearlyPercent": {
+      "type": "number",
+      "description": "Yearly discount percentage"
+    },
+    "pricingModel": {
+      "type": "string",
+      "enum": [
+        "flat",
+        "per_test_centre"
+      ],
+      "default": "flat",
+      "description": "Pricing model"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this plan is active"
+    },
+    "stripePriceIdMonthly": {
+      "type": "string",
+      "description": "Stripe Price ID for monthly billing"
+    },
+    "stripePriceIdYearly": {
+      "type": "string",
+      "description": "Stripe Price ID for yearly billing"
+    }
+  },
+  "required": [
+    "planId",
+    "name",
+    "role",
+    "monthlyPrice",
+    "pricingModel"
+  ]
+}

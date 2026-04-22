@@ -1,0 +1,79 @@
+{
+  "name": "SkillAssignment",
+  "type": "object",
+  "properties": {
+    "skillId": {
+      "type": "string",
+      "description": "DVSA skill identifier (e.g., '1_legal_responsibilities')"
+    },
+    "skillNumber": {
+      "type": "number"
+    },
+    "pupilId": {
+      "type": "string"
+    },
+    "instructorId": {
+      "type": "string"
+    },
+    "assignedComponents": {
+      "type": "string",
+      "enum": [
+        "material",
+        "mcq",
+        "both"
+      ],
+      "default": "both"
+    },
+    "dueDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started"
+    },
+    "materialOpenedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "totalTimeSpentMs": {
+      "type": "number",
+      "default": 0
+    },
+    "scrollDepthPercentage": {
+      "type": "number",
+      "default": 0
+    },
+    "hasOpenedMaterial": {
+      "type": "boolean",
+      "default": false
+    },
+    "bestScore": {
+      "type": "number"
+    },
+    "lastAttemptScore": {
+      "type": "number"
+    },
+    "lastAttemptDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "passedMcq": {
+      "type": "boolean",
+      "default": false
+    },
+    "numberOfAttempts": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "skillId",
+    "pupilId"
+  ]
+}

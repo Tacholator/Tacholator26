@@ -1,0 +1,47 @@
+{
+  "name": "StudyAudioProgress",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "Reference to the user"
+    },
+    "topicId": {
+      "type": "string",
+      "description": "Topic/material identifier"
+    },
+    "sectionId": {
+      "type": "string",
+      "description": "Section identifier within the topic"
+    },
+    "lastPosition": {
+      "type": "number",
+      "description": "Last playback position in seconds",
+      "default": 0
+    },
+    "duration": {
+      "type": "number",
+      "description": "Total audio duration in seconds"
+    },
+    "voiceGender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female"
+      ],
+      "default": "female"
+    },
+    "speakingRate": {
+      "type": "number",
+      "default": 1.0
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "userId",
+    "topicId"
+  ]
+}

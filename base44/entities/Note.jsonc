@@ -1,0 +1,69 @@
+{
+  "name": "Note",
+  "type": "object",
+  "properties": {
+    "ownerPupilId": {
+      "type": "string",
+      "description": "Reference to the pupil who owns this note"
+    },
+    "assignedInstructorId": {
+      "type": "string",
+      "description": "Reference to the pupil's assigned instructor"
+    },
+    "title": {
+      "type": "string",
+      "description": "Note title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Note content (can be rich text/HTML)"
+    },
+    "cardColor": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "sunny",
+        "sky",
+        "mint",
+        "lavender",
+        "peach",
+        "slate"
+      ],
+      "default": "auto",
+      "description": "Color theme for the note card"
+    },
+    "instructorAccessLevel": {
+      "type": "string",
+      "enum": [
+        "full",
+        "restricted"
+      ],
+      "default": "full",
+      "description": "Whether instructor can view this note"
+    },
+    "createdByRole": {
+      "type": "string",
+      "enum": [
+        "pupil",
+        "instructor"
+      ],
+      "description": "Who created this note"
+    },
+    "createdByUserId": {
+      "type": "string",
+      "description": "User ID of the creator"
+    },
+    "orderIndex": {
+      "type": "number",
+      "description": "Stable order index for maintaining card position"
+    }
+  },
+  "required": [
+    "ownerPupilId",
+    "assignedInstructorId",
+    "title",
+    "content",
+    "createdByRole",
+    "createdByUserId"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "PupilTestRouteNote",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor"
+    },
+    "routeNumber": {
+      "type": "number",
+      "description": "Route number (1-10)"
+    },
+    "routeDetails": {
+      "type": "string",
+      "description": "Details about the route"
+    },
+    "comments": {
+      "type": "string",
+      "description": "Additional comments or notes"
+    }
+  },
+  "required": [
+    "pupilId",
+    "routeNumber"
+  ]
+}

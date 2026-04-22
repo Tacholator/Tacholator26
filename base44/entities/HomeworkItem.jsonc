@@ -1,0 +1,63 @@
+{
+  "name": "HomeworkItem",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string"
+    },
+    "instructorId": {
+      "type": "string"
+    },
+    "diaryEntryId": {
+      "type": "string"
+    },
+    "lessonId": {
+      "type": "string"
+    },
+    "templateId": {
+      "type": "string",
+      "description": "Reference to HomeworkTemplate if created from template"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "formatType": {
+      "type": "string",
+      "enum": [
+        "text",
+        "checklist",
+        "image",
+        "video",
+        "audio",
+        "link",
+        "attachment"
+      ],
+      "default": "text"
+    },
+    "formatPayload": {
+      "type": "object",
+      "description": "Format-specific content (bodyText, items[], imageUrl, videoUrl, etc.)"
+    },
+    "dueDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Viewed",
+        "Completed"
+      ],
+      "default": "Pending"
+    }
+  },
+  "required": [
+    "pupilId",
+    "title",
+    "formatType"
+  ]
+}

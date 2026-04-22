@@ -1,0 +1,49 @@
+{
+  "name": "BookableSlotInstance",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor user ID"
+    },
+    "sourceTemplateId": {
+      "type": "string",
+      "description": "Reference to bookable slot template if generated from template"
+    },
+    "startAtUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Slot start time in UTC"
+    },
+    "endAtUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Slot end time in UTC"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "reserved_pending",
+        "confirmed",
+        "blocked"
+      ],
+      "default": "available",
+      "description": "Slot availability status"
+    },
+    "reservedByPupilId": {
+      "type": "string",
+      "description": "Pupil who reserved this slot"
+    },
+    "bookingId": {
+      "type": "string",
+      "description": "Reference to lesson booking if slot is booked"
+    }
+  },
+  "required": [
+    "instructorId",
+    "startAtUtc",
+    "endAtUtc",
+    "status"
+  ]
+}

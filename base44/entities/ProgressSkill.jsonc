@@ -1,0 +1,65 @@
+{
+  "name": "ProgressSkill",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to pupil"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor"
+    },
+    "skillKey": {
+      "type": "string",
+      "description": "Unique skill identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Skill name"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started",
+      "description": "Derived from subsections"
+    },
+    "subsectionsTotal": {
+      "type": "number",
+      "default": 0,
+      "description": "Total subsections count"
+    },
+    "subsectionsCompleted": {
+      "type": "number",
+      "default": 0,
+      "description": "Completed subsections count"
+    },
+    "subsectionsRatio": {
+      "type": "number",
+      "default": 0,
+      "description": "Completion ratio 0-1"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When skill was completed"
+    },
+    "completedByUserId": {
+      "type": "string",
+      "description": "Who marked it complete"
+    }
+  },
+  "required": [
+    "pupilId",
+    "title",
+    "order"
+  ]
+}

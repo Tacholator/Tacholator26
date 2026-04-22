@@ -1,0 +1,64 @@
+{
+  "name": "McqQuestion",
+  "type": "object",
+  "properties": {
+    "topicId": {
+      "type": "string",
+      "description": "Topic identifier (e.g., 'legal_responsibilities')"
+    },
+    "topicLabel": {
+      "type": "string",
+      "description": "Human-readable topic name"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "default": "medium",
+      "description": "Question difficulty level"
+    },
+    "questionText": {
+      "type": "string",
+      "description": "The question text (max 400 chars)"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Array of 4 answer options (A-D)"
+    },
+    "correctAnswerId": {
+      "type": "string",
+      "description": "ID of the correct answer (A/B/C/D)"
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Explanation shown after submission (optional)"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this question is active in the bank"
+    }
+  },
+  "required": [
+    "topicId",
+    "topicLabel",
+    "difficulty",
+    "questionText",
+    "answers",
+    "correctAnswerId"
+  ]
+}

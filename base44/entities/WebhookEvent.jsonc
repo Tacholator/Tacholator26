@@ -1,0 +1,51 @@
+{
+  "name": "WebhookEvent",
+  "type": "object",
+  "properties": {
+    "stripeEventId": {
+      "type": "string",
+      "description": "Unique Stripe event ID for deduplication"
+    },
+    "type": {
+      "type": "string",
+      "description": "Stripe event type (e.g., checkout.session.completed)"
+    },
+    "stripeCreatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When Stripe created the event"
+    },
+    "receivedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When our server received the event"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "received",
+        "processed",
+        "failed"
+      ],
+      "default": "received",
+      "description": "Processing status of the webhook"
+    },
+    "relatedObjectId": {
+      "type": "string",
+      "description": "ID of related object (payment intent, invoice, etc.)"
+    },
+    "errorMessage": {
+      "type": "string",
+      "description": "Error message if processing failed"
+    },
+    "rawPayload": {
+      "type": "object",
+      "description": "Trimmed webhook payload for debugging"
+    }
+  },
+  "required": [
+    "stripeEventId",
+    "type",
+    "receivedAt"
+  ]
+}

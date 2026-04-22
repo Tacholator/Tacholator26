@@ -1,0 +1,33 @@
+{
+  "name": "ConversationMemberState",
+  "type": "object",
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "description": "Reference to conversation ID"
+    },
+    "userId": {
+      "type": "string",
+      "description": "Reference to user ID"
+    },
+    "lastReadMessageAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time user read messages"
+    },
+    "unreadCount": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of unread messages"
+    },
+    "isMuted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether chat is muted"
+    }
+  },
+  "required": [
+    "conversationId",
+    "userId"
+  ]
+}

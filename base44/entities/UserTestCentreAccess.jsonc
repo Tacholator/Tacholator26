@@ -1,0 +1,63 @@
+{
+  "name": "UserTestCentreAccess",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "Reference to User entity"
+    },
+    "testCentreId": {
+      "type": "string",
+      "description": "Reference to TestCentre entity"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expired",
+        "cancelled"
+      ],
+      "default": "active",
+      "description": "Access status"
+    },
+    "currentPeriodStartAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Current period start"
+    },
+    "currentPeriodEndAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Current period end"
+    },
+    "cancelAtPeriodEnd": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether access will cancel at period end"
+    },
+    "cancelledAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When access was cancelled"
+    },
+    "expiredAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When access expired"
+    },
+    "stripeSubscriptionId": {
+      "type": "string",
+      "description": "Stripe Subscription ID for this test centre"
+    },
+    "stripePriceId": {
+      "type": "string",
+      "description": "Stripe Price ID used"
+    }
+  },
+  "required": [
+    "userId",
+    "testCentreId",
+    "currentPeriodStartAt",
+    "currentPeriodEndAt"
+  ]
+}

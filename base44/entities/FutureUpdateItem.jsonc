@@ -1,0 +1,41 @@
+{
+  "name": "FutureUpdateItem",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the future update"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "Priority level"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "in_progress",
+        "completed"
+      ],
+      "default": "planned",
+      "description": "Current status"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category or feature area"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

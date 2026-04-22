@@ -1,0 +1,43 @@
+{
+  "name": "Resource",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor user ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Resource title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Resource description"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "pdf",
+        "link",
+        "video",
+        "document"
+      ],
+      "default": "link"
+    },
+    "url": {
+      "type": "string",
+      "description": "URL or file URL"
+    },
+    "sharedWith": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of pupil IDs this resource is shared with"
+    }
+  },
+  "required": [
+    "title",
+    "type"
+  ]
+}

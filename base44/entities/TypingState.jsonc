@@ -1,0 +1,28 @@
+{
+  "name": "TypingState",
+  "type": "object",
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "description": "Reference to conversation ID"
+    },
+    "userId": {
+      "type": "string",
+      "description": "Reference to user ID"
+    },
+    "isTyping": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user is currently typing"
+    },
+    "lastPingAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last typing ping timestamp"
+    }
+  },
+  "required": [
+    "conversationId",
+    "userId"
+  ]
+}
