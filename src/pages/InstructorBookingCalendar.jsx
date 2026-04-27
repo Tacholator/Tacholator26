@@ -276,12 +276,16 @@ export default function InstructorBookingCalendar() {
   const deleteBookingMutation = useMutation({
     mutationFn: async ({ booking, slotInstance }) => {
       if (booking) {
+        // Fetch fresh booking data to ensure slotInstanceId is up to date
+        const freshBookingResults = await base44.entities.LessonBooking.filter({ id: booking.id });
+        const freshBooking = freshBookingResults[0] || booking;
+
         // Fetch pupil fresh to get current (non-stale) balance
-        const pupilResults = await base44.entities.Pupil.filter({ id: booking.pupilId });
+        const pupilResults = await base44.entities.Pupil.filter({ id: freshBooking.pupilId });
         const pupil = pupilResults[0];
         
         // Soft delete the booking - mark as deleted
-        await base44.entities.LessonBooking.update(booking.id, {
+        await base44.entities.LessonBooking.update(freshBooking.id, {
           isDeleted: true,
           deletedAt: new Date().toISOString(),
           deletedByRole: 'instructor',
@@ -289,8 +293,8 @@ export default function InstructorBookingCalendar() {
         });
 
         // Free up the slot instance if linked
-        if (booking.slotInstanceId) {
-          await base44.entities.BookableSlotInstance.update(booking.slotInstanceId, {
+        if (freshBooking.slotInstanceId) {
+          await base44.entities.BookableSlotInstance.update(freshBooking.slotInstanceId, {
             status: 'available',
             bookingId: null,
             reservedByPupilId: null
