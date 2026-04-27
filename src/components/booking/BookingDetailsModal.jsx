@@ -141,9 +141,10 @@ export default function BookingDetailsModal({
         cancelledByRole: 'instructor'
       });
 
-      // Release slot instance if exists
-      if (slotInstance?.id) {
-        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+      // Release slot instance — use slotInstanceId from booking if prop not available
+      const declineSlotId = slotInstance?.id || booking.slotInstanceId;
+      if (declineSlotId) {
+        await base44.entities.BookableSlotInstance.update(declineSlotId, {
           status: 'available',
           reservedByPupilId: null,
           bookingId: null
@@ -191,11 +192,13 @@ export default function BookingDetailsModal({
         cancelledAt: new Date().toISOString()
       });
 
-      // Release slot instance if exists - make it available again
-      if (slotInstance?.id) {
-        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+      // Release slot instance — use slotInstanceId from booking if prop not available
+      const cancelSlotId = slotInstance?.id || booking.slotInstanceId;
+      if (cancelSlotId) {
+        await base44.entities.BookableSlotInstance.update(cancelSlotId, {
           status: 'available',
-          bookingId: null
+          bookingId: null,
+          reservedByPupilId: null
         });
       }
 
@@ -308,21 +311,26 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
 
-      const escrowAmount = booking.escrowAmountGbp || 0;
-      const refundAmount = escrowAmount > 0 ? escrowAmount : (booking.totalPriceGbp || 0);
-      const wasConfirmed = booking.status === 'confirmed';
+      // Fetch fresh booking to ensure slotInstanceId is current
+      const freshBookingResults = await base44.entities.LessonBooking.filter({ id: booking.id });
+      const freshBooking = freshBookingResults[0] || booking;
+
+      const escrowAmount = freshBooking.escrowAmountGbp || 0;
+      const refundAmount = escrowAmount > 0 ? escrowAmount : (freshBooking.totalPriceGbp || 0);
+      const wasConfirmed = freshBooking.status === 'confirmed';
 
       // Mark booking as deleted
-      await base44.entities.LessonBooking.update(booking.id, {
+      await base44.entities.LessonBooking.update(freshBooking.id, {
         isDeleted: true,
         deletedAt: new Date().toISOString(),
         deletedByRole: 'instructor',
         status: 'deleted'
       });
 
-      // Release slot instance
-      if (slotInstance?.id) {
-        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+      // Release slot instance — use fresh booking's slotInstanceId
+      const slotInstanceId = slotInstance?.id || freshBooking.slotInstanceId;
+      if (slotInstanceId) {
+        await base44.entities.BookableSlotInstance.update(slotInstanceId, {
           status: 'available',
           bookingId: null,
           reservedByPupilId: null
@@ -337,16 +345,16 @@ export default function BookingDetailsModal({
         await base44.entities.Pupil.update(pupil.id, {
           bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + refundAmount
         });
-        await base44.entities.LessonBooking.update(booking.id, { escrowAmountGbp: 0 });
+        await base44.entities.LessonBooking.update(freshBooking.id, { escrowAmountGbp: 0 });
         await base44.entities.PaymentLedger.create({
           userId: pupil.linkedUserId || pupil.id,
-          bookingId: booking.id,
+          bookingId: freshBooking.id,
           type: 'refund',
           reason: 'refund_issued',
           amountGbp: refundAmount,
-          hours: booking.durationHours || 0,
+          hours: freshBooking.durationHours || 0,
           createdByRole: 'instructor',
-          note: `Refund issued: instructor removed pupil from confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}${escrowAmount > 0 ? ' (escrow returned)' : ''}`
+          note: `Refund issued: instructor removed pupil from confirmed lesson on ${moment(freshBooking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}${escrowAmount > 0 ? ' (escrow returned)' : ''}`
         });
       }
 
@@ -356,7 +364,7 @@ export default function BookingDetailsModal({
         await base44.entities.Notification.create({
           userId: pupil.linkedUserId,
           title: 'Lesson Cancelled by Instructor',
-          message: `Your instructor has removed you from the lesson on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')}.${refundMsg}`,
+          message: `Your instructor has removed you from the lesson on ${moment(freshBooking.startAtUtc).local().format('D MMM')} at ${moment(freshBooking.startAtUtc).local().format('HH:mm')}.${refundMsg}`,
           type: 'booking',
           linkTarget: 'LearnerScheduledLessons'
         });
@@ -382,12 +390,16 @@ export default function BookingDetailsModal({
     mutationFn: async () => {
       setIsProcessing(true);
 
-      const escrowAmount = booking.escrowAmountGbp || 0;
-      const refundAmount = escrowAmount > 0 ? escrowAmount : (booking.totalPriceGbp || 0);
-      const wasConfirmed = booking.status === 'confirmed';
+      // Fetch fresh booking to ensure slotInstanceId is current
+      const freshBookingResults2 = await base44.entities.LessonBooking.filter({ id: booking.id });
+      const freshBooking2 = freshBookingResults2[0] || booking;
+
+      const escrowAmount = freshBooking2.escrowAmountGbp || 0;
+      const refundAmount = escrowAmount > 0 ? escrowAmount : (freshBooking2.totalPriceGbp || 0);
+      const wasConfirmed = freshBooking2.status === 'confirmed';
 
       // Mark booking as deleted (also clear escrow)
-      await base44.entities.LessonBooking.update(booking.id, {
+      await base44.entities.LessonBooking.update(freshBooking2.id, {
         isDeleted: true,
         deletedAt: new Date().toISOString(),
         deletedByRole: 'instructor',
@@ -395,9 +407,10 @@ export default function BookingDetailsModal({
         escrowAmountGbp: 0
       });
 
-      // Release slot instance
-      if (slotInstance?.id) {
-        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+      // Release slot instance — use fresh booking's slotInstanceId
+      const slotInstanceId2 = slotInstance?.id || freshBooking2.slotInstanceId;
+      if (slotInstanceId2) {
+        await base44.entities.BookableSlotInstance.update(slotInstanceId2, {
           status: 'available',
           bookingId: null,
           reservedByPupilId: null

@@ -209,8 +209,20 @@ export default function InstructorBookingCalendar() {
 
   const createSlotMutation = useMutation({
     mutationFn: async (slotData) => {
-      const { title, startDate, startTime, endTime, repeatWeekly, selectedDays, stopDate } = slotData;
-      
+      const { slotId, title, startDate, startTime, endTime, repeatWeekly, selectedDays, stopDate } = slotData;
+
+      // Edit existing single slot
+      if (slotId) {
+        const startAtUtc = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
+        const endAtUtc = moment(`${startDate} ${endTime}`, 'YYYY-MM-DD HH:mm').utc().toISOString();
+        await base44.entities.BookableSlotInstance.update(slotId, {
+          startAtUtc,
+          endAtUtc,
+          title: title || undefined
+        });
+        return;
+      }
+
       if (repeatWeekly) {
         // Create template
         const template = await base44.entities.BookableSlotTemplate.create({
