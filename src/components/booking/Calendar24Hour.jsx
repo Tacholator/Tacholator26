@@ -540,9 +540,9 @@ export default function Calendar24Hour({
                   );
                 }
 
-                // Skip slots covered by multi-slot blocks
+                // Skip slots covered by multi-slot blocks — must be invisible so the card above visually covers them
                 if (shouldRenderAsCard && !isBlockStart) {
-                  return <div key={dayIdx} className="border-r last:border-r-0" style={{ height: '22.5px' }} />;
+                  return <div key={dayIdx} className="border-r last:border-r-0" style={{ height: '22.5px', backgroundColor: displayColor }} />;
                 }
 
                 // Render flat background slot (for outside_working_hours or default available)
