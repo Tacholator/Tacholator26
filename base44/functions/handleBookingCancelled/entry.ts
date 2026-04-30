@@ -18,6 +18,26 @@ Deno.serve(async (req) => {
       return Response.json({ skipped: true, reason: 'Not cancelled' });
     }
 
+    // 0. Restore slot instance to available — try slotInstanceId first, then search by bookingId as fallback
+    const slotInstanceId = booking.slotInstanceId;
+    if (slotInstanceId) {
+      await base44.asServiceRole.entities.BookableSlotInstance.update(slotInstanceId, {
+        status: 'available',
+        bookingId: null,
+        reservedByPupilId: null
+      });
+    } else {
+      // Fallback: find any slot instance that references this booking
+      const linkedSlots = await base44.asServiceRole.entities.BookableSlotInstance.filter({ bookingId: booking.id });
+      for (const slot of linkedSlots) {
+        await base44.asServiceRole.entities.BookableSlotInstance.update(slot.id, {
+          status: 'available',
+          bookingId: null,
+          reservedByPupilId: null
+        });
+      }
+    }
+
     // 1. Cancel all pending SMS for this booking
     const pendingSms = await base44.asServiceRole.entities.SmsNotification.filter({ 
       bookingId: booking.id,
