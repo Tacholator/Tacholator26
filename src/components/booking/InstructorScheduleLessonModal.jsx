@@ -54,11 +54,14 @@ export default function InstructorScheduleLessonModal({
         return [];
       }
       
-      // Use both instructorId AND instructorEmail for strict filtering
-      const allPupils = await base44.entities.Pupil.filter({ 
-        instructorId: user.id,
-        instructorEmail: user.email
-      });
+      // Fetch by both fields separately and merge to handle data inconsistencies
+      const [byId, byEmail] = await Promise.all([
+        base44.entities.Pupil.filter({ instructorId: user.id }),
+        base44.entities.Pupil.filter({ instructorEmail: user.email }),
+      ]);
+      const map = {};
+      for (const p of [...byId, ...byEmail]) map[p.id] = p;
+      const allPupils = Object.values(map);
       
       // Apply status filter
       const bookablePupils = allPupils.filter(p => 
