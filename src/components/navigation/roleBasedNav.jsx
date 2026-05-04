@@ -92,7 +92,7 @@ export const instructorOnlyLinks = [
     ]
   },
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
-  { name: 'Test Readiness', icon: ClipboardCheck, page: 'TestReadiness' },
+  { name: 'Test Preparation', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' },
   { name: 'Referral Program', icon: Gift, page: 'InstructorReferralProgram' }
@@ -117,7 +117,7 @@ export const learnerOnlyLinks = [
     ]
   },
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
-  { name: 'Test Readiness', icon: ClipboardCheck, page: 'TestReadiness' },
+  { name: 'Test Preparation', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
   { name: 'My Bookings', icon: BookMarked, page: 'LearnerMyBookings' },
   { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' },

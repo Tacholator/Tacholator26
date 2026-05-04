@@ -111,7 +111,7 @@ export default function TestReadiness() {
               <div className="bg-[#F7B602]/20 p-2 rounded-lg">
                 <ClipboardCheck className="w-6 h-6 text-[#F7B602]" />
               </div>
-              <h1 className="text-2xl font-bold text-[#071739]">Test Readiness</h1>
+              <h1 className="text-2xl font-bold text-[#071739]">Test Preparation</h1>
             </div>
             <p className="text-slate-500 ml-14">Everything you need to prepare for your driving test.</p>
           </div>
