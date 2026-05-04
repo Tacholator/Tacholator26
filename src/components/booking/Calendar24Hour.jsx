@@ -179,12 +179,12 @@ export default function Calendar24Hour({
       }
     }
 
-    // Check unavailable blocks
-    const unavailableRule = rules.find(r => 
+    // Check unavailable blocks (there may be multiple per day)
+    const unavailableRules = rules.filter(r => 
       r.ruleType === 'unavailable' && 
       r.daysOfWeek.includes(dayOfWeek)
     );
-    if (unavailableRule) {
+    for (const unavailableRule of unavailableRules) {
       const unavailStart = moment(unavailableRule.startTimeLocal, 'HH:mm');
       const unavailEnd = moment(unavailableRule.endTimeLocal, 'HH:mm');
       if (workingStart.isSameOrAfter(unavailStart) && workingStart.isBefore(unavailEnd)) {

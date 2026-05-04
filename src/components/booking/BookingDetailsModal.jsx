@@ -64,17 +64,20 @@ export default function BookingDetailsModal({
   });
 
   const { data: allPupils = [] } = useQuery({
-    queryKey: ['activePupils', user?.id],
+    queryKey: ['activePupils', user?.id, user?.email],
     queryFn: async () => {
-      const pupils = await base44.entities.Pupil.filter({ 
-        instructorId: user.id,
-        status: 'Active'
-      });
-      return pupils.sort((a, b) => 
-        `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
-      );
+      // Dual fetch to handle data inconsistencies (instructorId vs instructorEmail)
+      const [byId, byEmail] = await Promise.all([
+        base44.entities.Pupil.filter({ instructorId: user.id }),
+        base44.entities.Pupil.filter({ instructorEmail: user.email }),
+      ]);
+      const map = {};
+      for (const p of [...byId, ...byEmail]) map[p.id] = p;
+      return Object.values(map)
+        .filter(p => p.status === 'Active' || p.status === 'OnHold')
+        .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !!user?.email
   });
 
   const filteredPupils = React.useMemo(() => {
@@ -95,24 +98,47 @@ export default function BookingDetailsModal({
       // Update booking status
       await base44.entities.LessonBooking.update(booking.id, {
         status: 'confirmed',
-        confirmedAt: new Date().toISOString()
+        confirmedAt: new Date().toISOString(),
+        escrowAmountGbp: booking.totalPriceGbp
       });
 
       // Update slot instance status if exists
-      if (slotInstance?.id) {
-        await base44.entities.BookableSlotInstance.update(slotInstance.id, {
+      const confirmSlotId = slotInstance?.id || booking.slotInstanceId;
+      if (confirmSlotId) {
+        await base44.entities.BookableSlotInstance.update(confirmSlotId, {
           status: 'confirmed'
         });
       }
 
+      // Deduct escrow from pupil balance
+      if (pupil && booking.totalPriceGbp > 0) {
+        const freshPupils = await base44.entities.Pupil.filter({ id: pupil.id });
+        const freshPupil = freshPupils[0];
+        await base44.entities.Pupil.update(pupil.id, {
+          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) - booking.totalPriceGbp
+        });
+        await base44.entities.PaymentLedger.create({
+          userId: pupil.id,
+          bookingId: booking.id,
+          type: 'charge',
+          reason: 'lesson_confirmed_charge',
+          amountGbp: booking.totalPriceGbp,
+          hours: booking.durationHours,
+          createdByRole: 'instructor',
+          note: 'Charge applied on confirmation'
+        });
+      }
+
       // Notify pupil
-      await base44.entities.Notification.create({
-        userId: pupil.linkedUserId,
-        title: 'Lesson Confirmed',
-        message: `Your lesson on ${moment(booking.startAtUtc).format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} has been confirmed`,
-        type: 'booking',
-        linkTarget: 'LearnerBookingCalendar'
-      });
+      if (pupil?.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: pupil.linkedUserId,
+          title: 'Lesson Confirmed',
+          message: `Your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} has been confirmed.`,
+          type: 'booking',
+          linkTarget: 'LearnerBookingCalendar'
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['instructorBookings']);

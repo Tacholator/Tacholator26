@@ -40,11 +40,17 @@ export default function LearnerBookingCalendar() {
   });
 
   const { data: pupil } = useQuery({
-    queryKey: ['myPupilProfile', user?.id],
+    queryKey: ['myPupilProfile', user?.id, user?.email],
     queryFn: async () => {
       if (!user?.id) return null;
-      const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
-      return pupils.length > 0 ? pupils[0] : null;
+      // Primary: match by linkedUserId; fallback: match by email
+      const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (byLinkedId.length > 0) return byLinkedId[0];
+      if (user?.email) {
+        const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+        return byEmail.length > 0 ? byEmail[0] : null;
+      }
+      return null;
     },
     enabled: !!user?.id
   });
