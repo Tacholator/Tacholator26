@@ -97,9 +97,18 @@ export default function InstructorReports() {
   });
 
   const { data: pupils = [], isLoading: pupilsLoading } = useQuery({
-    queryKey: ['reportPupils', user?.email],
-    queryFn: () => base44.entities.Pupil.filter({ instructorEmail: user.email }),
-    enabled: !!user?.email,
+    queryKey: ['reportPupils', user?.email, user?.id],
+    queryFn: async () => {
+      const [byEmail, byId] = await Promise.all([
+        base44.entities.Pupil.filter({ instructorEmail: user.email }),
+        base44.entities.Pupil.filter({ instructorId: user.id }),
+      ]);
+      // Merge and deduplicate by id
+      const map = {};
+      for (const p of [...byEmail, ...byId]) map[p.id] = p;
+      return Object.values(map);
+    },
+    enabled: !!user?.email && !!user?.id,
     staleTime: 3 * 60 * 1000,
   });
 
