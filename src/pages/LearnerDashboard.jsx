@@ -42,7 +42,6 @@ import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 import LearnerOnboardingPopup from '@/components/onboarding/LearnerOnboardingPopup';
 import LearnerAppTour from '@/components/onboarding/LearnerAppTour';
-import GettingStartedChecklist from '@/components/onboarding/GettingStartedChecklist';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
@@ -478,14 +477,6 @@ export default function LearnerDashboard() {
             <span className="hidden sm:inline">Help</span>
           </button>
         </motion.div>
-
-        {/* Getting Started Checklist */}
-        <GettingStartedChecklist
-          pupil={pupil}
-          bookings={bookings}
-          lessons={lessons}
-          onOpenTour={() => setShowAppTour(true)}
-        />
 
         {/* Arrival Notification Banner */}
         {arrivalNotification && (

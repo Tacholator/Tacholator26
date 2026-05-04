@@ -60,6 +60,43 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
     enabled: !!user?.id && isInstructor
   });
 
+  // Learner checklist data
+  const { data: learnerPupil } = useQuery({
+    queryKey: ['learnerPupilProfile', user?.id, user?.email],
+    queryFn: async () => {
+      if (!user?.id || !user?.email) return null;
+      const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (byLinkedId.length > 0) return byLinkedId[0];
+      const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+      return byEmail.length > 0 ? byEmail[0] : null;
+    },
+    enabled: !!user?.id && !!user?.email && !isInstructor
+  });
+
+  const { data: learnerBookings = [] } = useQuery({
+    queryKey: ['myBookings', learnerPupil?.id],
+    queryFn: () => base44.entities.LessonBooking.filter({ pupilId: learnerPupil.id }),
+    enabled: !!learnerPupil?.id && !isInstructor
+  });
+
+  const { data: learnerLessons = [] } = useQuery({
+    queryKey: ['myLessons', learnerPupil?.id],
+    queryFn: () => base44.entities.Lesson.filter({ pupilId: learnerPupil.id }),
+    enabled: !!learnerPupil?.id && !isInstructor
+  });
+
+  const learnerSteps = learnerPupil ? [
+    { key: 'profile', label: 'Complete your profile', done: !!(learnerPupil.firstName && learnerPupil.lastName && learnerPupil.phone), page: 'ProfileSettings' },
+    { key: 'balance', label: 'Top up your balance', done: (learnerPupil.bulkPaymentBalance || 0) > 0, page: 'LearnerPayments' },
+    { key: 'booking', label: 'Book your first lesson', done: learnerBookings.some(b => b.status === 'confirmed'), page: 'LearnerCalendar' },
+    { key: 'lesson', label: 'Complete a lesson', done: learnerLessons.some(l => l.status === 'Completed'), page: null },
+    { key: 'progress', label: 'Check your progress', done: learnerLessons.some(l => l.status === 'Completed'), page: 'LearnerProgress' },
+  ] : [];
+  const learnerCompletedCount = learnerSteps.filter(s => s.done).length;
+  const learnerPercentage = learnerSteps.length > 0 ? Math.round((learnerCompletedCount / learnerSteps.length) * 100) : 0;
+  const hasCompletedLesson = learnerLessons.some(l => l.status === 'Completed');
+  const showLearnerSetup = !isInstructor && learnerPupil && !hasCompletedLesson && learnerPercentage < 100;
+
   const stepCompletion = instructor ? {
     onboardingProfileCompleted: instructor.onboardingProfileCompleted || !!(instructor.name && (instructor.phone || user?.phone)),
     onboardingCalendarCompleted: instructor.onboardingCalendarCompleted || calendarRules.length > 0,
@@ -167,6 +204,45 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
                     </button>
                   );
                 })}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Learner Getting Started */}
+        {showLearnerSetup && (
+          <>
+            <button
+              onClick={() => setSetupOpen(!setupOpen)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#071739] shrink-0">
+                <Rocket className="w-4 h-4 text-[#F7B602]" />
+              </span>
+              <span className="text-sm font-medium flex-1 text-left">Getting Started</span>
+              <span className="text-xs font-bold text-[#F7B602] mr-1">{learnerPercentage}%</span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${setupOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {setupOpen && (
+              <div className="pl-4 space-y-1">
+                <div className="w-full bg-slate-200 rounded-full h-1.5 mb-2 mx-3">
+                  <div className="bg-[#F7B602] h-1.5 rounded-full transition-all" style={{ width: `${learnerPercentage}%` }} />
+                </div>
+                {learnerSteps.map((step) => (
+                  <button
+                    key={step.key}
+                    onClick={() => step.page && (window.location.href = createPageUrl(step.page))}
+                    disabled={!step.page}
+                    className="w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors disabled:cursor-default"
+                  >
+                    {step.done
+                      ? <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                      : <Circle className="w-4 h-4 text-slate-400 shrink-0" />
+                    }
+                    <span className={`text-sm ${step.done ? 'line-through text-slate-400' : ''}`}>{step.label}</span>
+                    {!step.done && step.page && <ChevronRight className="w-3 h-3 text-slate-400 ml-auto" />}
+                  </button>
+                ))}
               </div>
             )}
           </>
