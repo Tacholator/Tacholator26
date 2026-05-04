@@ -12,7 +12,6 @@ import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 import NewLessonModal from '@/components/booking/NewLessonModal';
 import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
-import OnboardingProgressCard from '@/components/onboarding/OnboardingProgressCard';
 import OnboardingPopup from '@/components/onboarding/OnboardingPopup';
 import InstructorAppTour from '@/components/onboarding/InstructorAppTour';
 
@@ -451,9 +450,6 @@ export default function InstructorDashboard() {
               </div>
             </CardContent>
           </Card>
-
-          {/* 1b. Onboarding Progress Card */}
-          <OnboardingProgressCard instructor={instructor} user={user} calendarRules={calendarRules} />
 
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (

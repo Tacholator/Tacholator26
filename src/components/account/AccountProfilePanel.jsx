@@ -4,6 +4,8 @@ import { createPageUrl } from '@/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import {
   Settings,
   UserCircle,
@@ -21,13 +23,52 @@ import {
   ThumbsUp,
   Users,
   Smartphone,
-  HelpCircle
+  HelpCircle,
+  Rocket,
+  CheckCircle2,
+  Circle,
+  Calendar,
+  CreditCard,
+  User
 } from 'lucide-react';
 import ProfileSettingsContent from './ProfileSettingsContent.jsx';
+
+const onboardingSteps = [
+  { key: 'onboardingProfileCompleted', label: 'Personal & Business Info', page: 'ProfileSettings', icon: User },
+  { key: 'onboardingCalendarCompleted', label: 'Set Up Your Calendar', page: 'InstructorBookingCalendar', icon: Calendar },
+  { key: 'onboardingStripeCompleted', label: 'Connect Stripe Payout', page: 'InstructorStripeConnect', icon: CreditCard },
+];
 
 export default function AccountProfilePanel({ user, isInstructor, onLogout, onDelete, onClose }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [legalOpen, setLegalOpen] = useState(false);
+  const [setupOpen, setSetupOpen] = useState(false);
+
+  const { data: instructor } = useQuery({
+    queryKey: ['instructor', user?.id],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: user.email });
+      return results[0] || null;
+    },
+    enabled: !!user?.email && isInstructor
+  });
+
+  const { data: calendarRules = [] } = useQuery({
+    queryKey: ['calendarRules', user?.id],
+    queryFn: () => base44.entities.CalendarRule.filter({ instructorId: user.id }),
+    enabled: !!user?.id && isInstructor
+  });
+
+  const stepCompletion = instructor ? {
+    onboardingProfileCompleted: instructor.onboardingProfileCompleted || !!(instructor.name && (instructor.phone || user?.phone)),
+    onboardingCalendarCompleted: instructor.onboardingCalendarCompleted || calendarRules.length > 0,
+    onboardingStripeCompleted: instructor.onboardingStripeCompleted || instructor.stripeAccountStatus === 'active' || instructor.stripeAccountStatus === 'pending' || !!instructor.stripeAccountId,
+  } : {};
+
+  const completedCount = onboardingSteps.filter(s => stepCompletion[s.key]).length;
+  const percentage = instructor ? Math.round((completedCount / onboardingSteps.length) * 100) : 0;
+  const showSetup = isInstructor && instructor && percentage < 100;
 
   const menuItems = [
     { icon: UserCircle, label: 'My Account', page: 'ProfileSettings', component: 'profile', iconBg: 'bg-violet-500' },
@@ -88,6 +129,48 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             </button>
           );
         })}
+
+        {/* Complete Your Setup */}
+        {showSetup && (
+          <>
+            <button
+              onClick={() => setSetupOpen(!setupOpen)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#071739] shrink-0">
+                <Rocket className="w-4 h-4 text-[#F7B602]" />
+              </span>
+              <span className="text-sm font-medium flex-1 text-left">Complete Your Setup</span>
+              <span className="text-xs font-bold text-[#F7B602] mr-1">{percentage}%</span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${setupOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {setupOpen && (
+              <div className="pl-4 space-y-1">
+                <div className="w-full bg-slate-200 rounded-full h-1.5 mb-2 mx-3">
+                  <div className="bg-[#F7B602] h-1.5 rounded-full transition-all" style={{ width: `${percentage}%` }} />
+                </div>
+                {onboardingSteps.map((step) => {
+                  const done = !!stepCompletion[step.key];
+                  const Icon = step.icon;
+                  return (
+                    <button
+                      key={step.key}
+                      onClick={() => { window.location.href = createPageUrl(step.page); }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                    >
+                      {done
+                        ? <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                        : <Circle className="w-4 h-4 text-slate-400 shrink-0" />
+                      }
+                      <span className={`text-sm ${done ? 'line-through text-slate-400' : ''}`}>{step.label}</span>
+                      {!done && <ChevronRight className="w-3 h-3 text-slate-400 ml-auto" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
 
         {/* Quick Links */}
         {quickLinks.map((item) => {
