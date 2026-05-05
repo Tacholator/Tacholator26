@@ -13,6 +13,12 @@ export default function Community() {
     queryFn: () => base44.auth.me()
   });
 
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile', user?.id],
+    queryFn: () => base44.entities.User.list().then(users => users.find(u => u.id === user.id) || null),
+    enabled: !!user?.id
+  });
+
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['communityPosts'],
     queryFn: () => base44.entities.CommunityPost.list('-created_date', 50)
@@ -47,7 +53,7 @@ export default function Community() {
 
         {/* Post Form */}
         {user && (
-          <CommunityPostForm user={user} onPostCreated={handleRefresh} />
+          <CommunityPostForm user={user} userProfile={userProfile} onPostCreated={handleRefresh} />
         )}
 
         {/* Feed */}

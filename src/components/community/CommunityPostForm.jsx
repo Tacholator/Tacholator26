@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ImagePlus, Loader2, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
-export default function CommunityPostForm({ user, onPostCreated }) {
+export default function CommunityPostForm({ user, userProfile, onPostCreated }) {
   const [content, setContent] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -29,7 +29,8 @@ export default function CommunityPostForm({ user, onPostCreated }) {
       }
       const isMainAdmin = user.email === 'fasobah@gmail.com';
       const userRole = isMainAdmin ? 'admin' : (user.role === 'admin' ? 'instructor' : 'learner');
-      const displayName = isMainAdmin ? 'Tacholator Admin' : (user.full_name || user.email);
+      const firstName = userProfile?.firstName || user.full_name?.split(' ')[0] || user.email;
+      const displayName = isMainAdmin ? 'Tacholator Admin' : firstName;
       await base44.entities.CommunityPost.create({
         userId: user.id,
         userFullName: displayName,
@@ -55,7 +56,7 @@ export default function CommunityPostForm({ user, onPostCreated }) {
       <div className="flex gap-3">
         <Avatar className="h-10 w-10 shrink-0">
           <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] font-bold">
-            {(user?.full_name || user?.email || 'U')[0].toUpperCase()}
+            {(userProfile?.firstName || user?.full_name?.split(' ')[0] || user?.email || 'U')[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 space-y-3">
