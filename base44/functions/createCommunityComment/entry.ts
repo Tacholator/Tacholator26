@@ -9,12 +9,24 @@ Deno.serve(async (req) => {
     const { postId, content } = await req.json();
     if (!postId || !content?.trim()) return Response.json({ error: 'postId and content are required' }, { status: 400 });
 
-    const userRole = user.role === 'admin' ? 'instructor' : 'learner';
+    const isMainAdmin = user.email === 'fasobah@gmail.com';
+    const userRole = isMainAdmin ? 'admin' : (user.role === 'admin' ? 'instructor' : 'learner');
+
+    // Resolve display name the same way as post creation: prefer pupil firstName, fallback to first word of full_name
+    let displayName;
+    if (isMainAdmin) {
+      displayName = 'Tacholator Admin';
+    } else {
+      // Try to find pupil profile for firstName
+      const pupils = await base44.asServiceRole.entities.Pupil.filter({ linkedUserId: user.id });
+      const pupil = pupils[0];
+      displayName = pupil?.firstName || user.full_name?.split(' ')[0] || user.email;
+    }
 
     const comment = await base44.asServiceRole.entities.CommunityComment.create({
       postId,
       userId: user.id,
-      userFullName: user.full_name || user.email,
+      userFullName: displayName,
       userRole,
       content: content.trim()
     });
