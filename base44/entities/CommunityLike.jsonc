@@ -1,0 +1,18 @@
+{
+  "name": "CommunityLike",
+  "type": "object",
+  "properties": {
+    "postId": {
+      "type": "string",
+      "description": "Reference to CommunityPost ID"
+    },
+    "userId": {
+      "type": "string",
+      "description": "ID of the user who liked the post"
+    }
+  },
+  "required": [
+    "postId",
+    "userId"
+  ]
+}

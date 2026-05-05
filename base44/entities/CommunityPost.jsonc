@@ -1,0 +1,45 @@
+{
+  "name": "CommunityPost",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "ID of the user who posted"
+    },
+    "userFullName": {
+      "type": "string",
+      "description": "Full name of the poster"
+    },
+    "userRole": {
+      "type": "string",
+      "enum": [
+        "instructor",
+        "learner",
+        "admin"
+      ],
+      "description": "Role of the poster"
+    },
+    "content": {
+      "type": "string",
+      "description": "Text content of the post"
+    },
+    "imageUrl": {
+      "type": "string",
+      "description": "Optional image URL"
+    },
+    "likeCount": {
+      "type": "number",
+      "default": 0
+    },
+    "commentCount": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "userId",
+    "userFullName",
+    "userRole",
+    "content"
+  ]
+}

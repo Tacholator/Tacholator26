@@ -28,7 +28,8 @@ import {
   UserX,
   ClipboardCheck,
   Navigation,
-  Gift
+  Gift,
+  Globe
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -95,7 +96,8 @@ export const instructorOnlyLinks = [
   { name: 'Test Preparation', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' },
-  { name: 'Referral Program', icon: Gift, page: 'InstructorReferralProgram' }
+  { name: 'Referral Program', icon: Gift, page: 'InstructorReferralProgram' },
+  { name: 'Community', icon: Globe, page: 'Community' }
 ];
 
 // Learner-only navigation items
@@ -121,7 +123,8 @@ export const learnerOnlyLinks = [
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
   { name: 'My Bookings', icon: BookMarked, page: 'LearnerMyBookings' },
   { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' },
-  { name: 'Refer a Friend', icon: Gift, page: 'ReferAFriend' }
+  { name: 'Refer a Friend', icon: Gift, page: 'ReferAFriend' },
+  { name: 'Community', icon: Globe, page: 'Community' }
 ];
 
 // Get the correct page for a shared link based on user role
