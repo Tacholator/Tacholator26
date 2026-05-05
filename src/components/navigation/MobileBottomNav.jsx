@@ -12,7 +12,8 @@ import {
   FileText,
   Bell,
   GraduationCap,
-  BookOpen
+  BookOpen,
+  Globe
 } from 'lucide-react';
 
 const instructorNavItems = [
@@ -41,10 +42,10 @@ const instructorNavItems = [
     page: 'InstructorTeachingHub'
   },
   {
-    id: 'notifications',
-    label: 'Notifications',
-    icon: Bell,
-    page: 'InstructorNotifications'
+    id: 'community',
+    label: 'Community',
+    icon: Globe,
+    page: 'Community'
   }
 ];
 
