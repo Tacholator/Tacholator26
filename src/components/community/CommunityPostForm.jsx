@@ -15,8 +15,11 @@ export default function CommunityPostForm({ user, userProfile, onPostCreated }) 
     try {
       const isMainAdmin = user.email === 'fasobah@gmail.com';
       const userRole = isMainAdmin ? 'admin' : (user.role === 'admin' ? 'instructor' : 'learner');
-      const firstName = userProfile?.firstName || user.full_name?.split(' ')[0] || user.email;
-      const displayName = isMainAdmin ? 'Tacholator Admin' : firstName;
+      // For instructors userProfile is the Instructor entity (has .name), for learners it's Pupil (has .firstName)
+      const resolvedName = userRole === 'instructor'
+        ? (userProfile?.name?.split(' ')[0] || user.full_name?.split(' ')[0] || user.email)
+        : (userProfile?.firstName || user.full_name?.split(' ')[0] || user.email);
+      const displayName = isMainAdmin ? 'Tacholator Admin' : resolvedName;
       await base44.entities.CommunityPost.create({
         userId: user.id,
         userFullName: displayName,
@@ -39,7 +42,7 @@ export default function CommunityPostForm({ user, userProfile, onPostCreated }) 
       <div className="flex gap-3">
         <Avatar className="h-10 w-10 shrink-0">
           <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] font-bold">
-            {(userProfile?.firstName || user?.full_name?.split(' ')[0] || user?.email || 'U')[0].toUpperCase()}
+            {(user?.role === 'admin' ? (userProfile?.name?.split(' ')[0] || user?.full_name?.split(' ')[0]) : (userProfile?.firstName || user?.full_name?.split(' ')[0]) || user?.email || 'U')[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 space-y-3">

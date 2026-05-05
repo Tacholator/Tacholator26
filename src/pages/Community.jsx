@@ -15,10 +15,21 @@ export default function Community() {
     queryFn: () => base44.auth.me()
   });
 
+  const isInstructor = user?.role === 'admin';
+
+  // For learners: fetch pupil profile for firstName. For instructors: fetch Instructor entity for name.
   const { data: userProfile } = useQuery({
-    queryKey: ['userProfile', user?.id],
-    queryFn: () => base44.entities.User.list().then(users => users.find(u => u.id === user.id) || null),
-    enabled: !!user?.id
+    queryKey: ['communityUserProfile', user?.id, user?.email, isInstructor],
+    queryFn: async () => {
+      if (isInstructor) {
+        const results = await base44.entities.Instructor.filter({ created_by: user.email });
+        return results[0] || null;
+      } else {
+        const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+        return pupils[0] || null;
+      }
+    },
+    enabled: !!user?.id && !!user?.email
   });
 
   const { data: posts = [], isLoading } = useQuery({

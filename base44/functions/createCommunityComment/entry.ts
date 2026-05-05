@@ -12,12 +12,17 @@ Deno.serve(async (req) => {
     const isMainAdmin = user.email === 'fasobah@gmail.com';
     const userRole = isMainAdmin ? 'admin' : (user.role === 'admin' ? 'instructor' : 'learner');
 
-    // Resolve display name the same way as post creation: prefer pupil firstName, fallback to first word of full_name
+    // Resolve display name: use Instructor name for instructors, pupil firstName for learners
     let displayName;
     if (isMainAdmin) {
       displayName = 'Tacholator Admin';
+    } else if (userRole === 'instructor') {
+      // Instructors store their real name in the Instructor entity
+      const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by: user.email });
+      const instructor = instructors[0];
+      displayName = instructor?.name?.split(' ')[0] || user.full_name?.split(' ')[0] || user.email;
     } else {
-      // Try to find pupil profile for firstName
+      // Learners: use pupil firstName
       const pupils = await base44.asServiceRole.entities.Pupil.filter({ linkedUserId: user.id });
       const pupil = pupils[0];
       displayName = pupil?.firstName || user.full_name?.split(' ')[0] || user.email;
