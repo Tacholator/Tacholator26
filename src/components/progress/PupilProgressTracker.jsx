@@ -73,6 +73,12 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     enabled: !!pupilId
   });
 
+  const { data: mcqStatusData = [] } = useQuery({
+    queryKey: ['mcqStatus', pupilId],
+    queryFn: () => base44.entities.McqStatus.filter({ pupilId }),
+    enabled: !!pupilId
+  });
+
   const updateProgressMutation = useMutation({
     mutationFn: async ({ skillId, progressState }) => {
       const existing = progressData.find(p => p.skillId === skillId);
@@ -215,6 +221,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     const progress = getProgressForSkill(skill.id);
     const levels = ['full_talk_through', 'prompted', 'independent'];
     const skillHours = topicHours.find(log => log.topicId === skill.id)?.totalHours || 0;
+    const mcqPassed = mcqStatusData.find(m => m.topicId === skill.id)?.lastPassed;
 
     if (isInstructor) {
       return (
@@ -227,6 +234,11 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
             <ChevronRight className={`w-4 h-4 text-slate-400 flex-shrink-0 ${level > 0 ? 'opacity-50' : ''}`} />
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <span className="text-sm text-slate-700 truncate">{skill.label}</span>
+              {mcqPassed && (
+                <Badge className="bg-emerald-100 text-emerald-700 text-xs whitespace-nowrap">
+                  PASSED
+                </Badge>
+              )}
               {skillHours > 0 && (
                 <span className="text-xs text-blue-600 font-medium whitespace-nowrap">
                   ({skillHours.toFixed(1)}h)
@@ -267,6 +279,11 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
           <ChevronRight className={`w-4 h-4 text-slate-400 ${level > 0 ? 'opacity-50' : ''}`} />
           <div className="flex items-center gap-2 flex-1">
             <span className="text-sm text-slate-700">{skill.label}</span>
+            {mcqPassed && (
+              <Badge className="bg-emerald-100 text-emerald-700 text-xs">
+                PASSED
+              </Badge>
+            )}
             {skillHours > 0 && (
               <span className="text-xs text-blue-600 font-medium">
                 ({skillHours.toFixed(1)}h)
