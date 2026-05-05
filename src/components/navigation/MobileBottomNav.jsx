@@ -73,6 +73,12 @@ const pupilNavItems = [
     label: 'Notifications',
     icon: Bell,
     page: 'LearnerNotifications'
+  },
+  {
+    id: 'community',
+    label: 'Community',
+    icon: Globe,
+    page: 'Community'
   }
 ];
 
