@@ -7,7 +7,7 @@ import { formatDistanceToNow } from 'date-fns';
 import CommunityCommentSection from './CommunityCommentSection';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-export default function CommunityPostCard({ post, user, likedPostIds, onLikeToggled, onPostDeleted }) {
+export default function CommunityPostCard({ post, user, userDisplayName, likedPostIds, onLikeToggled, onPostDeleted }) {
   const [showComments, setShowComments] = useState(false);
   const [toggling, setToggling] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -130,6 +130,7 @@ export default function CommunityPostCard({ post, user, likedPostIds, onLikeTogg
           postId={post.id}
           comments={comments}
           user={user}
+          userDisplayName={userDisplayName}
           onCommentAdded={() => {
             refetchComments();
             queryClient.invalidateQueries(['communityPosts']);

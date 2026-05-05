@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDistanceToNow } from 'date-fns';
 
-export default function CommunityCommentSection({ postId, comments, user, onCommentAdded }) {
+export default function CommunityCommentSection({ postId, comments, user, userDisplayName, onCommentAdded }) {
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -52,7 +52,7 @@ export default function CommunityCommentSection({ postId, comments, user, onComm
       <form onSubmit={handleSubmit} className="flex gap-2 mt-2">
         <Avatar className="h-7 w-7 shrink-0">
           <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-xs font-bold">
-            {(user?.full_name || user?.email || 'U')[0].toUpperCase()}
+            {(userDisplayName || user?.full_name || user?.email || 'U')[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 flex gap-2">

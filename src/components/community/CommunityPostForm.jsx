@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
-export default function CommunityPostForm({ user, userProfile, onPostCreated }) {
+export default function CommunityPostForm({ user, userDisplayName, onPostCreated }) {
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -13,13 +13,8 @@ export default function CommunityPostForm({ user, userProfile, onPostCreated }) 
     if (!content.trim()) return;
     setSubmitting(true);
     try {
-      const isMainAdmin = user.email === 'fasobah@gmail.com';
-      const userRole = isMainAdmin ? 'admin' : (user.role === 'admin' ? 'instructor' : 'learner');
-      // For instructors userProfile is the Instructor entity (has .name), for learners it's Pupil (has .firstName)
-      const resolvedName = userRole === 'instructor'
-        ? (userProfile?.name?.split(' ')[0] || user.full_name?.split(' ')[0] || user.email)
-        : (userProfile?.firstName || user.full_name?.split(' ')[0] || user.email);
-      const displayName = isMainAdmin ? 'Tacholator Admin' : resolvedName;
+      const userRole = user.email === 'fasobah@gmail.com' ? 'admin' : (user.role === 'admin' ? 'instructor' : 'learner');
+      const displayName = userDisplayName || user.full_name?.split(' ')[0] || user.email;
       await base44.entities.CommunityPost.create({
         userId: user.id,
         userFullName: displayName,
@@ -42,7 +37,7 @@ export default function CommunityPostForm({ user, userProfile, onPostCreated }) 
       <div className="flex gap-3">
         <Avatar className="h-10 w-10 shrink-0">
           <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] font-bold">
-            {(user?.role === 'admin' ? (userProfile?.name?.split(' ')[0] || user?.full_name?.split(' ')[0]) : (userProfile?.firstName || user?.full_name?.split(' ')[0]) || user?.email || 'U')[0].toUpperCase()}
+            {(userDisplayName || user?.full_name?.split(' ')[0] || user?.email || 'U')[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 space-y-3">

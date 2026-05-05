@@ -22,8 +22,8 @@ export default function Community() {
     queryKey: ['communityUserProfile', user?.id, user?.email, isInstructor],
     queryFn: async () => {
       if (isInstructor) {
-        const results = await base44.entities.Instructor.filter({ created_by: user.email });
-        return results[0] || null;
+        const results = await base44.entities.Instructor.list();
+        return results.find(i => i.created_by === user.email) || null;
       } else {
         const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
         return pupils[0] || null;
@@ -44,6 +44,14 @@ export default function Community() {
   });
 
   const likedPostIds = new Set(myLikes.map(l => l.postId));
+
+  // Resolve display name: instructor uses Instructor.name first word, learner uses Pupil.firstName
+  const userDisplayName = (() => {
+    if (!user) return '';
+    if (user.email === 'fasobah@gmail.com') return 'Tacholator Admin';
+    if (isInstructor) return userProfile?.name?.split(' ')[0] || user.full_name?.split(' ')[0] || user.email;
+    return userProfile?.firstName || user.full_name?.split(' ')[0] || user.email;
+  })();
 
   const handleRefresh = () => {
     queryClient.invalidateQueries(['communityPosts']);
@@ -101,6 +109,7 @@ export default function Community() {
                 key={post.id}
                 post={post}
                 user={user}
+                userDisplayName={userDisplayName}
                 likedPostIds={likedPostIds}
                 onLikeToggled={handleRefresh}
                 onPostDeleted={handleRefresh}
@@ -126,7 +135,7 @@ export default function Community() {
           <DialogHeader>
             <DialogTitle className="text-[#071739]">New Post</DialogTitle>
           </DialogHeader>
-          <CommunityPostForm user={user} userProfile={userProfile} onPostCreated={handlePostCreated} />
+          <CommunityPostForm user={user} userDisplayName={userDisplayName} onPostCreated={handlePostCreated} />
         </DialogContent>
       </Dialog>
     </div>
