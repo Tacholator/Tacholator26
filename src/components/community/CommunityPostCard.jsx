@@ -1,16 +1,32 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Heart, MessageCircle, ChevronDown, ChevronUp, BadgeCheck } from 'lucide-react';
+import { Heart, MessageCircle, ChevronDown, ChevronUp, BadgeCheck, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDistanceToNow } from 'date-fns';
 import CommunityCommentSection from './CommunityCommentSection';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-export default function CommunityPostCard({ post, user, likedPostIds, onLikeToggled }) {
+export default function CommunityPostCard({ post, user, likedPostIds, onLikeToggled, onPostDeleted }) {
   const [showComments, setShowComments] = useState(false);
   const [toggling, setToggling] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const queryClient = useQueryClient();
+
+  const isOwner = user?.id === post.userId;
+
+  const handleDelete = async () => {
+    if (!window.confirm('Delete this post?')) return;
+    setDeleting(true);
+    try {
+      await base44.entities.CommunityPost.delete(post.id);
+      if (onPostDeleted) onPostDeleted();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const isLiked = likedPostIds.has(post.id);
 
@@ -77,7 +93,7 @@ export default function CommunityPostCard({ post, user, likedPostIds, onLikeTogg
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-4 pt-2 border-t border-slate-100">
+      <div className="flex items-center gap-4 pt-2 border-t border-slate-100 justify-between">
         <button
           onClick={handleLike}
           disabled={toggling}
@@ -97,6 +113,18 @@ export default function CommunityPostCard({ post, user, likedPostIds, onLikeTogg
           {showComments ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
         </button>
       </div>
+      {isOwner && (
+        <div className="flex justify-end mt-1">
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="flex items-center gap-1 text-xs text-slate-400 hover:text-rose-500 transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>{deleting ? 'Deleting...' : 'Delete post'}</span>
+          </button>
+        </div>
+      )}
 
       {/* Comments */}
       {showComments && (

@@ -84,6 +84,7 @@ export default function Community() {
                 user={user}
                 likedPostIds={likedPostIds}
                 onLikeToggled={handleRefresh}
+                onPostDeleted={handleRefresh}
               />
             ))}
           </div>
