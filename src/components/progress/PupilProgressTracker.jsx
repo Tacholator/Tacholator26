@@ -217,11 +217,42 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
     queryClient.invalidateQueries(['drivingProgress']);
   };
 
+  const checkMcqPassed = (skillId) => {
+    // Map MCQ topic IDs to the drivingSkillsSections structure
+    const mcqToSkillIdMap = {
+      'legal_responsibilities': 'legal_responsibilities_core',
+      'safety_checks': 'safety_checks_core',
+      'vehicle_security': 'security_core',
+      'cockpit_drill_dsssm': 'cockpit_drill',
+      'dsssm_routine': 'dsssm_routine',
+      'stopping_safely': 'mirrors_stopping', // MSM routine - matches any of the 3 components
+      'use_of_mirrors': 'mirrors_before_signalling', // any mirror skill will match
+      'use_of_signals': 'signals_indicators_changing_direction', // any signals skill will match
+      'junctions': 'junctions_turning_emerging_right', // any junctions skill
+      'hazard_perception': 'hazard_perception',
+      'moving_off_safely': 'prepare_gear_d_park_brake_down', // any POM routine component
+      'main_car_controls': 'accelerator', // any car controls skill
+      'use_of_speed': 'speed_30_40_50_roads', // any speed skill
+    };
+
+    // Check direct match first
+    if (mcqStatusData.find(m => m.topicId === skillId)?.lastPassed) return true;
+    
+    // Check mapped matches
+    for (const [mcqTopic, mappedSkillId] of Object.entries(mcqToSkillIdMap)) {
+      if (mappedSkillId === skillId && mcqStatusData.find(m => m.topicId === mcqTopic)?.lastPassed) {
+        return true;
+      }
+    }
+    
+    return false;
+  };
+
   const renderSkillItem = (skill, level = 0) => {
     const progress = getProgressForSkill(skill.id);
     const levels = ['full_talk_through', 'prompted', 'independent'];
     const skillHours = topicHours.find(log => log.topicId === skill.id)?.totalHours || 0;
-    const mcqPassed = mcqStatusData.find(m => m.topicId === skill.id)?.lastPassed;
+    const mcqPassed = checkMcqPassed(skill.id);
 
     if (isInstructor) {
       return (
