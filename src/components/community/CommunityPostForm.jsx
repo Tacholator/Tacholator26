@@ -27,10 +27,12 @@ export default function CommunityPostForm({ user, onPostCreated }) {
         const res = await base44.integrations.Core.UploadFile({ file: imageFile });
         imageUrl = res.file_url;
       }
-      const userRole = user.role === 'admin' ? 'instructor' : 'learner';
+      const isMainAdmin = user.email === 'fasobah@gmail.com';
+      const userRole = isMainAdmin ? 'admin' : (user.role === 'admin' ? 'instructor' : 'learner');
+      const displayName = isMainAdmin ? 'Tacholator Admin' : (user.full_name || user.email);
       await base44.entities.CommunityPost.create({
         userId: user.id,
-        userFullName: user.full_name || user.email,
+        userFullName: displayName,
         userRole,
         content: content.trim(),
         imageUrl,

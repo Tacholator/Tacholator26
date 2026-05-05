@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Heart, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Heart, MessageCircle, ChevronDown, ChevronUp, BadgeCheck } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDistanceToNow } from 'date-fns';
 import CommunityCommentSection from './CommunityCommentSection';
@@ -33,7 +33,13 @@ export default function CommunityPostCard({ post, user, likedPostIds, onLikeTogg
     }
   };
 
-  const roleColor = post.userRole === 'instructor' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700';
+  const isAdmin = post.userRole === 'admin';
+  const roleColor = isAdmin
+    ? 'bg-[#071739] text-white'
+    : post.userRole === 'instructor'
+    ? 'bg-blue-100 text-blue-700'
+    : 'bg-emerald-100 text-emerald-700';
+  const roleLabel = isAdmin ? 'Admin' : post.userRole;
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
@@ -47,8 +53,9 @@ export default function CommunityPostCard({ post, user, likedPostIds, onLikeTogg
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-[#071739] text-sm">{post.userFullName}</span>
+            {isAdmin && <BadgeCheck className="w-4 h-4 text-[#F7B602] fill-[#071739]" />}
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${roleColor}`}>
-              {post.userRole}
+              {roleLabel}
             </span>
           </div>
           <p className="text-xs text-slate-400">
