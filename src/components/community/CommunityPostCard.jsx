@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Heart, BadgeCheck, Trash2, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Heart, BadgeCheck, Trash2, MessageCircle, ChevronDown, ChevronUp, Pencil, Check, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import CommunityCommentSection from './CommunityCommentSection';
 
@@ -10,9 +10,10 @@ export default function CommunityPostCard({ post, user, userDisplayName, likedPo
   const [toggling, setToggling] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editContent, setEditContent] = useState(post.content);
+  const [saving, setSaving] = useState(false);
   const queryClient = useQueryClient();
-
-  const isOwner = user?.id === post.userId;
 
   const handleDelete = async () => {
     if (!window.confirm('Delete this post?')) return;
@@ -24,6 +25,25 @@ export default function CommunityPostCard({ post, user, userDisplayName, likedPo
       console.error(err);
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const isOwner = user?.id === post.userId;
+
+  const handleEdit = async () => {
+    if (!editContent.trim() || editContent.trim() === post.content) { setEditing(false); return; }
+    setSaving(true);
+    try {
+      await base44.entities.CommunityPost.update(post.id, {
+        content: editContent.trim(),
+        editedAt: new Date().toISOString()
+      });
+      queryClient.invalidateQueries(['communityPosts']);
+      setEditing(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -74,22 +94,56 @@ export default function CommunityPostCard({ post, user, userDisplayName, likedPo
             </span>
           </div>
           <p className="text-xs text-slate-400">
-            {formatDistanceToNow(new Date(post.created_date), { addSuffix: true })}
+            {format(new Date(post.created_date), 'd MMM yyyy, HH:mm')}
+            {post.editedAt && <span className="ml-1 italic text-slate-400">(edited)</span>}
           </p>
         </div>
-        {isOwner && (
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="text-slate-300 hover:text-rose-500 transition-colors shrink-0"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+        {isOwner && !editing && (
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={() => { setEditContent(post.content); setEditing(true); }}
+              className="text-slate-300 hover:text-[#071739] transition-colors"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="text-slate-300 hover:text-rose-500 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
         )}
       </div>
 
       {/* Content */}
-      <p className="text-sm text-slate-700 leading-relaxed mb-3 whitespace-pre-wrap">{post.content}</p>
+      {editing ? (
+        <div className="mb-3 space-y-2">
+          <textarea
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+            className="w-full text-sm text-slate-700 border border-slate-300 rounded-xl p-3 resize-none focus:outline-none focus:border-[#F7B602] min-h-[80px]"
+          />
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={() => setEditing(false)}
+              className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 px-3 py-1.5 rounded-full border border-slate-200"
+            >
+              <X className="w-3 h-3" /> Cancel
+            </button>
+            <button
+              onClick={handleEdit}
+              disabled={saving}
+              className="flex items-center gap-1 text-xs bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold px-3 py-1.5 rounded-full"
+            >
+              <Check className="w-3 h-3" /> {saving ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-sm text-slate-700 leading-relaxed mb-3 whitespace-pre-wrap">{post.content}</p>
+      )}
 
       {/* Image */}
       {post.imageUrl && (

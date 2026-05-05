@@ -34,6 +34,11 @@
     "commentCount": {
       "type": "number",
       "default": 0
+    },
+    "editedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the post was last edited"
     }
   },
   "required": [
