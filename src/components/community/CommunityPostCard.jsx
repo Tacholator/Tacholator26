@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Heart, MessageCircle, ChevronDown, ChevronUp, BadgeCheck, Trash2 } from 'lucide-react';
+import { Heart, BadgeCheck, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDistanceToNow } from 'date-fns';
-import CommunityCommentSection from './CommunityCommentSection';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function CommunityPostCard({ post, user, userDisplayName, likedPostIds, onLikeToggled, onPostDeleted }) {
-  const [showComments, setShowComments] = useState(false);
   const [toggling, setToggling] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const queryClient = useQueryClient();
 
   const isOwner = user?.id === post.userId;
 
@@ -29,12 +24,6 @@ export default function CommunityPostCard({ post, user, userDisplayName, likedPo
   };
 
   const isLiked = likedPostIds.has(post.id);
-
-  const { data: comments = [], refetch: refetchComments } = useQuery({
-    queryKey: ['communityComments', post.id],
-    queryFn: () => base44.entities.CommunityComment.filter({ postId: post.id }, '-created_date'),
-    enabled: showComments
-  });
 
   const handleLike = async () => {
     if (toggling) return;
@@ -102,7 +91,7 @@ export default function CommunityPostCard({ post, user, userDisplayName, likedPo
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-4 pt-2 border-t border-slate-100 justify-between">
+      <div className="flex items-center gap-4 pt-2 border-t border-slate-100">
         <button
           onClick={handleLike}
           disabled={toggling}
@@ -113,30 +102,7 @@ export default function CommunityPostCard({ post, user, userDisplayName, likedPo
           <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-500' : ''}`} />
           <span>{post.likeCount || 0}</span>
         </button>
-        <button
-          onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#071739] transition-colors"
-        >
-          <MessageCircle className="w-4 h-4" />
-          <span>{post.commentCount || 0}</span>
-          {showComments ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-        </button>
       </div>
-
-
-      {/* Comments */}
-      {showComments && (
-        <CommunityCommentSection
-          postId={post.id}
-          comments={comments}
-          user={user}
-          userDisplayName={userDisplayName}
-          onCommentAdded={() => {
-            refetchComments();
-            queryClient.invalidateQueries(['communityPosts']);
-          }}
-        />
-      )}
     </div>
   );
 }
