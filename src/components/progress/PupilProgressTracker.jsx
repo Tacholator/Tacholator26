@@ -218,29 +218,29 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   };
 
   const checkMcqPassed = (skillId) => {
-    // Map MCQ topic IDs to the drivingSkillsSections structure
-    const mcqToSkillIdMap = {
-      'legal_responsibilities': 'legal_responsibilities_core',
-      'safety_checks': 'safety_checks_core',
-      'vehicle_security': 'security_core',
-      'cockpit_drill_dsssm': 'cockpit_drill',
-      'dsssm_routine': 'dsssm_routine',
-      'stopping_safely': 'mirrors_stopping', // MSM routine - matches any of the 3 components
-      'use_of_mirrors': 'mirrors_before_signalling', // any mirror skill will match
-      'use_of_signals': 'signals_indicators_changing_direction', // any signals skill will match
-      'junctions': 'junctions_turning_emerging_right', // any junctions skill
-      'hazard_perception': 'hazard_perception',
-      'moving_off_safely': 'prepare_gear_d_park_brake_down', // any POM routine component
-      'main_car_controls': 'accelerator', // any car controls skill
-      'use_of_speed': 'speed_30_40_50_roads', // any speed skill
+    // Map MCQ topic IDs to skill ID patterns they should match
+    const mcqToSkillPatterns = {
+      'stopping_safely': ['mirrors_stopping', 'signal_stopping', 'manoeuvre_stopping'], // Any MSM routine component
+      'use_of_mirrors': ['mirrors_before_signalling', 'mirrors_before_changing_lane', 'mirrors_before_changing_direction', 'mirrors_change_of_speed_new_road', 'mirrors_traffic_and_traffic_lights', 'mirrors_change_of_speed_slowing_down'],
+      'use_of_signals': ['signals_indicators_changing_direction', 'signals_road_position_overtaking_parked_cars', 'signals_horn', 'signals_brake_and_headlights', 'signals_arm_signal', 'signals_hazard_lights'],
+      'junctions': ['junctions_turning_emerging_right', 'junctions_turning_emerging_left', 'junctions_filter_lane_turning_right', 'junctions_open_and_closed'],
+      'legal_responsibilities': ['legal_responsibilities_core'],
+      'safety_checks': ['safety_checks_core'],
+      'vehicle_security': ['security_core'],
+      'cockpit_drill_dsssm': ['cockpit_drill', 'dsssm_routine'],
+      'hazard_perception': ['hazard_perception'],
+      'moving_off_safely': ['prepare_gear_d_park_brake_down', 'observe_6_point_checks', 'manoeuvre_signal_drive_off'],
+      'main_car_controls': ['accelerator', 'footbrake', 'clutch', 'steering_wheel', 'handbrake', 'gear_lever', 'indicators', 'horn', 'lights', 'wipers', 'demisters'],
+      'use_of_speed': ['speed_30_40_50_roads', 'speed_national_speed_limit_roads', 'speed_hump_roads'],
     };
 
     // Check direct match first
     if (mcqStatusData.find(m => m.topicId === skillId)?.lastPassed) return true;
     
-    // Check mapped matches
-    for (const [mcqTopic, mappedSkillId] of Object.entries(mcqToSkillIdMap)) {
-      if (mappedSkillId === skillId && mcqStatusData.find(m => m.topicId === mcqTopic)?.lastPassed) {
+    // Check pattern matches - if this skill matches any pattern for a passed MCQ
+    for (const [mcqTopic, skillPatterns] of Object.entries(mcqToSkillPatterns)) {
+      const mcqPassed = mcqStatusData.find(m => m.topicId === mcqTopic)?.lastPassed;
+      if (mcqPassed && skillPatterns.includes(skillId)) {
         return true;
       }
     }
