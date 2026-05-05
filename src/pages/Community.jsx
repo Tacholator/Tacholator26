@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Users } from 'lucide-react';
+import { Users, Plus, X } from 'lucide-react';
 import CommunityPostForm from '@/components/community/CommunityPostForm';
 import CommunityPostCard from '@/components/community/CommunityPostCard';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function Community() {
   const queryClient = useQueryClient();
+  const [showPostModal, setShowPostModal] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -37,6 +39,11 @@ export default function Community() {
     refetchLikes();
   };
 
+  const handlePostCreated = () => {
+    handleRefresh();
+    setShowPostModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 py-6 px-4">
       <div className="max-w-2xl mx-auto space-y-5">
@@ -50,11 +57,6 @@ export default function Community() {
             <p className="text-sm text-slate-500">Share thoughts with instructors & learners</p>
           </div>
         </div>
-
-        {/* Post Form */}
-        {user && (
-          <CommunityPostForm user={user} userProfile={userProfile} onPostCreated={handleRefresh} />
-        )}
 
         {/* Feed */}
         {isLoading ? (
@@ -96,6 +98,26 @@ export default function Community() {
           </div>
         )}
       </div>
+
+      {/* Floating Action Button */}
+      {user && (
+        <button
+          onClick={() => setShowPostModal(true)}
+          className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-[#F7B602] text-[#071739] shadow-lg flex items-center justify-center hover:bg-[#d99f02] transition-colors lg:bottom-8"
+        >
+          <Plus className="w-7 h-7" strokeWidth={2.5} />
+        </button>
+      )}
+
+      {/* New Post Modal */}
+      <Dialog open={showPostModal} onOpenChange={setShowPostModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-[#071739]">New Post</DialogTitle>
+          </DialogHeader>
+          <CommunityPostForm user={user} userProfile={userProfile} onPostCreated={handlePostCreated} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
