@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
       displayName = 'Tacholator Admin';
     } else if (userRole === 'instructor') {
       // Instructors store their real name in the Instructor entity (filter by created_by_id for reliability)
-      const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by_id: user.id });
+      const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by: user.email });
       const instructor = instructors[0];
       displayName = instructor?.name?.split(' ')[0] || user.full_name?.split(' ')[0] || user.email;
     } else {
