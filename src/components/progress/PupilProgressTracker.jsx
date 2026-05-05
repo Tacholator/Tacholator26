@@ -449,7 +449,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
       {/* Overall Progress Summary */}
       <Card className="border-0 shadow-sm bg-gradient-to-br from-[#F7B602]/10 to-[#F7B602]/5">
         <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-lg font-semibold text-slate-800 mb-1">Overall Progress</h3>
               <p className="text-sm text-slate-600">
@@ -461,7 +461,18 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
               <p className="text-xs text-slate-500">Independent</p>
             </div>
           </div>
-          <div className="mt-4 h-3 bg-slate-200 rounded-full overflow-hidden">
+          {mcqStatusData.some(m => m.lastPassed) && (
+            <div className="mb-4">
+              <Badge className="bg-emerald-100 text-emerald-700 text-xs">
+                ✓ MCQ Tests Passed
+              </Badge>
+            </div>
+          )}
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-slate-600 font-medium">Progress</span>
+            <span className="text-xs text-slate-700 font-semibold">{overallProgress.percentage}%</span>
+          </div>
+          <div className="h-3 bg-slate-200 rounded-full overflow-hidden">
             <div 
               className="h-full bg-gradient-to-r from-[#F7B602] to-[#d99f02] transition-all duration-500"
               style={{ width: `${overallProgress.percentage}%` }}
