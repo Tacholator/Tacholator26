@@ -537,6 +537,9 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
             completed: { label: 'Completed', color: 'bg-emerald-100 text-emerald-700' }
           };
 
+          // Check if any skill in this section has passed MCQ
+          const hasSectionMcqPassed = sectionSkills.some(skillId => checkMcqPassed(skillId));
+
           return (
             <Card 
               key={section.id}
@@ -560,9 +563,16 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                   </div>
                 </div>
 
-                <Badge className="bg-white/20 text-white backdrop-blur-sm mb-3 w-fit text-xs border-white/30">
-                  {statusConfig[sectionProgress.status].label}
-                </Badge>
+                <div className="flex items-center gap-2 mb-3 flex-wrap">
+                  <Badge className="bg-white/20 text-white backdrop-blur-sm text-xs border-white/30">
+                    {statusConfig[sectionProgress.status].label}
+                  </Badge>
+                  {hasSectionMcqPassed && (
+                    <Badge className="bg-emerald-100 text-emerald-700 text-xs">
+                      PASSED
+                    </Badge>
+                  )}
+                </div>
 
                 {hoursSpent > 0 && (
                 <div className="flex-1 flex items-center justify-center my-2">
