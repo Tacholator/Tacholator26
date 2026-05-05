@@ -78,6 +78,15 @@ export default function CommunityPostCard({ post, user, likedPostIds, onLikeTogg
             {formatDistanceToNow(new Date(post.created_date), { addSuffix: true })}
           </p>
         </div>
+        {isOwner && (
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="text-slate-300 hover:text-rose-500 transition-colors shrink-0"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Content */}
@@ -113,18 +122,7 @@ export default function CommunityPostCard({ post, user, likedPostIds, onLikeTogg
           {showComments ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
         </button>
       </div>
-      {isOwner && (
-        <div className="flex justify-end mt-1">
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="flex items-center gap-1 text-xs text-slate-400 hover:text-rose-500 transition-colors"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span>{deleting ? 'Deleting...' : 'Delete post'}</span>
-          </button>
-        </div>
-      )}
+
 
       {/* Comments */}
       {showComments && (
