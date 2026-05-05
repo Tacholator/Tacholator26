@@ -111,7 +111,7 @@ export default function Community() {
 
       {/* New Post Modal */}
       <Dialog open={showPostModal} onOpenChange={setShowPostModal}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle className="text-[#071739]">New Post</DialogTitle>
           </DialogHeader>
