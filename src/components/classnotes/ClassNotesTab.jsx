@@ -146,7 +146,7 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
 
       {/* Whiteboard-style full-screen editor dialog */}
       <Dialog open={editorOpen} onOpenChange={closeEditor}>
-        <DialogContent className="max-w-none w-screen h-screen p-0 flex flex-col rounded-none border-0" style={{ maxWidth: '100vw', maxHeight: '100vh' }}>
+        <DialogContent hideClose className="max-w-none w-screen h-screen p-0 flex flex-col rounded-none border-0" style={{ maxWidth: '100vw', maxHeight: '100vh' }}>
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
