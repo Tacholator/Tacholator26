@@ -61,11 +61,13 @@ export default function HomeworkSection({ pupilId, instructorId, homework = [] }
     setShowCourseWorkModal(true);
   };
 
-  const handleConfirmAssign = ({ dueDate, instructions }) => {
-    if (selectedTopic) {
+  const handleConfirmAssign = ({ topicId, topicTitle, dueDate, instructions }) => {
+    const resolvedTopicId = topicId ?? selectedTopic?.topicId;
+    const resolvedTopicTitle = topicTitle ?? selectedTopic?.title;
+    if (resolvedTopicId && resolvedTopicTitle) {
       assignCourseWorkMutation.mutate({
-        topicId: selectedTopic.topicId,
-        topicTitle: selectedTopic.title,
+        topicId: resolvedTopicId,
+        topicTitle: resolvedTopicTitle,
         dueDate,
         instructions
       });
