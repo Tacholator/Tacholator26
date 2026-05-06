@@ -1003,6 +1003,19 @@ export default function PupilProfile() {
           </TabsContent>
 
           <TabsContent value="diary">
+            <div className="flex justify-end mb-4">
+              <Button
+                onClick={() => {
+                  setSelectedDiaryEntry(null);
+                  setSelectedLesson(null);
+                  setShowDiaryModal(true);
+                }}
+                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Lesson Summary
+              </Button>
+            </div>
             <DiaryTimeline
               entries={diaryEntries}
               onEntryClick={(entry) => {
