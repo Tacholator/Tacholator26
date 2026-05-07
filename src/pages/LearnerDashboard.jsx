@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import moment from 'moment';
 import { drivingSkillsSections } from '@/components/progress/drivingSkillsData';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 import LearnerOnboardingPopup from '@/components/onboarding/LearnerOnboardingPopup';
 import LearnerAppTour from '@/components/onboarding/LearnerAppTour';
@@ -954,22 +955,23 @@ export default function LearnerDashboard() {
                         </div>
                       </Link>
                     ))}
-                    {courseworkAssignments.slice(0, 3).map(item => (
-                      <Link key={item.id} to={createPageUrl('CourseWorkDetail') + `?topicId=${item.formatPayload.topicId}`}>
+                    {courseworkAssignments.slice(0, 3).map(item => {
+                      const topic = courseWorkTopics.find(t => t.topicId === item.formatPayload.topicId);
+                      return (<Link key={item.id} to={createPageUrl('CourseWorkDetail') + `?id=${topic?.id || ''}`}>
                         <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg hover:bg-white cursor-pointer transition-colors">
                           <div className="p-2 rounded-lg bg-blue-100">
                             <BookOpen className="w-4 h-4 text-blue-600" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-slate-800 truncate">{item.title.replace('Coursework: ', '')}</p>
+                            <p className="font-medium text-slate-800 truncate">{item.title.replace('Coursework: ', '').replace('Study: ', '').replace('Practice: ', '')}</p>
                             {item.dueDate && (
                               <p className="text-xs text-blue-600">Due {moment(item.dueDate).format('D MMM')}</p>
                             )}
                           </div>
                           <ChevronRight className="w-4 h-4 text-slate-400" />
                         </div>
-                      </Link>
-                    ))}
+                      </Link>);
+                    })}
                     <Link to={createPageUrl('LearnerHomework')}>
                       <Button variant="outline" className="w-full gap-2 mt-2 bg-white/50 hover:bg-white/80 border-amber-200">
                         View All Homework <ChevronRight className="w-4 h-4" />
