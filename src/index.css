@@ -199,6 +199,16 @@ button:focus-visible {
   padding-bottom: calc(5rem + env(safe-area-inset-bottom));
 }
 
+/* Mobile header offset — only applies below lg breakpoint */
+.main-content-top {
+  padding-top: calc(4rem + env(safe-area-inset-top));
+}
+@media (min-width: 1024px) {
+  .main-content-top {
+    padding-top: 0;
+  }
+}
+
 /* Hide scrollbar but allow scrolling */
 .scrollbar-hide {
   -ms-overflow-style: none;
