@@ -173,8 +173,13 @@ export default function LearnerDashboard() {
   });
 
   // Separate coursework assignments from regular homework
-  const courseworkAssignments = homework.filter(h => h.formatType === 'link' && h.formatPayload?.topicId);
-  const regularHomework = homework.filter(h => !(h.formatType === 'link' && h.formatPayload?.topicId));
+  // Coursework items have a formatPayload.url pointing to CourseWorkDetail
+  const courseworkAssignments = homework.filter(h => 
+    h.formatType === 'link' && h.formatPayload?.url?.includes('CourseWorkDetail')
+  );
+  const regularHomework = homework.filter(h => 
+    !(h.formatType === 'link' && h.formatPayload?.url?.includes('CourseWorkDetail'))
+  );
 
   const { data: notifications = [] } = useQuery({
     queryKey: ['notifications', user?.id],
@@ -956,8 +961,7 @@ export default function LearnerDashboard() {
                       </Link>
                     ))}
                     {courseworkAssignments.slice(0, 3).map(item => {
-                      const topic = courseWorkTopics.find(t => t.topicId === item.formatPayload.topicId);
-                      return (<Link key={item.id} to={createPageUrl('CourseWorkDetail') + `?id=${topic?.id || ''}`}>
+                      return (<Link key={item.id} to={item.formatPayload.url}>
                         <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg hover:bg-white cursor-pointer transition-colors">
                           <div className="p-2 rounded-lg bg-blue-100">
                             <BookOpen className="w-4 h-4 text-blue-600" />
