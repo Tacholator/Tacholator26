@@ -916,52 +916,6 @@ export default function LearnerDashboard() {
           </motion.div>
         </div>
 
-        {/* 5. Assigned Coursework */}
-        {courseworkAssignments.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-l-blue-500">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-blue-600" />
-                    Assigned Coursework
-                  </CardTitle>
-                </div>
-                <Badge className="bg-blue-600 text-white">{courseworkAssignments.length} topics</Badge>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {courseworkAssignments.slice(0, 3).map(item => (
-                  <Link key={item.id} to={createPageUrl('CourseWorkDetail') + `?topicId=${item.formatPayload.topicId}`}>
-                    <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg hover:bg-white cursor-pointer transition-colors">
-                      <div className="p-2 rounded-lg bg-blue-100">
-                        <BookOpen className="w-4 h-4 text-blue-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-700 truncate">{item.title.replace('Coursework: ', '')}</p>
-                        {item.dueDate && (
-                          <p className="text-xs text-blue-600">Due {moment(item.dueDate).format('D MMM')}</p>
-                        )}
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-slate-300" />
-                    </div>
-                  </Link>
-                ))}
-                {courseworkAssignments.length > 3 && (
-                  <Link to={createPageUrl('LearnerHomework')}>
-                    <Button variant="outline" className="w-full gap-2 mt-2">
-                      View All ({courseworkAssignments.length}) <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
         {/* 6. Homework & Notifications */}
         <div className="grid md:grid-cols-2 gap-6">
           <motion.div
@@ -977,12 +931,12 @@ export default function LearnerDashboard() {
                     Homework & Study Tasks
                   </CardTitle>
                 </div>
-                {regularHomework.length > 0 && (
-                  <Badge className="bg-amber-600 text-white">{regularHomework.length} pending</Badge>
+                {(regularHomework.length + courseworkAssignments.length) > 0 && (
+                  <Badge className="bg-amber-600 text-white">{regularHomework.length + courseworkAssignments.length} pending</Badge>
                 )}
               </CardHeader>
               <CardContent className="space-y-3">
-                {regularHomework.length > 0 ? (
+                {(regularHomework.length > 0 || courseworkAssignments.length > 0) ? (
                   <>
                     {regularHomework.slice(0, 3).map(item => (
                       <Link key={item.id} to={createPageUrl('LearnerHomework')}>
@@ -994,6 +948,22 @@ export default function LearnerDashboard() {
                             <p className="font-medium text-slate-800 truncate">{item.title}</p>
                             {item.dueDate && (
                               <p className="text-xs text-amber-700">Due {moment(item.dueDate).format('D MMM')}</p>
+                            )}
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </div>
+                      </Link>
+                    ))}
+                    {courseworkAssignments.slice(0, 3).map(item => (
+                      <Link key={item.id} to={createPageUrl('CourseWorkDetail') + `?topicId=${item.formatPayload.topicId}`}>
+                        <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg hover:bg-white cursor-pointer transition-colors">
+                          <div className="p-2 rounded-lg bg-blue-100">
+                            <BookOpen className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-slate-800 truncate">{item.title.replace('Coursework: ', '')}</p>
+                            {item.dueDate && (
+                              <p className="text-xs text-blue-600">Due {moment(item.dueDate).format('D MMM')}</p>
                             )}
                           </div>
                           <ChevronRight className="w-4 h-4 text-slate-400" />
