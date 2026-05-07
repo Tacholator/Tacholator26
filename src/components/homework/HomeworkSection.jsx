@@ -29,12 +29,12 @@ export default function HomeworkSection({ pupilId, instructorId, homework = [] }
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.HomeworkItem.delete(id),
-    onSuccess: () => queryClient.invalidateQueries(['homework', pupilId])
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['homework', pupilId] })
   });
 
   const saveTemplateMutation = useMutation({
     mutationFn: (data) => base44.entities.HomeworkTemplate.create(data),
-    onSuccess: () => queryClient.invalidateQueries(['homeworkTemplates'])
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['homeworkTemplates'] })
   });
 
   const assignCourseWorkMutation = useMutation({
@@ -53,7 +53,7 @@ export default function HomeworkSection({ pupilId, instructorId, homework = [] }
         status: 'Pending'
       });
     },
-    onSuccess: () => queryClient.invalidateQueries(['homework', pupilId])
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['homework', pupilId] })
   });
 
   const handleAssignCourseWork = (topic) => {

@@ -72,7 +72,7 @@ export default function HomeworkFormModal({ open, onClose, pupilId, instructorId
       ? base44.entities.HomeworkItem.update(existingHomework.id, data)
       : base44.entities.HomeworkItem.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['homework', pupilId]);
+      queryClient.invalidateQueries({ queryKey: ['homework', pupilId] });
       onClose();
     }
   });
