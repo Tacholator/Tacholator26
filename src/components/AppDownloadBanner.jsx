@@ -18,6 +18,8 @@ function isRunningAsPWA() {
 }
 
 export default function AppDownloadBanner() {
+  return null;
+
   const [dismissed, setDismissed] = useState(() => {
     if (isRunningAsPWA()) return true;
     return localStorage.getItem(DISMISSED_KEY) === 'true';
