@@ -73,9 +73,8 @@ export default function McqQuiz({ questionPack, topicId }) {
       const allHomework = await base44.entities.HomeworkItem.filter({ pupilId: pupil.id });
       return allHomework.filter(h => 
         h.status !== 'Completed' && 
-        (h.description?.toLowerCase().includes(topicIdStr?.toLowerCase()) ||
-         h.title?.toLowerCase().includes(topicIdStr?.toLowerCase()) ||
-         h.description?.toLowerCase().includes('practice'))
+        h.formatPayload?.topicId !== undefined &&
+        String(h.formatPayload.topicId) === String(topicIdStr)
       );
     },
     enabled: !!pupil?.id && !!topicIdStr
@@ -179,8 +178,9 @@ export default function McqQuiz({ questionPack, topicId }) {
           base44.entities.HomeworkItem.update(hw.id, { status: 'Completed' })
         )
       );
-      queryClient.invalidateQueries(['myHomework']);
-      queryClient.invalidateQueries(['assignedHomework']);
+      queryClient.invalidateQueries({ queryKey: ['myHomework'] });
+      queryClient.invalidateQueries({ queryKey: ['homework', pupil.id] });
+      queryClient.invalidateQueries({ queryKey: ['relatedHomework', pupil.id, topicIdStr] });
     }
 
     // Auto-assign next topic if enabled and passed
