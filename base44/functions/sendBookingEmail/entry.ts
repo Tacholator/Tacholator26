@@ -27,14 +27,11 @@ function buildEmailHtml(subject, bodyHtml, preheader = '') {
                   <table cellpadding="0" cellspacing="0" style="display:inline-table;">
                     <tr>
                       <td style="vertical-align:middle;padding-right:14px;">
-                        <!-- Logo mark: yellow rounded square with M -->
-                        <div style="width:48px;height:48px;background:#F7B602;border-radius:10px;display:inline-block;vertical-align:middle;text-align:center;line-height:48px;">
-                          <span style="color:#071739;font-size:24px;font-weight:900;font-family:Arial,sans-serif;">M</span>
-                        </div>
+                        <img src="https://media.base44.com/images/public/6928de5cfb626066705b29e3/0655e28f5_LOgo2048.png" alt="Mobrage Logo" width="52" height="52" style="display:block;border-radius:10px;" />
                       </td>
                       <td style="vertical-align:middle;text-align:left;">
-                        <div style="color:#ffffff;font-size:20px;font-weight:900;letter-spacing:1px;line-height:1.1;font-family:Arial,sans-serif;">MOBRAGE</div>
-                        <div style="color:#F7B602;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;">DRIVING ACADEMY</div>
+                        <div style="color:#F7B602;font-size:20px;font-weight:900;letter-spacing:1px;line-height:1.1;font-family:Arial,sans-serif;">MOBRAGE</div>
+                        <div style="color:#ffffff;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;">DRIVING ACADEMY</div>
                       </td>
                     </tr>
                   </table>
