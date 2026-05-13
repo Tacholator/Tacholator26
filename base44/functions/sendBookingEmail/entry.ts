@@ -179,23 +179,23 @@ Deno.serve(async (req) => {
     }
 
     // Fetch booking
-    const bookings = await base44.asServiceRole.entities.LessonBooking.filter({ id: bookingId });
-    const booking = bookings[0];
+    const booking = await base44.asServiceRole.entities.LessonBooking.get(bookingId);
     if (!booking) return Response.json({ error: 'Booking not found' }, { status: 404 });
 
     // Fetch pupil
-    const pupils = await base44.asServiceRole.entities.Pupil.filter({ id: booking.pupilId });
-    const pupil = pupils[0];
+    const pupil = await base44.asServiceRole.entities.Pupil.get(booking.pupilId);
     if (!pupil) return Response.json({ error: 'Pupil not found' }, { status: 404 });
 
-    // Fetch instructor
-    const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by: booking.instructorId });
+    // Resolve instructor email from User entity
+    const instructorUser = await base44.asServiceRole.entities.User.get(booking.instructorId);
+    const instructorEmail = instructorUser?.email;
+
+    // Fetch instructor profile using their email (created_by stores email)
+    const instructors = instructorEmail
+      ? await base44.asServiceRole.entities.Instructor.filter({ created_by: instructorEmail })
+      : [];
     const instructor = instructors[0];
     const instructorName = instructor?.name || 'Your Instructor';
-
-    // Resolve instructor email from User entity
-    const instructorUsers = await base44.asServiceRole.entities.User.filter({ id: booking.instructorId });
-    const instructorEmail = instructorUsers[0]?.email;
 
     const pupilName = `${pupil.firstName} ${pupil.lastName}`;
     const pupilEmail = pupil.email;
