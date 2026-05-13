@@ -10,7 +10,7 @@ const LOGO_BLOCK = `
     <div style="width:44px;height:44px;background:#F7B602;border-radius:10px;display:inline-block;vertical-align:middle;"></div>
     <span style="color:#ffffff;font-size:22px;font-weight:bold;vertical-align:middle;margin-left:12px;">Mobrage Driving Academy</span>
   </div>
-  <p style="color:#F7B602;font-size:13px;margin:8px 0 0;letter-spacing:1px;text-transform:uppercase;">Professional Driving Instruction</p>
+  <p style="color:#F7B602;font-size:13px;margin:8px 0 0;letter-spacing:1px;text-transform:uppercase;">Training UK's Future Drivers</p>
 `;
 
 const SAMPLE_BOOKING = {
@@ -190,7 +190,7 @@ function EmailPreview({ html }) {
 </td></tr>
 <tr><td style="padding:32px 36px 28px;">${html}</td></tr>
 <tr><td style="background:#f8f9fb;border-top:1px solid #e8ecf0;padding:20px 36px;text-align:center;">
-<p style="color:#9ca3af;font-size:12px;margin:0 0 4px;">Mobrage Driving Academy &bull; Professional Driving Instruction</p>
+<p style="color:#9ca3af;font-size:12px;margin:0 0 4px;">Mobrage Driving Academy &bull; Training UK's Future Drivers</p>
 <p style="color:#9ca3af;font-size:11px;margin:0;">This is an automated email. Please do not reply directly to this message.</p>
 </td></tr>
 </table>
