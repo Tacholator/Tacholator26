@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 import moment from 'npm:moment@2.30.1';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-const FROM_EMAIL = 'noreply@mobrage.com';
+const FROM_EMAIL = 'noreply@mobragedrivingacademy.com';
 const FROM_NAME = 'Mobrage Driving Academy';
 
 function buildEmailHtml(subject, bodyHtml, preheader = '') {
