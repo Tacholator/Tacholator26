@@ -24,11 +24,21 @@ function buildEmailHtml(subject, bodyHtml, preheader = '') {
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center">
-                  <div style="display:inline-flex;align-items:center;gap:12px;">
-                    <div style="width:44px;height:44px;background:#F7B602;border-radius:10px;display:inline-block;vertical-align:middle;"></div>
-                    <span style="color:#ffffff;font-size:22px;font-weight:bold;vertical-align:middle;margin-left:12px;">Mobrage Driving Academy</span>
-                  </div>
-                  <p style="color:#F7B602;font-size:13px;margin:8px 0 0;letter-spacing:1px;text-transform:uppercase;">Professional Driving Instruction</p>
+                  <table cellpadding="0" cellspacing="0" style="display:inline-table;">
+                    <tr>
+                      <td style="vertical-align:middle;padding-right:14px;">
+                        <!-- Logo mark: yellow rounded square with M -->
+                        <div style="width:48px;height:48px;background:#F7B602;border-radius:10px;display:inline-block;vertical-align:middle;text-align:center;line-height:48px;">
+                          <span style="color:#071739;font-size:24px;font-weight:900;font-family:Arial,sans-serif;">M</span>
+                        </div>
+                      </td>
+                      <td style="vertical-align:middle;text-align:left;">
+                        <div style="color:#ffffff;font-size:20px;font-weight:900;letter-spacing:1px;line-height:1.1;font-family:Arial,sans-serif;">MOBRAGE</div>
+                        <div style="color:#F7B602;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;">DRIVING ACADEMY</div>
+                      </td>
+                    </tr>
+                  </table>
+                  <p style="color:#9ca3af;font-size:12px;margin:12px 0 0;letter-spacing:0.5px;font-style:italic;">Training UK's future drivers</p>
                 </td>
               </tr>
             </table>

@@ -175,9 +175,20 @@ function EmailPreview({ html }) {
 <tr><td align="center">
 <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
 <tr><td style="background:#071739;padding:24px 36px;text-align:center;">
-<div style="display:inline-block;width:36px;height:36px;background:#F7B602;border-radius:8px;vertical-align:middle;"></div>
-<span style="color:#ffffff;font-size:20px;font-weight:bold;vertical-align:middle;margin-left:10px;">Mobrage Driving Academy</span>
-<p style="color:#F7B602;font-size:12px;margin:6px 0 0;letter-spacing:1px;text-transform:uppercase;">Professional Driving Instruction</p>
+<table cellpadding="0" cellspacing="0" style="display:inline-table;margin:0 auto;">
+<tr>
+<td style="vertical-align:middle;padding-right:12px;">
+<div style="width:44px;height:44px;background:#F7B602;border-radius:9px;display:inline-block;text-align:center;line-height:44px;">
+<span style="color:#071739;font-size:22px;font-weight:900;font-family:Arial,sans-serif;">M</span>
+</div>
+</td>
+<td style="vertical-align:middle;text-align:left;">
+<div style="color:#ffffff;font-size:18px;font-weight:900;letter-spacing:1px;line-height:1.1;font-family:Arial,sans-serif;">MOBRAGE</div>
+<div style="color:#F7B602;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;">DRIVING ACADEMY</div>
+</td>
+</tr>
+</table>
+<p style="color:#9ca3af;font-size:12px;margin:10px 0 0;letter-spacing:0.5px;font-style:italic;">Training UK's future drivers</p>
 </td></tr>
 <tr><td style="padding:32px 36px 28px;">${html}</td></tr>
 <tr><td style="background:#f8f9fb;border-top:1px solid #e8ecf0;padding:20px 36px;text-align:center;">
