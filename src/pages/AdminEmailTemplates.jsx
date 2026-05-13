@@ -189,7 +189,7 @@ function EmailPreview({ html }) {
 <p style="color:#9ca3af;font-size:12px;margin:10px 0 0;letter-spacing:0.5px;font-style:italic;">Training UK's future drivers</p>
 </td></tr>
 <tr><td style="padding:32px 36px 28px;">${html}</td></tr>
-<tr><td style="background:#f8f9fb;border-top:1px solid #e8ecf0;padding:20px 36px;text-align:center;">
+<tr><td style="background:#071739;border-top:1px solid #0d2659;padding:20px 36px;text-align:center;">
 <p style="color:#9ca3af;font-size:12px;margin:0 0 4px;">Mobrage Driving Academy &bull; Training UK's Future Drivers</p>
 <p style="color:#9ca3af;font-size:11px;margin:0;">This is an automated email. Please do not reply directly to this message.</p>
 </td></tr>

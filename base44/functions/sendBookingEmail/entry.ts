@@ -49,7 +49,7 @@ function buildEmailHtml(subject, bodyHtml, preheader = '') {
         </tr>
         <!-- Footer -->
         <tr>
-          <td style="background:#f8f9fb;border-top:1px solid #e8ecf0;padding:24px 40px;text-align:center;">
+          <td style="background:#071739;border-top:1px solid #0d2659;padding:24px 40px;text-align:center;">
             <p style="color:#9ca3af;font-size:12px;margin:0 0 6px;">Mobrage Driving Academy &bull; Training UK's Future Drivers</p>
             <p style="color:#9ca3af;font-size:11px;margin:0;">This is an automated email. Please do not reply directly to this message.</p>
           </td>
