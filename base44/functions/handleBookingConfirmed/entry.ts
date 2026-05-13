@@ -67,6 +67,17 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Send confirmation emails via Resend
+    try {
+      const emailResult = await base44.asServiceRole.functions.invoke('sendBookingEmail', {
+        type: 'booking_confirmed',
+        bookingId: booking.id
+      });
+      results.push({ type: 'email_booking_confirmed', result: emailResult.data });
+    } catch (error) {
+      results.push({ type: 'email_booking_confirmed', error: error.message });
+    }
+
     return Response.json({ 
       success: true,
       results 

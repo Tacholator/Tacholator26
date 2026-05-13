@@ -38,6 +38,7 @@ import MockTestReportView from './pages/MockTestReportView';
 import LearnerMockTests from './pages/LearnerMockTests';
 import LearnerDiary from './pages/LearnerDiary';
 import Community from './pages/Community';
+import AdminEmailTemplates from './pages/AdminEmailTemplates';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -232,6 +233,11 @@ const AuthenticatedApp = () => {
       <Route path="/Community" element={
         <LayoutWrapper currentPageName="Community">
           <Community />
+        </LayoutWrapper>
+      } />
+      <Route path="/AdminEmailTemplates" element={
+        <LayoutWrapper currentPageName="AdminEmailTemplates">
+          <AdminEmailTemplates />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

@@ -50,7 +50,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 2. Enqueue cancellation notification
+    // 2. Send cancellation emails via Resend
+    try {
+      await base44.asServiceRole.functions.invoke('sendBookingEmail', {
+        type: 'booking_cancelled',
+        bookingId: booking.id
+      });
+    } catch (error) {
+      console.error('Email send error:', error.message);
+    }
+
+    // 3. Enqueue cancellation SMS notification
     try {
       const cancelResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
         bookingId: booking.id,
