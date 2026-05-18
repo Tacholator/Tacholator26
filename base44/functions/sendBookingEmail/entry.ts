@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 import moment from 'npm:moment@2.30.1';
+import 'npm:moment-timezone@0.5.45';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const FROM_EMAIL = 'noreply@mobragedrivingacademy.com';
@@ -62,7 +63,7 @@ function buildEmailHtml(subject, bodyHtml, preheader = '') {
 }
 
 function lessonDetailsBlock(booking) {
-  const start = moment(booking.startAtUtc).local();
+  const start = moment(booking.startAtUtc).tz('Europe/London');
   return `
     <div style="background:#f8f9fb;border-left:4px solid #F7B602;border-radius:8px;padding:20px 24px;margin:24px 0;">
       <p style="margin:0 0 8px;font-size:14px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Lesson Details</p>
@@ -109,7 +110,7 @@ function buildBookingConfirmedPupil(pupilName, instructorName, booking) {
     </div>
     <p style="color:#374151;font-size:15px;line-height:1.6;">If you need to cancel, please do so at least 48 hours in advance to avoid any cancellation charges.</p>
     <p style="color:#374151;font-size:15px;margin:24px 0 0;">Best regards,<br/><strong style="color:#071739;">${instructorName}</strong><br/><span style="color:#6b7280;">Mobrage Driving Academy</span></p>`;
-  return buildEmailHtml('Booking Confirmed – Mobrage Driving Academy', body, `Your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} is confirmed!`);
+  return buildEmailHtml('Booking Confirmed – Mobrage Driving Academy', body, `Your lesson on ${moment(booking.startAtUtc).tz('Europe/London').format('D MMM')} is confirmed!`);
 }
 
 function buildBookingConfirmedInstructor(instructorName, pupilName, pupilEmail, pupilPhone, booking) {
@@ -146,7 +147,7 @@ function buildCancellationPupil(pupilName, instructorName, booking, cancelledByR
     ${chargeBlock}
     <p style="color:#374151;font-size:15px;line-height:1.6;">If you have any questions, please contact your instructor directly.</p>
     <p style="color:#374151;font-size:15px;margin:24px 0 0;">Best regards,<br/><strong style="color:#071739;">Mobrage Driving Academy</strong></p>`;
-  return buildEmailHtml('Lesson Cancellation – Mobrage Driving Academy', body, `Your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} has been cancelled`);
+  return buildEmailHtml('Lesson Cancellation – Mobrage Driving Academy', body, `Your lesson on ${moment(booking.startAtUtc).tz('Europe/London').format('D MMM')} has been cancelled`);
 }
 
 function buildCancellationInstructor(instructorName, pupilName, booking, cancelledByRole, isLate, chargesApplied) {
