@@ -78,6 +78,22 @@ Deno.serve(async (req) => {
       results.push({ type: 'email_booking_confirmed', error: error.message });
     }
 
+    // Enqueue 1h email reminder (only if lesson is more than 72 minutes away)
+    if (hoursUntilLesson >= 1.2) {
+      try {
+        const reminderSendAt = moment(booking.startAtUtc).subtract(1, 'hour').toISOString();
+        await base44.asServiceRole.entities.EmailReminder.create({
+          bookingId: booking.id,
+          templateKey: 'lesson_reminder_1h',
+          sendAtUtc: reminderSendAt,
+          status: 'pending'
+        });
+        results.push({ type: 'email_reminder_1h_enqueued', sendAt: reminderSendAt });
+      } catch (error) {
+        results.push({ type: 'email_reminder_1h_enqueued', error: error.message });
+      }
+    }
+
     return Response.json({ 
       success: true,
       results 

@@ -168,6 +168,23 @@ function buildCancellationInstructor(instructorName, pupilName, booking, cancell
   return buildEmailHtml('Lesson Cancellation – Tacholator', body);
 }
 
+function buildLessonReminder1h(pupilName, instructorName, booking) {
+  const start = moment(booking.startAtUtc).tz('Europe/London');
+  const body = `
+    <h2 style="color:#071739;font-size:22px;margin:0 0 8px;">Your Lesson Starts in 1 Hour!</h2>
+    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${pupilName},</p>
+    <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 16px;">
+      Just a friendly reminder that your driving lesson with <strong>${instructorName}</strong> is starting soon.
+    </p>
+    ${lessonDetailsBlock(booking)}
+    <div style="background:#fffbeb;border-left:4px solid #F7B602;border-radius:8px;padding:16px 20px;margin:24px 0;">
+      <p style="color:#92400e;font-size:14px;margin:0;"><strong>⏰ Starting at ${start.format('HH:mm')}</strong><br/>Please make sure you're ready at your pickup location on time.</p>
+    </div>
+    <p style="color:#374151;font-size:15px;line-height:1.6;">If you need to contact your instructor, please reach out as soon as possible.</p>
+    <p style="color:#374151;font-size:15px;margin:24px 0 0;">See you soon,<br/><strong style="color:#071739;">${instructorName}</strong><br/><span style="color:#6b7280;">Mobrage Driving Academy</span></p>`;
+  return buildEmailHtml('⏰ Lesson Reminder – Starting in 1 Hour', body, `Your lesson with ${instructorName} starts at ${start.format('HH:mm')} today!`);
+}
+
 // ---- MAIN HANDLER ----
 
 Deno.serve(async (req) => {
@@ -215,6 +232,14 @@ Deno.serve(async (req) => {
         const html = buildBookingConfirmedInstructor(instructorName, pupilName, pupilEmail, pupil.phone, booking);
         const r = await sendEmail(instructorEmail, `📅 Booking Confirmed: ${pupilName}`, html);
         results.push({ to: 'instructor', email: instructorEmail, result: r });
+      }
+    }
+
+    if (type === 'lesson_reminder_1h') {
+      if (pupilEmail) {
+        const html = buildLessonReminder1h(pupilName, instructorName, booking);
+        const r = await sendEmail(pupilEmail, '⏰ Lesson Reminder – Starting in 1 Hour', html);
+        results.push({ to: 'pupil', email: pupilEmail, result: r });
       }
     }
 

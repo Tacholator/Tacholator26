@@ -50,6 +50,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    // 1b. Cancel all pending email reminders for this booking
+    const pendingEmailReminders = await base44.asServiceRole.entities.EmailReminder.filter({
+      bookingId: booking.id,
+      status: 'pending'
+    });
+    for (const reminder of pendingEmailReminders) {
+      await base44.asServiceRole.entities.EmailReminder.update(reminder.id, { status: 'cancelled' });
+    }
+
     // 2. Send cancellation emails via Resend
     try {
       await base44.asServiceRole.functions.invoke('sendBookingEmail', {

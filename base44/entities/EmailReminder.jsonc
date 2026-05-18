@@ -1,0 +1,40 @@
+{
+  "name": "EmailReminder",
+  "type": "object",
+  "properties": {
+    "bookingId": {
+      "type": "string",
+      "description": "Reference to LessonBooking ID"
+    },
+    "templateKey": {
+      "type": "string",
+      "description": "Email template to send (e.g. lesson_reminder_1h)"
+    },
+    "sendAtUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to send this email"
+    },
+    "sentAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When it was actually sent (null = not yet sent)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "sent",
+        "cancelled",
+        "failed"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "bookingId",
+    "templateKey",
+    "sendAtUtc",
+    "status"
+  ]
+}
