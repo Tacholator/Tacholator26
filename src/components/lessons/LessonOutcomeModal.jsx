@@ -219,21 +219,24 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         // Handle CANCELLED lessons
         else if (data.completionOutcome === 'cancelled') {
           if (hasEscrow) {
-            // Instructor cancelling a confirmed booking with escrow - refund to pupil
-            const currentBalance = pupil.bulkPaymentBalance || 0;
             const escrowAmount = booking.escrowAmountGbp || 0;
-            await base44.entities.LessonBooking.update(bookingId, { escrowAmountGbp: 0 });
-            await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: currentBalance + escrowAmount });
-            await base44.entities.PaymentLedger.create({
-              userId: pupil.linkedUserId || pupil.id,
-              bookingId: bookingId,
-              type: 'refund',
-              reason: 'refund_issued',
-              amountGbp: escrowAmount,
-              hours: durationHours,
-              createdByRole: 'instructor',
-              note: `Escrow refunded - instructor cancelled lesson`
-            });
+            if (data.chargesApplied) {
+              // Instructor keeps the escrow as a cancellation charge — just release it, no refund
+              await base44.entities.LessonBooking.update(bookingId, { escrowAmountGbp: 0, escrowReleasedAt: new Date().toISOString() });
+              await base44.entities.PaymentLedger.create({
+                userId: pupil.linkedUserId || pupil.id,
+                bookingId: bookingId,
+                type: 'charge',
+                reason: 'late_cancellation_penalty',
+                amountGbp: 0, // already deducted from balance at booking
+                hours: durationHours,
+                createdByRole: 'instructor',
+                note: `Escrow retained - cancellation charge: ${durationHours.toFixed(2)}h`
+              });
+            } else {
+              // No charges — clear escrow but do NOT credit pupil (money stays neutral until instructor decides)
+              await base44.entities.LessonBooking.update(bookingId, { escrowAmountGbp: 0 });
+            }
           } else if (data.chargesApplied) {
             const newAuditLateCancellationHours = (pupil.auditLateCancellationHours || 0) + durationHours;
             const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;

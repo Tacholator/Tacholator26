@@ -38,32 +38,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 1. Refund escrow to pupil balance if booking was confirmed
-    const escrowAmount = booking.escrowAmountGbp || 0;
-    if (escrowAmount > 0 && booking.pupilId) {
-      const pupilResults = await base44.asServiceRole.entities.Pupil.filter({ id: booking.pupilId });
-      const pupil = pupilResults[0];
-      if (pupil) {
-        await base44.asServiceRole.entities.Pupil.update(pupil.id, {
-          bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + escrowAmount
-        });
-        await base44.asServiceRole.entities.LessonBooking.update(booking.id, {
-          escrowAmountGbp: 0
-        });
-        await base44.asServiceRole.entities.PaymentLedger.create({
-          userId: pupil.linkedUserId || pupil.id,
-          bookingId: booking.id,
-          type: 'refund',
-          reason: 'refund_issued',
-          amountGbp: escrowAmount,
-          hours: booking.durationHours || 0,
-          createdByRole: 'system',
-          note: `Escrow refunded on cancellation: lesson on ${moment(booking.startAtUtc).format('D MMM YYYY [at] HH:mm')} (UTC)`
-        });
-      }
-    }
-
-    // 2. Cancel all pending SMS for this booking
+    // 1. Cancel all pending SMS for this booking
     const pendingSms = await base44.asServiceRole.entities.SmsNotification.filter({ 
       bookingId: booking.id,
       status: 'Pending'
@@ -75,7 +50,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 3. Send cancellation emails via Resend
+    // 2. Send cancellation emails via Resend
     try {
       await base44.asServiceRole.functions.invoke('sendBookingEmail', {
         type: 'booking_cancelled',
@@ -85,7 +60,7 @@ Deno.serve(async (req) => {
       console.error('Email send error:', error.message);
     }
 
-    // 4. Enqueue cancellation SMS notification
+    // 3. Enqueue cancellation SMS notification
     try {
       const cancelResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
         bookingId: booking.id,
