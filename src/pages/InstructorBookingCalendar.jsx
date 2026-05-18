@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Clock, CalendarDays, Coffee, Loader2, Settings, Eye, Lock, Zap } from 'lucide-react';
+import { Clock, CalendarDays, Coffee, Loader2, Settings, Eye, Lock, Zap, Plus } from 'lucide-react';
 import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -429,6 +429,18 @@ export default function InstructorBookingCalendar() {
             <h1 className="text-xl sm:text-3xl font-bold text-slate-800 mb-0.5 sm:mb-2">Booking Calendar</h1>
             <p className="text-xs sm:text-sm text-slate-500">Manage your availability and bookings</p>
           </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => {
+                setSelectedSlotForSchedule(null);
+                setShowScheduleLessonModal(true);
+              }}
+              className="bg-[#071739] hover:bg-[#0d2659] text-white gap-2"
+              size="sm"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">New Lesson</span>
+            </Button>
           {/* Settings Icon - shown on all screen sizes */}
           <Sheet>
             <SheetTrigger asChild>
@@ -510,6 +522,7 @@ export default function InstructorBookingCalendar() {
               </div>
             </SheetContent>
           </Sheet>
+          </div>
         </div>
 
 
