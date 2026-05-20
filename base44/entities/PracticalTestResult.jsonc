@@ -1,0 +1,56 @@
+{
+  "name": "PracticalTestResult",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil's ID"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor's ID"
+    },
+    "pupilName": {
+      "type": "string",
+      "description": "Pupil's full name (denormalised for display)"
+    },
+    "testDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the practical test"
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "True if the pupil passed the test"
+    },
+    "dangerousFaults": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of dangerous faults"
+    },
+    "seriousFaults": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of serious faults"
+    },
+    "drivingFaults": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of driving faults"
+    },
+    "examinerName": {
+      "type": "string",
+      "description": "Name of the examiner"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes"
+    }
+  },
+  "required": [
+    "pupilId",
+    "instructorId",
+    "testDate",
+    "passed"
+  ]
+}

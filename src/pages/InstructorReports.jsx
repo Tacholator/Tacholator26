@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import PupilLessonHistory from '@/components/reports/PupilLessonHistory';
+import PracticalTestTab from '@/components/reports/PracticalTestTab';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -22,7 +23,7 @@ const RANGES = [
   { label: 'All Time', key: 'all' },
 ];
 
-const TABS = ['Overview', 'Pupils', 'Financial', 'Lesson History'];
+const TABS = ['Overview', 'Pupils', 'Financial', 'Lesson History', 'Practical Test'];
 
 // ── KPI card ──────────────────────────────────────────────────────────────────
 function KpiCard({ icon: Icon, label, value, sub, color = 'blue', trend }) {
@@ -668,6 +669,11 @@ export default function InstructorReports() {
         {/* ════ LESSON HISTORY TAB ════ */}
         {tab === 'Lesson History' && (
           <PupilLessonHistory pupils={pupils} instructorId={user?.id} />
+        )}
+
+        {/* ════ PRACTICAL TEST TAB ════ */}
+        {tab === 'Practical Test' && (
+          <PracticalTestTab instructorId={user?.id} pupils={pupils} />
         )}
 
       </div>
