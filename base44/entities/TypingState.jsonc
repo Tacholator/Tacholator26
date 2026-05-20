@@ -24,5 +24,31 @@
   "required": [
     "conversationId",
     "userId"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.userId": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "user.condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.userId": "{{user.id}}"
+        },
+        {
+          "data.conversationId": "{{user.data.pupil.id}}_{{user.id}}"
+        }
+      ]
+    },
+    "update": {
+      "data.userId": "{{user.id}}"
+    },
+    "delete": {
+      "data.userId": "{{user.id}}"
+    }
+  }
 }
