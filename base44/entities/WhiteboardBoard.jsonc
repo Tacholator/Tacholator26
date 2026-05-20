@@ -57,5 +57,33 @@
   "required": [
     "ownerInstructorId",
     "title"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.ownerInstructorId": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.ownerInstructorId": "{{user.id}}"
+        },
+        {
+          "$and": [
+            {
+              "data.linkedPupilId": "{{user.data.pupil.id}}"
+            },
+            {
+              "data.isSharedWithPupil": true
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "data.ownerInstructorId": "{{user.id}}"
+    },
+    "delete": {
+      "data.ownerInstructorId": "{{user.id}}"
+    }
+  }
 }
