@@ -135,7 +135,7 @@ export const getPageForRole = (linkId, isInstructor) => {
 };
 
 // Build complete navigation array for a role
-export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active', testRoutesAccessEnabled = false, gpsRoutesAccessEnabled = false) => {
+export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active', testRoutesAccessEnabled = false, gpsRoutesAccessEnabled = false, practicalTestPassDate = null) => {
   const shared = sharedNavLinks
     .map(link => ({
       name: link.name,
@@ -159,9 +159,18 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
 
 
 
+  // Check if a Passed pupil is more than 7 days past their pass date
+  const isPassedAndExpired = !isInstructor && pupilStatus === 'Passed' && practicalTestPassDate
+    ? (() => {
+        const passDate = new Date(practicalTestPassDate);
+        const daysSincePass = (Date.now() - passDate.getTime()) / (1000 * 60 * 60 * 24);
+        return daysSincePass > 7;
+      })()
+    : false;
+
   // For non-active pupils (OnHold/Stopped), only show: Home, Book a Lesson, Payments, Notifications
-  // Passed pupils retain full access so they can view their learning history and mock tests
-  if (!isInstructor && pupilStatus !== 'Active' && pupilStatus !== 'Passed') {
+  // Passed pupils retain full access for 7 days, then get restricted to the same limited nav
+  if (!isInstructor && (pupilStatus !== 'Active' && pupilStatus !== 'Passed' || isPassedAndExpired)) {
     const allowedIds = ['home', 'payments', 'notifications'];
     const allowedShared = shared.filter(link => 
       allowedIds.includes(sharedNavLinks.find(s => 

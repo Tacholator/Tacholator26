@@ -146,7 +146,8 @@ export default function Layout({ children, currentPageName }) {
   const pupilStatus = pupilProfile?.status || 'Active';
   const testRoutesAccessEnabled = pupilProfile?.testRoutesAccessEnabled || false;
   const gpsRoutesAccessEnabled = isMainAdmin || (instructorProfile?.gpsRoutesAccessEnabled || false);
-  const navItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus, testRoutesAccessEnabled, gpsRoutesAccessEnabled);
+  const practicalTestPassDate = pupilProfile?.practicalTestPassDate || null;
+  const navItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus, testRoutesAccessEnabled, gpsRoutesAccessEnabled, practicalTestPassDate);
 
   const handleLogout = () => {
     base44.auth.logout();

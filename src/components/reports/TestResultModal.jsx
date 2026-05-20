@@ -60,7 +60,15 @@ export default function TestResultModal({ open, onClose, pupil, instructorId }) 
       }
       return base44.entities.PracticalTestResult.create(data);
     },
-    onSuccess: () => {
+    onSuccess: async (_, variables) => {
+      // If result is a Pass, stamp practicalTestPassDate on the Pupil record
+      if (variables.passed && pupil?.id) {
+        await base44.entities.Pupil.update(pupil.id, {
+          practicalTestPassDate: variables.testDate,
+        });
+        queryClient.invalidateQueries({ queryKey: ['learnerPupilProfile'] });
+        queryClient.invalidateQueries({ queryKey: ['pupil', pupil.id] });
+      }
       queryClient.invalidateQueries({ queryKey: ['practicalTestResult', pupil?.id] });
       queryClient.invalidateQueries({ queryKey: ['practicalTestResults', instructorId] });
       setSaved(true);

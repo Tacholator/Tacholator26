@@ -79,6 +79,11 @@
       "type": "boolean",
       "default": false
     },
+    "practicalTestPassDate": {
+      "type": "string",
+      "format": "date",
+      "description": "The date the pupil passed their practical test (set when result is recorded as Pass)"
+    },
     "practicalTestCentre": {
       "type": "string"
     },
