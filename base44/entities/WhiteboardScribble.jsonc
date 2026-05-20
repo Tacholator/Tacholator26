@@ -6,6 +6,10 @@
       "type": "string",
       "description": "Reference to the pupil"
     },
+    "pupilUserId": {
+      "type": "string",
+      "description": "The linked user ID of the pupil (for RLS - allows learner to read their own notes)"
+    },
     "instructorId": {
       "type": "string",
       "description": "Reference to the instructor who created the scribble"
@@ -29,5 +33,64 @@
     "instructorId",
     "scribbleData",
     "timestamp"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.pupilId": "{{user.data.pupil.id}}"
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.pupilUserId": "{{user.id}}"
+        },
+        {
+          "data.instructorId": "{{user.id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.pupilUserId": "{{user.id}}"
+        },
+        {
+          "data.instructorId": "{{user.id}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.pupilUserId": "{{user.id}}"
+        },
+        {
+          "data.instructorId": "{{user.id}}"
+        }
+      ]
+    }
+  }
 }
