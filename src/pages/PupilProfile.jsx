@@ -29,6 +29,7 @@ import {
   CircleDashed,
   WalletMinimal,
   Youtube,
+  Trophy,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import ProgressRing from '@/components/ui/ProgressRing';
@@ -42,6 +43,7 @@ import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
 import ClassNotesTab from '@/components/classnotes/ClassNotesTab';
 import MockTestsSection from '@/components/progress/MockTestsSection';
+import TestResultModal from '@/components/reports/TestResultModal';
 import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import moment from 'moment';
 import { createPageUrl } from '@/utils';
@@ -74,6 +76,7 @@ export default function PupilProfile() {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBookingSummaryModal, setShowBookingSummaryModal] = useState(false);
   const [showNewLessonModal, setShowNewLessonModal] = useState(false);
+  const [showTestResultModal, setShowTestResultModal] = useState(false);
   const [checksData, setChecksData] = useState({
     licenseChecked: false,
     licenseCheckDate: '',
@@ -156,6 +159,13 @@ export default function PupilProfile() {
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
+
+  const { data: existingTestResults = [] } = useQuery({
+    queryKey: ['practicalTestResult', pupilId],
+    queryFn: () => base44.entities.PracticalTestResult.filter({ pupilId }),
+    enabled: !!pupilId && pupil?.status === 'Passed',
+  });
+  const hasTestResult = existingTestResults.length > 0;
 
   const updateSkillMutation = useMutation({
     mutationFn: ({ id, status }) => base44.entities.Skill.update(id, { status }),
@@ -368,20 +378,36 @@ export default function PupilProfile() {
                          pupil.status === 'Stopped' ? 'One Off' : 
                          pupil.status || 'Active'}
                       </Badge>
+                      {hasTestResult && (
+                        <Badge className="bg-emerald-100 text-emerald-700 gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> Result Logged
+                        </Badge>
+                      )}
                       {!pupil.hasSignedUp && !pupil.linkedUserId && (
                         <Badge className="bg-rose-100 text-rose-700">Not Signed Up</Badge>
                       )}
                     </div>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowEditModal(true)}
-                    className="shrink-0"
-                  >
-                    <Edit className="w-4 h-4 mr-1 lg:mr-2" />
-                    <span>Edit</span>
-                  </Button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {pupil.status === 'Passed' && (
+                      <Button
+                        size="sm"
+                        onClick={() => setShowTestResultModal(true)}
+                        className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] gap-1.5"
+                      >
+                        <Trophy className="w-4 h-4" />
+                        {hasTestResult ? 'Edit Result' : 'Log Test Result'}
+                      </Button>
+                    )}
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setShowEditModal(true)}
+                    >
+                      <Edit className="w-4 h-4 mr-1 lg:mr-2" />
+                      <span>Edit</span>
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-3 text-sm text-slate-500 mt-2">
                   {pupil.phone && (
@@ -1187,6 +1213,13 @@ export default function PupilProfile() {
           }
         }}
         defaultPupilId={pupilId}
+      />
+
+      <TestResultModal
+        open={showTestResultModal}
+        onClose={() => setShowTestResultModal(false)}
+        pupil={pupil}
+        instructorId={currentUser?.id}
       />
     </div>
   );
