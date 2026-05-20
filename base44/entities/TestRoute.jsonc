@@ -57,5 +57,65 @@
   },
   "required": [
     "routeName"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "$and": [
+            {
+              "data.instructorId": "{{user.data.pupil.instructorId}}"
+            },
+            {
+              "user.data.pupil.testRoutesAccessEnabled": true
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }
