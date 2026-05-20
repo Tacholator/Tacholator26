@@ -307,7 +307,7 @@ export default function InstructorReports() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* ── Hero Header ──────────────────────────────────────────────────── */}
-      <div className="bg-[#071739] text-white px-6 lg:px-10 pt-8 pb-6">
+      <div className="bg-slate-800 text-white px-6 lg:px-10 pt-8 pb-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
