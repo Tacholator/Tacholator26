@@ -12,7 +12,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '@/components/ui/select';
-import { CheckCircle, XCircle, Plus, Trash2, Award } from 'lucide-react';
+import { CheckCircle, XCircle, Plus, Trash2, Award, RotateCcw } from 'lucide-react';
 import moment from 'moment';
 
 const EMPTY_FORM = {
@@ -72,6 +72,22 @@ export default function PracticalTestTab({ instructorId, pupils }) {
   const totalTests = results.length;
   const totalPassed = results.filter(r => r.passed).length;
   const passRate = totalTests > 0 ? Math.round((totalPassed / totalTests) * 100) : null;
+
+  // Group by pupil for attempts section
+  const attemptsByPupil = results.reduce((acc, r) => {
+    const key = r.pupilId;
+    if (!acc[key]) acc[key] = { pupilName: r.pupilName || '—', attempts: [] };
+    acc[key].attempts.push(r);
+    return acc;
+  }, {});
+  const pupilAttempts = Object.values(attemptsByPupil)
+    .map(p => ({
+      ...p,
+      attempts: p.attempts.sort((a, b) => moment(a.testDate).diff(moment(b.testDate))),
+      passed: p.attempts.some(a => a.passed),
+      count: p.attempts.length,
+    }))
+    .sort((a, b) => b.count - a.count);
 
   return (
     <div className="space-y-6">
@@ -167,6 +183,56 @@ export default function PracticalTestTab({ instructorId, pupils }) {
           )}
         </CardContent>
       </Card>
+
+      {/* Attempts per Pupil */}
+      {pupilAttempts.length > 0 && (
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3 flex flex-row items-center gap-2">
+            <RotateCcw className="w-4 h-4 text-slate-500" />
+            <CardTitle className="text-sm font-semibold text-slate-600">Attempts per Pupil</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50">
+                    {['Pupil', 'Attempts', 'Outcome', 'Test Dates'].map(h => (
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pupilAttempts.map((p, i) => (
+                    <tr key={i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-3 font-medium text-slate-800 whitespace-nowrap">{p.pupilName}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-bold ${p.count >= 3 ? 'bg-red-100 text-red-600' : p.count === 2 ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-600'}`}>
+                          {p.count}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {p.passed ? (
+                          <Badge className="bg-emerald-100 text-emerald-700 gap-1"><CheckCircle className="w-3 h-3" />Passed</Badge>
+                        ) : (
+                          <Badge className="bg-red-100 text-red-700 gap-1"><XCircle className="w-3 h-3" />Not yet</Badge>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-slate-500 text-xs">
+                        {p.attempts.map(a => (
+                          <span key={a.id} className={`inline-block mr-2 ${a.passed ? 'text-emerald-600 font-medium' : 'text-slate-400'}`}>
+                            {moment(a.testDate).format('DD MMM YY')}
+                            {a.passed ? ' ✓' : ' ✗'}
+                          </span>
+                        ))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Add Result Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
