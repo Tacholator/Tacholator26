@@ -8,10 +8,14 @@ import { ShieldCheck, ExternalLink } from 'lucide-react';
 import moment from 'moment';
 
 export default function DvlaVerificationCard({ pupils }) {
-  // Only show pupils who have submitted DVLA info but haven't been verified yet
-  const pendingPupils = pupils.filter(
-    p => p.dvlaCheckCode && !p.instructorDvlaVerified
-  );
+  const now = new Date();
+
+  // Only show pupils with a valid (non-expired) DVLA code that hasn't been verified yet
+  const pendingPupils = pupils.filter(p => {
+    if (!p.dvlaCheckCode || p.instructorDvlaVerified) return false;
+    if (p.dvlaExpiryDate && new Date(p.dvlaExpiryDate) < now) return false; // expired — handled by automated reminder
+    return true;
+  });
 
   if (pendingPupils.length === 0) return null;
 
