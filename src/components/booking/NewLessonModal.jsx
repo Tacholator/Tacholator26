@@ -132,12 +132,14 @@ export default function NewLessonModal({ open, onOpenChange, defaultPupilId }) {
 
   const selectedPupil = useMemo(() => pupils.find(p => p.id === selectedPupilId), [pupils, selectedPupilId]);
 
-  // Pre-fill pickup location when a default pupil is selected and has a pickup address
+  // Pre-fill pickup location when a pupil is selected and has a pickup address
   useEffect(() => {
-    if (selectedPupil?.pickupAddress && !pickupLocation) {
+    if (selectedPupil?.pickupAddress) {
       setPickupLocation(selectedPupil.pickupAddress);
+    } else if (selectedPupilId) {
+      setPickupLocation('');
     }
-  }, [selectedPupil]);
+  }, [selectedPupilId, selectedPupil]);
 
   const lessonCost = (selectedPupil?.hourlyRate || 0) * durationHours;
   const currentBalance = selectedPupil?.bulkPaymentBalance || 0;
