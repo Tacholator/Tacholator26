@@ -33,7 +33,7 @@
     },
     "speakingRate": {
       "type": "number",
-      "default": 1.0
+      "default": 1
     },
     "completed": {
       "type": "boolean",
@@ -43,5 +43,19 @@
   "required": [
     "userId",
     "topicId"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.userId": "{{user.id}}"
+    },
+    "read": {
+      "data.userId": "{{user.id}}"
+    },
+    "update": {
+      "data.userId": "{{user.id}}"
+    },
+    "delete": {
+      "data.userId": "{{user.id}}"
+    }
+  }
 }
