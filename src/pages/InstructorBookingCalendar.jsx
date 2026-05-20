@@ -23,6 +23,7 @@ import UnavailableModal from '@/components/booking/UnavailableModal';
 import LunchBreakModal from '@/components/booking/LunchBreakModal';
 import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
 import InstructorScheduleLessonModal from '@/components/booking/InstructorScheduleLessonModal';
+import NewLessonModal from '@/components/booking/NewLessonModal';
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
 import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModal';
 import SlotDetailsModal from '@/components/booking/SlotDetailsModal';
@@ -37,6 +38,7 @@ export default function InstructorBookingCalendar() {
   const [showLunchModal, setShowLunchModal] = useState(false);
   const [showScheduleLessonModal, setShowScheduleLessonModal] = useState(false);
   const [selectedSlotForSchedule, setSelectedSlotForSchedule] = useState(null);
+  const [showNewLessonModal, setShowNewLessonModal] = useState(false);
   const [showBookingDetailsModal, setShowBookingDetailsModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
@@ -431,10 +433,7 @@ export default function InstructorBookingCalendar() {
           </div>
           <div className="flex items-center gap-2">
             <Button
-              onClick={() => {
-                setSelectedSlotForSchedule(null);
-                setShowScheduleLessonModal(true);
-              }}
+              onClick={() => setShowNewLessonModal(true)}
               className="bg-[#071739] hover:bg-[#0d2659] text-white gap-2"
               size="sm"
             >
@@ -581,6 +580,11 @@ export default function InstructorBookingCalendar() {
           onOpenChange={setShowLunchModal}
           onSave={(data) => createRuleMutation.mutate({ ...data, ruleType: 'lunch_break' })}
           isSaving={createRuleMutation.isPending}
+        />
+
+        <NewLessonModal
+          open={showNewLessonModal}
+          onOpenChange={setShowNewLessonModal}
         />
 
         <InstructorScheduleLessonModal
