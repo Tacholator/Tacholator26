@@ -189,16 +189,12 @@ export default function PracticalTestTab({ instructorId, pupils }) {
                         <span className={`font-semibold ${r.drivingFaults > 0 ? 'text-amber-500' : 'text-slate-400'}`}>{r.drivingFaults ?? 0}</span>
                       </td>
                       <td className="px-4 py-3 text-center">
-                          <span className={`font-semibold ${
-                            (() => {
-                              const pupilResults = sorted.filter(x => x.pupilId === r.pupilId).sort((a,b) => moment(a.testDate).diff(moment(b.testDate)));
-                              const attempt = pupilResults.findIndex(x => x.id === r.id) + 1;
-                              return attempt >= 3 ? 'text-red-600' : attempt === 2 ? 'text-amber-500' : 'text-slate-400';
-                            })()
-                          }`}>
-                            {sorted.filter(x => x.pupilId === r.pupilId).sort((a,b) => moment(a.testDate).diff(moment(b.testDate))).findIndex(x => x.id === r.id) + 1}
-                          </span>
-                        </td>
+                        <span className={`font-semibold ${
+                          (r.attemptNumber ?? 1) >= 3 ? 'text-red-600' : (r.attemptNumber ?? 1) === 2 ? 'text-amber-500' : 'text-slate-400'
+                        }`}>
+                          {r.attemptNumber ?? 1}
+                        </span>
+                      </td>
                       <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{r.examinerName || '—'}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
