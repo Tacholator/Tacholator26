@@ -59,5 +59,33 @@
     "pupilId",
     "title",
     "formatType"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.instructorId": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "data.pupilId": "{{user.data.pupil.id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "data.pupilId": "{{user.data.pupil.id}}"
+        }
+      ]
+    },
+    "delete": {
+      "data.instructorId": "{{user.id}}"
+    }
+  }
 }
