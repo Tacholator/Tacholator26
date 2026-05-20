@@ -12,7 +12,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '@/components/ui/select';
-import { CheckCircle, XCircle, Plus, Trash2, Award } from 'lucide-react';
+import { CheckCircle, XCircle, Plus, Trash2, Award, Pencil } from 'lucide-react';
 import moment from 'moment';
 
 const EMPTY_FORM = {
@@ -32,6 +32,7 @@ export default function PracticalTestTab({ instructorId, pupils }) {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [deleteId, setDeleteId] = useState(null);
+  const [editRecord, setEditRecord] = useState(null); // holds the record being edited
 
   const { data: results = [], isLoading } = useQuery({
     queryKey: ['practicalTestResults', instructorId],
@@ -55,6 +56,36 @@ export default function PracticalTestTab({ instructorId, pupils }) {
       setDeleteId(null);
     },
   });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.PracticalTestResult.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['practicalTestResults', instructorId] });
+      setEditRecord(null);
+    },
+  });
+
+  const openEdit = (r) => {
+    setEditRecord({
+      ...r,
+      passed: r.passed ? 'true' : 'false',
+    });
+  };
+
+  const handleUpdate = () => {
+    const { id, ...rest } = editRecord;
+    updateMutation.mutate({
+      id,
+      data: {
+        ...rest,
+        passed: rest.passed === 'true',
+        dangerousFaults: Number(rest.dangerousFaults) || 0,
+        seriousFaults: Number(rest.seriousFaults) || 0,
+        drivingFaults: Number(rest.drivingFaults) || 0,
+        attemptNumber: Number(rest.attemptNumber) || 1,
+      },
+    });
+  };
 
   const handleSubmit = () => {
     const pupil = pupils.find(p => p.id === form.pupilId);
@@ -170,9 +201,14 @@ export default function PracticalTestTab({ instructorId, pupils }) {
                         </td>
                       <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{r.examinerName || '—'}</td>
                       <td className="px-4 py-3">
-                        <button onClick={() => setDeleteId(r.id)} className="text-slate-300 hover:text-red-400 transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => openEdit(r)} className="text-slate-300 hover:text-blue-500 transition-colors">
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => setDeleteId(r.id)} className="text-slate-300 hover:text-red-400 transition-colors">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -246,6 +282,69 @@ export default function PracticalTestTab({ instructorId, pupils }) {
               className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
             >
               {createMutation.isPending ? 'Saving…' : 'Save Result'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Result Modal */}
+      <Dialog open={!!editRecord} onOpenChange={() => setEditRecord(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Test Result</DialogTitle>
+          </DialogHeader>
+          {editRecord && (
+            <div className="space-y-4 py-2">
+              <div>
+                <Label>Test Date</Label>
+                <Input type="date" value={editRecord.testDate} onChange={e => setEditRecord(r => ({ ...r, testDate: e.target.value }))} />
+              </div>
+              <div>
+                <Label>Result</Label>
+                <Select value={editRecord.passed} onValueChange={v => setEditRecord(r => ({ ...r, passed: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Pass</SelectItem>
+                    <SelectItem value="false">Fail</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <Label>Dangerous</Label>
+                  <Input type="number" min="0" value={editRecord.dangerousFaults} onChange={e => setEditRecord(r => ({ ...r, dangerousFaults: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Serious</Label>
+                  <Input type="number" min="0" value={editRecord.seriousFaults} onChange={e => setEditRecord(r => ({ ...r, seriousFaults: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Driving</Label>
+                  <Input type="number" min="0" value={editRecord.drivingFaults} onChange={e => setEditRecord(r => ({ ...r, drivingFaults: e.target.value }))} />
+                </div>
+              </div>
+              <div>
+                <Label>Attempt Number</Label>
+                <Input type="number" min="1" value={editRecord.attemptNumber} onChange={e => setEditRecord(r => ({ ...r, attemptNumber: e.target.value }))} />
+              </div>
+              <div>
+                <Label>Examiner Name</Label>
+                <Input placeholder="e.g. J. Smith" value={editRecord.examinerName || ''} onChange={e => setEditRecord(r => ({ ...r, examinerName: e.target.value }))} />
+              </div>
+              <div>
+                <Label>Notes</Label>
+                <Input placeholder="Optional notes" value={editRecord.notes || ''} onChange={e => setEditRecord(r => ({ ...r, notes: e.target.value }))} />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditRecord(null)}>Cancel</Button>
+            <Button
+              onClick={handleUpdate}
+              disabled={updateMutation.isPending}
+              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+            >
+              {updateMutation.isPending ? 'Saving…' : 'Save Changes'}
             </Button>
           </DialogFooter>
         </DialogContent>
