@@ -132,5 +132,33 @@
   "required": [
     "learnerId",
     "date"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.instructorId": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "$and": [
+            {
+              "data.learnerId": "{{user.data.pupil.id}}"
+            },
+            {
+              "data.isSharedWithLearner": true
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "data.instructorId": "{{user.id}}"
+    },
+    "delete": {
+      "data.instructorId": "{{user.id}}"
+    }
+  }
 }
