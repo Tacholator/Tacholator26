@@ -47,5 +47,35 @@
     "mockTestReportId",
     "category",
     "subcategory"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.instructorId": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "$and": [
+            {
+              "data.learnerId": "{{user.data.pupil.id}}"
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "data.instructorId": "{{user.id}}"
+    },
+    "delete": {
+      "data.instructorId": "{{user.id}}"
+    }
+  }
 }
