@@ -39,5 +39,46 @@
   "required": [
     "title",
     "type"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.instructorId": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "$and": [
+            {
+              "data.instructorId": "{{user.data.pupil.instructorId}}"
+            },
+            {
+              "$or": [
+                {
+                  "data.sharedWith": {
+                    "$in": [
+                      "{{user.data.pupil.id}}"
+                    ]
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "admin"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "data.instructorId": "{{user.id}}"
+    },
+    "delete": {
+      "data.instructorId": "{{user.id}}"
+    }
+  }
 }
