@@ -291,7 +291,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm p-0 gap-0 flex flex-col overflow-hidden top-[45%]" style={{ maxHeight: '90vh' }}>
+      <DialogContent className="max-w-sm p-0 gap-0 flex flex-col overflow-hidden" style={{ maxHeight: '90vh' }}>
         
         {/* Header */}
         <DialogHeader className="px-4 pt-4 pb-3 shrink-0 border-b bg-[#071739]">
