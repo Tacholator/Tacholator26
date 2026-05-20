@@ -86,6 +86,14 @@ export default function InstructorScheduleLessonModal({
     }
   }, [open, user?.id, user?.email, refetchPupils]);
 
+  const selectedPupil = React.useMemo(() => pupils.find(p => p.id === selectedPupilId), [pupils, selectedPupilId]);
+
+  // Auto-fill pickup location from pupil's profile address
+  React.useEffect(() => {
+    if (!selectedPupilId) return;
+    setPickupLocation(selectedPupil?.pickupAddress || '');
+  }, [selectedPupilId, selectedPupil?.pickupAddress]);
+
   const filteredPupils = React.useMemo(() => {
     if (!searchQuery.trim()) return pupils;
     const query = searchQuery.toLowerCase();
