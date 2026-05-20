@@ -30,7 +30,14 @@ import {
   WalletMinimal,
   Youtube,
   Trophy,
+  Lock,
 } from 'lucide-react';
+
+const isAccessRestricted = (pupil) => {
+  if (!pupil || pupil.status !== 'Passed' || !pupil.practicalTestPassDate) return false;
+  const daysSince = (Date.now() - new Date(pupil.practicalTestPassDate).getTime()) / (1000 * 60 * 60 * 24);
+  return daysSince > 7;
+};
 import { Switch } from '@/components/ui/switch';
 import ProgressRing from '@/components/ui/ProgressRing';
 import SkillsGrid from '@/components/skills/SkillsGrid';
@@ -378,6 +385,17 @@ export default function PupilProfile() {
                          pupil.status === 'Stopped' ? 'One Off' : 
                          pupil.status || 'Active'}
                       </Badge>
+                      {isAccessRestricted(pupil) && (
+                        <Badge className="bg-rose-100 text-rose-700 gap-1">
+                          <Lock className="w-3 h-3" />
+                          Access Restricted
+                        </Badge>
+                      )}
+                      {isAccessRestricted(pupil) && pupil.practicalTestPassDate && (
+                        <span className="text-xs text-rose-500 self-center">
+                          Restricted since {moment(pupil.practicalTestPassDate).add(7, 'days').format('D MMM YYYY')}
+                        </span>
+                      )}
                       {hasTestResult && (
                         <Badge className="bg-emerald-100 text-emerald-700 gap-1">
                           <CheckCircle2 className="w-3 h-3" /> Result Logged

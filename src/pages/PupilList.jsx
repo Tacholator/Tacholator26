@@ -41,8 +41,16 @@ import {
   ChevronRight,
   Loader2,
   Trash2,
-  X
+  X,
+  Lock
 } from 'lucide-react';
+
+// Returns true if a Passed pupil's access should be restricted (>7 days since pass date)
+const isAccessRestricted = (pupil) => {
+  if (pupil.status !== 'Passed' || !pupil.practicalTestPassDate) return false;
+  const daysSince = (Date.now() - new Date(pupil.practicalTestPassDate).getTime()) / (1000 * 60 * 60 * 24);
+  return daysSince > 7;
+};
 import PupilFormModal, { DVSA_SKILLS } from '@/components/modals/PupilFormModal';
 import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import OneOffPupilModal from '@/components/modals/OneOffPupilModal';
@@ -481,6 +489,17 @@ export default function PupilList() {
                             pupil.status === 'Stopped' ? 'One Off' : 
                             pupil.status || 'Active'}
                           </Badge>
+                          {isAccessRestricted(pupil) && (
+                            <Badge className="bg-rose-100 text-rose-700 gap-1">
+                              <Lock className="w-3 h-3" />
+                              Access Restricted
+                            </Badge>
+                          )}
+                          {isAccessRestricted(pupil) && pupil.practicalTestPassDate && (
+                            <p className="text-xs text-rose-400">
+                              Since {moment(pupil.practicalTestPassDate).add(7, 'days').format('D MMM YYYY')}
+                            </p>
+                          )}
                           {!pupil.hasSignedUp && !pupil.linkedUserId && (
                             <Badge className="bg-rose-100 text-rose-700">
                               Not Signed Up
@@ -602,9 +621,10 @@ export default function PupilList() {
               <div className="flex flex-col gap-3 py-4">
                 <Button
                   onClick={() => {
+                    const today = moment().format('YYYY-MM-DD');
                     updatePupilMutation.mutate({
                       id: pastTestPupils[currentTestPupilIndex].id,
-                      data: { status: 'Passed', practicalTestDate: null }
+                      data: { status: 'Passed', practicalTestDate: null, practicalTestPassDate: today }
                     });
                     if (currentTestPupilIndex < pastTestPupils.length - 1) {
                       setCurrentTestPupilIndex(currentTestPupilIndex + 1);
