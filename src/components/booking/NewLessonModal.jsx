@@ -45,7 +45,7 @@ const RECURRENCE_OPTIONS = [
   { label: 'Monthly', value: 'monthly' },
 ];
 
-export default function NewLessonModal({ open, onOpenChange }) {
+export default function NewLessonModal({ open, onOpenChange, defaultPupilId }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -108,7 +108,7 @@ export default function NewLessonModal({ open, onOpenChange }) {
       setDate(today);
       setStartTime('09:00');
       setDurationHours(1);
-      setSelectedPupilId('');
+      setSelectedPupilId(defaultPupilId || '');
       setPickupLocation('');
       setDropoffLocation('');
       setDropoffSameAsPickup(true);
@@ -131,6 +131,13 @@ export default function NewLessonModal({ open, onOpenChange }) {
   }, [pupils, searchQuery]);
 
   const selectedPupil = useMemo(() => pupils.find(p => p.id === selectedPupilId), [pupils, selectedPupilId]);
+
+  // Pre-fill pickup location when a default pupil is selected and has a pickup address
+  useEffect(() => {
+    if (selectedPupil?.pickupAddress && !pickupLocation) {
+      setPickupLocation(selectedPupil.pickupAddress);
+    }
+  }, [selectedPupil]);
 
   const lessonCost = (selectedPupil?.hourlyRate || 0) * durationHours;
   const currentBalance = selectedPupil?.bulkPaymentBalance || 0;

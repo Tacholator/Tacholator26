@@ -37,6 +37,7 @@ import DiaryTimeline from '@/components/diary/DiaryTimeline';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
+import NewLessonModal from '@/components/booking/NewLessonModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
 import ClassNotesTab from '@/components/classnotes/ClassNotesTab';
@@ -72,6 +73,7 @@ export default function PupilProfile() {
   const [showLessonModal, setShowLessonModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBookingSummaryModal, setShowBookingSummaryModal] = useState(false);
+  const [showNewLessonModal, setShowNewLessonModal] = useState(false);
   const [checksData, setChecksData] = useState({
     licenseChecked: false,
     licenseCheckDate: '',
@@ -1029,8 +1031,20 @@ export default function PupilProfile() {
           <TabsContent value="lessons">
             <Card className="border-0 shadow-sm">
               <CardHeader>
-                <CardTitle>Confirmed Lessons</CardTitle>
-                <p className="text-sm text-slate-600">Lessons booked by the pupil that have been confirmed</p>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <CardTitle>Confirmed Lessons</CardTitle>
+                    <p className="text-sm text-slate-600 mt-1">Lessons booked by the pupil that have been confirmed</p>
+                  </div>
+                  <Button
+                    onClick={() => setShowNewLessonModal(true)}
+                    className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] gap-2 shrink-0"
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    New Lesson
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
@@ -1161,6 +1175,18 @@ export default function PupilProfile() {
         booking={selectedBooking}
         pupil={pupil}
         readOnly={selectedBooking?.hasDiaryEntry}
+      />
+
+      <NewLessonModal
+        open={showNewLessonModal}
+        onOpenChange={(open) => {
+          setShowNewLessonModal(open);
+          if (!open) {
+            queryClient.invalidateQueries(['pupilConfirmedBookings', pupilId]);
+            queryClient.invalidateQueries(['pupil', pupilId]);
+          }
+        }}
+        defaultPupilId={pupilId}
       />
     </div>
   );
