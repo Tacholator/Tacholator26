@@ -84,16 +84,19 @@ export default function NewLessonModal({ open, onOpenChange }) {
   const { data: pupils = [], refetch: refetchPupils } = useQuery({
     queryKey: ['newLessonModalPupils', user?.id, user?.email],
     queryFn: async () => {
-      if (!user?.id || !user?.email) return [];
-      const allPupils = await base44.entities.Pupil.filter({
-        instructorId: user.id,
-        instructorEmail: user.email,
-      });
-      return allPupils
+      if (!user?.id) return [];
+      const [byId, byEmail] = await Promise.all([
+        base44.entities.Pupil.filter({ instructorId: user.id }),
+        user?.email ? base44.entities.Pupil.filter({ instructorEmail: user.email }) : Promise.resolve([]),
+      ]);
+      // Merge and deduplicate
+      const map = new Map();
+      [...byId, ...byEmail].forEach(p => map.set(p.id, p));
+      return Array.from(map.values())
         .filter(p => p.status === 'Active' || p.status === 'Stopped')
         .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
     },
-    enabled: !!user?.id && !!user?.email && open,
+    enabled: !!user?.id && open,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: 'always',
