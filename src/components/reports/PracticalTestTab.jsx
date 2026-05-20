@@ -22,6 +22,7 @@ const EMPTY_FORM = {
   dangerousFaults: 0,
   seriousFaults: 0,
   drivingFaults: 0,
+  attemptNumber: 1,
   examinerName: '',
   notes: '',
 };
@@ -65,6 +66,7 @@ export default function PracticalTestTab({ instructorId, pupils }) {
       dangerousFaults: Number(form.dangerousFaults) || 0,
       seriousFaults: Number(form.seriousFaults) || 0,
       drivingFaults: Number(form.drivingFaults) || 0,
+      attemptNumber: Number(form.attemptNumber) || 1,
     });
   };
 
@@ -226,6 +228,10 @@ export default function PracticalTestTab({ instructorId, pupils }) {
                 <Label>Driving</Label>
                 <Input type="number" min="0" value={form.drivingFaults} onChange={e => setForm(f => ({ ...f, drivingFaults: e.target.value }))} />
               </div>
+            </div>
+            <div>
+              <Label>Attempt Number</Label>
+              <Input type="number" min="1" value={form.attemptNumber} onChange={e => setForm(f => ({ ...f, attemptNumber: e.target.value }))} />
             </div>
             <div>
               <Label>Examiner Name</Label>

@@ -19,6 +19,7 @@ export default function TestResultModal({ open, onClose, pupil, instructorId }) 
     dangerousFaults: 0,
     seriousFaults: 0,
     drivingFaults: 0,
+    attemptNumber: 1,
     examinerName: '',
   });
   const [saved, setSaved] = useState(false);
@@ -40,6 +41,7 @@ export default function TestResultModal({ open, onClose, pupil, instructorId }) 
         dangerousFaults: r.dangerousFaults ?? 0,
         seriousFaults: r.seriousFaults ?? 0,
         drivingFaults: r.drivingFaults ?? 0,
+        attemptNumber: r.attemptNumber ?? 1,
         examinerName: r.examinerName || '',
       });
       setSaved(true);
@@ -85,6 +87,7 @@ export default function TestResultModal({ open, onClose, pupil, instructorId }) 
       dangerousFaults: Number(form.dangerousFaults) || 0,
       seriousFaults: Number(form.seriousFaults) || 0,
       drivingFaults: Number(form.drivingFaults) || 0,
+      attemptNumber: Number(form.attemptNumber) || 1,
       examinerName: form.examinerName,
     });
   };
@@ -134,6 +137,10 @@ export default function TestResultModal({ open, onClose, pupil, instructorId }) 
               <Label>Driving</Label>
               <Input type="number" min="0" value={form.drivingFaults} onChange={e => setForm(f => ({ ...f, drivingFaults: e.target.value }))} />
             </div>
+          </div>
+          <div>
+            <Label>Attempt Number</Label>
+            <Input type="number" min="1" value={form.attemptNumber} onChange={e => setForm(f => ({ ...f, attemptNumber: e.target.value }))} />
           </div>
           <div>
             <Label>Examiner Name</Label>

@@ -38,6 +38,11 @@
       "default": 0,
       "description": "Number of driving faults"
     },
+    "attemptNumber": {
+      "type": "number",
+      "default": 1,
+      "description": "Which attempt number this test was for the pupil"
+    },
     "examinerName": {
       "type": "string",
       "description": "Name of the examiner"
