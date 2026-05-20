@@ -37,5 +37,55 @@
   },
   "required": [
     "boardId"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.boardId": {
+        "$in": [
+          "{{base44.entities.WhiteboardBoard.list('id', 'ownerInstructorId=')}}"
+        ]
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.boardId": {
+            "$in": [
+              "{{base44.entities.WhiteboardBoard.list('id', 'ownerInstructorId=')}}"
+            ]
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.boardId": {
+                "$in": [
+                  "{{base44.entities.WhiteboardBoard.list('id', 'linkedPupilId=', 'isSharedWithPupil=true')}}"
+                ]
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "data.boardId": {
+        "$in": [
+          "{{base44.entities.WhiteboardBoard.list('id', 'ownerInstructorId=')}}"
+        ]
+      }
+    },
+    "delete": {
+      "data.boardId": {
+        "$in": [
+          "{{base44.entities.WhiteboardBoard.list('id', 'ownerInstructorId=')}}"
+        ]
+      }
+    }
+  }
 }
