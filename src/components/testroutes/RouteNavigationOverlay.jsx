@@ -943,7 +943,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const nextBanner = nextStep ? buildBanner(nextStep) : null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black" style={{ height: '100dvh' }}>
+    <div
+      className="fixed z-[9999] bg-black overflow-hidden"
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
+    >
       {/* Hide Google Maps branding chrome */}
       <style>{`
         .gm-style-cc, .gm-style-cc + div,
@@ -1116,8 +1124,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       {/* Bottom Panel — fixed to bottom so it's always visible regardless of viewport */}
       {!hasStarted ? (
         <div
-          className="absolute bottom-0 left-0 right-0 bg-[#071739] px-4 pt-3 shadow-2xl z-30"
-          style={{ paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}
+          className="bg-[#071739] px-4 pt-3 shadow-2xl"
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10000,
+            paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom))',
+          }}
         >
           <div className="flex justify-between mb-4">
             <div>
@@ -1161,8 +1176,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               initial={{ y: 90, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', damping: 28 }}
-              className="absolute bottom-0 left-0 right-0 bg-[#071739] px-4 py-3 shadow-2xl z-30"
-              style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+              className="bg-[#071739] px-4 py-3 shadow-2xl"
+              style={{
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 10000,
+                paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
+              }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex gap-5 items-center">
