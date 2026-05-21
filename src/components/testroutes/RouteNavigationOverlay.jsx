@@ -713,9 +713,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       const pos = { lat: latitude, lng: longitude };
       const userIcon = {
         path: 'M 0,-1.2 L 0.7,0.9 L 0,0.45 L -0.7,0.9 Z',
-        fillColor: '#F7B602',
+        fillColor: driveToStartModeRef.current ? '#22c55e' : '#F7B602',
         fillOpacity: 1,
-        strokeColor: '#071739',
+        strokeColor: driveToStartModeRef.current ? '#14532d' : '#071739',
         strokeWeight: 0.6,
         scale: 22,
         rotation: newSmoothed,
@@ -1108,7 +1108,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               transition={{ type: 'spring', damping: 28, stiffness: 280 }}
               className="absolute top-0 left-0 right-0 z-20"
             >
-              <div className="bg-[#071739] shadow-2xl">
+              <div className={`shadow-2xl ${driveToStartMode ? 'bg-[#1a5c1a]' : 'bg-[#071739]'}`}>
                 {/* Main instruction */}
                 <div className="flex items-center px-4 pt-4 pb-3 gap-4">
                   <ManeuverIcon iconKey={banner.iconKey} size={58} />
@@ -1118,7 +1118,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                         {formatDistanceUK(distanceToManeuver)}
                       </p>
                     )}
-                    <p className="text-sm font-bold text-[#F7B602] mt-1 leading-tight">{banner.title}</p>
+                    <p className={`text-sm font-bold mt-1 leading-tight ${driveToStartMode ? 'text-green-300' : 'text-[#F7B602]'}`}>{banner.title}</p>
                     {banner.street && (
                       <p className="text-base font-semibold text-white truncate mt-0.5 opacity-90">{banner.street}</p>
                     )}
@@ -1128,7 +1128,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
                 {/* Drive-to-start mode indicator */}
                 {driveToStartMode && (
-                  <div className="flex items-center gap-2 bg-[#F7B602]/20 px-4 py-2 text-[#F7B602] text-xs border-t border-[#F7B602]/30">
+                  <div className="flex items-center gap-2 bg-green-900/60 px-4 py-2 text-green-300 text-xs border-t border-green-700/50">
                     <Navigation2 className="w-3 h-3 shrink-0" />
                     <span className="font-semibold">Navigating to test route start point</span>
                   </div>
@@ -1150,7 +1150,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
                 {/* Then strip */}
                 {nextBanner && (
-                  <div className="flex items-center gap-3 border-t border-slate-700/60 px-4 py-2.5">
+                  <div className={`flex items-center gap-3 border-t px-4 py-2.5 ${driveToStartMode ? 'border-green-700/60' : 'border-slate-700/60'}`}>
                     <span className="text-xs text-slate-400 font-semibold shrink-0 uppercase tracking-wide">Then</span>
                     <ManeuverIcon iconKey={nextBanner.iconKey} size={22} />
                     <div className="flex-1 min-w-0">
@@ -1291,7 +1291,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               initial={{ y: 90, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', damping: 28 }}
-              className="bg-[#071739] px-4 py-3 shadow-2xl"
+              className={`px-4 py-3 shadow-2xl ${driveToStartMode ? 'bg-[#1a5c1a]' : 'bg-[#071739]'}`}
               style={{
                 position: 'fixed',
                 bottom: 0,
