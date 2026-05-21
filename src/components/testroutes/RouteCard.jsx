@@ -8,7 +8,7 @@ export default function RouteCard({ route, onClick }) {
 
   return (
     <Card 
-      className="border-2 border-slate-200 hover:border-[#F7B602] hover:shadow-lg transition-all cursor-pointer"
+      className="border-0 shadow-none cursor-pointer hover:bg-slate-50 transition-all"
       onClick={() => onClick(route)}
     >
       <CardContent className="p-6">

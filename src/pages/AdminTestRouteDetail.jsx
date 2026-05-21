@@ -373,15 +373,17 @@ export default function AdminTestRouteDetail() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {sortedRoutes.map(route => (
-              <div key={route.id} className="flex flex-col">
-                <RouteCard
-                  route={route}
-                  onClick={() => {
-                    setSelectedRoute(route);
-                    setShowRouteModal(true);
-                  }}
-                />
-                <div className="flex gap-2 mt-2">
+              <div key={route.id} className="flex flex-col border-2 border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+                <div className="flex-1">
+                  <RouteCard
+                    route={route}
+                    onClick={() => {
+                      setSelectedRoute(route);
+                      setShowRouteModal(true);
+                    }}
+                  />
+                </div>
+                <div className="flex gap-2 p-3 border-t border-slate-100 bg-slate-50">
                   <div className="flex-1">
                     <ConfigureRouteButton
                       routeId={route.id}
