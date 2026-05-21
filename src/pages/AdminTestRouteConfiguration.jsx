@@ -144,7 +144,7 @@ export default function AdminTestRouteConfiguration() {
           </Button>
         </Link>
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-[#071739] mb-2">Test Route Configuration</h1>
               <p className="text-slate-600">
@@ -153,7 +153,7 @@ export default function AdminTestRouteConfiguration() {
             </div>
             <Button
               onClick={() => setShowCreateModal(true)}
-              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Test Route Area
