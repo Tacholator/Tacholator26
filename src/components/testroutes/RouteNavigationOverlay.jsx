@@ -379,10 +379,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const [currentSpeedMps, setCurrentSpeedMps] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [gpsUnavailable, setGpsUnavailable] = useState(false);
-  // "Drive to Start" feature
-  const [driveToStartMode, setDriveToStartMode] = useState(false);
-  const [distanceToStart, setDistanceToStart] = useState(null);
-  const driveToStartModeRef = useRef(false);
 
   // Map DOM refs
   const mapDivRef = useRef(null);
@@ -426,7 +422,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   useEffect(() => { navStepsRef.current = navSteps; }, [navSteps]);
   useEffect(() => { stepIndexRef.current = stepIndex; }, [stepIndex]);
   useEffect(() => { userLocationRef.current = userLocation; }, [userLocation]);
-  useEffect(() => { driveToStartModeRef.current = driveToStartMode; }, [driveToStartMode]);
 
   const routeGeoJson = route?.gpsGeoJson || null;
   const allCoords = routeGeoJson?.geometry?.coordinates || [];
@@ -619,55 +614,10 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     return steps;
   }, [allCoords, updateRoutePolylines]);
 
-  // ── Build Route to Start Point ────────────────────────────────────────────────
-  const buildRouteToStart = useCallback(async (originLat, originLng) => {
-    if (!startCoord || !window.google?.maps) return;
-    const [startLng, startLat] = startCoord;
-    const svc = new window.google.maps.DirectionsService();
-    let result;
-    try {
-      result = await svc.route({
-        origin: { lat: originLat, lng: originLng },
-        destination: { lat: startLat, lng: startLng },
-        travelMode: window.google.maps.TravelMode.DRIVING,
-        region: 'GB',
-        provideRouteAlternatives: false,
-      });
-    } catch (e) {
-      console.warn('Directions to start failed:', e);
-      return;
-    }
-    if (!result?.routes?.length) return;
-    const r = result.routes[0];
-    setTotalDistance(r.legs.reduce((s, l) => s + (l.distance?.value || 0), 0));
-    setTotalDuration(r.legs.reduce((s, l) => s + (l.duration?.value || 0), 0));
-    const steps = normalizeGoogleSteps(r.legs, []);
-    setNavSteps(steps);
-    navStepsRef.current = steps;
-    setStepIndex(0);
-    stepIndexRef.current = 0;
-    milestonesRef.current = { early: false, near: false, now: false };
-    setBanner(buildBanner(steps[0]));
-    return steps;
-  }, [startCoord]);
-
   // ── Pre-fetch route when map is ready ─────────────────────────────────────────
   useEffect(() => {
     if (mapReady && startCoord) buildRoute(startCoord[1], startCoord[0]);
   }, [mapReady]);
-
-  // ── Get user location for pre-start distance check ────────────────────────────
-  useEffect(() => {
-    if (!mapReady || hasStarted) return;
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy });
-      },
-      () => {}, // silently ignore errors in pre-start
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
-    );
-  }, [mapReady, hasStarted]);
 
   // ── GPS Location Update ───────────────────────────────────────────────────────
   const handleLocationUpdate = useCallback((position) => {
@@ -713,9 +663,9 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       const pos = { lat: latitude, lng: longitude };
       const userIcon = {
         path: 'M 0,-1.2 L 0.7,0.9 L 0,0.45 L -0.7,0.9 Z',
-        fillColor: driveToStartModeRef.current ? '#22c55e' : '#F7B602',
+        fillColor: '#F7B602',
         fillOpacity: 1,
-        strokeColor: driveToStartModeRef.current ? '#14532d' : '#071739',
+        strokeColor: '#071739',
         strokeWeight: 0.6,
         scale: 22,
         rotation: newSmoothed,
@@ -751,57 +701,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       completedPathRef.current = [{ lat: latitude, lng: longitude }];
 
       if (mapInstanceRef.current) {
-        if (driveToStartModeRef.current && startCoord) {
-          // Show both user location and route start point
-          const [startLng, startLat] = startCoord;
-          const bounds = new window.google.maps.LatLngBounds();
-          bounds.extend({ lat: latitude, lng: longitude });
-          bounds.extend({ lat: startLat, lng: startLng });
-          mapInstanceRef.current.setTilt(0);
-          mapInstanceRef.current.setHeading(0);
-          mapInstanceRef.current.fitBounds(bounds, 80);
-        } else {
-          animateCameraTo(mapInstanceRef.current, latitude, longitude, newSmoothed, 18, 52);
+        animateCameraTo(mapInstanceRef.current, latitude, longitude, newSmoothed, 18, 52);
+      }
+      buildRoute(latitude, longitude).then(steps => {
+        if (steps?.length && !isMutedRef.current) {
+          setTimeout(() => speakQueued('Start following the practice route.'), 600);
+          setTimeout(() => speakQueued(buildSpeech(steps[0], steps[0]?.distance || null)), 2200);
         }
-      }
-
-      if (driveToStartModeRef.current) {
-        // Navigate to the test route start point
-        buildRouteToStart(latitude, longitude).then(steps => {
-          if (steps?.length && !isMutedRef.current) {
-            setTimeout(() => speakQueued('Navigating to the test route start point.'), 600);
-            setTimeout(() => speakQueued(buildSpeech(steps[0], steps[0]?.distance || null)), 2200);
-          }
-        });
-      } else {
-        buildRoute(latitude, longitude).then(steps => {
-          if (steps?.length && !isMutedRef.current) {
-            setTimeout(() => speakQueued('Start following the practice route.'), 600);
-            setTimeout(() => speakQueued(buildSpeech(steps[0], steps[0]?.distance || null)), 2200);
-          }
-        });
-      }
+      });
       return;
-    }
-
-    // ── Detect arrival at start point (drive-to-start mode) ──────────────────
-    if (driveToStartModeRef.current && startCoord) {
-      const [startLng, startLat] = startCoord;
-      const distToStart = haversineMeters(latitude, longitude, startLat, startLng);
-      if (distToStart <= 40) {
-        // Arrived! Switch to main route navigation
-        driveToStartModeRef.current = false;
-        setDriveToStartMode(false);
-        completedPathRef.current = [{ lat: latitude, lng: longitude }];
-        milestonesRef.current = { early: false, near: false, now: false };
-        if (!isMutedRef.current) speakQueued('You have arrived at the start point. Beginning the practice route.', true);
-        buildRoute(latitude, longitude).then(steps => {
-          if (steps?.length && !isMutedRef.current) {
-            setTimeout(() => speakQueued(buildSpeech(steps[0], steps[0]?.distance || null)), 2500);
-          }
-        });
-        return;
-      }
     }
 
     // Accumulate completed path
@@ -810,24 +718,13 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     // ── Camera Follow Mode ────────────────────────────────────────────────────
     if (followModeRef.current && mapInstanceRef.current) {
       const now = Date.now();
-      if (now - lastCameraUpdateRef.current >= 1000) {
+      if (now - lastCameraUpdateRef.current >= 300) {
         lastCameraUpdateRef.current = now;
-        if (driveToStartModeRef.current && startCoord) {
-          // Keep both user and start point in view
-          const [startLng, startLat] = startCoord;
-          const bounds = new window.google.maps.LatLngBounds();
-          bounds.extend({ lat: latitude, lng: longitude });
-          bounds.extend({ lat: startLat, lng: startLng });
-          mapInstanceRef.current.setTilt(0);
-          mapInstanceRef.current.setHeading(0);
-          mapInstanceRef.current.fitBounds(bounds, 80);
-        } else {
-          const spd = speed != null && !isNaN(speed) ? speed : 7;
-          // Zoom: 17.5 at slow, 16 at 60+km/h
-          const targetZoom = spd < 5 ? 18 : spd < 14 ? 17.5 : spd < 22 ? 17 : 16.5;
-          const targetTilt = 52;
-          animateCameraTo(mapInstanceRef.current, latitude, longitude, newSmoothed, targetZoom, targetTilt);
-        }
+        const spd = speed != null && !isNaN(speed) ? speed : 7;
+        // Zoom: 17.5 at slow, 16 at 60+km/h
+        const targetZoom = spd < 5 ? 18 : spd < 14 ? 17.5 : spd < 22 ? 17 : 16.5;
+        const targetTilt = 52;
+        animateCameraTo(mapInstanceRef.current, latitude, longitude, newSmoothed, targetZoom, targetTilt);
       }
     }
 
@@ -907,7 +804,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         });
       }
     }
-  }, [buildRoute, buildRouteToStart, allCoords, updateRoutePolylines, startCoord]);
+  }, [buildRoute, allCoords, updateRoutePolylines]);
 
   // ── Camera animation helper (smooth panTo + heading + tilt + zoom) ────────────
   function animateCameraTo(map, lat, lng, heading, zoom, tilt) {
@@ -965,16 +862,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       animateCameraTo(mapInstanceRef.current, startCoord[1], startCoord[0], initBearing, 18, 52);
     }
     // Keep the original GPX route fully visible throughout navigation
-  };
-
-  const handleDriveToStart = () => {
-    setDriveToStartMode(true);
-    driveToStartModeRef.current = true;
-    setIsLoading(true);
-    setHasStarted(true);
-    setFollowMode(true);
-    followModeRef.current = true;
-    completedPathRef.current = [];
   };
 
   const handleEnd = () => {
@@ -1055,13 +942,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const nextStep = navSteps[stepIndex + 1] || null;
   const nextBanner = nextStep ? buildBanner(nextStep) : null;
 
-  // Distance from user's current location to route start point
-  const distToStartPoint = userLocation && startCoord
-    ? haversineMeters(userLocation.latitude, userLocation.longitude, startCoord[1], startCoord[0])
-    : null;
-  const isNearStart = distToStartPoint != null && distToStartPoint <= 100;
-  const isFarFromStart = distToStartPoint != null && distToStartPoint > 100;
-
   return (
     <div
       className="fixed z-[9999] bg-black overflow-hidden"
@@ -1130,7 +1010,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               transition={{ type: 'spring', damping: 28, stiffness: 280 }}
               className="absolute top-0 left-0 right-0 z-20"
             >
-              <div className={`shadow-2xl ${driveToStartMode ? 'bg-[#1a5c1a]' : 'bg-[#071739]'}`}>
+              <div className="bg-[#071739] shadow-2xl">
                 {/* Main instruction */}
                 <div className="flex items-center px-4 pt-4 pb-3 gap-4">
                   <ManeuverIcon iconKey={banner.iconKey} size={58} />
@@ -1140,21 +1020,13 @@ export default function RouteNavigationOverlay({ route, onClose }) {
                         {formatDistanceUK(distanceToManeuver)}
                       </p>
                     )}
-                    <p className={`text-sm font-bold mt-1 leading-tight ${driveToStartMode ? 'text-green-300' : 'text-[#F7B602]'}`}>{banner.title}</p>
+                    <p className="text-sm font-bold text-[#F7B602] mt-1 leading-tight">{banner.title}</p>
                     {banner.street && (
                       <p className="text-base font-semibold text-white truncate mt-0.5 opacity-90">{banner.street}</p>
                     )}
                     {banner.sub && <p className="text-xs text-slate-400 mt-0.5">{banner.sub}</p>}
                   </div>
                 </div>
-
-                {/* Drive-to-start mode indicator */}
-                {driveToStartMode && (
-                  <div className="flex items-center gap-2 bg-green-900/60 px-4 py-2 text-green-300 text-xs border-t border-green-700/50">
-                    <Navigation2 className="w-3 h-3 shrink-0" />
-                    <span className="font-semibold">Navigating to test route start point</span>
-                  </div>
-                )}
 
                 {/* Off-route / rerouting bar */}
                 {isRerouting && (
@@ -1172,7 +1044,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
                 {/* Then strip */}
                 {nextBanner && (
-                  <div className={`flex items-center gap-3 border-t px-4 py-2.5 ${driveToStartMode ? 'border-green-700/60' : 'border-slate-700/60'}`}>
+                  <div className="flex items-center gap-3 border-t border-slate-700/60 px-4 py-2.5">
                     <span className="text-xs text-slate-400 font-semibold shrink-0 uppercase tracking-wide">Then</span>
                     <ManeuverIcon iconKey={nextBanner.iconKey} size={22} />
                     <div className="flex-1 min-w-0">
@@ -1289,15 +1161,6 @@ export default function RouteNavigationOverlay({ route, onClose }) {
             <Navigation2 className="w-5 h-5 mr-2" />
             Go
           </Button>
-          {isFarFromStart && (
-            <Button
-              onClick={handleDriveToStart}
-              className="w-full mt-2 bg-[#071739] border border-[#F7B602] text-[#F7B602] hover:bg-[#0d2456] text-sm py-3 font-semibold rounded-xl"
-            >
-              <Navigation2 className="w-4 h-4 mr-2" />
-              Drive to Start Point · {formatDistanceUK(distToStartPoint)} away
-            </Button>
-          )}
           <button
             onClick={onClose}
             className="w-full mt-2 text-slate-400 text-sm py-1.5 hover:text-white transition-colors"
@@ -1313,7 +1176,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               initial={{ y: 90, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', damping: 28 }}
-              className={`px-4 py-3 shadow-2xl ${driveToStartMode ? 'bg-[#1a5c1a]' : 'bg-[#071739]'}`}
+              className="bg-[#071739] px-4 py-3 shadow-2xl"
               style={{
                 position: 'fixed',
                 bottom: 0,
