@@ -254,7 +254,7 @@ export default function AdminTestRouteDetail() {
 
         <Card className="mb-8">
           <CardHeader>
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               <div className="flex-1">
                 {isEditingMainCard ? (
                   <div className="space-y-3">
@@ -294,7 +294,7 @@ export default function AdminTestRouteDetail() {
                   </>
                 )}
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 sm:min-w-[140px]">
                 {isEditingMainCard ? (
                   <>
                     <Button
@@ -349,11 +349,11 @@ export default function AdminTestRouteDetail() {
           </CardHeader>
         </Card>
 
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <h2 className="text-xl font-semibold text-[#071739]">Routes</h2>
           <Button
             onClick={() => setShowAddRouteModal(true)}
-            className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
+            className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Route
