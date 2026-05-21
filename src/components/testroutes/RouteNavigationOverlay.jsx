@@ -943,7 +943,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const nextBanner = nextStep ? buildBanner(nextStep) : null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black flex flex-col overflow-hidden" style={{ height: '100dvh' }}>
+    <div className="fixed inset-0 z-[9999] bg-black" style={{ height: '100dvh' }}>
       {/* Hide Google Maps branding chrome */}
       <style>{`
         .gm-style-cc, .gm-style-cc + div,
@@ -957,7 +957,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       `}</style>
 
       {/* Map */}
-      <div className="flex-1 relative overflow-hidden min-h-0">
+      <div className="absolute inset-0">
         <div id="route-nav-map" ref={mapDivRef} style={{ width: '100%', height: '100%' }} />
 
         {/* Error */}
@@ -1113,9 +1113,12 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         </div>
       </div>
 
-      {/* Bottom Panel */}
+      {/* Bottom Panel — fixed to bottom so it's always visible regardless of viewport */}
       {!hasStarted ? (
-        <div className="bg-[#071739] px-4 pt-3 pb-6 shadow-2xl" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
+        <div
+          className="absolute bottom-0 left-0 right-0 bg-[#071739] px-4 pt-3 shadow-2xl z-30"
+          style={{ paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}
+        >
           <div className="flex justify-between mb-4">
             <div>
               <p className="text-[10px] text-slate-400 uppercase tracking-widest">Time</p>
@@ -1158,7 +1161,8 @@ export default function RouteNavigationOverlay({ route, onClose }) {
               initial={{ y: 90, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', damping: 28 }}
-              className="bg-[#071739] px-4 py-3 pb-4 shadow-2xl"
+              className="absolute bottom-0 left-0 right-0 bg-[#071739] px-4 py-3 shadow-2xl z-30"
+              style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex gap-5 items-center">
