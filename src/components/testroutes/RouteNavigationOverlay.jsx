@@ -557,26 +557,15 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
   // ── Update Completed/Remaining Route Polylines ────────────────────────────────
   const updateRoutePolylines = useCallback((completedPath, stepIdx) => {
-    if (!mapInstanceRef.current || !remainingPolyRef.current) return;
-    const steps = navStepsRef.current;
+    if (!mapInstanceRef.current) return;
 
-    // Completed path = driven coords
+    // Only show the driven (completed) grey path — original GPX route stays as-is
     if (completedPolyRef.current) {
       completedPolyRef.current.setPath(completedPath);
     }
 
-    // Remaining path = rest of allCoords from nearest point onward
-    // Simple: use remaining steps' rawPath
-    const remainingPath = steps.slice(stepIdx).flatMap(st => st.rawPath || []);
-    if (remainingPolyRef.current) {
-      remainingPolyRef.current.setPath(remainingPath.length ? remainingPath : []);
-    }
-
-    // Next leg highlight = current step rawPath
-    const curStep = steps[stepIdx];
-    if (nextLegPolyRef.current) {
-      nextLegPolyRef.current.setPath(curStep?.rawPath || []);
-    }
+    // Never draw directions-based remaining/next-leg paths — they differ from the GPX
+    // The original GPX polyline (originalRoutePolyRef) is the single source of truth
   }, []);
 
   // ── Build Route via Google Directions ────────────────────────────────────────
@@ -872,10 +861,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       smoothedBearingRef.current = initBearing;
       animateCameraTo(mapInstanceRef.current, startCoord[1], startCoord[0], initBearing, 18, 52);
     }
-    // Hide the static preview route once navigation starts (directions polylines take over)
-    if (originalRoutePolyRef.current) {
-      originalRoutePolyRef.current.setOptions({ strokeOpacity: 0.25, strokeWeight: 5 });
-    }
+    // Keep the original GPX route fully visible throughout navigation
   };
 
   const handleEnd = () => {
