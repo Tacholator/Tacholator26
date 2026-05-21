@@ -383,7 +383,8 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   // Map DOM refs
   const mapDivRef = useRef(null);
   const mapInstanceRef = useRef(null);
-  const remainingPolyRef = useRef(null);   // blue — remaining route
+  const originalRoutePolyRef = useRef(null); // the original GPX route, always shown
+  const remainingPolyRef = useRef(null);   // blue — remaining route (directions-based)
   const completedPolyRef = useRef(null);   // grey — driven portion
   const nextLegPolyRef = useRef(null);     // bright — immediate next step
   const startMarkerRef = useRef(null);
@@ -488,17 +489,22 @@ export default function RouteNavigationOverlay({ route, onClose }) {
         });
         mapInstanceRef.current = map;
 
-        // Draw full route as remaining (blue)
+        // Draw original GPX route as persistent background (always matches the preview map)
         if (allCoords.length) {
           const path = allCoords.map(([lng, lat]) => ({ lat, lng }));
-          remainingPolyRef.current = new window.google.maps.Polyline({
+          // Original route — always visible, matches the static map preview exactly
+          originalRoutePolyRef.current = new window.google.maps.Polyline({
             path, map, strokeColor: '#1A73E8', strokeWeight: 9, strokeOpacity: 0.95, zIndex: 2,
           });
+          // Directions-based overlays (start empty, filled after route is built)
+          remainingPolyRef.current = new window.google.maps.Polyline({
+            path: [], map, strokeColor: '#1A73E8', strokeWeight: 9, strokeOpacity: 0.95, zIndex: 2,
+          });
           completedPolyRef.current = new window.google.maps.Polyline({
-            path: [], map, strokeColor: '#9E9E9E', strokeWeight: 7, strokeOpacity: 0.6, zIndex: 1,
+            path: [], map, strokeColor: '#9E9E9E', strokeWeight: 7, strokeOpacity: 0.6, zIndex: 3,
           });
           nextLegPolyRef.current = new window.google.maps.Polyline({
-            path: [], map, strokeColor: '#0056D2', strokeWeight: 10, strokeOpacity: 1, zIndex: 3,
+            path: [], map, strokeColor: '#0056D2', strokeWeight: 10, strokeOpacity: 1, zIndex: 4,
           });
           const bounds = new window.google.maps.LatLngBounds();
           path.forEach(p => bounds.extend(p));
@@ -865,6 +871,10 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       const initBearing = coords.length >= 2 ? computeBearing(coords[0][1], coords[0][0], coords[1][1], coords[1][0]) : 0;
       smoothedBearingRef.current = initBearing;
       animateCameraTo(mapInstanceRef.current, startCoord[1], startCoord[0], initBearing, 18, 52);
+    }
+    // Hide the static preview route once navigation starts (directions polylines take over)
+    if (originalRoutePolyRef.current) {
+      originalRoutePolyRef.current.setOptions({ strokeOpacity: 0.25, strokeWeight: 5 });
     }
   };
 
