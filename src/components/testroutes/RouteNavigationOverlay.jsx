@@ -751,7 +751,18 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       completedPathRef.current = [{ lat: latitude, lng: longitude }];
 
       if (mapInstanceRef.current) {
-        animateCameraTo(mapInstanceRef.current, latitude, longitude, newSmoothed, 18, 52);
+        if (driveToStartModeRef.current && startCoord) {
+          // Show both user location and route start point
+          const [startLng, startLat] = startCoord;
+          const bounds = new window.google.maps.LatLngBounds();
+          bounds.extend({ lat: latitude, lng: longitude });
+          bounds.extend({ lat: startLat, lng: startLng });
+          mapInstanceRef.current.setTilt(0);
+          mapInstanceRef.current.setHeading(0);
+          mapInstanceRef.current.fitBounds(bounds, 80);
+        } else {
+          animateCameraTo(mapInstanceRef.current, latitude, longitude, newSmoothed, 18, 52);
+        }
       }
 
       if (driveToStartModeRef.current) {
@@ -799,13 +810,24 @@ export default function RouteNavigationOverlay({ route, onClose }) {
     // ── Camera Follow Mode ────────────────────────────────────────────────────
     if (followModeRef.current && mapInstanceRef.current) {
       const now = Date.now();
-      if (now - lastCameraUpdateRef.current >= 300) {
+      if (now - lastCameraUpdateRef.current >= 1000) {
         lastCameraUpdateRef.current = now;
-        const spd = speed != null && !isNaN(speed) ? speed : 7;
-        // Zoom: 17.5 at slow, 16 at 60+km/h
-        const targetZoom = spd < 5 ? 18 : spd < 14 ? 17.5 : spd < 22 ? 17 : 16.5;
-        const targetTilt = 52;
-        animateCameraTo(mapInstanceRef.current, latitude, longitude, newSmoothed, targetZoom, targetTilt);
+        if (driveToStartModeRef.current && startCoord) {
+          // Keep both user and start point in view
+          const [startLng, startLat] = startCoord;
+          const bounds = new window.google.maps.LatLngBounds();
+          bounds.extend({ lat: latitude, lng: longitude });
+          bounds.extend({ lat: startLat, lng: startLng });
+          mapInstanceRef.current.setTilt(0);
+          mapInstanceRef.current.setHeading(0);
+          mapInstanceRef.current.fitBounds(bounds, 80);
+        } else {
+          const spd = speed != null && !isNaN(speed) ? speed : 7;
+          // Zoom: 17.5 at slow, 16 at 60+km/h
+          const targetZoom = spd < 5 ? 18 : spd < 14 ? 17.5 : spd < 22 ? 17 : 16.5;
+          const targetTilt = 52;
+          animateCameraTo(mapInstanceRef.current, latitude, longitude, newSmoothed, targetZoom, targetTilt);
+        }
       }
     }
 
