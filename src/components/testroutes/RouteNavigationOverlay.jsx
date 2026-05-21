@@ -943,7 +943,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
   const nextBanner = nextStep ? buildBanner(nextStep) : null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
+    <div className="fixed inset-0 z-[9999] bg-black flex flex-col overflow-hidden" style={{ height: '100dvh' }}>
       {/* Hide Google Maps branding chrome */}
       <style>{`
         .gm-style-cc, .gm-style-cc + div,
@@ -957,7 +957,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
       `}</style>
 
       {/* Map */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden min-h-0">
         <div id="route-nav-map" ref={mapDivRef} style={{ width: '100%', height: '100%' }} />
 
         {/* Error */}
@@ -1115,7 +1115,7 @@ export default function RouteNavigationOverlay({ route, onClose }) {
 
       {/* Bottom Panel */}
       {!hasStarted ? (
-        <div className="bg-[#071739] px-4 pt-3 pb-5 shadow-2xl">
+        <div className="bg-[#071739] px-4 pt-3 pb-6 shadow-2xl" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
           <div className="flex justify-between mb-4">
             <div>
               <p className="text-[10px] text-slate-400 uppercase tracking-widest">Time</p>
