@@ -373,7 +373,7 @@ export default function AdminTestRouteDetail() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {sortedRoutes.map(route => (
-              <div key={route.id} className="relative">
+              <div key={route.id} className="flex flex-col">
                 <RouteCard
                   route={route}
                   onClick={() => {
@@ -381,14 +381,16 @@ export default function AdminTestRouteDetail() {
                     setShowRouteModal(true);
                   }}
                 />
-                <div className="absolute top-2 right-2 flex gap-2">
-                  <ConfigureRouteButton
-                    routeId={route.id}
-                    onSuccess={() => {
-                      queryClient.invalidateQueries({ queryKey: ['testRoutes', centreId] });
-                      setHasChanges(true);
-                    }}
-                  />
+                <div className="flex gap-2 mt-2">
+                  <div className="flex-1">
+                    <ConfigureRouteButton
+                      routeId={route.id}
+                      onSuccess={() => {
+                        queryClient.invalidateQueries({ queryKey: ['testRoutes', centreId] });
+                        setHasChanges(true);
+                      }}
+                    />
+                  </div>
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
