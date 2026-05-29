@@ -1,0 +1,40 @@
+{
+  "name": "TeachingNote",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "User ID of the instructor who created this note"
+    },
+    "skillKey": {
+      "type": "string",
+      "description": "Skill key if this note is tied to a driving skill, null for general notes"
+    },
+    "title": {
+      "type": "string",
+      "description": "Note title (used for general notes)"
+    },
+    "content": {
+      "type": "string",
+      "description": "Note content"
+    },
+    "tag": {
+      "type": "string",
+      "description": "Optional tag for general notes"
+    },
+    "noteType": {
+      "type": "string",
+      "enum": [
+        "skill",
+        "general"
+      ],
+      "default": "general",
+      "description": "Whether this is a skill-specific or general note"
+    }
+  },
+  "required": [
+    "instructorId",
+    "content",
+    "noteType"
+  ]
+}
