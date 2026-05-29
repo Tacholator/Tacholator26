@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import PupilClassNotes from '@/components/classnotes/PupilClassNotes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, Award, TrendingUp, Clock, ChevronRight, ClipboardList, NotebookPen } from 'lucide-react';
+import { BookOpen, Award, TrendingUp, Clock, ChevronRight, ClipboardList, NotebookPen, StickyNote } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function LearnerMyLearning() {
@@ -120,6 +120,24 @@ export default function LearnerMyLearning() {
               <CardContent>
                 <p className="text-sm text-slate-600">
                   View notes and feedback from your driving lessons
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Learning Notes card */}
+          <Link to="/LearnerLearningNotes" className="block">
+            <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <StickyNote className="w-5 h-5 text-orange-500" />
+                  Learning Notes
+                  <ChevronRight className="w-4 h-4 text-slate-400 ml-auto" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-slate-600">
+                  Your personal notes for all 24 driving skills
                 </p>
               </CardContent>
             </Card>
