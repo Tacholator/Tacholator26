@@ -89,6 +89,7 @@ export const instructorOnlyLinks = [
       { name: 'Pupil Notes', icon: Notebook, page: 'InstructorPupilNotes' },
       { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
       { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
+      { name: 'Teaching Notes', icon: StickyNote, page: 'InstructorTeachingNotes' },
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
