@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
 import { PROGRESS_SKILLS_DATA } from '@/components/progress/progressSkillsData';
+import { SKILL_LEARNING_OBJECTIVES } from '@/components/teachingnotes/skillLearningObjectives';
 
 // 28 driving skills card colors (cycling through a palette)
 const SKILL_COLORS = [
@@ -48,12 +49,11 @@ const SKILL_COLORS = [
 ];
 
 const SKILL_SECTIONS = [
-  { key: 'topics', label: 'Topics', Icon: List, placeholder: 'List the main topics covered in this skill...' },
   { key: 'learning_objectives', label: 'Learning Objectives', Icon: Target, placeholder: 'What should the pupil achieve by the end of this skill?' },
   { key: 'qa', label: 'Q&A', Icon: HelpCircle, placeholder: 'Common questions and answers for this skill...' },
 ];
 
-function SkillSectionEditor({ section, note, onSave, isSaving, color }) {
+function SkillSectionEditor({ section, note, onSave, isSaving, color, suggestions = [] }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(note?.content || '');
   const { Icon, label, placeholder } = section;
@@ -99,7 +99,23 @@ function SkillSectionEditor({ section, note, onSave, isSaving, color }) {
             {note?.content?.trim() ? (
               <p className="text-sm text-slate-700 whitespace-pre-wrap mb-2">{note.content}</p>
             ) : (
-              <p className="text-xs text-slate-400 italic mb-2">No {label.toLowerCase()} notes yet.</p>
+              <>
+                {suggestions.length > 0 ? (
+                  <div className="mb-2">
+                    <p className="text-xs text-slate-400 italic mb-1.5">Suggested {label.toLowerCase()}:</p>
+                    <ul className="space-y-1">
+                      {suggestions.map((s, i) => (
+                        <li key={i} className="flex items-start gap-1.5 text-xs text-slate-500">
+                          <span className={`mt-1 w-1.5 h-1.5 rounded-full ${color.num} shrink-0`} />
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic mb-2">No {label.toLowerCase()} notes yet.</p>
+                )}
+              </>
             )}
             <button
               onClick={() => { setDraft(note?.content || ''); setEditing(true); }}
@@ -118,7 +134,8 @@ function SkillSectionEditor({ section, note, onSave, isSaving, color }) {
 function SkillNoteCard({ skill, index, sectionNotes, onSectionSave, isSaving }) {
   const [expanded, setExpanded] = useState(false);
   const color = SKILL_COLORS[index % SKILL_COLORS.length];
-  const hasAnyNote = SKILL_SECTIONS.some(s => sectionNotes[s.key]?.content?.trim());
+  const ALL_SECTION_KEYS = ['learning_objectives', 'qa'];
+  const hasAnyNote = ALL_SECTION_KEYS.some(k => sectionNotes[k]?.content?.trim());
 
   const handleExpand = () => {
     setExpanded(v => !v);
@@ -141,6 +158,9 @@ function SkillNoteCard({ skill, index, sectionNotes, onSectionSave, isSaving }) 
               {SKILL_SECTIONS.filter(s => sectionNotes[s.key]?.content?.trim()).map(s => (
                 <span key={s.key} className={`text-xs px-1.5 py-0.5 rounded bg-white/70 ${color.text} border ${color.border}`}>{s.label}</span>
               ))}
+              {skill.subsections?.length > 0 && (
+                <span className={`text-xs px-1.5 py-0.5 rounded bg-white/70 ${color.text} border ${color.border}`}>{skill.subsections.length} topics</span>
+              )}
             </div>
           )}
         </div>
@@ -159,16 +179,44 @@ function SkillNoteCard({ skill, index, sectionNotes, onSectionSave, isSaving }) 
       {/* Expanded Area */}
       {expanded && (
         <div className="px-4 pb-4 space-y-3">
+          {/* Topics with suggested objectives */}
           {skill.subsections?.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-1">
-              {skill.subsections.map((sub, i) => (
-                <span key={i} className={`text-xs px-2 py-0.5 rounded-full bg-white/70 ${color.text} border ${color.border}`}>
-                  {sub.title}
-                </span>
-              ))}
+            <div className={`rounded-lg border ${color.border} overflow-hidden`}>
+              <div className={`flex items-center gap-2 px-3 py-2 border-b ${color.border} ${color.bg}`}>
+                <List className={`w-3.5 h-3.5 ${color.text}`} />
+                <span className="text-xs font-semibold text-slate-900 uppercase tracking-wide">Topics</span>
+              </div>
+              <div className="bg-white/60 divide-y divide-slate-100">
+                {skill.subsections.map((sub, i) => {
+                  const objectives = SKILL_LEARNING_OBJECTIVES[skill.skillKey] || [];
+                  // Match objectives relevant to this subsection by keyword (simple heuristic)
+                  const subWords = sub.title.toLowerCase().split(/[\s–\-\/,]+/).filter(w => w.length > 3);
+                  const matched = objectives.filter(obj =>
+                    subWords.some(w => obj.toLowerCase().includes(w))
+                  );
+                  const suggestions = matched.length > 0 ? matched : [];
+
+                  return (
+                    <div key={i} className="px-3 py-2">
+                      <p className={`text-xs font-semibold ${color.text} mb-1`}>{sub.title}</p>
+                      {suggestions.length > 0 && (
+                        <ul className="space-y-0.5">
+                          {suggestions.map((obj, j) => (
+                            <li key={j} className="flex items-start gap-1.5 text-xs text-slate-600">
+                              <span className={`mt-1 w-1.5 h-1.5 rounded-full ${color.num} shrink-0`} />
+                              {obj}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
+          {/* Learning Objectives & Q&A sections */}
           {SKILL_SECTIONS.map(section => (
             <SkillSectionEditor
               key={section.key}
@@ -177,6 +225,7 @@ function SkillNoteCard({ skill, index, sectionNotes, onSectionSave, isSaving }) 
               onSave={(content, existingId) => onSectionSave(skill.skillKey, section.key, content, existingId)}
               isSaving={isSaving}
               color={color}
+              suggestions={section.key === 'learning_objectives' ? (SKILL_LEARNING_OBJECTIVES[skill.skillKey] || []) : []}
             />
           ))}
         </div>
