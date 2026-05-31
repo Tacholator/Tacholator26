@@ -23,12 +23,13 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote, UserX, Video, Plus, Trash2, Pencil, Lock, Zap } from 'lucide-react';
+import { ArrowLeft, BookOpen, ClipboardCheck, Users, Loader2, Send, CheckCircle2, Clock, Trophy, Edit, Eye, FileText, StickyNote, UserX, Video, Plus, Trash2, Pencil, Lock, Zap, List, Target, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { Input } from '@/components/ui/input';
 import { getSkillById, DVSA_SKILLS_DATA } from '@/components/dvsa/dvsaSkillsData';
 import StudyMaterial from '@/components/dvsa/StudyMaterial';
 import McqQuiz from '@/components/dvsa/McqQuiz';
+import QAndAList from '@/components/dvsa/QAndAList';
 import { Textarea } from '@/components/ui/textarea';
 
 export default function DVSASkillDetail() {
@@ -358,6 +359,18 @@ export default function DVSASkillDetail() {
               <Eye className="w-4 h-4" />
               View Questions
             </TabsTrigger>
+            <TabsTrigger value="topics" className="gap-2">
+              <List className="w-4 h-4" />
+              Topics
+            </TabsTrigger>
+            <TabsTrigger value="objectives" className="gap-2">
+              <Target className="w-4 h-4" />
+              Learning Objectives
+            </TabsTrigger>
+            <TabsTrigger value="qanda" className="gap-2">
+              <MessageCircle className="w-4 h-4" />
+              Q&amp;A
+            </TabsTrigger>
             {user?.role === 'admin' && (
               <>
                 <TabsTrigger value="progress" className="gap-2">
@@ -482,6 +495,86 @@ export default function DVSASkillDetail() {
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="topics">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <List className="w-5 h-5 text-teal-600" />
+                  Topics
+                </CardTitle>
+                <p className="text-sm text-slate-600">Key topics covered in this skill</p>
+              </CardHeader>
+              <CardContent>
+                {skill.topics?.length > 0 ? (
+                  <div className="space-y-2">
+                    {skill.topics.map((topic, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                        <span className="w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">{idx + 1}</span>
+                        <p className="text-slate-700">{topic}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-slate-400">
+                    <List className="w-10 h-10 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm">No topics added yet for this skill</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="objectives">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5 text-indigo-600" />
+                  Learning Objectives
+                </CardTitle>
+                <p className="text-sm text-slate-600">What the learner should be able to do after this skill</p>
+              </CardHeader>
+              <CardContent>
+                {skill.learningObjectives?.length > 0 ? (
+                  <div className="space-y-2">
+                    {skill.learningObjectives.map((obj, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
+                        <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" />
+                        <p className="text-slate-700">{obj}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-slate-400">
+                    <Target className="w-10 h-10 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm">No learning objectives added yet for this skill</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="qanda">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageCircle className="w-5 h-5 text-amber-600" />
+                  Q&amp;A
+                </CardTitle>
+                <p className="text-sm text-slate-600">Common questions and answers for this skill</p>
+              </CardHeader>
+              <CardContent>
+                {skill.qAndA?.length > 0 ? (
+                  <QAndAList items={skill.qAndA} />
+                ) : (
+                  <div className="text-center py-12 text-slate-400">
+                    <MessageCircle className="w-10 h-10 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm">No Q&amp;A added yet for this skill</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
