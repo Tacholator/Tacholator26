@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2, Edit2, Save, X, StickyNote, Search, ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, StickyNote, Search, ChevronDown, ChevronUp, BookOpen, List, Target, HelpCircle } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,24 +47,81 @@ const SKILL_COLORS = [
   { bg: 'bg-sky-50',     border: 'border-sky-200',     num: 'bg-sky-600',      text: 'text-sky-700'     },
 ];
 
-function SkillNoteCard({ skill, index, note, onSave, isSaving }) {
-  const [expanded, setExpanded] = useState(false);
+const SKILL_SECTIONS = [
+  { key: 'topics', label: 'Topics', Icon: List, placeholder: 'List the main topics covered in this skill...' },
+  { key: 'learning_objectives', label: 'Learning Objectives', Icon: Target, placeholder: 'What should the pupil achieve by the end of this skill?' },
+  { key: 'qa', label: 'Q&A', Icon: HelpCircle, placeholder: 'Common questions and answers for this skill...' },
+];
+
+function SkillSectionEditor({ section, note, onSave, isSaving, color }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(note?.content || '');
-  const color = SKILL_COLORS[index % SKILL_COLORS.length];
-  const hasNote = note?.content?.trim();
+  const { Icon, label, placeholder } = section;
 
   const handleSave = () => {
-    onSave(skill.skillKey, draft, note?.id);
+    onSave(draft, note?.id);
     setEditing(false);
   };
 
+  const handleCancel = () => {
+    setDraft(note?.content || '');
+    setEditing(false);
+  };
+
+  return (
+    <div className="bg-white/60 rounded-lg border border-white/80 overflow-hidden">
+      <div className={`flex items-center gap-2 px-3 py-2 border-b border-white/80 ${color.bg}`}>
+        <Icon className={`w-3.5 h-3.5 ${color.text}`} />
+        <span className={`text-xs font-semibold ${color.text} uppercase tracking-wide`}>{label}</span>
+      </div>
+      <div className="p-3">
+        {editing ? (
+          <div className="space-y-2">
+            <Textarea
+              placeholder={placeholder}
+              value={draft}
+              onChange={e => setDraft(e.target.value)}
+              rows={4}
+              className="bg-white border-slate-200 text-sm resize-none"
+              autoFocus
+            />
+            <div className="flex gap-2 justify-end">
+              <Button size="sm" variant="outline" onClick={handleCancel}>
+                <X className="w-3 h-3 mr-1" /> Cancel
+              </Button>
+              <Button size="sm" onClick={handleSave} disabled={isSaving} className="bg-[#071739] hover:bg-[#0a2150] text-white">
+                <Save className="w-3 h-3 mr-1" /> Save
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            {note?.content?.trim() ? (
+              <p className="text-sm text-slate-700 whitespace-pre-wrap mb-2">{note.content}</p>
+            ) : (
+              <p className="text-xs text-slate-400 italic mb-2">No {label.toLowerCase()} notes yet.</p>
+            )}
+            <button
+              onClick={() => { setDraft(note?.content || ''); setEditing(true); }}
+              className={`flex items-center gap-1 text-xs ${color.text} font-medium hover:underline`}
+            >
+              <Edit2 className="w-3 h-3" />
+              {note?.content?.trim() ? `Edit ${label}` : `Add ${label}`}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SkillNoteCard({ skill, index, sectionNotes, onSectionSave, isSaving }) {
+  const [expanded, setExpanded] = useState(false);
+  const color = SKILL_COLORS[index % SKILL_COLORS.length];
+  const hasAnyNote = SKILL_SECTIONS.some(s => sectionNotes[s.key]?.content?.trim());
+
   const handleExpand = () => {
-    if (!expanded) {
-      setDraft(note?.content || '');
-    }
     setExpanded(v => !v);
-    if (expanded) setEditing(false);
   };
 
   return (
@@ -79,12 +136,16 @@ function SkillNoteCard({ skill, index, note, onSave, isSaving }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className={`font-semibold text-sm ${color.text} leading-tight`}>{skill.title}</p>
-          {hasNote && !expanded && (
-            <p className="text-xs text-slate-500 mt-0.5 truncate">{note.content}</p>
+          {hasAnyNote && !expanded && (
+            <div className="flex gap-1 mt-1">
+              {SKILL_SECTIONS.filter(s => sectionNotes[s.key]?.content?.trim()).map(s => (
+                <span key={s.key} className={`text-xs px-1.5 py-0.5 rounded bg-white/70 ${color.text} border ${color.border}`}>{s.label}</span>
+              ))}
+            </div>
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          {hasNote && (
+          {hasAnyNote && (
             <span className={`w-2 h-2 rounded-full ${color.num} opacity-80`} title="Has notes" />
           )}
           {expanded ? (
@@ -97,9 +158,9 @@ function SkillNoteCard({ skill, index, note, onSave, isSaving }) {
 
       {/* Expanded Area */}
       {expanded && (
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-4 space-y-3">
           {skill.subsections?.length > 0 && (
-            <div className="mb-3 flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1 mb-1">
               {skill.subsections.map((sub, i) => (
                 <span key={i} className={`text-xs px-2 py-0.5 rounded-full bg-white/70 ${color.text} border ${color.border}`}>
                   {sub.title}
@@ -108,41 +169,16 @@ function SkillNoteCard({ skill, index, note, onSave, isSaving }) {
             </div>
           )}
 
-          {editing ? (
-            <div className="space-y-2">
-              <Textarea
-                placeholder="Add your teaching notes for this skill..."
-                value={draft}
-                onChange={e => setDraft(e.target.value)}
-                rows={4}
-                className="bg-white/80 border-white text-sm resize-none"
-                autoFocus
-              />
-              <div className="flex gap-2 justify-end">
-                <Button size="sm" variant="outline" onClick={() => { setEditing(false); setDraft(note?.content || ''); }}>
-                  <X className="w-3 h-3 mr-1" /> Cancel
-                </Button>
-                <Button size="sm" onClick={handleSave} disabled={isSaving} className="bg-[#071739] hover:bg-[#0a2150] text-white">
-                  <Save className="w-3 h-3 mr-1" /> Save
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div>
-              {hasNote ? (
-                <p className="text-sm text-slate-700 whitespace-pre-wrap mb-3 bg-white/60 rounded-lg p-3">{note.content}</p>
-              ) : (
-                <p className="text-xs text-slate-400 italic mb-3">No notes yet for this skill.</p>
-              )}
-              <button
-                onClick={() => { setDraft(note?.content || ''); setEditing(true); }}
-                className={`flex items-center gap-1 text-xs ${color.text} font-medium hover:underline`}
-              >
-                <Edit2 className="w-3 h-3" />
-                {hasNote ? 'Edit note' : 'Add note'}
-              </button>
-            </div>
-          )}
+          {SKILL_SECTIONS.map(section => (
+            <SkillSectionEditor
+              key={section.key}
+              section={section}
+              note={sectionNotes[section.key] || null}
+              onSave={(content, existingId) => onSectionSave(skill.skillKey, section.key, content, existingId)}
+              isSaving={isSaving}
+              color={color}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -175,8 +211,13 @@ export default function InstructorTeachingNotes() {
   const skillNotes = allNotes.filter(n => n.noteType === 'skill');
   const freeNotes = allNotes.filter(n => n.noteType === 'general');
 
-  const skillNoteMap = {};
-  skillNotes.forEach(n => { skillNoteMap[n.skillKey] = n; });
+  // sectionNoteMap: { [skillKey]: { topics: note, learning_objectives: note, qa: note } }
+  const sectionNoteMap = {};
+  skillNotes.forEach(n => {
+    if (!sectionNoteMap[n.skillKey]) sectionNoteMap[n.skillKey] = {};
+    const sectionKey = n.section || 'general_skill';
+    sectionNoteMap[n.skillKey][sectionKey] = n;
+  });
 
   const saveMutation = useMutation({
     mutationFn: ({ id, data }) => id
@@ -190,8 +231,8 @@ export default function InstructorTeachingNotes() {
     onSuccess: () => { queryClient.invalidateQueries(['teachingNotes']); setDeleteId(null); },
   });
 
-  const handleSkillSave = (skillKey, content, existingId) => {
-    saveMutation.mutate({ id: existingId, data: { skillKey, content, noteType: 'skill' } });
+  const handleSkillSave = (skillKey, section, content, existingId) => {
+    saveMutation.mutate({ id: existingId, data: { skillKey, section, content, noteType: 'skill' } });
   };
 
   const resetForm = () => { setForm({ title: '', content: '', tag: '' }); setShowForm(false); setEditingNote(null); };
@@ -258,8 +299,8 @@ export default function InstructorTeachingNotes() {
                 key={skill.skillKey}
                 skill={skill}
                 index={i}
-                note={skillNoteMap[skill.skillKey] || null}
-                onSave={handleSkillSave}
+                sectionNotes={sectionNoteMap[skill.skillKey] || {}}
+                onSectionSave={handleSkillSave}
                 isSaving={saveMutation.isPending}
               />
             ))}

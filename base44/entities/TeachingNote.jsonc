@@ -10,6 +10,16 @@
       "type": "string",
       "description": "Skill key if this note is tied to a driving skill, null for general notes"
     },
+    "section": {
+      "type": "string",
+      "enum": [
+        "topics",
+        "learning_objectives",
+        "qa",
+        "general_skill"
+      ],
+      "description": "Sub-section within a skill note: topics, learning_objectives, qa, or general_skill (legacy)"
+    },
     "title": {
       "type": "string",
       "description": "Note title (used for general notes)"
