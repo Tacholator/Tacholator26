@@ -72,7 +72,7 @@ function SkillSectionEditor({ section, note, onSave, isSaving, color }) {
     <div className="bg-white/60 rounded-lg border border-white/80 overflow-hidden">
       <div className={`flex items-center gap-2 px-3 py-2 border-b border-white/80 ${color.bg}`}>
         <Icon className={`w-3.5 h-3.5 ${color.text}`} />
-        <span className={`text-xs font-semibold ${color.text} uppercase tracking-wide`}>{label}</span>
+        <span className="text-xs font-semibold text-slate-900 uppercase tracking-wide">{label}</span>
       </div>
       <div className="p-3">
         {editing ? (
