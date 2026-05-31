@@ -5,7 +5,17 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Clock, Calendar, User, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { Clock, Calendar, User, CheckCircle, XCircle, Loader2, CheckCheck } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import moment from 'moment';
 
 export default function PendingBookingsPanel({ 
@@ -13,9 +23,12 @@ export default function PendingBookingsPanel({
   pupils = [], 
   onConfirm, 
   onDecline,
-  isLoading 
+  onConfirmAll,
+  isLoading,
+  isConfirmingAll
 }) {
   const [showDeclineDialog, setShowDeclineDialog] = useState(false);
+  const [showConfirmAllDialog, setShowConfirmAllDialog] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [declineReason, setDeclineReason] = useState('');
 
@@ -54,9 +67,22 @@ export default function PendingBookingsPanel({
     <>
       <Card className="border-0 shadow-sm border-l-4 border-l-purple-500">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center justify-between">
-            <span>Pending Booking Requests</span>
-            <Badge className="bg-purple-100 text-purple-700">{bookings.length}</Badge>
+          <CardTitle className="text-lg flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <span>Pending Booking Requests</span>
+              <Badge className="bg-purple-100 text-purple-700">{bookings.length}</Badge>
+            </div>
+            {bookings.length > 1 && (
+              <Button
+                size="sm"
+                onClick={() => setShowConfirmAllDialog(true)}
+                disabled={isLoading || isConfirmingAll}
+                className="bg-emerald-600 hover:bg-emerald-700 gap-2 text-white"
+              >
+                {isConfirmingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCheck className="w-4 h-4" />}
+                Confirm All
+              </Button>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -119,6 +145,27 @@ export default function PendingBookingsPanel({
           ))}
         </CardContent>
       </Card>
+
+      {/* Confirm All Dialog */}
+      <AlertDialog open={showConfirmAllDialog} onOpenChange={setShowConfirmAllDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm All Bookings</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to confirm all {bookings.length} pending booking requests? Each pupil will be notified and charged.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { onConfirmAll(); setShowConfirmAllDialog(false); }}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              Confirm All {bookings.length} Bookings
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Decline Dialog */}
       <Dialog open={showDeclineDialog} onOpenChange={setShowDeclineDialog}>

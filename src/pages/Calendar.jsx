@@ -549,6 +549,17 @@ export default function Calendar() {
 
   const pendingBookings = bookings.filter(b => b.status === 'reserved_pending_instructor');
 
+  const confirmAllBookingsMutation = useMutation({
+    mutationFn: async () => {
+      await Promise.all(pendingBookings.map(booking =>
+        confirmBookingMutation.mutateAsync(booking.id)
+      ));
+    },
+    onSuccess: () => {
+      toast({ title: `All ${pendingBookings.length} bookings confirmed` });
+    }
+  });
+
   const deleteBookingMutation = useMutation({
     mutationFn: async ({ booking, slotInstance, state, blockType }) => {
       if (booking) {
@@ -670,7 +681,9 @@ export default function Calendar() {
               pupils={pupils}
               onConfirm={(id) => confirmBookingMutation.mutate(id)}
               onDecline={(id, reason) => declineBookingMutation.mutate({ bookingId: id, reason })}
+              onConfirmAll={() => confirmAllBookingsMutation.mutate()}
               isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending}
+              isConfirmingAll={confirmAllBookingsMutation.isPending}
             />
           </div>
         )}
