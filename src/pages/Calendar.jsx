@@ -356,6 +356,9 @@ export default function Calendar() {
         type: 'booking',
         linkTarget: 'Calendar'
       });
+
+      // Send confirmation emails and SMS (fire-and-forget, don't block on failure)
+      base44.functions.invoke('handleBookingConfirmed', { ...booking, status: 'confirmed' }).catch(() => {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['lessonBookings']);
