@@ -1,3 +1,4 @@
+
 export const DVSA_SKILLS_DATA = [
   {
     skillId: '1_legal_responsibilities',
@@ -159,51 +160,6 @@ export const DVSA_SKILLS_DATA = [
     </ul>
 
     <p>Understanding and following these legal responsibilities helps keep you, your passengers and other road users safe.</p>`,
-    topics: [
-      'Fitness to drive (health, eyesight, alcohol, drugs, tiredness)',
-      'Mobile phone laws',
-      'Vehicle legal requirements (tax, MOT, insurance, roadworthiness)',
-      'L plates and D plates',
-      'Who can supervise a learner driver',
-      'ADI and trainee driving instructor rules',
-      'Accident and collision legal duties',
-      'Other ongoing legal responsibilities',
-    ],
-    learningObjectives: [
-      'Understand what conditions make a driver unfit to drive',
-      'Know the eyesight standard required to drive legally',
-      'Explain the penalties for drink driving and drug driving',
-      'State the vehicle documents required to drive legally on public roads',
-      'Describe the rules around supervising a learner driver',
-      'Know what to do legally after a road traffic collision',
-      'Explain the legal responsibilities related to mobile phone use',
-    ],
-    qAndA: [
-      {
-        question: 'What eyesight standard must a driver meet?',
-        answer: 'You must be able to read a number plate from 20 metres. If you need glasses or contact lenses to meet this standard, you must wear them every time you drive.'
-      },
-      {
-        question: 'What is the minimum driving ban for drink driving?',
-        answer: 'A minimum of 12 months. Penalties can also include up to 6 months in prison and an unlimited fine.'
-      },
-      {
-        question: 'What documents must a vehicle have to be used legally on public roads?',
-        answer: 'The vehicle must have valid road tax, a valid MOT certificate (if over 3 years old), correct insurance, and must be in a roadworthy condition.'
-      },
-      {
-        question: 'Who can legally supervise a learner driver?',
-        answer: 'The supervisor must be at least 21 years old and have held a full driving licence for at least 3 years. They must also hold the correct licence category for the vehicle being driven.'
-      },
-      {
-        question: 'What must you do if you are involved in a collision and details are not exchanged at the scene?',
-        answer: 'You must report the incident to the police within 24 hours. Failing to stop or report an accident is a criminal offence.'
-      },
-      {
-        question: 'Is it legal to use a hands-free phone while driving?',
-        answer: 'It is legal, but it can still distract you and slow your reaction time. It is strongly advised to avoid all phone use while driving.'
-      },
-    ],
     mcqQuiz: {
       passMarkScore: 8,
       totalQuestions: 10,
