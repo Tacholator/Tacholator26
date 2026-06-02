@@ -40,6 +40,7 @@ import LearnerDiary from './pages/LearnerDiary';
 import Community from './pages/Community';
 import AdminEmailTemplates from './pages/AdminEmailTemplates';
 import InstructorTeachingNotes from './pages/InstructorTeachingNotes';
+import InstructorTeachingNoteDetail from './pages/InstructorTeachingNoteDetail';
 import LearnerLearningNotes from './pages/LearnerLearningNotes';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -245,6 +246,11 @@ const AuthenticatedApp = () => {
       <Route path="/InstructorTeachingNotes" element={
         <LayoutWrapper currentPageName="InstructorTeachingNotes">
           <InstructorTeachingNotes />
+        </LayoutWrapper>
+      } />
+      <Route path="/InstructorTeachingNoteDetail" element={
+        <LayoutWrapper currentPageName="InstructorTeachingNotes">
+          <InstructorTeachingNoteDetail />
         </LayoutWrapper>
       } />
       <Route path="/LearnerLearningNotes" element={

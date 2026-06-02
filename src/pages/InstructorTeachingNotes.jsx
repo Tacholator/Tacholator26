@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2, Edit2, Save, X, StickyNote, Search, ChevronDown, ChevronUp, BookOpen, List, Target, HelpCircle } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, StickyNote, Search, BookOpen, ChevronRight } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,7 +19,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
 import { PROGRESS_SKILLS_DATA } from '@/components/progress/progressSkillsData';
-import { SKILL_LEARNING_OBJECTIVES } from '@/components/teachingnotes/skillLearningObjectives';
 
 // 28 driving skills card colors (cycling through a palette)
 const SKILL_COLORS = [
@@ -48,193 +48,48 @@ const SKILL_COLORS = [
   { bg: 'bg-sky-50',     border: 'border-sky-200',     num: 'bg-sky-600',      text: 'text-sky-700'     },
 ];
 
-const SKILL_SECTIONS = [
-  { key: 'learning_objectives', label: 'Learning Objectives', Icon: Target, placeholder: 'What should the pupil achieve by the end of this skill?' },
-  { key: 'qa', label: 'Q&A', Icon: HelpCircle, placeholder: 'Common questions and answers for this skill...' },
-];
+const ALL_SECTION_KEYS = ['learning_objectives', 'qa'];
 
-function SkillSectionEditor({ section, note, onSave, isSaving, color, suggestions = [] }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(note?.content || '');
-  const { Icon, label, placeholder } = section;
-
-  const handleSave = () => {
-    onSave(draft, note?.id);
-    setEditing(false);
-  };
-
-  const handleCancel = () => {
-    setDraft(note?.content || '');
-    setEditing(false);
-  };
-
-  return (
-    <div className="bg-white/60 rounded-lg border border-white/80 overflow-hidden">
-      <div className={`flex items-center gap-2 px-3 py-2 border-b border-white/80 ${color.bg}`}>
-        <Icon className={`w-3.5 h-3.5 ${color.text}`} />
-        <span className="text-xs font-semibold text-slate-900 uppercase tracking-wide">{label}</span>
-      </div>
-      <div className="p-3">
-        {editing ? (
-          <div className="space-y-2">
-            <Textarea
-              placeholder={placeholder}
-              value={draft}
-              onChange={e => setDraft(e.target.value)}
-              rows={4}
-              className="bg-white border-slate-200 text-sm resize-none"
-              autoFocus
-            />
-            <div className="flex gap-2 justify-end">
-              <Button size="sm" variant="outline" onClick={handleCancel}>
-                <X className="w-3 h-3 mr-1" /> Cancel
-              </Button>
-              <Button size="sm" onClick={handleSave} disabled={isSaving} className="bg-[#071739] hover:bg-[#0a2150] text-white">
-                <Save className="w-3 h-3 mr-1" /> Save
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div>
-            {note?.content?.trim() ? (
-              <p className="text-sm text-slate-700 whitespace-pre-wrap mb-2">{note.content}</p>
-            ) : (
-              <>
-                {suggestions.length > 0 ? (
-                  <div className="mb-2">
-                    <p className="text-xs text-slate-400 italic mb-1.5">Suggested {label.toLowerCase()}:</p>
-                    <ul className="space-y-1">
-                      {suggestions.map((s, i) => (
-                        <li key={i} className="flex items-start gap-1.5 text-xs text-slate-500">
-                          <span className={`mt-1 w-1.5 h-1.5 rounded-full ${color.num} shrink-0`} />
-                          {s}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <p className="text-xs text-slate-400 italic mb-2">No {label.toLowerCase()} notes yet.</p>
-                )}
-              </>
-            )}
-            <button
-              onClick={() => { setDraft(note?.content || ''); setEditing(true); }}
-              className={`flex items-center gap-1 text-xs ${color.text} font-medium hover:underline`}
-            >
-              <Edit2 className="w-3 h-3" />
-              {note?.content?.trim() ? `Edit ${label}` : `Add ${label}`}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SkillNoteCard({ skill, index, sectionNotes, onSectionSave, isSaving }) {
-  const [expanded, setExpanded] = useState(false);
+function SkillNoteCard({ skill, index, sectionNotes, onNavigate }) {
   const color = SKILL_COLORS[index % SKILL_COLORS.length];
-  const ALL_SECTION_KEYS = ['learning_objectives', 'qa'];
   const hasAnyNote = ALL_SECTION_KEYS.some(k => sectionNotes[k]?.content?.trim());
-
-  const handleExpand = () => {
-    setExpanded(v => !v);
-  };
+  const noteCount = ALL_SECTION_KEYS.filter(k => sectionNotes[k]?.content?.trim()).length;
 
   return (
-    <div className={`rounded-xl border-2 ${color.border} ${color.bg} overflow-hidden transition-all duration-200 shadow-sm hover:shadow-md`}>
-      {/* Card Header */}
-      <button
-        onClick={handleExpand}
-        className="w-full flex items-center gap-3 p-4 text-left"
-      >
-        <div className={`w-8 h-8 rounded-full ${color.num} flex items-center justify-center shrink-0`}>
-          <span className="text-white text-xs font-bold">{skill.order}</span>
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className={`font-semibold text-sm ${color.text} leading-tight`}>{skill.title}</p>
-          {hasAnyNote && !expanded && (
-            <div className="flex gap-1 mt-1">
-              {SKILL_SECTIONS.filter(s => sectionNotes[s.key]?.content?.trim()).map(s => (
-                <span key={s.key} className={`text-xs px-1.5 py-0.5 rounded bg-white/70 ${color.text} border ${color.border}`}>{s.label}</span>
-              ))}
-              {skill.subsections?.length > 0 && (
-                <span className={`text-xs px-1.5 py-0.5 rounded bg-white/70 ${color.text} border ${color.border}`}>{skill.subsections.length} topics</span>
-              )}
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
+    <button
+      onClick={() => onNavigate(skill.skillKey)}
+      className={`w-full rounded-xl border-2 ${color.border} ${color.bg} overflow-hidden transition-all duration-200 shadow-sm hover:shadow-md text-left flex items-center gap-3 p-4`}
+    >
+      <div className={`w-8 h-8 rounded-full ${color.num} flex items-center justify-center shrink-0`}>
+        <span className="text-white text-xs font-bold">{skill.order}</span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={`font-semibold text-sm ${color.text} leading-tight`}>{skill.title}</p>
+        <div className="flex gap-1 mt-1 flex-wrap">
           {hasAnyNote && (
-            <span className={`w-2 h-2 rounded-full ${color.num} opacity-80`} title="Has notes" />
+            <span className={`text-xs px-1.5 py-0.5 rounded bg-white/70 ${color.text} border ${color.border}`}>
+              {noteCount} note{noteCount !== 1 ? 's' : ''}
+            </span>
           )}
-          {expanded ? (
-            <ChevronUp className="w-4 h-4 text-slate-400" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-slate-400" />
-          )}
-        </div>
-      </button>
-
-      {/* Expanded Area */}
-      {expanded && (
-        <div className="px-4 pb-4 space-y-3">
-          {/* Topics with suggested objectives */}
           {skill.subsections?.length > 0 && (
-            <div className={`rounded-lg border ${color.border} overflow-hidden`}>
-              <div className={`flex items-center gap-2 px-3 py-2 border-b ${color.border} ${color.bg}`}>
-                <List className={`w-3.5 h-3.5 ${color.text}`} />
-                <span className="text-xs font-semibold text-slate-900 uppercase tracking-wide">Topics</span>
-              </div>
-              <div className="bg-white/60 divide-y divide-slate-100">
-                {skill.subsections.map((sub, i) => {
-                  const objectives = SKILL_LEARNING_OBJECTIVES[skill.skillKey] || [];
-                  // Match objectives relevant to this subsection by keyword (simple heuristic)
-                  const subWords = sub.title.toLowerCase().split(/[\s–\-\/,]+/).filter(w => w.length > 3);
-                  const matched = objectives.filter(obj =>
-                    subWords.some(w => obj.toLowerCase().includes(w))
-                  );
-                  const suggestions = matched.length > 0 ? matched : [];
-
-                  return (
-                    <div key={i} className="px-3 py-2">
-                      <p className={`text-xs font-semibold ${color.text} mb-1`}>{sub.title}</p>
-                      {suggestions.length > 0 && (
-                        <ul className="space-y-0.5">
-                          {suggestions.map((obj, j) => (
-                            <li key={j} className="flex items-start gap-1.5 text-xs text-slate-600">
-                              <span className={`mt-1 w-1.5 h-1.5 rounded-full ${color.num} shrink-0`} />
-                              {obj}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <span className={`text-xs px-1.5 py-0.5 rounded bg-white/70 ${color.text} border ${color.border}`}>
+              {skill.subsections.length} topics
+            </span>
           )}
-
-          {/* Learning Objectives & Q&A sections */}
-          {SKILL_SECTIONS.map(section => (
-            <SkillSectionEditor
-              key={section.key}
-              section={section}
-              note={sectionNotes[section.key] || null}
-              onSave={(content, existingId) => onSectionSave(skill.skillKey, section.key, content, existingId)}
-              isSaving={isSaving}
-              color={color}
-              suggestions={section.key === 'learning_objectives' ? (SKILL_LEARNING_OBJECTIVES[skill.skillKey] || []) : []}
-            />
-          ))}
         </div>
-      )}
-    </div>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        {hasAnyNote && (
+          <span className={`w-2 h-2 rounded-full ${color.num} opacity-80`} title="Has notes" />
+        )}
+        <ChevronRight className="w-4 h-4 text-slate-400" />
+      </div>
+    </button>
   );
 }
 
 export default function InstructorTeachingNotes() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [search, setSearch] = useState('');
@@ -279,10 +134,6 @@ export default function InstructorTeachingNotes() {
     mutationFn: (id) => base44.entities.TeachingNote.delete(id),
     onSuccess: () => { queryClient.invalidateQueries(['teachingNotes']); setDeleteId(null); },
   });
-
-  const handleSkillSave = (skillKey, section, content, existingId) => {
-    saveMutation.mutate({ id: existingId, data: { skillKey, section, content, noteType: 'skill' } });
-  };
 
   const resetForm = () => { setForm({ title: '', content: '', tag: '' }); setShowForm(false); setEditingNote(null); };
 
@@ -349,8 +200,7 @@ export default function InstructorTeachingNotes() {
                 skill={skill}
                 index={i}
                 sectionNotes={sectionNoteMap[skill.skillKey] || {}}
-                onSectionSave={handleSkillSave}
-                isSaving={saveMutation.isPending}
+                onNavigate={(skillKey) => navigate(`/InstructorTeachingNoteDetail?skill=${skillKey}`)}
               />
             ))}
             {filteredSkills.length === 0 && (
