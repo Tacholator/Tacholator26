@@ -20,7 +20,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { progressStates, drivingSkillsSections, mockTests } from './drivingSkillsData';
-import { ChevronRight, Check, Loader2, Edit2, Award, CheckSquare, Square, MapPin } from 'lucide-react';
+import { ChevronRight, Loader2, Edit2, Award, CheckSquare, Square } from 'lucide-react';
 import moment from 'moment';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -30,9 +30,6 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   const [notes, setNotes] = useState('');
   const [editingMockTest, setEditingMockTest] = useState(null);
   const [mockTestData, setMockTestData] = useState({ result: '', instructorComments: '', pupilComments: '', testDate: '' });
-  const [editingRoute, setEditingRoute] = useState(null);
-  const [routeData, setRouteData] = useState({ routeDetails: '', comments: '' });
-  const [originalRouteData, setOriginalRouteData] = useState({ routeDetails: '', comments: '' });
   const [expandedSection, setExpandedSection] = useState(null);
   const [selectedCustomTopic, setSelectedCustomTopic] = useState(null);
 
@@ -45,12 +42,6 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
   const { data: mockTestResults = [] } = useQuery({
     queryKey: ['mockTestResults', pupilId],
     queryFn: () => base44.entities.MockTestResult.filter({ pupilId }),
-    enabled: !!pupilId
-  });
-
-  const { data: testRoutes = [] } = useQuery({
-    queryKey: ['pupilTestRouteNotes', pupilId],
-    queryFn: () => base44.entities.PupilTestRouteNote.filter({ pupilId }, 'routeNumber'),
     enabled: !!pupilId
   });
 
@@ -124,27 +115,6 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
       queryClient.invalidateQueries(['mockTestResults']);
       setEditingMockTest(null);
       setMockTestData({ result: '', instructorComments: '', pupilComments: '', testDate: '' });
-    }
-  });
-
-  const saveRouteMutation = useMutation({
-    mutationFn: async ({ routeNumber, data }) => {
-      const existing = testRoutes.find(r => r.routeNumber === routeNumber);
-      if (existing) {
-        return base44.entities.PupilTestRouteNote.update(existing.id, data);
-      } else {
-        return base44.entities.PupilTestRouteNote.create({
-          pupilId,
-          instructorId,
-          routeNumber,
-          ...data
-        });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['pupilTestRouteNotes', pupilId]);
-      setEditingRoute(null);
-      setRouteData({ routeDetails: '', comments: '' });
     }
   });
 
@@ -680,106 +650,6 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
           </Card>
         );
       })()}
-
-      {/* Test Routes Section */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-[#F7B602]" />
-            Test Routes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(routeNumber => {
-              const route = testRoutes.find(r => r.routeNumber === routeNumber);
-              return (
-                <div 
-                  key={routeNumber}
-                  className={`p-4 border-2 rounded-lg min-h-[120px] cursor-pointer transition-colors ${
-                    isInstructor ? 'hover:border-[#F7B602]' : ''
-                  } ${route && (route.routeDetails || route.comments) ? 'border-slate-300 bg-slate-50' : 'border-slate-200'}`}
-                  onClick={() => {
-                    if (!isInstructor) return;
-                    const initialData = {
-                      routeDetails: route?.routeDetails || '',
-                      comments: route?.comments || ''
-                    };
-                    setEditingRoute(routeNumber);
-                    setRouteData(initialData);
-                    setOriginalRouteData(initialData);
-                  }}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-semibold text-slate-700">Route {routeNumber}</h4>
-                    {route && (route.routeDetails || route.comments) && <Check className="w-4 h-4 text-emerald-500" />}
-                  </div>
-                  {route && (route.routeDetails || route.comments) ? (
-                    <div className="space-y-2">
-                      {route.routeDetails && (
-                        <p className="text-sm text-slate-600">{route.routeDetails}</p>
-                      )}
-                      {route.comments && (
-                        <p className="text-xs text-slate-500 italic">{route.comments}</p>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-slate-400">Click to add route details</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-
-
-      {/* Edit Test Route Dialog */}
-      <Dialog open={!!editingRoute} onOpenChange={() => setEditingRoute(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Test Route {editingRoute}</DialogTitle>
-            <DialogDescription>
-              Add details about this test route
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">Route Details</label>
-              <Textarea
-                value={routeData.routeDetails}
-                onChange={(e) => setRouteData({ ...routeData, routeDetails: e.target.value })}
-                placeholder="Describe the route, key areas, directions..."
-                rows={4}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">Comments</label>
-              <Textarea
-                value={routeData.comments}
-                onChange={(e) => setRouteData({ ...routeData, comments: e.target.value })}
-                placeholder="Any additional notes or observations..."
-                rows={3}
-              />
-            </div>
-
-            <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setEditingRoute(null)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => saveRouteMutation.mutate({ routeNumber: editingRoute, data: routeData })}
-                disabled={saveRouteMutation.isPending || JSON.stringify(routeData) === JSON.stringify(originalRouteData)}
-                className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]"
-              >
-                {saveRouteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Custom Topic Details Dialog */}
       <Dialog open={!!selectedCustomTopic} onOpenChange={() => setSelectedCustomTopic(null)}>
