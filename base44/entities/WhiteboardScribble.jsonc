@@ -36,16 +36,9 @@
   ],
   "rls": {
     "create": {
-      "$or": [
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        },
-        {
-          "data.pupilId": "{{user.data.pupil.id}}"
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "read": {
       "$or": [
@@ -55,42 +48,19 @@
           }
         },
         {
-          "data.pupilUserId": "{{user.id}}"
-        },
-        {
-          "data.instructorId": "{{user.id}}"
+          "pupilUserId": "{{user.id}}"
         }
       ]
     },
     "update": {
-      "$or": [
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        },
-        {
-          "data.pupilUserId": "{{user.id}}"
-        },
-        {
-          "data.instructorId": "{{user.id}}"
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "delete": {
-      "$or": [
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        },
-        {
-          "data.pupilUserId": "{{user.id}}"
-        },
-        {
-          "data.instructorId": "{{user.id}}"
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     }
   }
 }

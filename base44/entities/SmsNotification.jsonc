@@ -60,25 +60,5 @@
     "toE164",
     "templateKey",
     "sendAtUtc"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "service_role"
-      }
-    },
-    "read": {
-      "data.userId": "{{user.id}}"
-    },
-    "update": {
-      "user_condition": {
-        "role": "service_role"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "service_role"
-      }
-    }
-  }
+  ]
 }

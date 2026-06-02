@@ -49,6 +49,9 @@ export default function LearnerDashboard() {
   const [summaryModalOpen, setSummaryModalOpen] = React.useState(false);
   const [showOnboardingPopup, setShowOnboardingPopup] = React.useState(false);
   const [showAppTour, setShowAppTour] = React.useState(false);
+  const [checksbannerDismissed, setChecksBannerDismissed] = React.useState(
+    () => sessionStorage.getItem('firstLessonChecksBannerDismissed') === '1'
+  );
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
@@ -490,7 +493,7 @@ export default function LearnerDashboard() {
         )}
 
         {/* First Lesson Checks Complete Banner */}
-        {pupil.licenseChecked && pupil.eyeTestChecked && pupil.instructorDvlaVerified && (
+        {pupil.licenseChecked && pupil.eyeTestChecked && pupil.instructorDvlaVerified && !checksbannerDismissed && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -499,10 +502,20 @@ export default function LearnerDashboard() {
             <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
               <span className="text-lg">✅</span>
             </div>
-            <div>
+            <div className="flex-1">
               <p className="font-semibold text-emerald-900 text-sm">First lesson checks complete</p>
               <p className="text-emerald-700 text-xs mt-0.5">Your licence, eye test and DVLA details have been verified by your instructor.</p>
             </div>
+            <button
+              onClick={() => {
+                sessionStorage.setItem('firstLessonChecksBannerDismissed', '1');
+                setChecksBannerDismissed(true);
+              }}
+              className="text-emerald-500 hover:text-emerald-700 transition-colors p-1 shrink-0"
+              aria-label="Dismiss"
+            >
+              <span className="text-lg leading-none">×</span>
+            </button>
           </motion.div>
         )}
 

@@ -74,26 +74,5 @@
     "startTimeLocal",
     "endTimeLocal",
     "daysOfWeek"
-  ],
-  "rls": {
-    "create": {
-      "data.instructorId": "{{user.id}}"
-    },
-    "read": {
-      "$or": [
-        {
-          "data.instructorId": "{{user.id}}"
-        },
-        {
-          "data.instructorId": "{{user.data.pupil.instructorId}}"
-        }
-      ]
-    },
-    "update": {
-      "data.instructorId": "{{user.id}}"
-    },
-    "delete": {
-      "data.instructorId": "{{user.id}}"
-    }
-  }
+  ]
 }

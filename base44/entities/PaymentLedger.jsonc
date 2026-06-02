@@ -58,56 +58,5 @@
     "type",
     "reason",
     "createdByRole"
-  ],
-  "rls": {
-    "create": {
-      "$or": [
-        {
-          "data.createdByRole": "instructor",
-          "created_by": "{{user.email}}"
-        },
-        {
-          "user_condition": {
-            "role": "service_role"
-          }
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "read": {
-      "$or": [
-        {
-          "data.userId": "{{user.data.pupil.id}}"
-        },
-        {
-          "data.userId": {
-            "$in": [
-              "{{user.id}}",
-              "{{user.data.pupil.id}}",
-              "{{user.data.pupil.linkedUserId}}"
-            ]
-          }
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

@@ -65,51 +65,5 @@
     "attemptNumber",
     "score",
     "passed"
-  ],
-  "rls": {
-    "create": {
-      "$or": [
-        {
-          "data.instructorId": "{{user.id}}"
-        },
-        {
-          "data.pupilId": "{{user.data.pupil.id}}"
-        }
-      ]
-    },
-    "read": {
-      "$or": [
-        {
-          "data.instructorId": "{{user.id}}"
-        },
-        {
-          "data.pupilId": "{{user.data.pupil.id}}"
-        }
-      ]
-    },
-    "update": {
-      "$or": [
-        {
-          "data.instructorId": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "delete": {
-      "$or": [
-        {
-          "data.instructorId": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    }
-  }
+  ]
 }

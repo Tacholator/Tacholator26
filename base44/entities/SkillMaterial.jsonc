@@ -45,33 +45,5 @@
   "required": [
     "skillId",
     "content"
-  ],
-  "rls": {
-    "create": {
-      "data.instructorId": "{{user.id}}"
-    },
-    "read": {
-      "$or": [
-        {
-          "data.instructorId": "{{user.id}}"
-        },
-        {
-          "$and": [
-            {
-              "data.instructorId": "{{user.data.pupil.instructorId}}"
-            },
-            {
-              "data.isVisibleToPupils": true
-            }
-          ]
-        }
-      ]
-    },
-    "update": {
-      "data.instructorId": "{{user.id}}"
-    },
-    "delete": {
-      "data.instructorId": "{{user.id}}"
-    }
-  }
+  ]
 }

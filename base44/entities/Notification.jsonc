@@ -68,28 +68,5 @@
     "title",
     "message",
     "type"
-  ],
-  "rls": {
-    "create": {
-      "$or": [
-        {
-          "data.userId": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "service_role"
-          }
-        }
-      ]
-    },
-    "read": {
-      "data.userId": "{{user.id}}"
-    },
-    "update": {
-      "data.userId": "{{user.id}}"
-    },
-    "delete": {
-      "data.userId": "{{user.id}}"
-    }
-  }
+  ]
 }

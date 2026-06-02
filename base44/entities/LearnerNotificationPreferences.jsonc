@@ -64,19 +64,5 @@
   },
   "required": [
     "learnerId"
-  ],
-  "rls": {
-    "create": {
-      "data.learnerId": "{{user.data.pupil.id}}"
-    },
-    "read": {
-      "data.learnerId": "{{user.data.pupil.id}}"
-    },
-    "update": {
-      "data.learnerId": "{{user.data.pupil.id}}"
-    },
-    "delete": {
-      "data.learnerId": "{{user.data.pupil.id}}"
-    }
-  }
+  ]
 }

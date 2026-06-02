@@ -14,19 +14,5 @@
   },
   "required": [
     "instructorId"
-  ],
-  "rls": {
-    "create": {
-      "data.instructorId": "{{user.id}}"
-    },
-    "read": {
-      "data.instructorId": "{{user.id}}"
-    },
-    "update": {
-      "data.instructorId": "{{user.id}}"
-    },
-    "delete": {
-      "data.instructorId": "{{user.id}}"
-    }
-  }
+  ]
 }
