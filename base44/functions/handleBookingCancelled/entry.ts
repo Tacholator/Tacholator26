@@ -13,9 +13,11 @@ Deno.serve(async (req) => {
 
     const booking = data;
 
-    // Only process cancelled bookings
-    if (!['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor'].includes(booking.status)) {
-      return Response.json({ skipped: true, reason: 'Not cancelled' });
+    // Only process cancelled or deleted bookings
+    const isCancelled = ['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor'].includes(booking.status);
+    const isDeleted = booking.status === 'deleted' || booking.isDeleted === true;
+    if (!isCancelled && !isDeleted) {
+      return Response.json({ skipped: true, reason: 'Not cancelled or deleted' });
     }
 
     // 0. Restore slot instance to available — try slotInstanceId first, then search by bookingId as fallback
