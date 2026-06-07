@@ -189,6 +189,45 @@ export default function InstructorBookingCalendar() {
     }
   });
 
+  const [isConfirmingAll, setIsConfirmingAll] = useState(false);
+
+  const handleConfirmAll = async () => {
+    setIsConfirmingAll(true);
+    try {
+      await Promise.all(pendingBookings.map(async (booking) => {
+        const pupil = pupils.find(p => p.id === booking.pupilId);
+        await base44.entities.LessonBooking.update(booking.id, {
+          status: 'confirmed',
+          confirmedAt: new Date().toISOString()
+        });
+        await base44.entities.PaymentLedger.create({
+          userId: booking.pupilId,
+          bookingId: booking.id,
+          type: 'charge',
+          reason: 'lesson_confirmed_charge',
+          amountGbp: booking.totalPriceGbp,
+          hours: booking.durationHours,
+          createdByRole: 'system',
+          note: 'Charge applied on confirmation'
+        });
+        const notifyUserId = pupil?.linkedUserId;
+        if (notifyUserId) {
+          await base44.entities.Notification.create({
+            userId: notifyUserId,
+            title: 'Lesson Confirmed',
+            message: `Your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')} has been confirmed.`,
+            type: 'booking',
+            linkTarget: 'LearnerMyBookings'
+          });
+        }
+      }));
+      queryClient.invalidateQueries(['lessonBookings']);
+      toast({ title: `${pendingBookings.length} bookings confirmed` });
+    } finally {
+      setIsConfirmingAll(false);
+    }
+  };
+
   const pendingBookings = bookings.filter(b => b.status === 'reserved_pending_instructor');
 
   const handleSlotClick = (slotDateTime, slotInstance) => {
@@ -536,9 +575,9 @@ export default function InstructorBookingCalendar() {
               pupils={pupils}
               onConfirm={(id) => confirmBookingMutation.mutate(id)}
               onDecline={(id, reason) => declineBookingMutation.mutate({ bookingId: id, reason })}
-              onConfirmAll={() => pendingBookings.forEach(b => confirmBookingMutation.mutate(b.id))}
-              isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending}
-              isConfirmingAll={confirmBookingMutation.isPending}
+              onConfirmAll={handleConfirmAll}
+              isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending || isConfirmingAll}
+              isConfirmingAll={isConfirmingAll}
             />
           </div>
         )}
