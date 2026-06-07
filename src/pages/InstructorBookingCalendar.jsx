@@ -536,7 +536,9 @@ export default function InstructorBookingCalendar() {
               pupils={pupils}
               onConfirm={(id) => confirmBookingMutation.mutate(id)}
               onDecline={(id, reason) => declineBookingMutation.mutate({ bookingId: id, reason })}
+              onConfirmAll={() => pendingBookings.forEach(b => confirmBookingMutation.mutate(b.id))}
               isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending}
+              isConfirmingAll={confirmBookingMutation.isPending}
             />
           </div>
         )}
