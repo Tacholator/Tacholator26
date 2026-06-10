@@ -50,6 +50,7 @@ import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
 import ClassNotesTab from '@/components/classnotes/ClassNotesTab';
 import MockTestsSection from '@/components/progress/MockTestsSection';
+import McqResultsSummary from '@/components/progress/McqResultsSummary';
 import TestResultModal from '@/components/reports/TestResultModal';
 import PupilProgressTracker from '@/components/progress/PupilProgressTracker';
 import moment from 'moment';
@@ -1175,6 +1176,7 @@ export default function PupilProfile() {
                         </TabsContent>
                         <TabsContent value="mocktests">
                           <MockTestsSection pupilId={pupilId} />
+                          <McqResultsSummary pupilId={pupilId} />
                         </TabsContent>
                       </Tabs>
                     </div>

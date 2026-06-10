@@ -28,7 +28,11 @@ export default function InstructorMcqReporting() {
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['myPupils', user?.id],
-    queryFn: () => base44.entities.Pupil.filter({ instructorId: user.id }),
+    queryFn: async () => {
+      const byEmail = await base44.entities.Pupil.filter({ instructorEmail: user.email });
+      if (byEmail.length > 0) return byEmail;
+      return base44.entities.Pupil.filter({ instructorId: user.id });
+    },
     enabled: !!user?.id
   });
 
