@@ -96,6 +96,7 @@ export default function McqQuiz({ questionPack, topicId }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['mcqStatus']);
+      queryClient.invalidateQueries(['allMcqStatuses']);
     }
   });
 

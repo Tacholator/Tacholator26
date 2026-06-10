@@ -104,6 +104,7 @@ export default function McqQuizPaginated({ questionPack, topicId }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['mcqStatus']);
+      queryClient.invalidateQueries(['allMcqStatuses']);
     }
   });
 
