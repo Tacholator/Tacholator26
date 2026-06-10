@@ -8,8 +8,12 @@ Deno.serve(async (req) => {
     return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
   }
 
-  // Fetch all MCQ attempts
-  const attempts = await base44.asServiceRole.entities.McqAttempt.list('-submittedAt', 500);
+  // Fetch all MCQ attempts (paginate if needed)
+  const attempts = await base44.asServiceRole.entities.McqAttempt.list('-submittedAt', 1000);
+
+  // Fetch all existing McqStatus records upfront (avoid per-group queries)
+  const existingStatuses = await base44.asServiceRole.entities.McqStatus.list('-created_date', 1000);
+  const existingKeys = new Set(existingStatuses.map(s => `${s.pupilId}__${s.mcqPackId}`));
 
   // Group attempts by pupilId + mcqPackId
   const groups = {};
@@ -23,14 +27,12 @@ Deno.serve(async (req) => {
   let skipped = 0;
 
   for (const [key, groupAttempts] of Object.entries(groups)) {
-    const [pupilId, mcqPackId] = key.split('__');
-
-    // Check if McqStatus already exists
-    const existing = await base44.asServiceRole.entities.McqStatus.filter({ pupilId, mcqPackId });
-    if (existing.length > 0) {
+    if (existingKeys.has(key)) {
       skipped++;
       continue;
     }
+
+    const [pupilId, mcqPackId] = key.split('__');
 
     // Sort by submittedAt ascending to determine first pass
     const sorted = [...groupAttempts].sort((a, b) =>
@@ -41,10 +43,17 @@ Deno.serve(async (req) => {
     const firstPassedAttempt = sorted.find(a => a.passed);
     const everPassed = !!firstPassedAttempt;
 
+    // Skip if topicId is missing (required field)
+    const topicId = lastAttempt.topicId || null;
+    if (!topicId) {
+      skipped++;
+      continue;
+    }
+
     const statusData = {
       pupilId,
       instructorId: lastAttempt.instructorId || null,
-      topicId: lastAttempt.topicId || null,
+      topicId,
       mcqPackId,
       attemptCount: sorted.length,
       lastAttemptId: lastAttempt.id,
