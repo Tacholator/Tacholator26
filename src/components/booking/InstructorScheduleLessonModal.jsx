@@ -139,7 +139,8 @@ export default function InstructorScheduleLessonModal({
       // Update slot instance
       await base44.entities.BookableSlotInstance.update(slotInstance.id, {
         status: 'confirmed',
-        bookingId: booking.id
+        bookingId: booking.id,
+        reservedByPupilId: selectedPupilId
       });
 
       // Create payment ledger entry
