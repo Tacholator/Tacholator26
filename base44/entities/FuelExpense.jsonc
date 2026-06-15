@@ -1,0 +1,67 @@
+{
+  "name": "FuelExpense",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor user ID"
+    },
+    "weekStartDate": {
+      "type": "string",
+      "format": "date",
+      "description": "The Monday date of the week"
+    },
+    "year": {
+      "type": "number",
+      "description": "Year"
+    },
+    "month": {
+      "type": "number",
+      "description": "Month (1-12)"
+    },
+    "weekNumber": {
+      "type": "number",
+      "description": "Week number within the month (1-5)"
+    },
+    "startMileage": {
+      "type": "number",
+      "description": "Odometer reading at start of week (miles)"
+    },
+    "endMileage": {
+      "type": "number",
+      "description": "Odometer reading at end of week (miles)"
+    },
+    "fills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "litres": {
+            "type": "number"
+          },
+          "amountGbp": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Array of fuel fill-ups during the week"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional weekly notes"
+    }
+  },
+  "required": [
+    "instructorId",
+    "weekStartDate",
+    "year",
+    "month"
+  ]
+}

@@ -29,7 +29,8 @@ import {
   ClipboardCheck,
   Navigation,
   Gift,
-  Globe
+  Globe,
+  Fuel
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -96,6 +97,7 @@ export const instructorOnlyLinks = [
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
   { name: 'Test Preparation', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
+  { name: 'Expenses', icon: Fuel, page: 'InstructorExpenses' },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' },
   { name: 'Referral Program', icon: Gift, page: 'InstructorReferralProgram' },
   { name: 'Community', icon: Globe, page: 'Community' }

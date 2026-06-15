@@ -42,6 +42,7 @@ import AdminEmailTemplates from './pages/AdminEmailTemplates';
 import InstructorTeachingNotes from './pages/InstructorTeachingNotes';
 import InstructorTeachingNoteDetail from './pages/InstructorTeachingNoteDetail';
 import LearnerLearningNotes from './pages/LearnerLearningNotes';
+import InstructorExpenses from './pages/InstructorExpenses';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -256,6 +257,11 @@ const AuthenticatedApp = () => {
       <Route path="/LearnerLearningNotes" element={
         <LayoutWrapper currentPageName="LearnerLearningNotes">
           <LearnerLearningNotes />
+        </LayoutWrapper>
+      } />
+      <Route path="/InstructorExpenses" element={
+        <LayoutWrapper currentPageName="InstructorExpenses">
+          <InstructorExpenses />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
