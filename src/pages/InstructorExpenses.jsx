@@ -100,7 +100,7 @@ function WeekFormModal({ open, onOpenChange, existingRecord, weekInfo, instructo
         setFills(existingRecord.fills?.length ? existingRecord.fills : [{ ...defaultFill }]);
         setNotes(existingRecord.notes || '');
       } else {
-        setStartMileage('');
+        setStartMileage(existingRecord?.startMileage || '');
         setEndMileage('');
         setFills([{ ...defaultFill }]);
         setNotes('');
