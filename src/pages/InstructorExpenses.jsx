@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { Plus, Pencil, Trash2, Fuel, ChevronLeft, ChevronRight, Droplets, PoundSterling, Gauge } from 'lucide-react';
+import { Plus, Pencil, Trash2, Fuel, ChevronLeft, ChevronRight, Droplets, PoundSterling, Gauge, Car } from 'lucide-react';
 import moment from 'moment';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -392,7 +392,7 @@ export default function InstructorExpenses() {
 
       {/* Monthly Summary */}
       {monthTotals.weekCount > 0 && (
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div className="bg-blue-50 rounded-xl p-3 text-center border border-blue-100">
             <Gauge className="w-5 h-5 text-blue-600 mx-auto mb-1" />
             <p className="text-xs text-slate-500">Total Miles</p>
@@ -407,6 +407,16 @@ export default function InstructorExpenses() {
             <PoundSterling className="w-5 h-5 text-amber-600 mx-auto mb-1" />
             <p className="text-xs text-slate-500">Total Spent</p>
             <p className="text-lg font-bold text-slate-800">£{monthTotals.totalAmount.toFixed(2)}</p>
+          </div>
+          <div className="bg-purple-50 rounded-xl p-3 text-center border border-purple-100">
+            <Car className="w-5 h-5 text-purple-600 mx-auto mb-1" />
+            <p className="text-xs text-slate-500">Current Mileage</p>
+            <p className="text-lg font-bold text-slate-800">
+              {(() => {
+                const latest = expenses.filter(e => e.endMileage).sort((a, b) => new Date(b.weekStartDate) - new Date(a.weekStartDate))[0];
+                return latest ? latest.endMileage.toLocaleString() : '–';
+              })()}
+            </p>
           </div>
         </div>
       )}
