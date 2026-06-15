@@ -327,8 +327,34 @@ export default function InstructorExpenses() {
   };
 
   const handleEdit = (week, record) => {
+    let recordToEdit = record || null;
+    // Auto-populate start mileage from previous week's end mileage if no record yet
+    if (!record) {
+      const weekIndex = weeks.findIndex(w => w.weekStartDate === week.weekStartDate);
+      if (weekIndex > 0) {
+        const prevWeekStart = weeks[weekIndex - 1].weekStartDate;
+        const prevRecord = getRecordForWeek(prevWeekStart);
+        if (prevRecord?.endMileage) {
+          recordToEdit = { startMileage: prevRecord.endMileage };
+        }
+      } else {
+        // First week of month — look in previous month's expenses
+        const prevMonthExpenses = expenses.filter(e => {
+          if (selectedMonth === 1) return e.year === selectedYear - 1 && e.month === 12;
+          return e.year === selectedYear && e.month === selectedMonth - 1;
+        });
+        if (prevMonthExpenses.length > 0) {
+          const lastPrev = prevMonthExpenses.reduce((a, b) => 
+            new Date(a.weekStartDate) > new Date(b.weekStartDate) ? a : b
+          );
+          if (lastPrev?.endMileage) {
+            recordToEdit = { startMileage: lastPrev.endMileage };
+          }
+        }
+      }
+    }
     setEditingWeek({ ...week, year: selectedYear, month: selectedMonth });
-    setEditingRecord(record || null);
+    setEditingRecord(recordToEdit);
     setModalOpen(true);
   };
 
