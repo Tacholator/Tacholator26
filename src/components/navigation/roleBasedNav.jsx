@@ -29,6 +29,7 @@ import {
   ClipboardCheck,
   Navigation,
   Gift,
+  Globe,
   Fuel
 } from 'lucide-react';
 
@@ -98,7 +99,8 @@ export const instructorOnlyLinks = [
   { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
   { name: 'Expenses', icon: Fuel, page: 'InstructorExpenses' },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' },
-  { name: 'Referral Program', icon: Gift, page: 'InstructorReferralProgram' }
+  { name: 'Referral Program', icon: Gift, page: 'InstructorReferralProgram' },
+  { name: 'Community', icon: Globe, page: 'Community' }
 ];
 
 // Learner-only navigation items
@@ -125,7 +127,8 @@ export const learnerOnlyLinks = [
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
   { name: 'My Bookings', icon: BookMarked, page: 'LearnerMyBookings' },
   { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' },
-  { name: 'Refer a Friend', icon: Gift, page: 'ReferAFriend' }
+  { name: 'Refer a Friend', icon: Gift, page: 'ReferAFriend' },
+  { name: 'Community', icon: Globe, page: 'Community' }
 ];
 
 // Get the correct page for a shared link based on user role
