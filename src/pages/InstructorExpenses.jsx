@@ -83,7 +83,7 @@ function FillRow({ fill, index, onChange, onRemove, isOnly }) {
 function WeekFormModal({ open, onOpenChange, existingRecord, weekInfo, instructorId, onSaved }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const isEdit = !!existingRecord;
+  const isEdit = !!existingRecord?.id;
 
   const defaultFill = { litres: '', amountGbp: '', date: weekInfo?.weekStartDate || '', note: '' };
 
