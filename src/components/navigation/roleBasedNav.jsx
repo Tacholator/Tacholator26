@@ -29,7 +29,6 @@ import {
   ClipboardCheck,
   Navigation,
   Gift,
-  Globe,
   Fuel
 } from 'lucide-react';
 
