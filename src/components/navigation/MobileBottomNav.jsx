@@ -13,7 +13,8 @@ import {
   Bell,
   GraduationCap,
   BookOpen,
-  Globe
+  BookMarked,
+  Fuel
 } from 'lucide-react';
 
 const instructorNavItems = [
@@ -42,10 +43,10 @@ const instructorNavItems = [
     page: 'InstructorTeachingHub'
   },
   {
-    id: 'community',
-    label: 'Community',
-    icon: Globe,
-    page: 'Community'
+    id: 'expenses',
+    label: 'Expenses',
+    icon: Fuel,
+    page: 'InstructorExpenses'
   }
 ];
 
@@ -75,10 +76,10 @@ const pupilNavItems = [
     page: 'LearnerNotifications'
   },
   {
-    id: 'community',
-    label: 'Community',
-    icon: Globe,
-    page: 'Community'
+    id: 'mybookings',
+    label: 'My Bookings',
+    icon: BookMarked,
+    page: 'LearnerMyBookings'
   }
 ];
 
