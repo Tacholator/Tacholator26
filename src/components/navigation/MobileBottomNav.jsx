@@ -64,6 +64,12 @@ const pupilNavItems = [
     page: 'LearnerBookingCalendar'
   },
   {
+    id: 'mybookings',
+    label: 'My Bookings',
+    icon: BookMarked,
+    page: 'LearnerMyBookings'
+  },
+  {
     id: 'learning',
     label: 'My Learning',
     icon: BookOpen,
@@ -74,12 +80,6 @@ const pupilNavItems = [
     label: 'Notifications',
     icon: Bell,
     page: 'LearnerNotifications'
-  },
-  {
-    id: 'mybookings',
-    label: 'My Bookings',
-    icon: BookMarked,
-    page: 'LearnerMyBookings'
   }
 ];
 
