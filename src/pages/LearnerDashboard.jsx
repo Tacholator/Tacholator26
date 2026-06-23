@@ -497,6 +497,17 @@ export default function LearnerDashboard() {
           <ArrivalBanner notification={arrivalNotification} lesson={arrivalLesson} />
         )}
 
+        {/* Test Readiness Card */}
+        {pupil?.id && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+          >
+            <TestReadinessCard pupilId={pupil.id} />
+          </motion.div>
+        )}
+
         {/* First Lesson Checks Complete Banner */}
         {pupil.licenseChecked && pupil.eyeTestChecked && pupil.instructorDvlaVerified && !checksbannerDismissed && (
           <motion.div
@@ -1053,17 +1064,6 @@ export default function LearnerDashboard() {
             </motion.div>
           )}
         </div>
-
-        {/* Test Readiness Card */}
-        {pupil?.id && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <TestReadinessCard pupilId={pupil.id} />
-          </motion.div>
-        )}
 
         {/* 8. Instructor Snapshot */}
         <motion.div
