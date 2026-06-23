@@ -95,8 +95,9 @@ export function generateReadinessSummary(form, result) {
   }
 
   // Improvement areas
-  if (form.improvement_areas?.length > 0) {
-    concerns.push(`You have identified areas to improve: ${form.improvement_areas.join(', ')}.`);
+  const improvementAreas = (form.improvement_areas || []).filter(a => a !== 'None');
+  if (improvementAreas.length > 0) {
+    concerns.push(`You have identified areas to improve: ${improvementAreas.join(', ')}.`);
   }
 
   // Test booking
