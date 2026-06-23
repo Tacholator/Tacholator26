@@ -10,8 +10,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { Progress } from '@/components/ui/progress';
-import { ClipboardList, CheckCircle2, XCircle, AlertCircle, User, Calendar, MapPin, ChevronRight, ArrowLeft } from 'lucide-react';
+import { ClipboardList, CheckCircle2, XCircle, AlertCircle, User, Calendar, MapPin, ChevronRight, ArrowLeft, UserPlus } from 'lucide-react';
 import moment from 'moment';
+import InstructorConductReadinessCheck from '@/components/readiness/InstructorConductReadinessCheck';
 
 function ReadinessBadge({ result }) {
   if (!result) return <Badge variant="outline" className="text-slate-500">Not completed</Badge>;
@@ -36,6 +37,23 @@ export default function InstructorReadinessReview() {
   const [selected, setSelected] = useState(null);
   const [decision, setDecision] = useState('');
   const [decisionNotes, setDecisionNotes] = useState('');
+  const [conductOpen, setConductOpen] = useState(false);
+
+  const { data: user } = useQuery({ queryKey: ['currentUser'], queryFn: () => base44.auth.me() });
+
+  const { data: instructorProfile } = useQuery({
+    queryKey: ['instructorProfileForReadiness', user?.id],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const results = await base44.entities.Instructor.filter({ created_by: user.email });
+      return results[0] || null;
+    },
+    enabled: !!user?.email
+  });
+
+  const instructorName = instructorProfile
+    ? `${instructorProfile.firstName || ''} ${instructorProfile.lastName || ''}`.trim()
+    : user?.full_name || '';
 
   const { data: checks = [], isLoading } = useQuery({
     queryKey: ['allReadinessChecks'],
@@ -70,10 +88,14 @@ export default function InstructorReadinessReview() {
           <div className="w-10 h-10 rounded-xl bg-[#071739] flex items-center justify-center">
             <ClipboardList className="w-5 h-5 text-[#F7B602]" />
           </div>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-[#071739]">Test Readiness Reviews</h1>
             <p className="text-slate-500 text-sm">View and review learner readiness checker submissions</p>
           </div>
+          <Button onClick={() => setConductOpen(true)} className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold">
+            <UserPlus className="w-4 h-4 mr-2" />
+            Conduct Check
+          </Button>
         </div>
 
         {isLoading ? (
@@ -202,6 +224,14 @@ export default function InstructorReadinessReview() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Conduct Check Dialog */}
+      <InstructorConductReadinessCheck
+        open={conductOpen}
+        onOpenChange={setConductOpen}
+        instructorId={user?.id}
+        instructorName={instructorName}
+      />
     </div>
   );
 }
