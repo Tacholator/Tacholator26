@@ -129,26 +129,6 @@ function LearnerView({ pupilProfile }) {
         {/* Informational Content (Intro + Sections 1-8, 10) */}
         <NerveContent />
 
-        {/* Section 9: Test-day calm plan */}
-        <Card className="border border-slate-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
-              <Sparkles className="w-5 h-5 text-[#F7B602]" />
-              Section 9: Create your test-day calm plan
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-slate-700 mb-3">Before your test, write down your personal plan for managing nerves.</p>
-            <Label className="text-sm font-medium text-slate-700 mb-1 block">What will you do to stay calm before and during your test?</Label>
-            <Textarea
-              value={form.calm_plan}
-              onChange={e => setField('calm_plan', e.target.value)}
-              placeholder="Example: I will sleep early, avoid too much caffeine, arrive on time, take slow breaths, listen carefully, and focus only on safe driving."
-              rows={4}
-            />
-          </CardContent>
-        </Card>
-
         {/* Section 11: Checklist */}
         <Card className="border border-slate-200">
           <CardHeader className="pb-3">
