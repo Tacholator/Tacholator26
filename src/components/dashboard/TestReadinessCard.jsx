@@ -84,7 +84,7 @@ export default function TestReadinessCard({ pupilId }) {
             </Button>
           </Link>
           <Link to={createPageUrl('ManageNerves')}>
-            <Button variant="outline" className="w-full border-sky-500 text-sky-600 hover:bg-sky-50 text-sm">
+            <Button className="w-full bg-sky-500 hover:bg-sky-600 text-white text-sm">
               How to Manage Nerves
             </Button>
           </Link>
