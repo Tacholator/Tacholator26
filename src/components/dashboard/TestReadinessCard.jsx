@@ -77,11 +77,18 @@ export default function TestReadinessCard({ pupilId }) {
         ) : (
           <p className="text-sm text-slate-500">You haven't completed a readiness check yet.</p>
         )}
-        <Link to={createPageUrl('TestReadinessChecker')}>
-          <Button className="w-full bg-[#071739] hover:bg-[#0d2a5e] text-white text-sm">
-            {latest ? 'Take Another Check' : 'Check My Test Readiness'}
-          </Button>
-        </Link>
+        <div className="grid grid-cols-2 gap-2">
+          <Link to={createPageUrl('TestReadinessChecker')}>
+            <Button className="w-full bg-[#071739] hover:bg-[#0d2a5e] text-white text-sm">
+              {latest ? 'Take Another Check' : 'Check My Test Readiness'}
+            </Button>
+          </Link>
+          <Link to={createPageUrl('ManageNerves')}>
+            <Button variant="outline" className="w-full border-[#071739] text-[#071739] hover:bg-[#071739]/5 text-sm">
+              How to Manage Nerves
+            </Button>
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );
