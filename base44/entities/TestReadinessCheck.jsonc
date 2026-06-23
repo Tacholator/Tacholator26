@@ -1,0 +1,157 @@
+{
+  "name": "TestReadinessCheck",
+  "type": "object",
+  "properties": {
+    "learner_id": {
+      "type": "string"
+    },
+    "learner_name": {
+      "type": "string"
+    },
+    "instructor_id": {
+      "type": "string"
+    },
+    "instructor_name": {
+      "type": "string"
+    },
+    "independent_driving_status": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No",
+        "Sometimes"
+      ]
+    },
+    "independent_driving_notes": {
+      "type": "string"
+    },
+    "safe_driving_status": {
+      "type": "string",
+      "enum": [
+        "Yes, I am not making serious or dangerous mistakes",
+        "No, I still make serious or dangerous mistakes",
+        "Not sure"
+      ]
+    },
+    "recent_faults_notes": {
+      "type": "string"
+    },
+    "mock_tests_passed_count": {
+      "type": "number",
+      "default": 0
+    },
+    "latest_mock_test_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "latest_mock_test_result": {
+      "type": "string",
+      "enum": [
+        "Pass",
+        "Fail"
+      ]
+    },
+    "latest_mock_test_minor_faults": {
+      "type": "number"
+    },
+    "mock_test_independent_driving": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "mock_test_manoeuvres": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "mock_test_test_conditions": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "nerves_management_methods": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nerves_management_plan": {
+      "type": "string"
+    },
+    "instructor_ready_confirmation": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No",
+        "Not yet discussed"
+      ]
+    },
+    "instructor_confirmation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "instructor_comments": {
+      "type": "string"
+    },
+    "test_booked_status": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "test_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "test_time": {
+      "type": "string"
+    },
+    "test_centre": {
+      "type": "string"
+    },
+    "days_until_test": {
+      "type": "number"
+    },
+    "improvement_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "learner_extra_notes": {
+      "type": "string"
+    },
+    "readiness_result": {
+      "type": "string",
+      "enum": [
+        "Ready for Test",
+        "Almost Ready",
+        "Not Ready Yet"
+      ]
+    },
+    "readiness_score": {
+      "type": "number"
+    },
+    "final_instructor_decision": {
+      "type": "string",
+      "enum": [
+        "Ready",
+        "Not Ready",
+        "Needs More Practice"
+      ]
+    },
+    "final_instructor_decision_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "learner_id"
+  ]
+}

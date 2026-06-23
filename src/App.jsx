@@ -43,6 +43,8 @@ import InstructorTeachingNotes from './pages/InstructorTeachingNotes';
 import InstructorTeachingNoteDetail from './pages/InstructorTeachingNoteDetail';
 import LearnerLearningNotes from './pages/LearnerLearningNotes';
 import InstructorExpenses from './pages/InstructorExpenses';
+import TestReadinessChecker from './pages/TestReadinessChecker';
+import InstructorReadinessReview from './pages/InstructorReadinessReview';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -262,6 +264,16 @@ const AuthenticatedApp = () => {
       <Route path="/InstructorExpenses" element={
         <LayoutWrapper currentPageName="InstructorExpenses">
           <InstructorExpenses />
+        </LayoutWrapper>
+      } />
+      <Route path="/TestReadinessChecker" element={
+        <LayoutWrapper currentPageName="TestReadinessChecker">
+          <TestReadinessChecker />
+        </LayoutWrapper>
+      } />
+      <Route path="/InstructorReadinessReview" element={
+        <LayoutWrapper currentPageName="InstructorReadinessReview">
+          <InstructorReadinessReview />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

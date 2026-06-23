@@ -43,6 +43,7 @@ import { courseWorkTopics } from '@/components/coursework/topicIndex';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 import LearnerOnboardingPopup from '@/components/onboarding/LearnerOnboardingPopup';
 import LearnerAppTour from '@/components/onboarding/LearnerAppTour';
+import TestReadinessCard from '@/components/dashboard/TestReadinessCard';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
@@ -1046,6 +1047,17 @@ export default function LearnerDashboard() {
             </motion.div>
           )}
         </div>
+
+        {/* Test Readiness Card */}
+        {pupil?.id && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <TestReadinessCard pupilId={pupil.id} />
+          </motion.div>
+        )}
 
         {/* 8. Instructor Snapshot */}
         <motion.div
