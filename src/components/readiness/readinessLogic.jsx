@@ -54,7 +54,7 @@ export function calculateReadiness(form) {
   if (mocks >= 2) score += 25;
   else if (mocks === 1) score += 10;
 
-  if (form.nerves_management_plan?.trim()) score += 10;
+  if (form.nerves_management_methods?.length > 0) score += 10;
 
   if (form.instructor_ready_confirmation === 'Yes') score += 20;
 
@@ -63,7 +63,7 @@ export function calculateReadiness(form) {
     form.safe_driving_status === 'Yes, I am not making serious or dangerous mistakes' &&
     mocks >= 2 &&
     form.instructor_ready_confirmation === 'Yes' &&
-    form.nerves_management_plan?.trim();
+    form.nerves_management_methods?.length > 0;
 
   const isNotReady =
     mocks < 2 ||

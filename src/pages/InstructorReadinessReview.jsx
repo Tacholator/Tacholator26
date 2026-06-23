@@ -176,9 +176,7 @@ export default function InstructorReadinessReview() {
               {/* Key Details */}
               <div className="space-y-1">
                 <DetailRow label="Independent Driving" value={selected.independent_driving_status} />
-                <DetailRow label="Independent Driving Notes" value={selected.independent_driving_notes} />
                 <DetailRow label="Safe Driving Status" value={selected.safe_driving_status} />
-                <DetailRow label="Recent Faults" value={selected.recent_faults_notes} />
                 <DetailRow label="Mock Tests Passed" value={selected.mock_tests_passed_count} />
                 <DetailRow label="Latest Mock Date" value={selected.latest_mock_test_date ? moment(selected.latest_mock_test_date).format('DD MMM YYYY') : null} />
                 <DetailRow label="Latest Mock Result" value={selected.latest_mock_test_result} />
@@ -187,17 +185,13 @@ export default function InstructorReadinessReview() {
                 <DetailRow label="Mock: Manoeuvres" value={selected.mock_test_manoeuvres} />
                 <DetailRow label="Mock: Test Conditions" value={selected.mock_test_test_conditions} />
                 <DetailRow label="Nerves Management Methods" value={selected.nerves_management_methods} />
-                <DetailRow label="Nerves Management Plan" value={selected.nerves_management_plan} />
                 <DetailRow label="Instructor Confirmation" value={selected.instructor_ready_confirmation} />
-                <DetailRow label="Instructor Name" value={selected.instructor_name} />
                 <DetailRow label="Instructor Confirmed Date" value={selected.instructor_confirmation_date ? moment(selected.instructor_confirmation_date).format('DD MMM YYYY') : null} />
-                <DetailRow label="Instructor Comments" value={selected.instructor_comments} />
                 <DetailRow label="Test Booked" value={selected.test_booked_status} />
                 <DetailRow label="Test Date" value={selected.test_date ? moment(selected.test_date).format('DD MMM YYYY') : null} />
                 <DetailRow label="Test Time" value={selected.test_time} />
                 <DetailRow label="Test Centre" value={selected.test_centre} />
                 <DetailRow label="Improvement Areas" value={selected.improvement_areas} />
-                <DetailRow label="Extra Notes" value={selected.learner_extra_notes} />
                 <DetailRow label="Submitted" value={moment(selected.created_date).format('DD MMM YYYY HH:mm')} />
               </div>
 

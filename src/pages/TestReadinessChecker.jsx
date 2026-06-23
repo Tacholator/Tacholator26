@@ -349,9 +349,6 @@ export default function TestReadinessChecker() {
               ))}
             </RadioGroup>
           </FormField>
-          <FormField label="Give an example of when you drove independently without help." className="mt-4">
-            <Textarea value={form.independent_driving_notes} onChange={e => setField('independent_driving_notes', e.target.value)} placeholder="Describe a time you drove independently..." rows={2} />
-          </FormField>
         </SectionCard>
 
         {/* Section 2: Serious Mistakes */}
@@ -373,9 +370,6 @@ export default function TestReadinessChecker() {
                 </div>
               ))}
             </RadioGroup>
-          </FormField>
-          <FormField label="List any serious, dangerous or repeated faults your instructor has recently mentioned." className="mt-4">
-            <Textarea value={form.recent_faults_notes} onChange={e => setField('recent_faults_notes', e.target.value)} placeholder="e.g. pulling out at junctions without checking..." rows={2} />
           </FormField>
         </SectionCard>
 
@@ -421,9 +415,6 @@ export default function TestReadinessChecker() {
               ))}
             </div>
           </FormField>
-          <FormField label="What is your plan for staying calm and focused during the test?" className="mt-4">
-            <Textarea value={form.nerves_management_plan} onChange={e => setField('nerves_management_plan', e.target.value)} placeholder="Describe your nerves management plan..." rows={2} />
-          </FormField>
         </SectionCard>
 
         {/* Section 5: Instructor Confirmation */}
@@ -439,16 +430,10 @@ export default function TestReadinessChecker() {
             </RadioGroup>
           </FormField>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            <FormField label="Instructor name (optional)">
-              <Input value={form.instructor_name} onChange={e => setField('instructor_name', e.target.value)} placeholder="Your instructor's name" />
-            </FormField>
             <FormField label="Date instructor confirmed readiness (optional)">
               <Input type="date" value={form.instructor_confirmation_date} onChange={e => setField('instructor_confirmation_date', e.target.value)} />
             </FormField>
           </div>
-          <FormField label="Instructor comments (optional)" className="mt-4">
-            <Textarea value={form.instructor_comments} onChange={e => setField('instructor_comments', e.target.value)} placeholder="Any comments from your instructor..." rows={2} />
-          </FormField>
         </SectionCard>
 
         {/* Section 6: Test Booking */}
@@ -496,9 +481,6 @@ export default function TestReadinessChecker() {
                 </div>
               ))}
             </div>
-          </FormField>
-          <FormField label="Add any extra notes about your test preparation." className="mt-4">
-            <Textarea value={form.learner_extra_notes} onChange={e => setField('learner_extra_notes', e.target.value)} placeholder="Any additional thoughts or notes..." rows={3} />
           </FormField>
         </SectionCard>
 

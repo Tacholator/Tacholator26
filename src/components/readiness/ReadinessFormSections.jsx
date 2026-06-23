@@ -67,9 +67,6 @@ export function ReadinessFormSections({ form, setField, toggleArrayItem, errors 
             ))}
           </RadioGroup>
         </FormField>
-        <FormField label="Give an example of when the pupil drove independently without help." className="mt-4">
-          <Textarea value={form.independent_driving_notes} onChange={e => setField('independent_driving_notes', e.target.value)} placeholder="Describe a time..." rows={2} />
-        </FormField>
       </SectionCard>
 
       {/* Section 2 */}
@@ -91,9 +88,6 @@ export function ReadinessFormSections({ form, setField, toggleArrayItem, errors 
               </div>
             ))}
           </RadioGroup>
-        </FormField>
-        <FormField label="List any serious, dangerous or repeated faults recently identified." className="mt-4">
-          <Textarea value={form.recent_faults_notes} onChange={e => setField('recent_faults_notes', e.target.value)} placeholder="e.g. pulling out at junctions without checking..." rows={2} />
         </FormField>
       </SectionCard>
 
@@ -139,9 +133,6 @@ export function ReadinessFormSections({ form, setField, toggleArrayItem, errors 
             ))}
           </div>
         </FormField>
-        <FormField label="What is the pupil's plan for staying calm and focused during the test?" className="mt-4">
-          <Textarea value={form.nerves_management_plan} onChange={e => setField('nerves_management_plan', e.target.value)} placeholder="Describe the nerves management plan..." rows={2} />
-        </FormField>
       </SectionCard>
 
       {/* Section 5 */}
@@ -157,16 +148,10 @@ export function ReadinessFormSections({ form, setField, toggleArrayItem, errors 
           </RadioGroup>
         </FormField>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          <FormField label="Instructor name (optional)">
-            <Input value={form.instructor_name} onChange={e => setField('instructor_name', e.target.value)} placeholder="Instructor's name" />
-          </FormField>
           <FormField label="Date instructor confirmed readiness (optional)">
             <Input type="date" value={form.instructor_confirmation_date} onChange={e => setField('instructor_confirmation_date', e.target.value)} />
           </FormField>
         </div>
-        <FormField label="Instructor comments (optional)" className="mt-4">
-          <Textarea value={form.instructor_comments} onChange={e => setField('instructor_comments', e.target.value)} placeholder="Any comments..." rows={2} />
-        </FormField>
       </SectionCard>
 
       {/* Section 6 */}
@@ -207,9 +192,6 @@ export function ReadinessFormSections({ form, setField, toggleArrayItem, errors 
               </div>
             ))}
           </div>
-        </FormField>
-        <FormField label="Add any extra notes about test preparation." className="mt-4">
-          <Textarea value={form.learner_extra_notes} onChange={e => setField('learner_extra_notes', e.target.value)} placeholder="Any additional thoughts or notes..." rows={3} />
         </FormField>
       </SectionCard>
     </>
