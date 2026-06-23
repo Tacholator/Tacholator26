@@ -61,8 +61,13 @@ function calculateReadiness(form) {
     form.independent_driving_status === 'Yes' &&
     form.safe_driving_status === 'Yes, I am not making serious or dangerous mistakes' &&
     mocks >= 2 &&
+    form.mock_test_independent_driving === 'Yes' &&
+    form.mock_test_manoeuvres === 'Yes' &&
+    form.mock_test_test_conditions === 'Yes' &&
+    form.nerves_management_methods?.length > 0 &&
     form.instructor_ready_confirmation === 'Yes' &&
-    form.nerves_management_plan?.trim();
+    form.test_booked_status !== '' &&
+    form.improvement_areas?.includes('None');
 
   const isNotReady =
     mocks < 2 ||
