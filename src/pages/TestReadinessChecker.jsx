@@ -80,6 +80,8 @@ function calculateReadiness(form) {
   if (isReady) result = 'Ready for Test';
   else if (isNotReady) result = 'Not Ready Yet';
 
+  if (isReady) score = 100;
+
   return { score, result };
 }
 
