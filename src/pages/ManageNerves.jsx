@@ -155,41 +155,6 @@ function LearnerView({ pupilProfile }) {
           </CardContent>
         </Card>
 
-        {/* Section 12: Confidence Rating */}
-        <Card className="border border-slate-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
-              <HeartPulse className="w-5 h-5 text-[#F7B602]" />
-              Section 12: My Confidence Rating
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Label className="text-sm font-medium text-slate-700 mb-4 block">How confident do you feel about managing your nerves?</Label>
-            <div className="px-2">
-              <Slider
-                value={[form.nerve_confidence_rating]}
-                min={1}
-                max={5}
-                step={1}
-                onValueChange={(val) => setField('nerve_confidence_rating', val[0])}
-                className="mb-3"
-              />
-              <div className="flex justify-between text-xs text-slate-500">
-                {CONFIDENCE_OPTIONS.map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setField('nerve_confidence_rating', opt.value)}
-                    className={`flex flex-col items-center gap-1 transition ${form.nerve_confidence_rating === opt.value ? 'text-[#071739] font-bold' : ''}`}
-                  >
-                    <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs ${form.nerve_confidence_rating === opt.value ? 'bg-[#F7B602] text-[#071739]' : 'bg-slate-200 text-slate-500'}`}>{opt.value}</span>
-                    <span className="text-center max-w-[60px]">{opt.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Save Button */}
         <div className="pb-6">
           <Button
