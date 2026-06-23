@@ -50,8 +50,8 @@ function calculateReadiness(form) {
   if (mocks >= 2) score += 25;
   else if (mocks === 1) score += 10;
 
-  // Nerves management plan: 10 points
-  if (form.nerves_management_plan?.trim()) score += 10;
+  // Nerves management methods: 10 points
+  if (form.nerves_management_methods?.length > 0) score += 10;
 
   // Instructor confirmation: 20 points
   if (form.instructor_ready_confirmation === 'Yes') score += 20;
