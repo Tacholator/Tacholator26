@@ -181,10 +181,36 @@ export function ReadinessFormSections({ form, setField, toggleArrayItem, errors 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
             {IMPROVEMENT_AREAS.map(area => (
               <div key={area} className="flex items-center gap-2">
-                <Checkbox id={`imp_${area}`} checked={form.improvement_areas.includes(area)} onCheckedChange={() => toggleArrayItem('improvement_areas', area)} />
+                <Checkbox
+                  id={`imp_${area}`}
+                  checked={form.improvement_areas.includes(area)}
+                  onCheckedChange={() => {
+                    const current = form.improvement_areas || [];
+                    const next = current.includes(area)
+                      ? current.filter(v => v !== area)
+                      : [...current.filter(v => v !== 'None'), area];
+                    setField('improvement_areas', next);
+                  }}
+                />
                 <Label htmlFor={`imp_${area}`} className="font-normal cursor-pointer text-sm">{area}</Label>
               </div>
             ))}
+          </div>
+          <div className="mt-3 pt-3 border-t border-slate-100">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="imp_none"
+                checked={form.improvement_areas.includes('None')}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    setField('improvement_areas', ['None']);
+                  } else {
+                    setField('improvement_areas', form.improvement_areas.filter(a => a !== 'None'));
+                  }
+                }}
+              />
+              <Label htmlFor="imp_none" className="font-medium cursor-pointer text-sm text-[#071739]">None — no areas need improvement</Label>
+            </div>
           </div>
         </FormField>
       </SectionCard>
