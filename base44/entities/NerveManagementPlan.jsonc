@@ -14,16 +14,31 @@
       "type": "string",
       "description": "Reference to the instructor user ID"
     },
-    "selectedTechniques": {
+    "calm_plan": {
+      "type": "string",
+      "description": "Pupil's test-day calm plan (Section 9)"
+    },
+    "checklist_items": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Nerve management techniques the pupil practises"
+      "description": "Checklist items confirmed by pupil before test (Section 11)"
     },
-    "personalPlan": {
+    "nerve_confidence_rating": {
+      "type": "number",
+      "description": "Confidence rating 1-5 (Section 12)"
+    },
+    "main_test_worries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Main test worries selected by pupil (Section 13)"
+    },
+    "nerve_control_plan": {
       "type": "string",
-      "description": "Pupil's personal nerves management plan for test day"
+      "description": "Practical steps pupil will take to manage worries (Section 14)"
     },
     "instructorRecommendations": {
       "type": "string",

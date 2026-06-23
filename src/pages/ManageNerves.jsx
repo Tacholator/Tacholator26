@@ -1,26 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/components/ui/use-toast';
+import NerveContent from '@/components/nerves/NerveContent';
 import {
-  Brain, Save, ChevronDown, ChevronRight, HeartPulse, Sparkles, CheckCircle2
+  CHECKLIST_ITEMS, MAIN_WORRIES, CONFIDENCE_OPTIONS, getEmptyNerveForm
+} from '@/components/nerves/nerveData';
+import {
+  Brain, Save, ClipboardList, HeartPulse, Sparkles, CheckCircle2,
+  ChevronDown, ChevronRight, AlertTriangle
 } from 'lucide-react';
-import { NERVES_OPTIONS } from '@/components/readiness/readinessLogic';
-
-const TECHNIQUE_DESCRIPTIONS = {
-  'Breathing techniques': 'Slow, deep breaths to calm your nervous system before and during the test.',
-  'Mock test practice': 'Simulating test conditions to build familiarity and reduce anxiety.',
-  'Practising difficult routes': 'Driving the test routes repeatedly until they feel natural.',
-  'Positive self-talk': 'Replacing negative thoughts with encouraging, confidence-building statements.',
-  'Knowing what to expect on test day': 'Understanding the test format, so there are no surprises.',
-  'Other': 'Any other technique that helps you stay calm and focused.'
-};
 
 export default function ManageNerves() {
   const { toast } = useToast();
@@ -41,53 +38,56 @@ export default function ManageNerves() {
   });
 
   const isInstructor = user?.role === 'admin';
-  const pupilId = pupilProfile?.id;
-  const instructorId = isInstructor ? user?.id : null;
 
-  // For learners: fetch their own plan
+  if (isInstructor) {
+    return <InstructorView instructorId={user?.id} />;
+  }
+
+  return (
+    <LearnerView pupilProfile={pupilProfile} />
+  );
+}
+
+/* ============ LEARNER VIEW ============ */
+
+function LearnerView({ pupilProfile }) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const pupilId = pupilProfile?.id;
+
+  const [form, setForm] = useState(getEmptyNerveForm());
+  const [planId, setPlanId] = useState(null);
+  const [saved, setSaved] = useState(false);
+
   const { data: myPlan } = useQuery({
     queryKey: ['myNervePlan', pupilId],
     queryFn: async () => {
       const results = await base44.entities.NerveManagementPlan.filter({ pupilId });
       return results[0] || null;
     },
-    enabled: !isInstructor && !!pupilId
+    enabled: !!pupilId
   });
-
-  // For instructors: fetch all their pupils' plans
-  const { data: instructorPupils } = useQuery({
-    queryKey: ['instructorPupilsForNerves', instructorId],
-    queryFn: async () => {
-      const results = await base44.entities.Pupil.filter({ instructorId });
-      return results;
-    },
-    enabled: isInstructor && !!instructorId
-  });
-
-  const { data: pupilPlans, refetch: refetchPupilPlans } = useQuery({
-    queryKey: ['instructorNervePlans', instructorId],
-    queryFn: async () => {
-      const results = await base44.entities.NerveManagementPlan.filter({ instructorId });
-      return results;
-    },
-    enabled: isInstructor && !!instructorId
-  });
-
-  // Learner form state
-  const [techniques, setTechniques] = useState([]);
-  const [personalPlan, setPersonalPlan] = useState('');
-  const [planId, setPlanId] = useState(null);
 
   useEffect(() => {
     if (myPlan) {
-      setTechniques(myPlan.selectedTechniques || []);
-      setPersonalPlan(myPlan.personalPlan || '');
+      setForm({
+        calm_plan: myPlan.calm_plan || '',
+        checklist_items: myPlan.checklist_items || [],
+        nerve_confidence_rating: myPlan.nerve_confidence_rating || 0,
+        main_test_worries: myPlan.main_test_worries || [],
+        nerve_control_plan: myPlan.nerve_control_plan || ''
+      });
       setPlanId(myPlan.id);
     }
   }, [myPlan]);
 
-  const toggleTechnique = (tech) => {
-    setTechniques(prev => prev.includes(tech) ? prev.filter(t => t !== tech) : [...prev, tech]);
+  const setField = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
+
+  const toggleArrayItem = (key, value) => {
+    setForm(prev => {
+      const arr = prev[key] || [];
+      return { ...prev, [key]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] };
+    });
   };
 
   const saveMutation = useMutation({
@@ -96,8 +96,7 @@ export default function ManageNerves() {
         pupilId,
         pupilName: pupilProfile ? `${pupilProfile.firstName || ''} ${pupilProfile.lastName || ''}`.trim() : '',
         instructorId: pupilProfile?.instructorId || null,
-        selectedTechniques: techniques,
-        personalPlan
+        ...form
       };
       if (planId) {
         return base44.entities.NerveManagementPlan.update(planId, payload);
@@ -107,43 +106,247 @@ export default function ManageNerves() {
     onSuccess: (data) => {
       if (!planId) setPlanId(data.id);
       queryClient.invalidateQueries({ queryKey: ['myNervePlan'] });
-      toast({ title: 'Nerves plan saved successfully' });
+      queryClient.invalidateQueries({ queryKey: ['nerveManagementCard'] });
+      setSaved(true);
+      toast({ title: 'Your nerve management plan has been saved. Keep practising these techniques during your lessons so they feel natural on test day.' });
     },
     onError: () => toast({ title: 'Failed to save', variant: 'destructive' })
   });
 
-  // Instructor view
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 lg:p-8">
+      <div className="max-w-2xl mx-auto space-y-6">
+        {/* Header */}
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-[#071739] flex items-center justify-center">
+              <Brain className="w-5 h-5 text-[#F7B602]" />
+            </div>
+            <h1 className="text-2xl font-bold text-[#071739]">Manage Nerves</h1>
+          </div>
+        </div>
+
+        {/* Informational Content (Intro + Sections 1-8, 10) */}
+        <NerveContent />
+
+        {/* Section 9: Test-day calm plan */}
+        <Card className="border border-slate-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
+              <Sparkles className="w-5 h-5 text-[#F7B602]" />
+              Section 9: Create your test-day calm plan
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-slate-700 mb-3">Before your test, write down your personal plan for managing nerves.</p>
+            <Label className="text-sm font-medium text-slate-700 mb-1 block">What will you do to stay calm before and during your test?</Label>
+            <Textarea
+              value={form.calm_plan}
+              onChange={e => setField('calm_plan', e.target.value)}
+              placeholder="Example: I will sleep early, avoid too much caffeine, arrive on time, take slow breaths, listen carefully, and focus only on safe driving."
+              rows={4}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Section 11: Checklist */}
+        <Card className="border border-slate-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
+              <ClipboardList className="w-5 h-5 text-[#F7B602]" />
+              Section 11: Tacholator Nerve Management Checklist
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm font-semibold text-slate-600 mb-3">Before my test, I will:</p>
+            <div className="space-y-2.5">
+              {CHECKLIST_ITEMS.map(item => (
+                <div key={item} className="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-50">
+                  <Checkbox
+                    id={`chk_${item}`}
+                    checked={form.checklist_items.includes(item)}
+                    onCheckedChange={() => toggleArrayItem('checklist_items', item)}
+                    className="mt-0.5"
+                  />
+                  <Label htmlFor={`chk_${item}`} className="font-normal cursor-pointer text-sm text-slate-700">{item}</Label>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Section 12: Confidence Rating */}
+        <Card className="border border-slate-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
+              <HeartPulse className="w-5 h-5 text-[#F7B602]" />
+              Section 12: My Confidence Rating
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Label className="text-sm font-medium text-slate-700 mb-4 block">How confident do you feel about managing your nerves?</Label>
+            <div className="px-2">
+              <Slider
+                value={[form.nerve_confidence_rating]}
+                min={1}
+                max={5}
+                step={1}
+                onValueChange={(val) => setField('nerve_confidence_rating', val[0])}
+                className="mb-3"
+              />
+              <div className="flex justify-between text-xs text-slate-500">
+                {CONFIDENCE_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setField('nerve_confidence_rating', opt.value)}
+                    className={`flex flex-col items-center gap-1 transition ${form.nerve_confidence_rating === opt.value ? 'text-[#071739] font-bold' : ''}`}
+                  >
+                    <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs ${form.nerve_confidence_rating === opt.value ? 'bg-[#F7B602] text-[#071739]' : 'bg-slate-200 text-slate-500'}`}>{opt.value}</span>
+                    <span className="text-center max-w-[60px]">{opt.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Section 13: Main Worries */}
+        <Card className="border border-slate-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
+              <AlertTriangle className="w-5 h-5 text-[#F7B602]" />
+              Section 13: My Main Worry
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {MAIN_WORRIES.map(worry => (
+                <div key={worry} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`worry_${worry}`}
+                    checked={form.main_test_worries.includes(worry)}
+                    onCheckedChange={() => toggleArrayItem('main_test_worries', worry)}
+                  />
+                  <Label htmlFor={`worry_${worry}`} className="font-normal cursor-pointer text-sm text-slate-700">{worry}</Label>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Section 14: Nerve Control Plan */}
+        <Card className="border border-slate-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
+              <Brain className="w-5 h-5 text-[#F7B602]" />
+              Section 14: My Nerve Control Plan
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Label className="text-sm font-medium text-slate-700 mb-1 block">What practical steps will you take to manage this worry?</Label>
+            <Textarea
+              value={form.nerve_control_plan}
+              onChange={e => setField('nerve_control_plan', e.target.value)}
+              placeholder="Example: I will practise more mock tests, ask my instructor to reduce prompts, use breathing techniques, and focus on one instruction at a time."
+              rows={4}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Save Button */}
+        <div className="pb-6">
+          <Button
+            onClick={() => saveMutation.mutate()}
+            disabled={saveMutation.isPending || !pupilId}
+            className="w-full bg-[#071739] hover:bg-[#0d2a5e] text-white py-3 text-base font-semibold"
+          >
+            <Save className="w-4 h-4 mr-2" />
+            {saveMutation.isPending ? 'Saving...' : 'Save My Nerve Plan'}
+          </Button>
+
+          {saved && (
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+              <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+              <p className="text-sm text-green-800">
+                Your nerve management plan has been saved. Keep practising these techniques during your lessons so they feel natural on test day.
+              </p>
+            </div>
+          )}
+
+          {!pupilId && (
+            <p className="text-xs text-slate-500 text-center mt-2">Link your pupil profile to save your plan.</p>
+          )}
+
+          {/* Disclaimer */}
+          <p className="text-xs text-slate-500 italic text-center mt-4">
+            Tacholator's Manage Nerves page is a learner support tool. It does not replace professional advice from your driving instructor, medical advice, or official DVSA guidance. If anxiety is seriously affecting your wellbeing, consider speaking to a healthcare professional.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ INSTRUCTOR VIEW ============ */
+
+function InstructorView({ instructorId }) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [expandedPupil, setExpandedPupil] = useState(null);
   const [recommendations, setRecommendations] = useState({});
+
+  const { data: instructorPupils } = useQuery({
+    queryKey: ['instructorPupilsForNerves', instructorId],
+    queryFn: async () => {
+      const results = await base44.entities.Pupil.filter({ instructorId });
+      return results;
+    },
+    enabled: !!instructorId
+  });
+
+  const { data: pupilPlans } = useQuery({
+    queryKey: ['instructorNervePlans', instructorId],
+    queryFn: async () => {
+      const results = await base44.entities.NerveManagementPlan.filter({ instructorId });
+      return results;
+    },
+    enabled: !!instructorId
+  });
 
   const handleSaveRecommendation = async (planId) => {
     try {
       await base44.entities.NerveManagementPlan.update(planId, {
         instructorRecommendations: recommendations[planId] ?? ''
       });
-      await refetchPupilPlans();
+      queryClient.invalidateQueries({ queryKey: ['instructorNervePlans'] });
       toast({ title: 'Recommendation saved' });
     } catch {
       toast({ title: 'Failed to save', variant: 'destructive' });
     }
   };
 
-  if (isInstructor) {
-    return (
-      <div className="min-h-screen bg-slate-50 p-4 lg:p-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-[#071739] flex items-center justify-center">
-                <Brain className="w-5 h-5 text-[#F7B602]" />
-              </div>
-              <h1 className="text-2xl font-bold text-[#071739]">Manage Nerves</h1>
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 lg:p-8">
+      <div className="max-w-2xl mx-auto space-y-6">
+        {/* Header */}
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-[#071739] flex items-center justify-center">
+              <Brain className="w-5 h-5 text-[#F7B602]" />
             </div>
-            <p className="text-slate-600 text-sm">
-              View your pupils' test-day nerves management plans and add personalised recommendations.
-            </p>
+            <h1 className="text-2xl font-bold text-[#071739]">Manage Nerves</h1>
           </div>
+          <p className="text-slate-600 text-sm">
+            Review your pupils' nerve management plans and add personalised recommendations.
+          </p>
+        </div>
 
+        {/* Informational Content (shared with learners) */}
+        <NerveContent />
+
+        {/* Pupil Plans */}
+        <div>
+          <h2 className="text-lg font-bold text-[#071739] mb-3">Pupil Nerve Plans</h2>
           {instructorPupils?.length === 0 && (
             <Card className="border border-slate-200">
               <CardContent className="py-10 text-center">
@@ -153,7 +356,7 @@ export default function ManageNerves() {
             </Card>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {instructorPupils?.map(pupil => {
               const plan = pupilPlans?.find(p => p.pupilId === pupil.id);
               const isExpanded = expandedPupil === pupil.id;
@@ -169,12 +372,21 @@ export default function ManageNerves() {
                         <div className="text-left">
                           <p className="font-semibold text-[#071739]">{pupil.firstName} {pupil.lastName}</p>
                           <p className="text-xs text-slate-500">
-                            {plan ? `${(plan.selectedTechniques || []).length} technique(s) selected` : 'No plan yet'}
+                            {plan ? 'Plan completed' : 'No plan yet'}
                           </p>
                         </div>
                       </div>
-                      {plan?.instructorRecommendations && (
-                        <Badge className="bg-green-100 text-green-700 text-xs">Reviewed</Badge>
+                      {plan && (
+                        <div className="flex items-center gap-2">
+                          {plan.nerve_confidence_rating > 0 && (
+                            <Badge className="bg-amber-100 text-amber-800 text-xs">
+                              {CONFIDENCE_OPTIONS.find(c => c.value === plan.nerve_confidence_rating)?.label || `Rating: ${plan.nerve_confidence_rating}`}
+                            </Badge>
+                          )}
+                          {plan.instructorRecommendations && (
+                            <Badge className="bg-green-100 text-green-700 text-xs">Reviewed</Badge>
+                          )}
+                        </div>
                       )}
                     </button>
 
@@ -182,26 +394,48 @@ export default function ManageNerves() {
                       <div className="mt-4 pt-4 border-t border-slate-100 space-y-4">
                         {plan ? (
                           <>
-                            {plan.selectedTechniques?.length > 0 && (
+                            {plan.nerve_confidence_rating > 0 && (
                               <div>
-                                <p className="text-xs font-semibold text-slate-600 mb-2">Techniques Practised</p>
+                                <p className="text-xs font-semibold text-slate-600 mb-1">Confidence Rating</p>
+                                <Badge className="bg-amber-100 text-amber-800 text-xs">
+                                  {CONFIDENCE_OPTIONS.find(c => c.value === plan.nerve_confidence_rating)?.label}
+                                </Badge>
+                              </div>
+                            )}
+                            {plan.main_test_worries?.length > 0 && (
+                              <div>
+                                <p className="text-xs font-semibold text-slate-600 mb-1">Main Worries</p>
                                 <div className="flex flex-wrap gap-2">
-                                  {plan.selectedTechniques.map(t => (
-                                    <Badge key={t} className="bg-amber-100 text-amber-800 text-xs">{t}</Badge>
+                                  {plan.main_test_worries.map(w => (
+                                    <Badge key={w} className="bg-rose-100 text-rose-700 text-xs">{w}</Badge>
                                   ))}
                                 </div>
                               </div>
                             )}
-                            {plan.personalPlan && (
+                            {plan.calm_plan && (
                               <div>
-                                <p className="text-xs font-semibold text-slate-600 mb-1">Pupil's Personal Plan</p>
-                                <p className="text-sm text-slate-700 bg-slate-50 rounded-lg p-3 whitespace-pre-wrap">{plan.personalPlan}</p>
+                                <p className="text-xs font-semibold text-slate-600 mb-1">Test-day Calm Plan</p>
+                                <p className="text-sm text-slate-700 bg-slate-50 rounded-lg p-3 whitespace-pre-wrap">{plan.calm_plan}</p>
+                              </div>
+                            )}
+                            {plan.nerve_control_plan && (
+                              <div>
+                                <p className="text-xs font-semibold text-slate-600 mb-1">Nerve Control Plan</p>
+                                <p className="text-sm text-slate-700 bg-slate-50 rounded-lg p-3 whitespace-pre-wrap">{plan.nerve_control_plan}</p>
+                              </div>
+                            )}
+                            {plan.checklist_items?.length > 0 && (
+                              <div>
+                                <p className="text-xs font-semibold text-slate-600 mb-1">Checklist Items</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {plan.checklist_items.map(item => (
+                                    <Badge key={item} className="bg-blue-100 text-blue-700 text-xs">{item}</Badge>
+                                  ))}
+                                </div>
                               </div>
                             )}
                             <div>
-                              <Label className="text-xs font-semibold text-slate-600 mb-1 block">
-                                Your Recommendations
-                              </Label>
+                              <Label className="text-xs font-semibold text-slate-600 mb-1 block">Your Recommendations</Label>
                               <Textarea
                                 value={recommendations[plan.id] ?? plan.instructorRecommendations ?? ''}
                                 onChange={e => setRecommendations(prev => ({ ...prev, [plan.id]: e.target.value }))}
@@ -219,7 +453,7 @@ export default function ManageNerves() {
                             </div>
                           </>
                         ) : (
-                          <p className="text-sm text-slate-500 italic">This pupil hasn't created a nerves management plan yet.</p>
+                          <p className="text-sm text-slate-500 italic">This pupil hasn't created a nerve management plan yet.</p>
                         )}
                       </div>
                     )}
@@ -229,97 +463,11 @@ export default function ManageNerves() {
             })}
           </div>
         </div>
-      </div>
-    );
-  }
 
-  // Learner view
-  return (
-    <div className="min-h-screen bg-slate-50 p-4 lg:p-8">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-[#071739] flex items-center justify-center">
-              <Brain className="w-5 h-5 text-[#F7B602]" />
-            </div>
-            <h1 className="text-2xl font-bold text-[#071739]">Manage Nerves</h1>
-          </div>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            Feeling nervous before your driving test is completely normal. Select the techniques you've practised and create a personal plan to help you stay calm and focused on test day.
-          </p>
-        </div>
-
-        <Card className="border border-slate-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
-              <HeartPulse className="w-5 h-5 text-[#F7B602]" />
-              Techniques You Practise
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {NERVES_OPTIONS.map(opt => (
-                <div key={opt} className="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-50">
-                  <Checkbox
-                    id={`nerve_${opt}`}
-                    checked={techniques.includes(opt)}
-                    onCheckedChange={() => toggleTechnique(opt)}
-                    className="mt-0.5"
-                  />
-                  <div>
-                    <Label htmlFor={`nerve_${opt}`} className="font-medium cursor-pointer text-sm text-slate-800">{opt}</Label>
-                    <p className="text-xs text-slate-500 mt-0.5">{TECHNIQUE_DESCRIPTIONS[opt]}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border border-slate-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
-              <Sparkles className="w-5 h-5 text-[#F7B602]" />
-              Your Personal Nerves Plan
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              value={personalPlan}
-              onChange={e => setPersonalPlan(e.target.value)}
-              placeholder="Write your step-by-step plan for managing nerves on test day. For example: '1. Arrive 10 minutes early. 2. Take 3 deep breaths before starting the engine. 3. Remind myself I've passed 2 mock tests...'"
-              rows={6}
-            />
-          </CardContent>
-        </Card>
-
-        {myPlan?.instructorRecommendations && (
-          <Card className="border border-green-200 bg-green-50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2 text-green-800">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                Instructor's Recommendations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-green-900 whitespace-pre-wrap">{myPlan.instructorRecommendations}</p>
-            </CardContent>
-          </Card>
-        )}
-
-        <div className="pb-6">
-          <Button
-            onClick={() => saveMutation.mutate()}
-            disabled={saveMutation.isPending || !pupilId}
-            className="w-full bg-[#071739] hover:bg-[#0d2a5e] text-white py-3 text-base font-semibold"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {saveMutation.isPending ? 'Saving...' : 'Save My Nerves Plan'}
-          </Button>
-          {!pupilId && (
-            <p className="text-xs text-slate-500 text-center mt-2">Link your pupil profile to save your plan.</p>
-          )}
-        </div>
+        {/* Disclaimer */}
+        <p className="text-xs text-slate-500 italic text-center pb-6">
+          Tacholator's Manage Nerves page is a learner support tool. It does not replace professional advice from your driving instructor, medical advice, or official DVSA guidance. If anxiety is seriously affecting your wellbeing, consider speaking to a healthcare professional.
+        </p>
       </div>
     </div>
   );

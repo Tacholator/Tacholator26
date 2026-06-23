@@ -44,6 +44,7 @@ import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModa
 import LearnerOnboardingPopup from '@/components/onboarding/LearnerOnboardingPopup';
 import LearnerAppTour from '@/components/onboarding/LearnerAppTour';
 import TestReadinessCard from '@/components/dashboard/TestReadinessCard';
+import NerveManagementCard from '@/components/dashboard/NerveManagementCard';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
@@ -505,6 +506,17 @@ export default function LearnerDashboard() {
             transition={{ delay: 0.05 }}
           >
             <TestReadinessCard pupilId={pupil.id} />
+          </motion.div>
+        )}
+
+        {/* Nerve Management Card */}
+        {pupil?.id && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <NerveManagementCard pupilId={pupil.id} />
           </motion.div>
         )}
 
