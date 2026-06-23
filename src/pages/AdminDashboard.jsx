@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, Calendar, Trash2, Sparkles, MapPin, CreditCard, Gift, Users, ClipboardCheck, Video, Mail } from 'lucide-react';
+import { Settings, Calendar, Trash2, Sparkles, MapPin, CreditCard, Gift, Users, ClipboardCheck, Video, Mail, Megaphone } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
@@ -92,6 +92,13 @@ const adminCards = [
     icon: Mail,
     page: 'AdminEmailTemplates',
     color: 'from-[#071739] to-[#0d2659]'
+  },
+  {
+    title: 'Marketing',
+    description: 'Control referral banners and promotional popups',
+    icon: Megaphone,
+    page: 'AdminMarketing',
+    color: 'from-orange-500 to-rose-600'
   }
 ];
 

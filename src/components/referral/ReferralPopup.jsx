@@ -14,6 +14,14 @@ export default function ReferralPopup({ pupilProfile }) {
   const [isOpen, setIsOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
+  const { data: globalSetting } = useQuery({
+    queryKey: ['appSetting', 'referral_program_enabled'],
+    queryFn: async () => {
+      const results = await base44.entities.AppSetting.filter({ key: 'referral_program_enabled' });
+      return results[0] || null;
+    },
+  });
+
   const { data: instructorProfile, isLoading } = useQuery({
     queryKey: ['instructorProfilePopup', pupilProfile?.instructorEmail],
     queryFn: async () => {
@@ -24,9 +32,11 @@ export default function ReferralPopup({ pupilProfile }) {
     enabled: !!pupilProfile?.instructorEmail,
   });
 
+  const globalReferralEnabled = globalSetting ? globalSetting.value !== false : true;
+
   useEffect(() => {
     if (isLoading) return;
-    if (instructorProfile?.referralProgramEnabled === false) {
+    if (!globalReferralEnabled || instructorProfile?.referralProgramEnabled === false) {
       setIsOpen(false);
       return;
     }
@@ -34,7 +44,7 @@ export default function ReferralPopup({ pupilProfile }) {
     if (!isDismissed) {
       setIsOpen(true);
     }
-  }, [instructorProfile?.referralProgramEnabled, isLoading]);
+  }, [globalReferralEnabled, instructorProfile?.referralProgramEnabled, isLoading]);
 
   const handleDismiss = () => {
     if (dontShowAgain) {
