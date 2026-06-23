@@ -210,49 +210,6 @@ function LearnerView({ pupilProfile }) {
           </CardContent>
         </Card>
 
-        {/* Section 13: Main Worries */}
-        <Card className="border border-slate-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
-              <AlertTriangle className="w-5 h-5 text-[#F7B602]" />
-              Section 13: My Main Worry
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {MAIN_WORRIES.map(worry => (
-                <div key={worry} className="flex items-center gap-2">
-                  <Checkbox
-                    id={`worry_${worry}`}
-                    checked={form.main_test_worries.includes(worry)}
-                    onCheckedChange={() => toggleArrayItem('main_test_worries', worry)}
-                  />
-                  <Label htmlFor={`worry_${worry}`} className="font-normal cursor-pointer text-sm text-slate-700">{worry}</Label>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Section 14: Nerve Control Plan */}
-        <Card className="border border-slate-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2 text-[#071739]">
-              <Brain className="w-5 h-5 text-[#F7B602]" />
-              Section 14: My Nerve Control Plan
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Label className="text-sm font-medium text-slate-700 mb-1 block">What practical steps will you take to manage this worry?</Label>
-            <Textarea
-              value={form.nerve_control_plan}
-              onChange={e => setField('nerve_control_plan', e.target.value)}
-              placeholder="Example: I will practise more mock tests, ask my instructor to reduce prompts, use breathing techniques, and focus on one instruction at a time."
-              rows={4}
-            />
-          </CardContent>
-        </Card>
-
         {/* Save Button */}
         <div className="pb-6">
           <Button
