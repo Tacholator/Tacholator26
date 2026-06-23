@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { Progress } from '@/components/ui/progress';
+import ReadinessSummary from '@/components/readiness/ReadinessSummary';
 import {
   Car, CheckCircle2, XCircle, AlertCircle, ClipboardList,
   Brain, Trophy, Calendar, User, MapPin, Target, ChevronRight,
@@ -137,6 +138,13 @@ function ResultCard({ result, score, form, onReset }) {
             <Progress value={score} className="h-3" />
           </div>
           <p className="text-slate-700 leading-relaxed">{cfg.message}</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle className="text-base">Why This Result?</CardTitle></CardHeader>
+        <CardContent>
+          <ReadinessSummary form={form} result={result} />
         </CardContent>
       </Card>
 

@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { ClipboardList, CheckCircle2, XCircle, AlertCircle, User, Calendar, MapPin, ChevronRight, ArrowLeft, UserPlus } from 'lucide-react';
 import moment from 'moment';
 import InstructorConductReadinessCheck from '@/components/readiness/InstructorConductReadinessCheck';
+import ReadinessSummary from '@/components/readiness/ReadinessSummary';
 
 function ReadinessBadge({ result }) {
   if (!result) return <Badge variant="outline" className="text-slate-500">Not completed</Badge>;
@@ -188,12 +189,15 @@ export default function InstructorReadinessReview() {
                 <DetailRow label="Instructor Confirmation" value={selected.instructor_ready_confirmation} />
                 <DetailRow label="Instructor Confirmed Date" value={selected.instructor_confirmation_date ? moment(selected.instructor_confirmation_date).format('DD MMM YYYY') : null} />
                 <DetailRow label="Test Booked" value={selected.test_booked_status} />
-                {selected.test_date && <DetailRow label="Test Date" value={selected.test_date} />}
                 <DetailRow label="Test Date" value={selected.test_date ? moment(selected.test_date).format('DD MMM YYYY') : null} />
-                <DetailRow label="Test Time" value={selected.test_time} />
-                <DetailRow label="Test Centre" value={selected.test_centre} />
                 <DetailRow label="Improvement Areas" value={selected.improvement_areas} />
                 <DetailRow label="Submitted" value={moment(selected.created_date).format('DD MMM YYYY HH:mm')} />
+              </div>
+
+              {/* Summary */}
+              <div className="border-t border-slate-200 pt-4">
+                <h3 className="font-semibold text-slate-800 mb-3">Why This Result?</h3>
+                <ReadinessSummary form={selected} result={selected.readiness_result} />
               </div>
 
               {/* Instructor Override */}
