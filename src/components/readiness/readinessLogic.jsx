@@ -67,8 +67,7 @@ export function calculateReadiness(form) {
     form.mock_test_test_conditions === 'Yes' &&
     form.nerves_management_methods?.length > 0 &&
     form.instructor_ready_confirmation === 'Yes' &&
-    form.test_booked_status !== '' &&
-    form.improvement_areas?.includes('None');
+    form.test_booked_status !== '';
 
   const isNotReady =
     mocks < 2 ||

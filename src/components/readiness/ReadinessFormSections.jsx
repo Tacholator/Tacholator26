@@ -6,9 +6,9 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Car, Brain, Trophy, Calendar, User, Target, Shield, Info
+  Car, Brain, Trophy, Calendar, User, Shield, Info
 } from 'lucide-react';
-import { NERVES_OPTIONS, IMPROVEMENT_AREAS } from './readinessLogic';
+import { NERVES_OPTIONS } from './readinessLogic';
 
 export function SectionCard({ icon, title, children }) {
   return (
@@ -173,46 +173,6 @@ export function ReadinessFormSections({ form, setField, toggleArrayItem, errors 
             </FormField>
           </div>
         )}
-      </SectionCard>
-
-      {/* Section 7 */}
-      <SectionCard icon={<Target className="w-5 h-5 text-[#F7B602]" />} title="Section 7: Learner Reflection">
-        <FormField label="What areas does the pupil still need to improve before their test?">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
-            {IMPROVEMENT_AREAS.map(area => (
-              <div key={area} className="flex items-center gap-2">
-                <Checkbox
-                  id={`imp_${area}`}
-                  checked={form.improvement_areas.includes(area)}
-                  onCheckedChange={() => {
-                    const current = form.improvement_areas || [];
-                    const next = current.includes(area)
-                      ? current.filter(v => v !== area)
-                      : [...current.filter(v => v !== 'None'), area];
-                    setField('improvement_areas', next);
-                  }}
-                />
-                <Label htmlFor={`imp_${area}`} className="font-normal cursor-pointer text-sm">{area}</Label>
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 pt-3 border-t border-slate-100">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="imp_none"
-                checked={form.improvement_areas.includes('None')}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    setField('improvement_areas', ['None']);
-                  } else {
-                    setField('improvement_areas', form.improvement_areas.filter(a => a !== 'None'));
-                  }
-                }}
-              />
-              <Label htmlFor="imp_none" className="font-medium cursor-pointer text-sm text-[#071739]">None — no areas need improvement</Label>
-            </div>
-          </div>
-        </FormField>
       </SectionCard>
     </>
   );
