@@ -50,9 +50,7 @@ export default function LearnerDashboard() {
   const [summaryModalOpen, setSummaryModalOpen] = React.useState(false);
   const [showOnboardingPopup, setShowOnboardingPopup] = React.useState(false);
   const [showAppTour, setShowAppTour] = React.useState(false);
-  const [checksbannerDismissed, setChecksBannerDismissed] = React.useState(
-    () => sessionStorage.getItem('firstLessonChecksBannerDismissed') === '1'
-  );
+  const [checksbannerDismissed, setChecksBannerDismissed] = React.useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['currentUser'],
@@ -115,6 +113,12 @@ export default function LearnerDashboard() {
       setShowAppTour(true);
     }
   }, [pupil]);
+
+  useEffect(() => {
+    if (pupil?.firstLessonChecksBannerDismissed) {
+      setChecksBannerDismissed(true);
+    }
+  }, [pupil?.firstLessonChecksBannerDismissed]);
 
   const handleTourClose = () => {
     setShowAppTour(false);
@@ -509,7 +513,9 @@ export default function LearnerDashboard() {
             </div>
             <button
               onClick={() => {
-                sessionStorage.setItem('firstLessonChecksBannerDismissed', '1');
+                if (pupil?.id) {
+                  base44.entities.Pupil.update(pupil.id, { firstLessonChecksBannerDismissed: true });
+                }
                 setChecksBannerDismissed(true);
               }}
               className="text-emerald-500 hover:text-emerald-700 transition-colors p-1 shrink-0"

@@ -229,6 +229,11 @@
       "type": "boolean",
       "default": false,
       "description": "Whether the learner has seen the app tour"
+    },
+    "firstLessonChecksBannerDismissed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the learner has dismissed the 'First lesson checks complete' banner (persistent)"
     }
   },
   "required": [
