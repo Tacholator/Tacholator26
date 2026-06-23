@@ -46,6 +46,7 @@ import InstructorExpenses from './pages/InstructorExpenses';
 import TestReadinessChecker from './pages/TestReadinessChecker';
 import InstructorReadinessReview from './pages/InstructorReadinessReview';
 import AdminMarketing from './pages/AdminMarketing';
+import ManageNerves from './pages/ManageNerves';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -280,6 +281,11 @@ const AuthenticatedApp = () => {
       <Route path="/AdminMarketing" element={
         <LayoutWrapper currentPageName="AdminMarketing">
           <AdminMarketing />
+        </LayoutWrapper>
+      } />
+      <Route path="/ManageNerves" element={
+        <LayoutWrapper currentPageName="ManageNerves">
+          <ManageNerves />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

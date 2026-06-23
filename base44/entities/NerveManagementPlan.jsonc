@@ -1,0 +1,78 @@
+{
+  "name": "NerveManagementPlan",
+  "type": "object",
+  "properties": {
+    "pupilId": {
+      "type": "string",
+      "description": "Reference to the pupil"
+    },
+    "pupilName": {
+      "type": "string",
+      "description": "Pupil's full name (denormalised for display)"
+    },
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to the instructor user ID"
+    },
+    "selectedTechniques": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nerve management techniques the pupil practises"
+    },
+    "personalPlan": {
+      "type": "string",
+      "description": "Pupil's personal nerves management plan for test day"
+    },
+    "instructorRecommendations": {
+      "type": "string",
+      "description": "Instructor's recommendations for managing nerves"
+    }
+  },
+  "required": [
+    "pupilId"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "data.pupilId": "{{user.data.pupil.id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "data.pupilId": "{{user.data.pupil.id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "data.pupilId": "{{user.data.pupil.id}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "data.pupilId": "{{user.data.pupil.id}}"
+        }
+      ]
+    }
+  }
+}

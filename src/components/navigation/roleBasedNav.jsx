@@ -30,7 +30,8 @@ import {
   Navigation,
   Gift,
   Fuel,
-  CheckSquare
+  CheckSquare,
+  Brain
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -91,6 +92,7 @@ export const instructorOnlyLinks = [
       { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting' },
       { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
       { name: 'Teaching Notes', icon: StickyNote, page: 'InstructorTeachingNotes' },
+      { name: 'Manage Nerves', icon: Brain, page: 'ManageNerves' },
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
@@ -118,6 +120,7 @@ export const learnerOnlyLinks = [
       { name: 'Learning Notes', icon: StickyNote, page: 'LearnerLearningNotes' },
       { name: 'Class Notes', icon: Notebook, page: 'LearnerClassNotes' },
       { name: 'Mock Tests', icon: ClipboardList, page: 'LearnerMockTests' },
+      { name: 'Manage Nerves', icon: Brain, page: 'ManageNerves' },
       { name: 'Lesson Diary', icon: BookOpen, page: 'LearnerDiary' }
     ]
   },
