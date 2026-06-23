@@ -89,8 +89,6 @@ export function validateReadinessForm(form) {
   if (!form.test_booked_status) e.test_booked_status = 'Please select an option';
   if (form.test_booked_status === 'Yes') {
     if (!form.test_date) e.test_date = 'Please enter your test date';
-    if (!form.test_time) e.test_time = 'Please enter your test time';
-    if (!form.test_centre) e.test_centre = 'Please enter your test centre';
   }
   return e;
 }

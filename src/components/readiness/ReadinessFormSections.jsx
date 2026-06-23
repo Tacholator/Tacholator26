@@ -171,12 +171,6 @@ export function ReadinessFormSections({ form, setField, toggleArrayItem, errors 
             <FormField label="Test date" required error={errors.test_date}>
               <Input type="date" value={form.test_date} onChange={e => setField('test_date', e.target.value)} />
             </FormField>
-            <FormField label="Test time" required error={errors.test_time}>
-              <Input type="time" value={form.test_time} onChange={e => setField('test_time', e.target.value)} />
-            </FormField>
-            <FormField label="Test centre" required error={errors.test_centre} className="sm:col-span-2">
-              <Input value={form.test_centre} onChange={e => setField('test_centre', e.target.value)} placeholder="e.g. Birmingham (Kings Heath)" />
-            </FormField>
           </div>
         )}
       </SectionCard>

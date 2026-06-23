@@ -272,8 +272,6 @@ export default function TestReadinessChecker() {
     if (!form.test_booked_status) e.test_booked_status = 'Please select an option';
     if (form.test_booked_status === 'Yes') {
       if (!form.test_date) e.test_date = 'Please enter your test date';
-      if (!form.test_time) e.test_time = 'Please enter your test time';
-      if (!form.test_centre) e.test_centre = 'Please enter your test centre';
     }
     return e;
   };
@@ -452,12 +450,6 @@ export default function TestReadinessChecker() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
               <FormField label="Test date" required error={errors.test_date}>
                 <Input type="date" value={form.test_date} onChange={e => setField('test_date', e.target.value)} />
-              </FormField>
-              <FormField label="Test time" required error={errors.test_time}>
-                <Input type="time" value={form.test_time} onChange={e => setField('test_time', e.target.value)} />
-              </FormField>
-              <FormField label="Test centre" required error={errors.test_centre} className="sm:col-span-2">
-                <Input value={form.test_centre} onChange={e => setField('test_centre', e.target.value)} placeholder="e.g. Birmingham (Kings Heath)" />
               </FormField>
               {daysUntilTest !== null && daysUntilTest >= 0 && (
                 <div className="sm:col-span-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">

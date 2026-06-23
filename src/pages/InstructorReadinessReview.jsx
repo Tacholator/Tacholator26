@@ -188,6 +188,7 @@ export default function InstructorReadinessReview() {
                 <DetailRow label="Instructor Confirmation" value={selected.instructor_ready_confirmation} />
                 <DetailRow label="Instructor Confirmed Date" value={selected.instructor_confirmation_date ? moment(selected.instructor_confirmation_date).format('DD MMM YYYY') : null} />
                 <DetailRow label="Test Booked" value={selected.test_booked_status} />
+                {selected.test_date && <DetailRow label="Test Date" value={selected.test_date} />}
                 <DetailRow label="Test Date" value={selected.test_date ? moment(selected.test_date).format('DD MMM YYYY') : null} />
                 <DetailRow label="Test Time" value={selected.test_time} />
                 <DetailRow label="Test Centre" value={selected.test_centre} />
