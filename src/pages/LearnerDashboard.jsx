@@ -44,6 +44,7 @@ import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModa
 import LearnerOnboardingPopup from '@/components/onboarding/LearnerOnboardingPopup';
 import LearnerAppTour from '@/components/onboarding/LearnerAppTour';
 import TestReadinessCard from '@/components/dashboard/TestReadinessCard';
+import GoldenRuleCard from '@/components/dashboard/GoldenRuleCard';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
@@ -491,6 +492,9 @@ export default function LearnerDashboard() {
             <span className="hidden sm:inline">Help</span>
           </button>
         </motion.div>
+
+        {/* Golden Rule */}
+        <GoldenRuleCard />
 
         {/* Arrival Notification Banner */}
         {arrivalNotification && (
