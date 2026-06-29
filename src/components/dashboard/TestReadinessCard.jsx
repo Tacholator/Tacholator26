@@ -39,7 +39,7 @@ export default function TestReadinessCard({ pupilId }) {
   if (isLoading) return null;
 
   return (
-    <Card className="border-0 shadow-sm bg-gradient-to-br from-slate-50 to-blue-50">
+    <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-purple-100">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <ClipboardList className="w-5 h-5 text-[#071739]" />
