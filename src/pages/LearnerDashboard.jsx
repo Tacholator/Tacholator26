@@ -470,29 +470,6 @@ export default function LearnerDashboard() {
           </motion.div>
         )}
 
-        {/* 1. Personal Greeting */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center relative"
-        >
-          <h1 className="text-3xl font-bold text-slate-800">
-            Good {getTimeOfDay()}, {user?.firstName || pupil.firstName}
-          </h1>
-          <p className="text-slate-500 mt-2">
-            {pupil.status === 'Passed' 
-              ? 'Welcome back, qualified driver! 🚗✨' 
-              : "Let's keep you moving towards test success 🚗"}
-          </p>
-          <button
-            onClick={() => setShowAppTour(true)}
-            className="absolute right-0 top-1 flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            <HelpCircle className="w-4 h-4" />
-            <span className="hidden sm:inline">Help</span>
-          </button>
-        </motion.div>
-
         {/* Golden Rule */}
         <GoldenRuleCard />
 

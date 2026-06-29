@@ -417,36 +417,25 @@ export default function InstructorDashboard() {
             </Card>
           ) : null}
 
-          {/* 1. Greeting Card */}
+          {/* Quick Actions Card */}
           <Card className={`${warmPalette.card_greeting} border-0 shadow-sm overflow-hidden`}>
             <CardContent className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-2 truncate">
-                    Good {getTimeOfDay()}, {firstName}
-                  </h2>
-                  <p className="text-slate-600 break-words">
-                    You have {nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length} upcoming lesson{(nextRelevantBooking ? upcomingTodayBookings.length + 1 : upcomingTodayBookings.length) !== 1 ? 's' : ''} today
-                    {nextRelevantBooking && ` • Next at ${moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')}`}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => setShowAppTour(true)}
-                    className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 transition-colors"
-                  >
-                    <HelpCircle className="w-4 h-4" />
-                    <span className="hidden sm:inline">Help</span>
-                  </button>
-                  <Button
-                    onClick={() => setNewLessonModalOpen(true)}
-                    className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
-                    size="sm"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    New Lesson
-                  </Button>
-                </div>
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  onClick={() => setShowAppTour(true)}
+                  className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 transition-colors"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                  <span className="hidden sm:inline">Help</span>
+                </button>
+                <Button
+                  onClick={() => setNewLessonModalOpen(true)}
+                  className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
+                  size="sm"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  New Lesson
+                </Button>
               </div>
             </CardContent>
           </Card>
