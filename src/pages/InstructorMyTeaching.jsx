@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ClipboardCheck, ArrowRight, StickyNote, Scroll } from 'lucide-react';
+import { ClipboardCheck, ClipboardList, ArrowRight, StickyNote, Scroll } from 'lucide-react';
 
 export default function InstructorMyTeaching() {
   return (
@@ -43,6 +43,24 @@ export default function InstructorMyTeaching() {
                     <div>
                       <h3 className="font-semibold text-lg text-slate-800">Ten Commandments</h3>
                       <p className="text-sm text-slate-500">The Ten Commandments of Passing Your Driving Test</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-slate-400" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link to={createPageUrl('TenCommandmentsChecklist')}>
+            <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center">
+                      <ClipboardList className="w-6 h-6 text-emerald-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg text-slate-800">Ten Commandments Checklist</h3>
+                      <p className="text-sm text-slate-500">Interactive checklist for each lesson</p>
                     </div>
                   </div>
                   <ArrowRight className="w-5 h-5 text-slate-400" />
