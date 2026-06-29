@@ -417,29 +417,6 @@ export default function InstructorDashboard() {
             </Card>
           ) : null}
 
-          {/* Quick Actions Card */}
-          <Card className={`${warmPalette.card_greeting} border-0 shadow-sm overflow-hidden`}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  onClick={() => setShowAppTour(true)}
-                  className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 transition-colors"
-                >
-                  <HelpCircle className="w-4 h-4" />
-                  <span className="hidden sm:inline">Help</span>
-                </button>
-                <Button
-                  onClick={() => setNewLessonModalOpen(true)}
-                  className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
-                  size="sm"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  New Lesson
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* 2. Quiz of the Day Card */}
           {dailyQuiz && (
             <Card className={`${warmPalette.card_quiz_of_day} border-0 shadow-sm overflow-hidden`}>
@@ -461,10 +438,20 @@ export default function InstructorDashboard() {
           {/* 3. Today's Schedule Card */}
           <Card className={`${warmPalette.card_todays_schedule} border-0 shadow-sm overflow-hidden`}>
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-amber-600" />
-                Today's Schedule
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-amber-600" />
+                  Today's Schedule
+                </h3>
+                <Button
+                  onClick={() => setNewLessonModalOpen(true)}
+                  className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
+                  size="sm"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  New Lesson
+                </Button>
+              </div>
 
               <div className="bg-white/70 rounded-lg p-4 mb-4">
                 <p className="text-xs font-medium text-slate-500 mb-2">Next Lesson</p>
