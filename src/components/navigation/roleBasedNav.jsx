@@ -95,6 +95,7 @@ export const instructorOnlyLinks = [
       { name: 'Teaching Notes', icon: StickyNote, page: 'InstructorTeachingNotes' },
       { name: 'Manage Nerves', icon: Brain, page: 'ManageNerves' },
       { name: 'Ten Commandments', icon: Scroll, page: 'TenCommandments' },
+      { name: 'Commandments Checklist', icon: CheckSquare, page: 'TenCommandmentsChecklist' },
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
