@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { FileText, Notebook, Lock, ClipboardList, BookOpen, Pen } from 'lucide-react';
+import { FileText, Notebook, Lock, ClipboardList, BookOpen, Pen, Scroll } from 'lucide-react';
 
 const teachingCards = [
   { name: 'Whiteboards', icon: Pen, page: 'InstructorWhiteboardLibrary', color: 'from-cyan-500 to-cyan-600' },
@@ -12,7 +12,8 @@ const teachingCards = [
   { name: 'Topic Access', icon: Lock, page: 'InstructorTopicAssignment', color: 'from-amber-500 to-amber-600' },
   { name: 'MCQ Reports', icon: ClipboardList, page: 'InstructorMcqReporting', color: 'from-rose-500 to-rose-600' },
   { name: 'Resources', icon: BookOpen, page: 'InstructorResources', color: 'from-teal-500 to-teal-600' },
-  { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary', color: 'from-indigo-500 to-indigo-600' }
+  { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary', color: 'from-indigo-500 to-indigo-600' },
+  { name: 'Ten Commandments', icon: Scroll, page: 'TenCommandments', color: 'from-amber-500 to-amber-700' }
 ];
 
 export default function InstructorTeachingHub() {

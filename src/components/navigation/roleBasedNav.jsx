@@ -31,7 +31,8 @@ import {
   Gift,
   Fuel,
   CheckSquare,
-  Brain
+  Brain,
+  Scroll
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -93,6 +94,7 @@ export const instructorOnlyLinks = [
       { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
       { name: 'Teaching Notes', icon: StickyNote, page: 'InstructorTeachingNotes' },
       { name: 'Manage Nerves', icon: Brain, page: 'ManageNerves' },
+      { name: 'Ten Commandments', icon: Scroll, page: 'TenCommandments' },
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
@@ -121,6 +123,7 @@ export const learnerOnlyLinks = [
       { name: 'Class Notes', icon: Notebook, page: 'LearnerClassNotes' },
       { name: 'Mock Tests', icon: ClipboardList, page: 'LearnerMockTests' },
       { name: 'Manage Nerves', icon: Brain, page: 'ManageNerves' },
+      { name: 'Ten Commandments', icon: Scroll, page: 'TenCommandments' },
       { name: 'Lesson Diary', icon: BookOpen, page: 'LearnerDiary' }
     ]
   },
