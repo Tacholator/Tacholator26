@@ -24,7 +24,8 @@ export default function GoldenRuleCard() {
           </p>
           <Link
             to="/TenCommandments"
-            className="mt-3 inline-flex items-center gap-2 rounded-lg bg-[#F7B602] px-4 py-2 text-xs font-semibold text-[#071739] hover:bg-[#d99f02] transition-colors"
+            data-testid="view-ten-commandments-btn"
+            className="mt-3 inline-flex items-center gap-2 rounded-lg bg-[#F7B602] px-4 py-2 text-xs font-bold text-[#071739] hover:bg-[#d99f02] transition-colors shadow-md"
           >
             <Scroll className="w-4 h-4" />
             View Ten Commandments
