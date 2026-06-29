@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Crown } from 'lucide-react';
+import { Crown, Scroll } from 'lucide-react';
 
 export default function GoldenRuleCard() {
   return (
@@ -21,6 +22,13 @@ export default function GoldenRuleCard() {
             If another road user has to slow down, stop, swerve, or take action because of you,
             you are probably making a serious fault.
           </p>
+          <Link
+            to="/TenCommandments"
+            className="mt-3 inline-flex items-center gap-2 rounded-lg bg-[#F7B602] px-4 py-2 text-xs font-semibold text-[#071739] hover:bg-[#d99f02] transition-colors"
+          >
+            <Scroll className="w-4 h-4" />
+            View Ten Commandments
+          </Link>
         </div>
       </div>
     </motion.div>
