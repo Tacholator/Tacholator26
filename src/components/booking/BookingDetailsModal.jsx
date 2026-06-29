@@ -209,7 +209,6 @@ export default function BookingDetailsModal({
       setIsProcessing(true);
 
       const escrowAmount = booking.escrowAmountGbp || 0;
-      const refundAmount = escrowAmount > 0 ? escrowAmount : (booking.totalPriceGbp || 0);
       const wasConfirmed = booking.status === 'confirmed';
 
       // Update booking status
@@ -228,13 +227,13 @@ export default function BookingDetailsModal({
         });
       }
 
-      // Refund pupil if booking was confirmed
-      if (wasConfirmed && pupil && refundAmount > 0) {
+      // Refund pupil only if escrow was actually held (money was deducted from balance at confirmation)
+      if (wasConfirmed && pupil && escrowAmount > 0) {
         // Fetch fresh pupil balance before updating
         const freshPupils = await base44.entities.Pupil.filter({ id: pupil.id });
         const freshPupil = freshPupils[0];
         await base44.entities.Pupil.update(pupil.id, {
-          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + refundAmount
+          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + escrowAmount
         });
         await base44.entities.LessonBooking.update(booking.id, { escrowAmountGbp: 0 });
         await base44.entities.PaymentLedger.create({
@@ -242,16 +241,16 @@ export default function BookingDetailsModal({
           bookingId: booking.id,
           type: 'refund',
           reason: 'refund_issued',
-          amountGbp: refundAmount,
+          amountGbp: escrowAmount,
           hours: booking.durationHours || 0,
           createdByRole: 'instructor',
-          note: `Refund issued: instructor cancelled confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}${escrowAmount > 0 ? ' (escrow returned)' : ''}`
+          note: `Escrow refunded: instructor cancelled confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}`
         });
       }
 
       // Notify pupil
       if (pupil?.linkedUserId) {
-        const refundMsg = wasConfirmed && refundAmount > 0 ? ` £${refundAmount.toFixed(2)} has been returned to your balance.` : '';
+        const refundMsg = wasConfirmed && escrowAmount > 0 ? ` £${escrowAmount.toFixed(2)} has been returned to your balance.` : '';
         await base44.entities.Notification.create({
           userId: pupil.linkedUserId,
           title: 'Lesson Cancelled by Instructor',
@@ -342,7 +341,6 @@ export default function BookingDetailsModal({
       const freshBooking = freshBookingResults[0] || booking;
 
       const escrowAmount = freshBooking.escrowAmountGbp || 0;
-      const refundAmount = escrowAmount > 0 ? escrowAmount : (freshBooking.totalPriceGbp || 0);
       const wasConfirmed = freshBooking.status === 'confirmed';
 
       // Mark booking as deleted
@@ -363,13 +361,13 @@ export default function BookingDetailsModal({
         });
       }
 
-      // Refund pupil if booking was confirmed
-      if (wasConfirmed && pupil && refundAmount > 0) {
+      // Refund pupil only if escrow was actually held (money was deducted from balance at confirmation)
+      if (wasConfirmed && pupil && escrowAmount > 0) {
         // Fetch fresh pupil balance before updating
         const freshPupils = await base44.entities.Pupil.filter({ id: pupil.id });
         const freshPupil = freshPupils[0];
         await base44.entities.Pupil.update(pupil.id, {
-          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + refundAmount
+          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + escrowAmount
         });
         await base44.entities.LessonBooking.update(freshBooking.id, { escrowAmountGbp: 0 });
         await base44.entities.PaymentLedger.create({
@@ -377,16 +375,16 @@ export default function BookingDetailsModal({
           bookingId: freshBooking.id,
           type: 'refund',
           reason: 'refund_issued',
-          amountGbp: refundAmount,
+          amountGbp: escrowAmount,
           hours: freshBooking.durationHours || 0,
           createdByRole: 'instructor',
-          note: `Refund issued: instructor removed pupil from confirmed lesson on ${moment(freshBooking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}${escrowAmount > 0 ? ' (escrow returned)' : ''}`
+          note: `Escrow refunded: instructor removed pupil from confirmed lesson on ${moment(freshBooking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}`
         });
       }
 
       // Notify pupil
       if (pupil?.linkedUserId) {
-        const refundMsg = wasConfirmed && refundAmount > 0 ? ` £${refundAmount.toFixed(2)} has been returned to your balance.` : '';
+        const refundMsg = wasConfirmed && escrowAmount > 0 ? ` £${escrowAmount.toFixed(2)} has been returned to your balance.` : '';
         await base44.entities.Notification.create({
           userId: pupil.linkedUserId,
           title: 'Lesson Cancelled by Instructor',
@@ -421,7 +419,6 @@ export default function BookingDetailsModal({
       const freshBooking2 = freshBookingResults2[0] || booking;
 
       const escrowAmount = freshBooking2.escrowAmountGbp || 0;
-      const refundAmount = escrowAmount > 0 ? escrowAmount : (freshBooking2.totalPriceGbp || 0);
       const wasConfirmed = freshBooking2.status === 'confirmed';
 
       // Mark booking as deleted (also clear escrow)
@@ -443,29 +440,29 @@ export default function BookingDetailsModal({
         });
       }
 
-      // Refund pupil if booking was confirmed
-      if (wasConfirmed && pupil && refundAmount > 0) {
+      // Refund pupil only if escrow was actually held (money was deducted from balance at confirmation)
+      if (wasConfirmed && pupil && escrowAmount > 0) {
         // Fetch fresh pupil balance before updating
         const freshPupils = await base44.entities.Pupil.filter({ id: pupil.id });
         const freshPupil = freshPupils[0];
         await base44.entities.Pupil.update(pupil.id, {
-          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + refundAmount
+          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + escrowAmount
         });
         await base44.entities.PaymentLedger.create({
           userId: pupil.linkedUserId || pupil.id,
           bookingId: booking.id,
           type: 'refund',
           reason: 'refund_issued',
-          amountGbp: refundAmount,
+          amountGbp: escrowAmount,
           hours: booking.durationHours || 0,
           createdByRole: 'instructor',
-          note: `Refund issued: instructor deleted confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}${escrowAmount > 0 ? ' (escrow returned)' : ''}`
+          note: `Escrow refunded: instructor deleted confirmed lesson on ${moment(booking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}`
         });
       }
 
       // Notify pupil
       if (pupil?.linkedUserId) {
-        const refundMsg = wasConfirmed && refundAmount > 0 ? ` £${refundAmount.toFixed(2)} has been returned to your balance.` : '';
+        const refundMsg = wasConfirmed && escrowAmount > 0 ? ` £${escrowAmount.toFixed(2)} has been returned to your balance.` : '';
         await base44.entities.Notification.create({
           userId: pupil.linkedUserId,
           title: 'Lesson Cancelled by Instructor',
@@ -776,9 +773,8 @@ export default function BookingDetailsModal({
           <AlertDialogDescription>
             {(() => {
               const escrow = booking.escrowAmountGbp || 0;
-              const refund = escrow > 0 ? escrow : (booking.totalPriceGbp || 0);
-              if (refund > 0) {
-                return `Are you sure you want to cancel this confirmed lesson? £${refund.toFixed(2)} held in escrow will be returned to the pupil's balance immediately. The pupil will be notified. This action cannot be undone.`;
+              if (escrow > 0) {
+                return `Are you sure you want to cancel this confirmed lesson? £${escrow.toFixed(2)} held in escrow will be returned to the pupil's balance immediately. The pupil will be notified. This action cannot be undone.`;
               }
               return 'Are you sure you want to cancel this confirmed lesson? The pupil will be notified and the slot will become available again. This action cannot be undone.';
             })()}
@@ -919,9 +915,8 @@ export default function BookingDetailsModal({
           <AlertDialogDescription>
             {(() => {
               const escrow = booking.escrowAmountGbp || 0;
-              const refund = escrow > 0 ? escrow : (booking.totalPriceGbp || 0);
-              if (isConfirmed && refund > 0) {
-                return `Delete this booking and restore the slot to available? £${refund.toFixed(2)} held in escrow will be returned to the pupil's balance immediately. The pupil will be notified. This action cannot be undone.`;
+              if (isConfirmed && escrow > 0) {
+                return `Delete this booking and restore the slot to available? £${escrow.toFixed(2)} held in escrow will be returned to the pupil's balance immediately. The pupil will be notified. This action cannot be undone.`;
               }
               return 'Delete this booking entirely and restore the slot to available? The pupil will be notified. This action cannot be undone.';
             })()}
