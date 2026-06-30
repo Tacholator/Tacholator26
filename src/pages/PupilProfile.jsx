@@ -58,6 +58,7 @@ import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -85,6 +86,7 @@ export default function PupilProfile() {
   const [showBookingSummaryModal, setShowBookingSummaryModal] = useState(false);
   const [showNewLessonModal, setShowNewLessonModal] = useState(false);
   const [showTestResultModal, setShowTestResultModal] = useState(false);
+  const [showTopicsModal, setShowTopicsModal] = useState(false);
   const [checksData, setChecksData] = useState({
     licenseChecked: false,
     licenseCheckDate: '',
@@ -705,10 +707,13 @@ export default function PupilProfile() {
 
           <TabsContent value="topics">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              <div className="aspect-square rounded-2xl border-2 border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-[#F7B602] transition-all cursor-pointer p-4 flex flex-col items-center justify-center gap-3">
+              <button
+                onClick={() => setShowTopicsModal(true)}
+                className="aspect-square rounded-2xl border-2 border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-[#F7B602] transition-all cursor-pointer p-4 flex flex-col items-center justify-center gap-3"
+              >
                 <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] font-bold text-lg">1</span>
                 <span className="text-center text-sm font-semibold text-[#071739]">Cockpit Drills</span>
-              </div>
+              </button>
             </div>
           </TabsContent>
 
@@ -1256,6 +1261,14 @@ export default function PupilProfile() {
         pupil={pupil}
         instructorId={currentUser?.id}
       />
+
+      <Dialog open={showTopicsModal} onOpenChange={setShowTopicsModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Cockpit Drills</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
