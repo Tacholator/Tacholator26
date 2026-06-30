@@ -51,7 +51,28 @@ export default function PupilTopicDetail() {
             <h2 className="text-lg font-semibold text-[#071739]">Procedure - D S S S M</h2>
           </div>
           <div className="p-5">
-            <p className="text-sm text-slate-500">Content coming soon</p>
+            <ul className="space-y-3">
+              <li className="flex gap-3 text-sm text-slate-700">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#F7B602] text-[#071739] font-bold text-sm shrink-0">D</span>
+                <span className="pt-0.5">Doors</span>
+              </li>
+              <li className="flex gap-3 text-sm text-slate-700">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#F7B602] text-[#071739] font-bold text-sm shrink-0">S</span>
+                <span className="pt-0.5">Seat</span>
+              </li>
+              <li className="flex gap-3 text-sm text-slate-700">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#F7B602] text-[#071739] font-bold text-sm shrink-0">S</span>
+                <span className="pt-0.5">Steering</span>
+              </li>
+              <li className="flex gap-3 text-sm text-slate-700">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#F7B602] text-[#071739] font-bold text-sm shrink-0">S</span>
+                <span className="pt-0.5">Seatbelt</span>
+              </li>
+              <li className="flex gap-3 text-sm text-slate-700">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#F7B602] text-[#071739] font-bold text-sm shrink-0">M</span>
+                <span className="pt-0.5">Mirrors</span>
+              </li>
+            </ul>
           </div>
         </section>
 
