@@ -28,7 +28,17 @@ export default function PupilTopicDetail() {
             <h2 className="text-lg font-semibold text-[#071739]">Learning Objectives</h2>
           </div>
           <div className="p-5">
-            <p className="text-sm text-slate-500">Content coming soon</p>
+            <p className="text-sm font-medium text-[#071739] mb-3">By the end of the lesson:</p>
+            <ul className="space-y-3">
+              <li className="flex gap-3 text-sm text-slate-700">
+                <span className="text-[#F7B602] font-bold mt-0.5">•</span>
+                <span>The learner will understand the purpose of cockpit drills and how they help prepare the driver and vehicle safely before moving off.</span>
+              </li>
+              <li className="flex gap-3 text-sm text-slate-700">
+                <span className="text-[#F7B602] font-bold mt-0.5">•</span>
+                <span>The learner will be able to carry out the full cockpit drill routine independently: <strong className="text-[#071739]">Doors, Seat, Steering, Seatbelt and Mirrors</strong>.</span>
+              </li>
+            </ul>
           </div>
         </section>
 
