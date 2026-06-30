@@ -49,7 +49,7 @@ export default function OneOffPupilModal({ open, onClose, onSave }) {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add One-Off Pupil</DialogTitle>
+          <DialogTitle>Add New Intake</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">

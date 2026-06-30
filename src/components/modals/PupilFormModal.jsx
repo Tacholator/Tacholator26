@@ -174,7 +174,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="email">
-                  Email {formData.status === 'Stopped' ? '(optional for One Offs)' : '*'}
+                  Email {formData.status === 'Stopped' ? '(optional for New Intakes)' : '*'}
                 </Label>
                 <Input
                   id="email"
@@ -228,7 +228,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                   <SelectItem value="Active">Active</SelectItem>
                   <SelectItem value="OnHold">On Hold</SelectItem>
                   <SelectItem value="Passed">Passed</SelectItem>
-                  <SelectItem value="Stopped">One Off</SelectItem>
+                  <SelectItem value="Stopped">New Intake</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-slate-500">

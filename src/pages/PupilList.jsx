@@ -319,7 +319,7 @@ export default function PupilList() {
               <p className="text-emerald-600 font-medium">{activePupils.length} active</p>
               <p className="text-amber-600 font-medium">{onHoldPupils.length} on hold</p>
               <p className="text-blue-600 font-medium">{passedPupils.length} passed</p>
-              <p className="text-purple-600 font-medium">{oneOffPupils.length} one-offs</p>
+              <p className="text-purple-600 font-medium">{oneOffPupils.length} new intakes</p>
             </div>
           </div>
           
@@ -399,7 +399,7 @@ export default function PupilList() {
           >
             <div className="text-left">
               <div className="text-2xl font-bold text-purple-600">{oneOffPupils.length}</div>
-              <div className="text-sm text-slate-600 mt-1">One Offs</div>
+              <div className="text-sm text-slate-600 mt-1">New Intakes</div>
               <div className="mt-2">
                 <Button
                   onClick={(e) => {
@@ -486,7 +486,7 @@ export default function PupilList() {
                             'Stopped': 'bg-purple-100 text-purple-700'
                           }[pupil.status || 'Active']}>
                            {pupil.status === 'OnHold' ? 'On Hold' : 
-                            pupil.status === 'Stopped' ? 'One Off' : 
+                            pupil.status === 'Stopped' ? 'New Intake' : 
                             pupil.status || 'Active'}
                           </Badge>
                           {isAccessRestricted(pupil) && (

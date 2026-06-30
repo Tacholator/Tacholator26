@@ -304,7 +304,7 @@ export default function InstructorScheduleLessonModal({
                           </div>
                           {pupil.status === 'Stopped' && (
                             <span className="text-xs px-2 py-0.5 rounded bg-purple-100 text-purple-700">
-                              One Off
+                              New Intake
                             </span>
                           )}
                         </div>

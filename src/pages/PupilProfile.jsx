@@ -383,7 +383,7 @@ export default function PupilProfile() {
                         'Stopped': 'bg-purple-100 text-purple-700'
                       }[pupil.status || 'Active']}>
                         {pupil.status === 'OnHold' ? 'On Hold' : 
-                         pupil.status === 'Stopped' ? 'One Off' : 
+                         pupil.status === 'Stopped' ? 'New Intake' : 
                          pupil.status || 'Active'}
                       </Badge>
                       {isAccessRestricted(pupil) && (
