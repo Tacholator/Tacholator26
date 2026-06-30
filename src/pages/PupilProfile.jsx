@@ -659,6 +659,12 @@ export default function PupilProfile() {
                 Progress
               </TabsTrigger>
               <TabsTrigger 
+                value="topics"
+                className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#F7B602] data-[state=active]:to-[#d99f02] data-[state=active]:text-[#071739] data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all text-xs sm:text-sm"
+              >
+                Topics
+              </TabsTrigger>
+              <TabsTrigger 
                 value="checks"
                 className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold text-slate-600 hover:text-slate-800 transition-all text-xs sm:text-sm"
               >
@@ -696,6 +702,9 @@ export default function PupilProfile() {
               </TabsTrigger>
             </TabsList>
           </div>
+
+          <TabsContent value="topics">
+          </TabsContent>
 
           <TabsContent value="progress">
             {/* Audit Hours Section */}
