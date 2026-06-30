@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Target, ListOrdered, MessageCircleQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function PupilTopicDetail() {
@@ -18,8 +18,45 @@ export default function PupilTopicDetail() {
         <h1 className="text-2xl font-bold text-[#071739]">{topicName}</h1>
       </div>
 
-      <div className="min-h-[60vh] rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 flex items-center justify-center">
-        <p className="text-slate-400 text-sm">Content coming soon</p>
+      <div className="space-y-6">
+        {/* Learning Objectives */}
+        <section className="bg-white rounded-2xl border-2 border-slate-200 shadow-sm overflow-hidden">
+          <div className="flex items-center gap-3 p-5 border-b border-slate-100 bg-slate-50/60">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#F7B602]/15 text-[#071739]">
+              <Target className="w-5 h-5 text-[#F7B602]" />
+            </div>
+            <h2 className="text-lg font-semibold text-[#071739]">Learning Objectives</h2>
+          </div>
+          <div className="p-5">
+            <p className="text-sm text-slate-500">Content coming soon</p>
+          </div>
+        </section>
+
+        {/* Procedure - D S S S M */}
+        <section className="bg-white rounded-2xl border-2 border-slate-200 shadow-sm overflow-hidden">
+          <div className="flex items-center gap-3 p-5 border-b border-slate-100 bg-slate-50/60">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#F7B602]/15 text-[#071739]">
+              <ListOrdered className="w-5 h-5 text-[#F7B602]" />
+            </div>
+            <h2 className="text-lg font-semibold text-[#071739]">Procedure - D S S S M</h2>
+          </div>
+          <div className="p-5">
+            <p className="text-sm text-slate-500">Content coming soon</p>
+          </div>
+        </section>
+
+        {/* Q&A */}
+        <section className="bg-white rounded-2xl border-2 border-slate-200 shadow-sm overflow-hidden">
+          <div className="flex items-center gap-3 p-5 border-b border-slate-100 bg-slate-50/60">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#F7B602]/15 text-[#071739]">
+              <MessageCircleQuestion className="w-5 h-5 text-[#F7B602]" />
+            </div>
+            <h2 className="text-lg font-semibold text-[#071739]">Q&A</h2>
+          </div>
+          <div className="p-5">
+            <p className="text-sm text-slate-500">Content coming soon</p>
+          </div>
+        </section>
       </div>
     </div>
   );
