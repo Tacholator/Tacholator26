@@ -410,7 +410,7 @@ export default function PupilList() {
                   className="w-full bg-purple-600 hover:bg-purple-700 text-xs h-8"
                 >
                   <Plus className="w-3 h-3 mr-1" />
-                  Add One Off
+                  New Intake
                 </Button>
               </div>
             </div>
