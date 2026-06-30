@@ -1,7 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Target, ListOrdered, MessageCircleQuestion } from 'lucide-react';
+import { ArrowLeft, Target, ListOrdered, MessageCircleQuestion, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+const QA_ITEMS = [
+  { question: 'What could happen if your seating position is too far from the pedals?', answer: 'You may not be able to press the pedals fully or react quickly in an emergency.' },
+  { question: 'Why is it important to check the doors before driving away?', answer: 'An open or poorly closed door could be dangerous for passengers, pedestrians, cyclists, or other road users.' },
+  { question: 'How can poor mirror adjustment affect your driving?', answer: 'It can reduce your awareness and increase the risk of missing vehicles, cyclists, pedestrians, or hazards around you.' },
+  { question: 'Why must the seatbelt be worn correctly and not twisted?', answer: 'A twisted or poorly fitted seatbelt may not protect you properly in a crash or sudden stop.' },
+  { question: 'Why is it important to feel comfortable and in control before moving off?', answer: 'If you are uncomfortable or badly positioned, your focus, steering, braking, and decision-making can be affected.' },
+  { question: 'What danger could poor steering position create?', answer: 'It could make it harder to steer smoothly, react quickly, or control the vehicle in tight spaces or emergencies.' },
+  { question: 'Why should the driver check their seating and mirrors after someone else has used the car?', answer: 'Because the previous driver\u2019s settings may not suit them, which could affect visibility, comfort, and control.' },
+  { question: 'How can skipping the cockpit drill affect the whole drive?', answer: 'It can lead to poor control, reduced awareness, discomfort, and a higher risk of mistakes or accidents.' },
+];
+
+function QaItem({ index, item }) {
+  const [revealed, setRevealed] = useState(false);
+  return (
+    <div className="border-b border-slate-100 last:border-0 py-4">
+      <div className="flex items-start gap-3">
+        <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#071739] text-white font-bold text-sm shrink-0">{index}</span>
+        <p className="flex-1 text-sm font-medium text-[#071739] pt-0.5">{item.question}</p>
+        <button
+          onClick={() => setRevealed(!revealed)}
+          className={`shrink-0 p-2 rounded-lg transition-colors ${revealed ? 'bg-[#F7B602] text-[#071739]' : 'text-slate-400 hover:bg-slate-100 hover:text-[#F7B602]'}`}
+          title={revealed ? 'Hide answer' : 'Reveal answer'}
+        >
+          <Lightbulb className="w-5 h-5" />
+        </button>
+      </div>
+      {revealed && (
+        <p className="mt-3 ml-10 text-sm text-slate-600 bg-slate-50 rounded-lg p-3 border border-slate-100">{item.answer}</p>
+      )}
+    </div>
+  );
+}
 
 export default function PupilTopicDetail() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -85,7 +118,9 @@ export default function PupilTopicDetail() {
             <h2 className="text-lg font-semibold text-[#071739]">Q&A</h2>
           </div>
           <div className="p-5">
-            <p className="text-sm text-slate-500">Content coming soon</p>
+            {QA_ITEMS.map((item, i) => (
+              <QaItem key={i} index={i + 1} item={item} />
+            ))}
           </div>
         </section>
       </div>
