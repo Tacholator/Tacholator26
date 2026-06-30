@@ -704,6 +704,12 @@ export default function PupilProfile() {
           </div>
 
           <TabsContent value="topics">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="aspect-square rounded-2xl border-2 border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-[#F7B602] transition-all cursor-pointer p-4 flex flex-col items-center justify-center gap-3">
+                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] font-bold text-lg">1</span>
+                <span className="text-center text-sm font-semibold text-[#071739]">Cockpit Drills</span>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="progress">
