@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -19,7 +20,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Calendar, Clock } from 'lucide-react';
+import { Loader2, Calendar, Clock, Gauge } from 'lucide-react';
 import moment from 'moment';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
@@ -31,7 +32,9 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
     chargesApplied: true,
     chargesDecisionReason: '',
     mainTopic: '',
-    completionNote: ''
+    completionNote: '',
+    startMileage: '',
+    endMileage: ''
   });
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
@@ -66,10 +69,18 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         chargesApplied: true,
         chargesDecisionReason: '',
         mainTopic: '',
-        completionNote: ''
+        completionNote: '',
+    startMileage: '',
+    endMileage: ''
       });
     }
   }, [open]);
+
+  useEffect(() => {
+    if (open && booking?.startMileage != null) {
+      setFormData(prev => ({ ...prev, startMileage: String(booking.startMileage) }));
+    }
+  }, [open, booking?.startMileage]);
 
   const [insufficientBalanceData, setInsufficientBalanceData] = React.useState(null);
 
@@ -90,6 +101,8 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
           chargesDecisionReason: data.chargesDecisionReason || null,
           mainTopic: data.mainTopic || null,
           completionNote: data.completionNote || null,
+          startMileage: data.startMileage ? Number(data.startMileage) : null,
+          endMileage: data.endMileage ? Number(data.endMileage) : null,
           completedAt: new Date().toISOString()
         });
       } else if (bookingId && booking) {
@@ -100,6 +113,8 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
           chargesDecisionReason: data.chargesDecisionReason || null,
           mainTopic: data.mainTopic || null,
           completionNote: data.completionNote || null,
+          startMileage: data.startMileage ? Number(data.startMileage) : null,
+          endMileage: data.endMileage ? Number(data.endMileage) : null,
           completedAt: new Date().toISOString()
         });
       }
@@ -282,6 +297,15 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
 
     if (formData.completionOutcome === 'completed' && !formData.mainTopic) {
       toast({ title: 'Please select a main topic for completed lessons', variant: 'destructive' });
+      return;
+    }
+
+    if (formData.completionOutcome === 'completed' && !formData.endMileage) {
+      toast({ title: 'Please enter the end mileage', variant: 'destructive' });
+      return;
+    }
+    if (formData.completionOutcome === 'completed' && formData.startMileage && Number(formData.endMileage) < Number(formData.startMileage)) {
+      toast({ title: 'End mileage cannot be less than start mileage', variant: 'destructive' });
       return;
     }
 
@@ -535,6 +559,43 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+            )}
+
+            {/* Mileage Tracking */}
+            {formData.completionOutcome === 'completed' && (
+              <div className="bg-teal-50 rounded-lg p-3 space-y-2">
+                <Label className="text-xs font-semibold text-teal-700 flex items-center gap-1">
+                  <Gauge className="w-3.5 h-3.5" />
+                  Lesson Mileage
+                </Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="startMileage" className="text-xs text-slate-600">Start Mileage</Label>
+                    <Input
+                      id="startMileage"
+                      type="number"
+                      value={formData.startMileage}
+                      onChange={(e) => setFormData({ ...formData, startMileage: e.target.value })}
+                      placeholder="e.g., 12345"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="endMileage" className="text-xs text-slate-600">End Mileage *</Label>
+                    <Input
+                      id="endMileage"
+                      type="number"
+                      value={formData.endMileage}
+                      onChange={(e) => setFormData({ ...formData, endMileage: e.target.value })}
+                      placeholder="e.g., 12385"
+                    />
+                  </div>
+                </div>
+                {formData.startMileage && formData.endMileage && Number(formData.endMileage) >= Number(formData.startMileage) && (
+                  <p className="text-xs text-teal-600">
+                    Distance covered: {Number(formData.endMileage) - Number(formData.startMileage)} miles
+                  </p>
+                )}
               </div>
             )}
 

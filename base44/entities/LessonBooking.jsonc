@@ -64,6 +64,18 @@
       "type": "string",
       "description": "Main topic covered in the lesson"
     },
+    "lessonObjectives": {
+      "type": "string",
+      "description": "Lesson objectives set at the start of the lesson"
+    },
+    "startMileage": {
+      "type": "number",
+      "description": "Odometer reading at the start of the lesson (miles)"
+    },
+    "endMileage": {
+      "type": "number",
+      "description": "Odometer reading at the end of the lesson (miles)"
+    },
     "completionNote": {
       "type": "string",
       "description": "Notes about lesson outcome"

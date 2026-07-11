@@ -286,6 +286,16 @@ export default function LearnerDashboard() {
     return percentage;
   }, [drivingProgress]);
 
+  // Calculate total training mileage from all bookings
+  const totalMileage = React.useMemo(() => {
+    return bookings.reduce((total, b) => {
+      if (b.startMileage != null && b.endMileage != null) {
+        return total + (b.endMileage - b.startMileage);
+      }
+      return total;
+    }, 0);
+  }, [bookings]);
+
   // Find next focus topic (first skill that's not independent)
   const nextFocusTopic = React.useMemo(() => {
     const notCompleted = drivingProgress.find(s => s.progressState !== 'independent');
@@ -897,31 +907,50 @@ export default function LearnerDashboard() {
                 <p className="text-sm text-slate-600">{drivingProgress.length} of 24 skills tracked</p>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm font-medium text-slate-700">Progress</span>
-                    <span className="text-sm font-bold text-orange-600">{overallProgress}%</span>
+                <div className="flex items-center justify-around py-2">
+                  <div className="flex flex-col items-center gap-1">
+                    <ProgressRing 
+                      current={overallProgress} 
+                      target={100} 
+                      size={100} 
+                      strokeWidth={8}
+                      label="Progress"
+                      displayValue={`${overallProgress}%`}
+                      colorFrom="#f97316"
+                      colorTo="#f59e0b"
+                      uniqueId="progress-grad"
+                    />
                   </div>
-                  <div className="w-full bg-white/70 rounded-full h-3">
-                    <div 
-                      className="bg-gradient-to-r from-orange-500 to-amber-500 h-3 rounded-full transition-all duration-500"
-                      style={{ width: `${overallProgress}%` }}
+                  <div className="flex flex-col items-center gap-1">
+                    <ProgressRing 
+                      current={pupil.hoursCompleted || 0} 
+                      target={pupil.targetHours || 45} 
+                      size={100} 
+                      strokeWidth={8}
+                      label={`of ${pupil.targetHours || 45} hrs`}
+                      colorFrom="#0d9488"
+                      colorTo="#14b8a6"
+                      uniqueId="hours-grad"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <ProgressRing 
+                      current={totalMileage} 
+                      target={500} 
+                      size={100} 
+                      strokeWidth={8}
+                      label="miles"
+                      colorFrom="#3b82f6"
+                      colorTo="#6366f1"
+                      uniqueId="mileage-grad"
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div>
-                    <p className="text-xs text-slate-600 mb-1">Next Focus</p>
-                    <p className="text-sm font-medium text-slate-800">
-                      {nextFocusTopic?.label || 'All skills completed! 🎉'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-600 mb-1">Hours Completed</p>
-                    <p className="text-sm font-medium text-slate-800">
-                      {pupil.hoursCompleted || 0} / {pupil.targetHours || 45}
-                    </p>
-                  </div>
+                <div className="pt-2">
+                  <p className="text-xs text-slate-600 mb-1">Next Focus</p>
+                  <p className="text-sm font-medium text-slate-800">
+                    {nextFocusTopic?.label || 'All skills completed! 🎉'}
+                  </p>
                 </div>
                 <Link to={createPageUrl('LearnerProgress')}>
                   <Button className="w-full gap-2 bg-orange-500 hover:bg-orange-600 text-white">
