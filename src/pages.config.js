@@ -81,6 +81,7 @@ import InstructorPupilNotesList from './pages/InstructorPupilNotesList';
 import InstructorPupilPayments from './pages/InstructorPupilPayments';
 import InstructorQuizPreview from './pages/InstructorQuizPreview';
 import InstructorReports from './pages/InstructorReports';
+import InstructorSchedule from './pages/InstructorSchedule';
 import InstructorResources from './pages/InstructorResources';
 import InstructorStripeConnect from './pages/InstructorStripeConnect';
 import InstructorSubscription from './pages/InstructorSubscription';
@@ -166,6 +167,7 @@ export const PAGES = {
     "InstructorPupilPayments": InstructorPupilPayments,
     "InstructorQuizPreview": InstructorQuizPreview,
     "InstructorReports": InstructorReports,
+    "InstructorSchedule": InstructorSchedule,
     "InstructorResources": InstructorResources,
     "InstructorStripeConnect": InstructorStripeConnect,
     "InstructorSubscription": InstructorSubscription,

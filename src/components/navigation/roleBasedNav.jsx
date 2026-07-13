@@ -4,6 +4,7 @@ import {
   Bell,
   MessageCircle,
   Calendar,
+  CalendarDays,
   Users,
   GraduationCap,
   BookOpen,
@@ -79,7 +80,16 @@ export const sharedNavLinks = [
 
 // Instructor-only navigation items
 export const instructorOnlyLinks = [
-  { name: 'Calendar', icon: Calendar, page: 'Calendar' },
+  { 
+    name: 'Calendar', 
+    icon: Calendar, 
+    page: 'Calendar',
+    isCollapsible: true,
+    children: [
+      { name: 'Calendar', icon: Calendar, page: 'Calendar' },
+      { name: 'Schedule', icon: CalendarDays, page: 'InstructorSchedule' }
+    ]
+  },
   { name: 'Pupils', icon: Users, page: 'PupilList' },
   { 
     name: 'My Teaching', 
