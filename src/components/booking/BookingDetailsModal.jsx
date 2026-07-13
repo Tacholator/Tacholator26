@@ -661,17 +661,9 @@ export default function BookingDetailsModal({
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-sm text-slate-600 mb-3">
-                  You can reassign this booking to another pupil, remove the pupil to restore the slot, or delete the booking.
+                  You can remove the pupil to restore the slot, or delete the booking.
                 </p>
                 <div className="flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowReassignDialog(true)}
-                    className="w-full justify-start"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Reassign to another pupil
-                  </Button>
                   <Button
                     variant="outline"
                     onClick={() => setShowRemoveDialog(true)}
