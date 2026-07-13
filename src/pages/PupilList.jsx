@@ -349,71 +349,61 @@ export default function PupilList() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <button
             onClick={() => setStatusFilter('Active')}
-            className={`p-4 rounded-xl border-2 transition-all ${
+            className={`aspect-square p-4 rounded-xl border-2 transition-all flex flex-col items-center justify-center text-center ${
               statusFilter === 'Active'
                 ? 'border-emerald-500 bg-emerald-50'
                 : 'border-slate-200 bg-white hover:border-emerald-300'
             }`}
           >
-            <div className="text-left">
-              <div className="text-2xl font-bold text-emerald-600">{activePupils.length}</div>
-              <div className="text-sm text-slate-600 mt-1">Active</div>
-            </div>
+            <div className="text-3xl font-bold text-emerald-600">{activePupils.length}</div>
+            <div className="text-sm text-slate-600 mt-1">Active</div>
           </button>
 
           <button
             onClick={() => setStatusFilter('OnHold')}
-            className={`p-4 rounded-xl border-2 transition-all ${
+            className={`aspect-square p-4 rounded-xl border-2 transition-all flex flex-col items-center justify-center text-center ${
               statusFilter === 'OnHold'
                 ? 'border-amber-500 bg-amber-50'
                 : 'border-slate-200 bg-white hover:border-amber-300'
             }`}
           >
-            <div className="text-left">
-              <div className="text-2xl font-bold text-amber-600">{onHoldPupils.length}</div>
-              <div className="text-sm text-slate-600 mt-1">On Hold</div>
-            </div>
+            <div className="text-3xl font-bold text-amber-600">{onHoldPupils.length}</div>
+            <div className="text-sm text-slate-600 mt-1">On Hold</div>
           </button>
 
           <button
             onClick={() => setStatusFilter('Passed')}
-            className={`p-4 rounded-xl border-2 transition-all ${
+            className={`aspect-square p-4 rounded-xl border-2 transition-all flex flex-col items-center justify-center text-center ${
               statusFilter === 'Passed'
                 ? 'border-blue-500 bg-blue-50'
                 : 'border-slate-200 bg-white hover:border-blue-300'
             }`}
           >
-            <div className="text-left">
-              <div className="text-2xl font-bold text-blue-600">{passedPupils.length}</div>
-              <div className="text-sm text-slate-600 mt-1">Passed</div>
-            </div>
+            <div className="text-3xl font-bold text-blue-600">{passedPupils.length}</div>
+            <div className="text-sm text-slate-600 mt-1">Passed</div>
           </button>
 
           <div
-            className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
+            className={`aspect-square p-3 rounded-xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center text-center ${
               statusFilter === 'Stopped'
                 ? 'border-purple-500 bg-purple-50'
                 : 'border-slate-200 bg-white hover:border-purple-300'
             }`}
             onClick={() => setStatusFilter('Stopped')}
           >
-            <div className="text-left">
-              <div className="text-2xl font-bold text-purple-600">{oneOffPupils.length}</div>
-              <div className="text-sm text-slate-600 mt-1">New Intakes</div>
-              <div className="mt-2">
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowOneOffModal(true);
-                  }}
-                  disabled={!hasValidSub}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-xs h-8"
-                >
-                  <Plus className="w-3 h-3 mr-1" />
-                  New Intake
-                </Button>
-              </div>
-            </div>
+            <div className="text-3xl font-bold text-purple-600">{oneOffPupils.length}</div>
+            <div className="text-sm text-slate-600 mt-1">New Intakes</div>
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowOneOffModal(true);
+              }}
+              disabled={!hasValidSub}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-xs h-7 mt-2"
+            >
+              <Plus className="w-3 h-3 mr-1" />
+              New Intake
+            </Button>
           </div>
         </div>
 
