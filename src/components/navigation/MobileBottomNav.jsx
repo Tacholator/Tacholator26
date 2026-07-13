@@ -14,7 +14,7 @@ import {
   GraduationCap,
   BookOpen,
   BookMarked,
-  Fuel
+  CalendarDays
 } from 'lucide-react';
 
 const instructorNavItems = [
@@ -43,10 +43,10 @@ const instructorNavItems = [
     page: 'InstructorTeachingHub'
   },
   {
-    id: 'expenses',
-    label: 'Expenses',
-    icon: Fuel,
-    page: 'InstructorExpenses'
+    id: 'schedule',
+    label: 'Schedule',
+    icon: CalendarDays,
+    page: 'InstructorSchedule'
   }
 ];
 
