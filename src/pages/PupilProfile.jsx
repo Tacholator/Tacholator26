@@ -31,6 +31,7 @@ import {
   Youtube,
   Trophy,
   Lock,
+  Gauge,
 } from 'lucide-react';
 
 const isAccessRestricted = (pupil) => {
@@ -148,12 +149,33 @@ export default function PupilProfile() {
     enabled: !!pupilId
   });
 
+  // Fetch completed bookings to calculate total mileage
+  const { data: completedBookings = [] } = useQuery({
+    queryKey: ['pupilCompletedBookings', pupilId],
+    queryFn: async () => {
+      const bookings = await base44.entities.LessonBooking.filter({ 
+        pupilId,
+        status: 'completed'
+      });
+      return bookings;
+    },
+    enabled: !!pupilId
+  });
+
   // Calculate total escrowed amount from upcoming confirmed bookings
   const now = moment();
   const upcomingConfirmedBookings = confirmedBookings.filter(b => moment(b.startAtUtc).isAfter(now));
   const totalEscrowedGbp = upcomingConfirmedBookings.reduce((sum, b) => sum + (b.escrowAmountGbp || 0), 0);
   const availableBalance = (pupil?.bulkPaymentBalance || 0);
   const totalBalance = availableBalance + totalEscrowedGbp;
+
+  // Calculate total mileage from completed bookings
+  const totalMileage = completedBookings.reduce((sum, b) => {
+    if (b.startMileage != null && b.endMileage != null && b.endMileage >= b.startMileage) {
+      return sum + (b.endMileage - b.startMileage);
+    }
+    return sum;
+  }, 0);
 
   const { data: homework = [] } = useQuery({
     queryKey: ['homework', pupilId],
@@ -534,6 +556,14 @@ export default function PupilProfile() {
                     );
                   }
                 })()}
+
+                {/* Mileage Counter */}
+                {totalMileage > 0 && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-teal-50 border border-teal-200 text-teal-700 text-sm w-fit">
+                    <Gauge className="w-4 h-4" />
+                    <span className="font-medium">{totalMileage.toLocaleString()} miles driven</span>
+                  </div>
+                )}
 
                 {/* Test Routes Access Toggle */}
                 <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 border border-slate-200">
