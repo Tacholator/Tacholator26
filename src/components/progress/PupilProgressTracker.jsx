@@ -534,6 +534,11 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+                  {hoursSpent > 0 && (
+                    <span className="text-white font-bold text-sm bg-white/20 backdrop-blur-sm rounded-md px-2 py-0.5">
+                      {hoursSpent.toFixed(1)}h
+                    </span>
+                  )}
                   <Badge className="bg-white/20 text-white backdrop-blur-sm text-xs border-white/30">
                     {sectionProgress.percentage}%
                   </Badge>
@@ -541,11 +546,6 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                     <Badge className="bg-emerald-100 text-emerald-700 text-xs">
                       PASSED
                     </Badge>
-                  )}
-                  {hoursSpent > 0 && (
-                    <span className="text-white font-bold text-sm bg-white/20 backdrop-blur-sm rounded-md px-2 py-0.5">
-                      {hoursSpent.toFixed(1)}h
-                    </span>
                   )}
                 </div>
                 <div className="hidden sm:flex flex-col items-end gap-1 shrink-0 w-28">
