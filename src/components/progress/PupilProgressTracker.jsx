@@ -465,8 +465,8 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         </CardContent>
       </Card>
 
-      {/* Skills Cards - Same for Both Instructor and Pupil */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Skills List - Same for Both Instructor and Pupil */}
+      <div className="space-y-3">
         {drivingSkillsSections.map((section, index) => {
           const gradients = [
             'from-blue-500 to-cyan-600',
@@ -524,27 +524,22 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
           return (
             <Card 
               key={section.id}
-              className={`border-0 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden h-[280px] flex flex-col bg-gradient-to-br ${gradient}`}
+              className={`border-0 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden bg-gradient-to-r ${gradient}`}
               onClick={() => setExpandedSection(section)}
             >
-              <CardContent className="p-5 flex flex-col flex-1">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-white text-sm leading-tight mb-1">
-                        {section.title}
-                      </h3>
-                      <p className="text-xs text-white/80">
-                        {sectionProgress.completed}/{sectionProgress.total} sections
-                      </p>
-                    </div>
-                  </div>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  {index + 1}
                 </div>
-
-                <div className="flex items-center gap-2 mb-3 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-white text-sm leading-tight truncate">
+                    {section.title}
+                  </h3>
+                  <p className="text-xs text-white/80">
+                    {sectionProgress.completed}/{sectionProgress.total} sections
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                   <Badge className="bg-white/20 text-white backdrop-blur-sm text-xs border-white/30">
                     {statusConfig[sectionProgress.status].label}
                   </Badge>
@@ -553,23 +548,15 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                       PASSED
                     </Badge>
                   )}
+                  {hoursSpent > 0 && (
+                    <span className="text-white font-bold text-sm bg-white/20 backdrop-blur-sm rounded-md px-2 py-0.5">
+                      {hoursSpent.toFixed(1)}h
+                    </span>
+                  )}
                 </div>
-
-                {hoursSpent > 0 && (
-                <div className="flex-1 flex items-center justify-center my-2">
-                  <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border-2 border-white/40 flex flex-col items-center justify-center px-2">
-                    <span className="text-2xl font-bold text-white leading-none">{hoursSpent.toFixed(1)}</span>
-                    <span className="text-[10px] text-white/90 mt-0.5 text-center leading-tight">hours covered</span>
-                  </div>
-                </div>
-                )}
-
-                <div className="mt-auto">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-white/90 font-medium">Progress</span>
-                    <span className="text-xs text-white font-semibold">{sectionProgress.percentage}%</span>
-                  </div>
-                  <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+                <div className="hidden sm:flex flex-col items-end gap-1 shrink-0 w-28">
+                  <span className="text-xs text-white font-semibold">{sectionProgress.percentage}%</span>
+                  <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
                     <div 
                       className="h-full bg-white/90 transition-all duration-500"
                       style={{ width: `${sectionProgress.percentage}%` }}
