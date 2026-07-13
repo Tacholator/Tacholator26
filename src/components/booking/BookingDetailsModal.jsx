@@ -430,6 +430,16 @@ export default function BookingDetailsModal({
         escrowAmountGbp: 0
       });
 
+      // Release slot instance — use fresh booking's slotInstanceId
+      const slotInstanceId = slotInstance?.id || freshBooking2.slotInstanceId;
+      if (slotInstanceId) {
+        await base44.entities.BookableSlotInstance.update(slotInstanceId, {
+          status: 'available',
+          bookingId: null,
+          reservedByPupilId: null
+        });
+      }
+
       // Refund pupil only if escrow was actually held (money was deducted from balance at confirmation)
       if (wasConfirmed && pupil && escrowAmount > 0) {
         // Fetch fresh pupil balance before updating
