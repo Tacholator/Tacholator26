@@ -476,11 +476,17 @@ export default function PupilProfile() {
 
             {/* Progress Ring + Stats */}
             <div className="flex flex-col sm:flex-row gap-4 sm:items-start pt-2 border-t">
-              <div className="flex justify-center sm:justify-start">
+              <div className="flex justify-center sm:justify-start gap-4 items-center">
                 <ProgressRing
                   current={pupil.hoursCompleted || 0}
                   target={pupil.targetHours || 45}
+                  uniqueId="hours-gradient"
                 />
+                <div className="flex flex-col items-center justify-center px-4 py-3 rounded-xl bg-teal-50 border border-teal-200">
+                  <Gauge className="w-5 h-5 text-teal-600 mb-1" />
+                  <span className="text-2xl font-bold text-slate-800">{totalMileage.toLocaleString()}</span>
+                  <span className="text-xs text-slate-500">miles</span>
+                </div>
               </div>
               
               <div className="flex-1 space-y-2.5">
@@ -556,14 +562,6 @@ export default function PupilProfile() {
                     );
                   }
                 })()}
-
-                {/* Mileage Counter */}
-                {totalMileage > 0 && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-teal-50 border border-teal-200 text-teal-700 text-sm w-fit">
-                    <Gauge className="w-4 h-4" />
-                    <span className="font-medium">{totalMileage.toLocaleString()} miles driven</span>
-                  </div>
-                )}
 
                 {/* Test Routes Access Toggle */}
                 <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 border border-slate-200">
