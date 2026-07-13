@@ -230,6 +230,8 @@ export default function NewLessonModal({ open, onOpenChange, defaultPupilId }) {
           dropoffLocation: dropoffSameAsPickup ? pickupLocation : dropoffLocation,
           hourlyRateAtBookingGbp: hourlyRate,
           totalPriceGbp: totalPriceEach,
+          escrowAmountGbp: totalPriceEach,
+          slotInstanceId: selectedSlot ? selectedSlot.id : null,
         });
 
         // If booked from a slot, mark it as confirmed and link it
