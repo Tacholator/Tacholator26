@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
-import StartLessonModal from '@/components/lessons/StartLessonModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import {
   AlertDialog,
@@ -17,7 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, Search, UserX, Trash2, RefreshCw, ClipboardList, Play } from 'lucide-react';
+import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, Search, UserX, Trash2, RefreshCw, ClipboardList } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -47,7 +46,6 @@ export default function BookingDetailsModal({
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showOutcomeModal, setShowOutcomeModal] = useState(false);
-  const [showStartLessonModal, setShowStartLessonModal] = useState(false);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [selectedPupilId, setSelectedPupilId] = useState('');
@@ -504,7 +502,6 @@ export default function BookingDetailsModal({
   const isNoShow = booking.status === 'no_show';
   const canManage = isPending || isConfirmed || isInProgress;
   const canChangeStatus = isConfirmed || isInProgress;
-  const canStartLesson = isConfirmed;
 
   const pickup = booking.pickupLocation || 'Not specified';
   const dropoff = booking.dropoffLocation || 'Not specified';
@@ -727,15 +724,6 @@ export default function BookingDetailsModal({
                 <ClipboardList className="w-4 h-4 mr-2" />
                 Lesson Summary
               </Button>
-              {canStartLesson && (
-                <Button 
-                  onClick={() => setShowStartLessonModal(true)}
-                  className="bg-teal-600 hover:bg-teal-700"
-                >
-                  <Play className="w-4 h-4 mr-2" />
-                  Start Lesson
-                </Button>
-              )}
               <Button 
                 onClick={() => setShowOutcomeModal(true)}
                 className="bg-emerald-600 hover:bg-emerald-700"
@@ -956,13 +944,6 @@ export default function BookingDetailsModal({
         onOpenChange(false);
       }}
       bookingId={booking.id}
-      />
-
-      {/* Start Lesson Modal */}
-      <StartLessonModal
-        open={showStartLessonModal}
-        onClose={() => setShowStartLessonModal(false)}
-        bookingId={booking.id}
       />
 
       {/* Lesson Summary Modal */}

@@ -5,9 +5,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Calendar, Clock, MapPin, FileText, Save, Sparkles } from 'lucide-react';
+import { Loader2, Calendar, Clock, MapPin, FileText, Save, Sparkles, Gauge } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
@@ -34,6 +35,8 @@ export default function BookingSummaryModal({
   });
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [startMileage, setStartMileage] = useState('');
+  const [endMileage, setEndMileage] = useState('');
 
   // Check if there's an existing diary entry for this booking
   const { data: existingDiaryEntry } = useQuery({
@@ -77,6 +80,15 @@ export default function BookingSummaryModal({
       });
     }
   }, [existingDiaryEntry?.id]);
+
+  React.useEffect(() => {
+    if (booking?.startMileage != null) {
+      setStartMileage(String(booking.startMileage));
+    }
+    if (booking?.endMileage != null) {
+      setEndMileage(String(booking.endMileage));
+    }
+  }, [booking?.startMileage, booking?.endMileage]);
 
   React.useEffect(() => {
     if (existingTopicDurations.length > 0) {
@@ -250,9 +262,11 @@ Requirements:
         }
       }
 
-      // Mark booking as completed
+      // Mark booking as completed and save mileage
       await base44.entities.LessonBooking.update(booking.id, {
-        status: 'completed'
+        status: 'completed',
+        startMileage: startMileage ? Number(startMileage) : null,
+        endMileage: endMileage ? Number(endMileage) : null
       });
 
       queryClient.invalidateQueries(['diaryEntry', booking.id]);
@@ -359,6 +373,47 @@ Requirements:
                   <p className="font-medium text-slate-800">{locations.dropoff}</p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Mileage Tracking */}
+          <Card className="border-teal-200 bg-teal-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Gauge className="w-4 h-4 text-teal-600" />
+                Lesson Mileage
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="startMileage" className="text-sm text-slate-600">Start Mileage (miles)</Label>
+                  <Input
+                    id="startMileage"
+                    type="number"
+                    value={startMileage}
+                    onChange={(e) => setStartMileage(e.target.value)}
+                    placeholder="e.g., 12345"
+                    disabled={readOnly}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="endMileage" className="text-sm text-slate-600">End Mileage (miles)</Label>
+                  <Input
+                    id="endMileage"
+                    type="number"
+                    value={endMileage}
+                    onChange={(e) => setEndMileage(e.target.value)}
+                    placeholder="e.g., 12385"
+                    disabled={readOnly}
+                  />
+                </div>
+              </div>
+              {startMileage && endMileage && Number(endMileage) >= Number(startMileage) && (
+                <p className="text-xs text-teal-600 mt-2">
+                  Distance covered: {Number(endMileage) - Number(startMileage)} miles
+                </p>
+              )}
             </CardContent>
           </Card>
 
