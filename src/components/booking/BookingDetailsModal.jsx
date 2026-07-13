@@ -430,16 +430,6 @@ export default function BookingDetailsModal({
         escrowAmountGbp: 0
       });
 
-      // Release slot instance — use fresh booking's slotInstanceId
-      const slotInstanceId2 = slotInstance?.id || freshBooking2.slotInstanceId;
-      if (slotInstanceId2) {
-        await base44.entities.BookableSlotInstance.update(slotInstanceId2, {
-          status: 'available',
-          bookingId: null,
-          reservedByPupilId: null
-        });
-      }
-
       // Refund pupil only if escrow was actually held (money was deducted from balance at confirmation)
       if (wasConfirmed && pupil && escrowAmount > 0) {
         // Fetch fresh pupil balance before updating
@@ -476,7 +466,7 @@ export default function BookingDetailsModal({
       queryClient.invalidateQueries({ queryKey: ['lessonBookings'] });
       queryClient.invalidateQueries({ queryKey: ['slotInstances'] });
       queryClient.invalidateQueries({ queryKey: ['pupils'] });
-      toast({ title: 'Booking deleted and slot restored to available' });
+      toast({ title: 'Booking deleted' });
       setIsProcessing(false);
       setShowDeleteDialog(false);
       onOpenChange(false);
@@ -678,7 +668,7 @@ export default function BookingDetailsModal({
                     className="w-full justify-start text-rose-600 border-rose-300 hover:bg-rose-50"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Delete booking (restore slot to available)
+                    Delete booking
                   </Button>
                 </div>
               </CardContent>
@@ -909,9 +899,9 @@ export default function BookingDetailsModal({
             {(() => {
               const escrow = booking.escrowAmountGbp || 0;
               if (isConfirmed && escrow > 0) {
-                return `Delete this booking and restore the slot to available? £${escrow.toFixed(2)} held in escrow will be returned to the pupil's balance immediately. The pupil will be notified. This action cannot be undone.`;
+                return `Delete this booking? £${escrow.toFixed(2)} held in escrow will be returned to the pupil's balance immediately. The pupil will be notified. This action cannot be undone.`;
               }
-              return 'Delete this booking entirely and restore the slot to available? The pupil will be notified. This action cannot be undone.';
+              return 'Delete this booking entirely? The pupil will be notified. This action cannot be undone.';
             })()}
           </AlertDialogDescription>
         </AlertDialogHeader>
