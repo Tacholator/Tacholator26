@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, Search, UserX, Trash2, RefreshCw, ClipboardList } from 'lucide-react';
+import { Loader2, User, Calendar, MapPin, FileText, PoundSterling, AlertCircle, Search, Trash2, RefreshCw, ClipboardList } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -43,7 +43,6 @@ export default function BookingDetailsModal({
   const [declineReason, setDeclineReason] = useState('');
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showReassignDialog, setShowReassignDialog] = useState(false);
-  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showOutcomeModal, setShowOutcomeModal] = useState(false);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
@@ -332,83 +331,7 @@ export default function BookingDetailsModal({
     }
   });
 
-  const removeMutation = useMutation({
-    mutationFn: async () => {
-      setIsProcessing(true);
 
-      // Fetch fresh booking to ensure slotInstanceId is current
-      const freshBookingResults = await base44.entities.LessonBooking.filter({ id: booking.id });
-      const freshBooking = freshBookingResults[0] || booking;
-
-      const escrowAmount = freshBooking.escrowAmountGbp || 0;
-      const wasConfirmed = freshBooking.status === 'confirmed';
-
-      // Mark booking as deleted
-      await base44.entities.LessonBooking.update(freshBooking.id, {
-        isDeleted: true,
-        deletedAt: new Date().toISOString(),
-        deletedByRole: 'instructor',
-        status: 'deleted'
-      });
-
-      // Release slot instance — use fresh booking's slotInstanceId
-      const slotInstanceId = slotInstance?.id || freshBooking.slotInstanceId;
-      if (slotInstanceId) {
-        await base44.entities.BookableSlotInstance.update(slotInstanceId, {
-          status: 'available',
-          bookingId: null,
-          reservedByPupilId: null
-        });
-      }
-
-      // Refund pupil only if escrow was actually held (money was deducted from balance at confirmation)
-      if (wasConfirmed && pupil && escrowAmount > 0) {
-        // Fetch fresh pupil balance before updating
-        const freshPupils = await base44.entities.Pupil.filter({ id: pupil.id });
-        const freshPupil = freshPupils[0];
-        await base44.entities.Pupil.update(pupil.id, {
-          bulkPaymentBalance: (freshPupil?.bulkPaymentBalance || 0) + escrowAmount
-        });
-        await base44.entities.LessonBooking.update(freshBooking.id, { escrowAmountGbp: 0 });
-        await base44.entities.PaymentLedger.create({
-          userId: pupil.linkedUserId || pupil.id,
-          bookingId: freshBooking.id,
-          type: 'refund',
-          reason: 'refund_issued',
-          amountGbp: escrowAmount,
-          hours: freshBooking.durationHours || 0,
-          createdByRole: 'instructor',
-          note: `Escrow refunded: instructor removed pupil from confirmed lesson on ${moment(freshBooking.startAtUtc).local().format('D MMM YYYY [at] HH:mm')}`
-        });
-      }
-
-      // Notify pupil
-      if (pupil?.linkedUserId) {
-        const refundMsg = wasConfirmed && escrowAmount > 0 ? ` £${escrowAmount.toFixed(2)} has been returned to your balance.` : '';
-        await base44.entities.Notification.create({
-          userId: pupil.linkedUserId,
-          title: 'Lesson Cancelled by Instructor',
-          message: `Your instructor has removed you from the lesson on ${moment(freshBooking.startAtUtc).local().format('D MMM')} at ${moment(freshBooking.startAtUtc).local().format('HH:mm')}.${refundMsg}`,
-          type: 'booking',
-          linkTarget: 'LearnerScheduledLessons'
-        });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lessonBookings'] });
-      queryClient.invalidateQueries({ queryKey: ['slotInstances'] });
-      queryClient.invalidateQueries({ queryKey: ['pupils'] });
-      toast({ title: 'Pupil removed and slot restored to available' });
-      setIsProcessing(false);
-      setShowRemoveDialog(false);
-      onOpenChange(false);
-    },
-    onError: (error) => {
-      toast({ title: 'Removal failed', description: error.message, variant: 'destructive' });
-      setIsProcessing(false);
-      setShowRemoveDialog(false);
-    }
-  });
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
@@ -660,18 +583,7 @@ export default function BookingDetailsModal({
                 <CardTitle className="text-base">Manage Booking</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p className="text-sm text-slate-600 mb-3">
-                  You can remove the pupil to restore the slot, or delete the booking.
-                </p>
                 <div className="flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowRemoveDialog(true)}
-                    className="w-full justify-start text-amber-600 border-amber-300 hover:bg-amber-50"
-                  >
-                    <UserX className="w-4 h-4 mr-2" />
-                    Remove pupil (restore slot to available)
-                  </Button>
                   <Button
                     variant="outline"
                     onClick={() => setShowDeleteDialog(true)}
@@ -877,28 +789,6 @@ export default function BookingDetailsModal({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-
-    {/* Remove Pupil Dialog */}
-    <AlertDialog open={showRemoveDialog} onOpenChange={setShowRemoveDialog}>
-      <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Remove Pupil</AlertDialogTitle>
-          <AlertDialogDescription>
-            Remove the pupil from this booking and restore the slot to available? The pupil will be notified.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isProcessing}>No, Keep Booking</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => removeMutation.mutate()}
-            disabled={isProcessing}
-            className="bg-amber-600 hover:bg-amber-700"
-          >
-            {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Yes, Remove Pupil'}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
 
     {/* Delete Booking Dialog */}
     <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
