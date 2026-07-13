@@ -7,6 +7,7 @@ Deno.serve(async (req) => {
     
     const body = await req.json();
     const booking = body.data || body;
+    const oldData = body.old_data;
 
     if (!booking?.id || !booking?.status) {
       return Response.json({ error: 'Invalid booking data' }, { status: 400 });
@@ -15,6 +16,11 @@ Deno.serve(async (req) => {
     // Only process confirmed bookings
     if (booking.status !== 'confirmed') {
       return Response.json({ skipped: true, reason: 'Not confirmed' });
+    }
+
+    // Skip if the booking was already confirmed (e.g. mileage or summary update)
+    if (oldData && oldData.status === 'confirmed') {
+      return Response.json({ skipped: true, reason: 'Already confirmed — not a new confirmation' });
     }
 
     const results = [];
