@@ -137,7 +137,7 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
               }`}
             >
               <div className="relative">
-                <Icon className={`w-5 h-5 ${isActive ? 'fill-current stroke-[2.5]' : 'fill-current stroke-2'}`} />
+                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
                 {item.id === 'notifications' && unreadNotificationsCount > 0 && (
                   <Badge 
                     className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-rose-500 text-white text-xs font-bold"
