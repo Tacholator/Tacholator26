@@ -655,99 +655,66 @@ export default function LearnerDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="border-0 shadow-sm bg-gradient-to-br from-[#071739] to-[#0a2142] text-white">
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-100 to-amber-100">
               <CardHeader>
-                <CardTitle className="text-lg text-white/90">Next Lesson & Hours Booked</CardTitle>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-orange-600" />
+                  Overall Driving Progress
+                </CardTitle>
+                <p className="text-sm text-slate-600">{drivingProgress.length} of 24 skills tracked</p>
               </CardHeader>
-              <CardContent>
-                {nextLesson ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                        <Calendar className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <p className="text-xl font-semibold">
-                          {moment(nextLesson.startAtUtc).local().format('dddd, D MMMM')}
-                        </p>
-                        <p className="text-white/80">{moment(nextLesson.startAtUtc).fromNow()}</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 pt-2">
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-white/70" />
-                        <span className="text-sm">{moment(nextLesson.startAtUtc).local().format('HH:mm')} - {moment(nextLesson.endAtUtc).local().format('HH:mm')}</span>
-                      </div>
-                      {nextLesson.pickupLocation && (
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-5 h-5 text-white/70" />
-                          <span className="truncate text-sm">{nextLesson.pickupLocation}</span>
-                        </div>
-                      )}
-                    </div>
-                    {(() => {
-                      const futureBookings = bookings.filter(b => 
-                        b.status === 'confirmed' && 
-                        moment(b.startAtUtc).isAfter(now)
-                      );
-                      const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
-                      
-                      return (
-                        <div className="pt-3 border-t border-white/20">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-white/80">Total Hours Booked</span>
-                            <span className="text-2xl font-bold">{totalHoursBooked.toFixed(1)}h</span>
-                          </div>
-                          <p className="text-xs text-white/70 mt-1">
-                            {futureBookings.length} upcoming lesson{futureBookings.length !== 1 ? 's' : ''}
-                          </p>
-                        </div>
-                      );
-                    })()}
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      <Link to={createPageUrl('LearnerScheduledLessons')}>
-                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
-                          View Lessons
-                        </Button>
-                      </Link>
-                      <Link to={createPageUrl('LearnerChats')}>
-                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
-                          <MessageCircle className="w-4 h-4 mr-2" />
-                          Message
-                        </Button>
-                      </Link>
-                    </div>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-around py-2">
+                  <div className="flex flex-col items-center gap-1">
+                    <ProgressRing 
+                      current={overallProgress} 
+                      target={100} 
+                      size={100} 
+                      strokeWidth={8}
+                      label="Progress"
+                      displayValue={`${overallProgress}%`}
+                      colorFrom="#f97316"
+                      colorTo="#f59e0b"
+                      uniqueId="progress-grad"
+                    />
                   </div>
-                ) : (
-                  <div className="text-center py-6">
-                    <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p className="text-white/80 mb-2">You don't have a lesson booked</p>
-                    {(() => {
-                      const futureBookings = bookings.filter(b => 
-                        b.status === 'confirmed' && 
-                        moment(b.startAtUtc).isAfter(now)
-                      );
-                      const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
-                      
-                      if (totalHoursBooked > 0) {
-                        return (
-                          <div className="mb-4 p-3 rounded-lg bg-white/10">
-                            <span className="text-white/80 text-sm">{totalHoursBooked.toFixed(1)}h booked</span>
-                            <p className="text-xs text-white/60 mt-1">
-                              {futureBookings.length} upcoming lesson{futureBookings.length !== 1 ? 's' : ''}
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()}
-                    <Link to={createPageUrl('LearnerBookingCalendar')}>
-                      <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
-                        Book a Lesson
-                      </Button>
-                    </Link>
+                  <div className="flex flex-col items-center gap-1">
+                    <ProgressRing 
+                      current={pupil.hoursCompleted || 0} 
+                      target={pupil.targetHours || 45} 
+                      size={100} 
+                      strokeWidth={8}
+                      label={`of ${pupil.targetHours || 45} hrs`}
+                      colorFrom="#0d9488"
+                      colorTo="#14b8a6"
+                      uniqueId="hours-grad"
+                    />
                   </div>
-                )}
+                  <div className="flex flex-col items-center gap-1">
+                    <ProgressRing 
+                      current={totalMileage} 
+                      target={500} 
+                      size={100} 
+                      strokeWidth={8}
+                      label="miles"
+                      colorFrom="#3b82f6"
+                      colorTo="#6366f1"
+                      uniqueId="mileage-grad"
+                    />
+                  </div>
+                </div>
+                <div className="pt-2">
+                  <p className="text-xs text-slate-600 mb-1">Next Focus</p>
+                  <p className="text-sm font-medium text-slate-800">
+                    {nextFocusTopic?.label || 'All skills completed! 🎉'}
+                  </p>
+                </div>
+                <Link to={createPageUrl('LearnerProgress')}>
+                  <Button className="w-full gap-2 bg-orange-500 hover:bg-orange-600 text-white">
+                    <TrendingUp className="w-4 h-4" />
+                    View Progress
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </motion.div>
@@ -898,66 +865,99 @@ export default function LearnerDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
           >
-            <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-100 to-amber-100">
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-[#071739] to-[#0a2142] text-white">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-orange-600" />
-                  Overall Driving Progress
-                </CardTitle>
-                <p className="text-sm text-slate-600">{drivingProgress.length} of 24 skills tracked</p>
+                <CardTitle className="text-lg text-white/90">Next Lesson & Hours Booked</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-around py-2">
-                  <div className="flex flex-col items-center gap-1">
-                    <ProgressRing 
-                      current={overallProgress} 
-                      target={100} 
-                      size={100} 
-                      strokeWidth={8}
-                      label="Progress"
-                      displayValue={`${overallProgress}%`}
-                      colorFrom="#f97316"
-                      colorTo="#f59e0b"
-                      uniqueId="progress-grad"
-                    />
+              <CardContent>
+                {nextLesson ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                        <Calendar className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="text-xl font-semibold">
+                          {moment(nextLesson.startAtUtc).local().format('dddd, D MMMM')}
+                        </p>
+                        <p className="text-white/80">{moment(nextLesson.startAtUtc).fromNow()}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-white/70" />
+                        <span className="text-sm">{moment(nextLesson.startAtUtc).local().format('HH:mm')} - {moment(nextLesson.endAtUtc).local().format('HH:mm')}</span>
+                      </div>
+                      {nextLesson.pickupLocation && (
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-5 h-5 text-white/70" />
+                          <span className="truncate text-sm">{nextLesson.pickupLocation}</span>
+                        </div>
+                      )}
+                    </div>
+                    {(() => {
+                      const futureBookings = bookings.filter(b => 
+                        b.status === 'confirmed' && 
+                        moment(b.startAtUtc).isAfter(now)
+                      );
+                      const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
+                      
+                      return (
+                        <div className="pt-3 border-t border-white/20">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-white/80">Total Hours Booked</span>
+                            <span className="text-2xl font-bold">{totalHoursBooked.toFixed(1)}h</span>
+                          </div>
+                          <p className="text-xs text-white/70 mt-1">
+                            {futureBookings.length} upcoming lesson{futureBookings.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                      );
+                    })()}
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <Link to={createPageUrl('LearnerScheduledLessons')}>
+                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
+                          View Lessons
+                        </Button>
+                      </Link>
+                      <Link to={createPageUrl('LearnerChats')}>
+                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Message
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <ProgressRing 
-                      current={pupil.hoursCompleted || 0} 
-                      target={pupil.targetHours || 45} 
-                      size={100} 
-                      strokeWidth={8}
-                      label={`of ${pupil.targetHours || 45} hrs`}
-                      colorFrom="#0d9488"
-                      colorTo="#14b8a6"
-                      uniqueId="hours-grad"
-                    />
+                ) : (
+                  <div className="text-center py-6">
+                    <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-white/80 mb-2">You don't have a lesson booked</p>
+                    {(() => {
+                      const futureBookings = bookings.filter(b => 
+                        b.status === 'confirmed' && 
+                        moment(b.startAtUtc).isAfter(now)
+                      );
+                      const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
+                      
+                      if (totalHoursBooked > 0) {
+                        return (
+                          <div className="mb-4 p-3 rounded-lg bg-white/10">
+                            <span className="text-white/80 text-sm">{totalHoursBooked.toFixed(1)}h booked</span>
+                            <p className="text-xs text-white/60 mt-1">
+                              {futureBookings.length} upcoming lesson{futureBookings.length !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
+                    <Link to={createPageUrl('LearnerBookingCalendar')}>
+                      <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
+                        Book a Lesson
+                      </Button>
+                    </Link>
                   </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <ProgressRing 
-                      current={totalMileage} 
-                      target={500} 
-                      size={100} 
-                      strokeWidth={8}
-                      label="miles"
-                      colorFrom="#3b82f6"
-                      colorTo="#6366f1"
-                      uniqueId="mileage-grad"
-                    />
-                  </div>
-                </div>
-                <div className="pt-2">
-                  <p className="text-xs text-slate-600 mb-1">Next Focus</p>
-                  <p className="text-sm font-medium text-slate-800">
-                    {nextFocusTopic?.label || 'All skills completed! 🎉'}
-                  </p>
-                </div>
-                <Link to={createPageUrl('LearnerProgress')}>
-                  <Button className="w-full gap-2 bg-orange-500 hover:bg-orange-600 text-white">
-                    <TrendingUp className="w-4 h-4" />
-                    View Progress
-                  </Button>
-                </Link>
+                )}
               </CardContent>
             </Card>
           </motion.div>
