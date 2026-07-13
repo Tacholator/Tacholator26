@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Calendar, Clock, MapPin, FileText, Save, Sparkles, Gauge } from 'lucide-react';
+import { Loader2, Calendar, Clock, MapPin, FileText, Save, Sparkles, Gauge, CheckCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
@@ -24,6 +24,7 @@ export default function BookingSummaryModal({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
 
   const [summaryData, setSummaryData] = useState({
     mainTopic: '',
@@ -136,6 +137,84 @@ Requirements:
       });
     } finally {
       setIsGeneratingSummary(false);
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    if (!booking || !pupil) return;
+
+    setIsSavingDraft(true);
+    try {
+      const mainTopicId = selectedTopics[0]?.topicId || '';
+
+      const diaryData = {
+        pupilId: booking.pupilId,
+        instructorId: booking.instructorId,
+        lessonId: booking.id,
+        date: moment(booking.startAtUtc).format('YYYY-MM-DD'),
+        mainTopic: mainTopicId,
+        objective: summaryData.whatWasCovered,
+        whatWentWell: summaryData.progressNotes,
+        areasToImprove: summaryData.nextSteps,
+        instructorComments: summaryData.instructorComments,
+        aiSummary: summaryData.aiSummary,
+        aiSummaryGeneratedAt: summaryData.aiSummary ? new Date().toISOString() : null
+      };
+
+      let diaryEntryId;
+      if (existingDiaryEntry) {
+        await base44.entities.DiaryEntry.update(existingDiaryEntry.id, diaryData);
+        diaryEntryId = existingDiaryEntry.id;
+      } else {
+        const newEntry = await base44.entities.DiaryEntry.create(diaryData);
+        diaryEntryId = newEntry.id;
+      }
+
+      if (existingTopicDurations.length > 0) {
+        await Promise.all(
+          existingTopicDurations.map(td => base44.entities.LessonTopicDuration.delete(td.id))
+        );
+      }
+
+      await Promise.all(
+        selectedTopics.map(topic =>
+          base44.entities.LessonTopicDuration.create({
+            lessonId: booking.id,
+            diaryEntryId: diaryEntryId,
+            pupilId: booking.pupilId,
+            instructorId: booking.instructorId,
+            topicId: topic.topicId,
+            topicName: topic.topicName,
+            durationMinutes: topic.durationMinutes
+          })
+        )
+      );
+
+      await base44.entities.LessonBooking.update(booking.id, {
+        startMileage: startMileage ? Number(startMileage) : null,
+        endMileage: endMileage ? Number(endMileage) : null
+      });
+
+      queryClient.invalidateQueries(['diaryEntry', booking.id]);
+      queryClient.invalidateQueries(['diaryEntries', booking.pupilId]);
+      queryClient.invalidateQueries(['lessonTopicDurations', booking.id]);
+      queryClient.invalidateQueries(['bookings']);
+      queryClient.invalidateQueries(['lessonBookings']);
+
+      toast({
+        title: 'Draft saved',
+        description: 'You can come back and complete this later'
+      });
+
+      onOpenChange(false);
+    } catch (error) {
+      toast({
+        title: 'Failed to save draft',
+        description: error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setIsSavingDraft(false);
     }
   };
 
@@ -555,12 +634,13 @@ Requirements:
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button 
-                onClick={handleSave}
-                disabled={isSaving}
-                className="bg-teal-600 hover:bg-teal-700"
+              <Button
+                variant="outline"
+                onClick={handleSaveDraft}
+                disabled={isSavingDraft || isSaving}
+                className="border-slate-400 text-slate-700 hover:bg-slate-100"
               >
-                {isSaving ? (
+                {isSavingDraft ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Saving...
@@ -568,7 +648,24 @@ Requirements:
                 ) : (
                   <>
                     <Save className="w-4 h-4 mr-2" />
-                    Save Summary
+                    Save Draft
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={isSaving || isSavingDraft}
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Submit & Complete
                   </>
                 )}
               </Button>
