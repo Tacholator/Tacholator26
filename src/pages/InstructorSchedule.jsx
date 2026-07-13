@@ -50,9 +50,9 @@ export default function InstructorSchedule() {
   });
 
   const { data: pupils = [] } = useQuery({
-    queryKey: ['pupils'],
-    queryFn: () => base44.entities.Pupil.list(),
-    enabled: !!user?.id,
+    queryKey: ['pupils', user?.email],
+    queryFn: () => base44.entities.Pupil.filter({ instructorEmail: user.email }),
+    enabled: !!user?.email,
   });
 
   const bookings = useMemo(
@@ -88,7 +88,9 @@ export default function InstructorSchedule() {
   // Group bookings by date
   const groupedBookings = useMemo(() => {
     const filtered = bookings.filter(b => {
+      if (!b.startAtUtc) return false;
       const bookingDate = moment(b.startAtUtc);
+      if (!bookingDate.isValid()) return false;
       return bookingDate.isBetween(rangeStart, rangeEnd, null, '[]');
     });
 
