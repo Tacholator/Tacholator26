@@ -118,7 +118,7 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
 
   return (
     <div
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#071739] border-t border-slate-700 shadow-lg"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-lg"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)', willChange: 'transform', transform: 'translateZ(0)' }}
     >
       <div className="flex items-center justify-around h-16 px-2">
@@ -132,8 +132,8 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
               to={createPageUrl(item.page)}
               className={`flex flex-col items-center justify-center flex-1 h-full relative transition-colors ${
                 isActive 
-                  ? 'text-[#F7B602]' 
-                  : 'text-slate-300 active:text-white'
+                  ? 'text-[#071739]' 
+                  : 'text-slate-500 active:text-[#071739]'
               }`}
             >
               <div className="relative">
