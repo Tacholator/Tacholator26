@@ -512,12 +512,6 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
            const sectionLog = topicHours.find(l => l.topicId === section.id);
            const hoursSpent = sectionLog?.totalHours || 0;
 
-          const statusConfig = {
-            not_started: { label: 'Not Started', color: 'bg-slate-100 text-slate-600' },
-            in_progress: { label: 'In Progress', color: 'bg-blue-100 text-blue-700' },
-            completed: { label: 'Completed', color: 'bg-emerald-100 text-emerald-700' }
-          };
-
           // Check if any skill in this section has passed MCQ
           const hasSectionMcqPassed = sectionSkills.some(skillId => checkMcqPassed(skillId));
 
@@ -541,7 +535,7 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
                 </div>
                 <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                   <Badge className="bg-white/20 text-white backdrop-blur-sm text-xs border-white/30">
-                    {statusConfig[sectionProgress.status].label}
+                    {sectionProgress.percentage}%
                   </Badge>
                   {hasSectionMcqPassed && (
                     <Badge className="bg-emerald-100 text-emerald-700 text-xs">
