@@ -31,6 +31,12 @@ const instructorNavItems = [
     page: 'InstructorBookingCalendar'
   },
   {
+    id: 'schedule',
+    label: 'Schedule',
+    icon: CalendarDays,
+    page: 'InstructorSchedule'
+  },
+  {
     id: 'pupils',
     label: 'Pupils',
     icon: Users,
@@ -41,12 +47,6 @@ const instructorNavItems = [
     label: 'My Teaching',
     icon: GraduationCap,
     page: 'InstructorTeachingHub'
-  },
-  {
-    id: 'schedule',
-    label: 'Schedule',
-    icon: CalendarDays,
-    page: 'InstructorSchedule'
   }
 ];
 
