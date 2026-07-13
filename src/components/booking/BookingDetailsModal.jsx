@@ -575,27 +575,6 @@ export default function BookingDetailsModal({
               </div>
             </div>
           )}
-
-          {/* Booking Management Actions */}
-          {canManage && (
-            <Card className="border-slate-300 md:col-span-2">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Manage Booking</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowDeleteDialog(true)}
-                    className="w-full justify-start text-rose-600 border-rose-300 hover:bg-rose-50"
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete booking
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         <DialogFooter>
@@ -627,6 +606,14 @@ export default function BookingDetailsModal({
               >
                 <ClipboardList className="w-4 h-4 mr-2" />
                 Lesson Summary
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-rose-600 border-rose-300 hover:bg-rose-50"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
               </Button>
               <Button 
                 onClick={() => setShowOutcomeModal(true)}
