@@ -488,17 +488,6 @@ export default function LearnerDashboard() {
           <ArrivalBanner notification={arrivalNotification} lesson={arrivalLesson} />
         )}
 
-        {/* Test Readiness Card */}
-        {pupil?.id && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-          >
-            <TestReadinessCard pupilId={pupil.id} />
-          </motion.div>
-        )}
-
         {/* First Lesson Checks Complete Banner */}
         {pupil.licenseChecked && pupil.eyeTestChecked && pupil.instructorDvlaVerified && !checksbannerDismissed && (
           <motion.div
@@ -648,7 +637,7 @@ export default function LearnerDashboard() {
           });
         })()}
 
-        {/* 3. Next Lesson & Last Lesson Summary */}
+        {/* Overall Driving Progress & Next Lesson */}
         <div className="grid md:grid-cols-2 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -723,147 +712,6 @@ export default function LearnerDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-          >
-            <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-indigo-50">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                  Last Lesson Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {latestDiary ? (
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-xs font-medium text-slate-600 mb-1">Last Lesson</p>
-                      <p className="text-sm font-semibold text-slate-800">{moment(latestDiary.date).format('DD MMM YYYY')}</p>
-                      <p className="text-xs text-slate-500 mt-0.5">{moment(latestDiary.date).fromNow()}</p>
-                    </div>
-                    {latestDiary.mainTopic && (
-                      <div>
-                        <p className="text-xs font-medium text-slate-600 mb-1">Topics Covered</p>
-                        <p className="text-sm text-slate-700 line-clamp-2">{latestDiary.mainTopic}</p>
-                      </div>
-                    )}
-                    {(latestDiary.whatWentWell || latestDiary.areasToImprove) && (
-                      <div className="grid grid-cols-2 gap-3">
-                        {latestDiary.whatWentWell && (
-                          <div className="bg-emerald-50 rounded-lg p-3">
-                            <p className="text-xs font-medium text-emerald-700 mb-1.5">✓ Went Well</p>
-                            <p className="text-xs text-slate-600 line-clamp-3">{latestDiary.whatWentWell}</p>
-                          </div>
-                        )}
-                        {latestDiary.areasToImprove && (
-                          <div className="bg-amber-50 rounded-lg p-3">
-                            <p className="text-xs font-medium text-amber-700 mb-1.5">⚠ To Improve</p>
-                            <p className="text-xs text-slate-600 line-clamp-3">{latestDiary.areasToImprove}</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button
-                        className="w-full gap-2 bg-purple-600 hover:bg-purple-700 text-white"
-                        onClick={() => setSummaryModalOpen(true)}
-                      >
-                        <Sparkles className="w-4 h-4" />
-                        Full Summary
-                      </Button>
-                      <Link to={createPageUrl('LearnerDiary')} className="w-full">
-                        <Button
-                          className="w-full gap-2 bg-indigo-500 hover:bg-indigo-600 text-white"
-                        >
-                          <NotebookPen className="w-4 h-4" />
-                          View Diary
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <FileText className="w-12 h-12 mx-auto mb-3 text-purple-300" />
-                    <p className="text-sm text-slate-600">No lesson diary entries yet</p>
-                    <p className="text-xs text-slate-500 mt-1">Your instructor will add notes after each lesson</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* 4. My Balance & Overall Progress */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-          >
-            {(() => {
-              const balance = pupil.bulkPaymentBalance || 0;
-              const hourlyRate = pupil.hourlyRate || 0;
-              const hoursAvailable = hourlyRate > 0 ? (balance / hourlyRate).toFixed(1) : 0;
-              
-              const isPositive = balance > 0;
-              const isZero = balance === 0;
-              const isNegative = balance < 0;
-              
-              let bgGradient = 'from-slate-400 to-slate-500';
-              let iconBg = 'bg-white/20';
-              if (isPositive) {
-                bgGradient = 'from-emerald-500 to-emerald-600';
-                iconBg = 'bg-white/20';
-              } else if (isNegative) {
-                bgGradient = 'from-rose-500 to-rose-600';
-                iconBg = 'bg-white/20';
-              }
-              
-              return (
-                <Card className={`border-0 shadow-sm bg-gradient-to-br ${bgGradient} text-white`}>
-                  <CardHeader>
-                    <CardTitle className="text-lg text-white/90">My Balance</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 rounded-xl ${iconBg} flex items-center justify-center`}>
-                          <Wallet className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <p className="text-3xl font-bold">
-                            £{Math.abs(balance).toFixed(2)}
-                          </p>
-                          <p className="text-white/80 text-sm">
-                            {isNegative ? 'Amount owed' : 'Credit balance'}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="pt-2">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm text-white/80">Hours available</span>
-                          <span className="text-lg font-semibold">{hoursAvailable}h</span>
-                        </div>
-                        {hourlyRate > 0 && (
-                          <p className="text-xs text-white/70">
-                            Based on £{hourlyRate.toFixed(2)}/hour
-                          </p>
-                        )}
-                      </div>
-                      <Link to={createPageUrl('LearnerPayments')}>
-                        <Button className="w-full bg-white text-slate-800 hover:bg-white/90 font-semibold">
-                          {isNegative ? 'Make Payment' : 'View Payments'}
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })()}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
           >
             <Card className="border-0 shadow-sm bg-gradient-to-br from-[#071739] to-[#0a2142] text-white">
               <CardHeader>
@@ -962,6 +810,158 @@ export default function LearnerDashboard() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Last Lesson Summary & My Balance */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-indigo-50">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-600" />
+                  Last Lesson Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {latestDiary ? (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs font-medium text-slate-600 mb-1">Last Lesson</p>
+                      <p className="text-sm font-semibold text-slate-800">{moment(latestDiary.date).format('DD MMM YYYY')}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{moment(latestDiary.date).fromNow()}</p>
+                    </div>
+                    {latestDiary.mainTopic && (
+                      <div>
+                        <p className="text-xs font-medium text-slate-600 mb-1">Topics Covered</p>
+                        <p className="text-sm text-slate-700 line-clamp-2">{latestDiary.mainTopic}</p>
+                      </div>
+                    )}
+                    {(latestDiary.whatWentWell || latestDiary.areasToImprove) && (
+                      <div className="grid grid-cols-2 gap-3">
+                        {latestDiary.whatWentWell && (
+                          <div className="bg-emerald-50 rounded-lg p-3">
+                            <p className="text-xs font-medium text-emerald-700 mb-1.5">✓ Went Well</p>
+                            <p className="text-xs text-slate-600 line-clamp-3">{latestDiary.whatWentWell}</p>
+                          </div>
+                        )}
+                        {latestDiary.areasToImprove && (
+                          <div className="bg-amber-50 rounded-lg p-3">
+                            <p className="text-xs font-medium text-amber-700 mb-1.5">⚠ To Improve</p>
+                            <p className="text-xs text-slate-600 line-clamp-3">{latestDiary.areasToImprove}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        className="w-full gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+                        onClick={() => setSummaryModalOpen(true)}
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        Full Summary
+                      </Button>
+                      <Link to={createPageUrl('LearnerDiary')} className="w-full">
+                        <Button
+                          className="w-full gap-2 bg-indigo-500 hover:bg-indigo-600 text-white"
+                        >
+                          <NotebookPen className="w-4 h-4" />
+                          View Diary
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <FileText className="w-12 h-12 mx-auto mb-3 text-purple-300" />
+                    <p className="text-sm text-slate-600">No lesson diary entries yet</p>
+                    <p className="text-xs text-slate-500 mt-1">Your instructor will add notes after each lesson</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            {(() => {
+              const balance = pupil.bulkPaymentBalance || 0;
+              const hourlyRate = pupil.hourlyRate || 0;
+              const hoursAvailable = hourlyRate > 0 ? (balance / hourlyRate).toFixed(1) : 0;
+              
+              const isPositive = balance > 0;
+              const isZero = balance === 0;
+              const isNegative = balance < 0;
+              
+              let bgGradient = 'from-slate-400 to-slate-500';
+              let iconBg = 'bg-white/20';
+              if (isPositive) {
+                bgGradient = 'from-emerald-500 to-emerald-600';
+                iconBg = 'bg-white/20';
+              } else if (isNegative) {
+                bgGradient = 'from-rose-500 to-rose-600';
+                iconBg = 'bg-white/20';
+              }
+              
+              return (
+                <Card className={`border-0 shadow-sm bg-gradient-to-br ${bgGradient} text-white`}>
+                  <CardHeader>
+                    <CardTitle className="text-lg text-white/90">My Balance</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-12 h-12 rounded-xl ${iconBg} flex items-center justify-center`}>
+                          <Wallet className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <p className="text-3xl font-bold">
+                            £{Math.abs(balance).toFixed(2)}
+                          </p>
+                          <p className="text-white/80 text-sm">
+                            {isNegative ? 'Amount owed' : 'Credit balance'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm text-white/80">Hours available</span>
+                          <span className="text-lg font-semibold">{hoursAvailable}h</span>
+                        </div>
+                        {hourlyRate > 0 && (
+                          <p className="text-xs text-white/70">
+                            Based on £{hourlyRate.toFixed(2)}/hour
+                          </p>
+                        )}
+                      </div>
+                      <Link to={createPageUrl('LearnerPayments')}>
+                        <Button className="w-full bg-white text-slate-800 hover:bg-white/90 font-semibold">
+                          {isNegative ? 'Make Payment' : 'View Payments'}
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+          </motion.div>
+        </div>
+
+        {/* Test Readiness Card */}
+        {pupil?.id && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <TestReadinessCard pupilId={pupil.id} />
+          </motion.div>
+        )}
 
         {/* 6. Homework & Notifications */}
         <div className="grid md:grid-cols-2 gap-6">
