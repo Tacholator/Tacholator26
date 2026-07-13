@@ -451,20 +451,6 @@ export default function PupilProgressTracker({ pupilId, instructorId, isInstruct
         </CardContent>
       </Card>
 
-      {/* Progress Legend */}
-      <Card className="border-0 shadow-sm">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-4 flex-wrap">
-            <span className="text-sm font-medium text-slate-600">Progress Levels:</span>
-            {progressStates.map(state => (
-              <Badge key={state.id} className={`${state.color} text-xs`}>
-                {state.label}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Skills List - Same for Both Instructor and Pupil */}
       <div className="space-y-3">
         {drivingSkillsSections.map((section, index) => {
