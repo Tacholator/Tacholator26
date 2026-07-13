@@ -118,7 +118,7 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
 
   return (
     <div
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-lg"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-50 border-t border-slate-200 shadow-lg"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)', willChange: 'transform', transform: 'translateZ(0)' }}
     >
       <div className="flex items-center justify-around h-16 px-2">
