@@ -438,16 +438,16 @@ export default function InstructorDashboard() {
           {/* 3. Today's Schedule Card */}
           <Card className={`${warmPalette.card_todays_schedule} border-0 shadow-sm overflow-hidden`}>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-amber-600" />
                   Today's Schedule
                 </h3>
-                <div className="flex items-center gap-2">
-                  <Link to={createPageUrl('InstructorSchedule')}>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <Link to={createPageUrl('InstructorSchedule')} className="flex-1 sm:flex-none">
                     <Button
                       variant="outline"
-                      className="bg-white/60 hover:bg-white text-slate-700 border-slate-300"
+                      className="bg-white/60 hover:bg-white text-slate-700 border-slate-300 w-full"
                       size="sm"
                     >
                       <Calendar className="w-4 h-4 mr-1" />
@@ -456,7 +456,7 @@ export default function InstructorDashboard() {
                   </Link>
                   <Button
                     onClick={() => setNewLessonModalOpen(true)}
-                    className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
+                    className="bg-[#071739] hover:bg-[#0e2a5a] text-white flex-1 sm:flex-none"
                     size="sm"
                   >
                     <Plus className="w-4 h-4 mr-1" />
