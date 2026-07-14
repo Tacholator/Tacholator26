@@ -136,7 +136,7 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
                   : 'text-slate-500 active:text-[#071739]'
               }`}
             >
-              <div className={`relative flex items-center justify-center w-9 h-9 rounded-full transition-colors ${isActive ? 'bg-[#F7B602]/15' : ''}`}>
+              <div className={`relative flex items-center justify-center w-9 h-9 rounded-full transition-colors ${isActive ? 'bg-blue-100' : ''}`}>
                 <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
                 {item.id === 'notifications' && unreadNotificationsCount > 0 && (
                   <Badge 
