@@ -25,16 +25,10 @@ const instructorNavItems = [
     page: 'Home'
   },
   {
-    id: 'calendar',
-    label: 'Calendar',
-    icon: Calendar,
-    page: 'InstructorBookingCalendar'
-  },
-  {
     id: 'schedule',
     label: 'Schedule',
     icon: CalendarDays,
-    page: 'InstructorSchedule'
+    page: 'InstructorBookingCalendar'
   },
   {
     id: 'pupils',
