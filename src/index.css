@@ -196,7 +196,7 @@ button:focus-visible {
 
 /* For page bottom padding that accounts for bottom nav + safe area */
 .pb-nav-safe {
-  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom));
 }
 
 /* Mobile header offset — only applies below lg breakpoint */

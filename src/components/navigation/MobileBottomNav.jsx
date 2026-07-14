@@ -118,10 +118,10 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
 
   return (
     <div
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-50 border-t border-slate-200 shadow-lg"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)', willChange: 'transform', transform: 'translateZ(0)' }}
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)', willChange: 'transform', transform: 'translateZ(0)' }}
     >
-      <div className="flex items-center justify-around h-16 px-2">
+      <div className="flex items-center justify-around h-16 bg-white rounded-2xl shadow-xl border border-slate-200/80 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentPageName === item.page || (item.id === 'home' && currentPageName === 'Home');
