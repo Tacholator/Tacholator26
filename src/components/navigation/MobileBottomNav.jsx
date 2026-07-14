@@ -146,7 +146,7 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
                   </Badge>
                 )}
               </div>
-              <span className={`text-xs mt-1 leading-tight whitespace-nowrap ${isActive ? 'font-semibold' : 'font-medium'}`}>
+              <span className={`text-[11px] mt-1 leading-tight text-center ${isActive ? 'font-semibold' : 'font-medium'}`}>
                 {item.label}
               </span>
             </Link>
