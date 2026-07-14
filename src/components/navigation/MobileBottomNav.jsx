@@ -136,19 +136,21 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
                   : 'text-slate-500 active:text-[#071739]'
               }`}
             >
-              <div className={`relative flex items-center justify-center w-9 h-9 rounded-full transition-colors ${isActive ? 'bg-[#F7B602]/15' : ''}`}>
-                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-                {item.id === 'notifications' && unreadNotificationsCount > 0 && (
-                  <Badge 
-                    className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-rose-500 text-white text-xs font-bold"
-                  >
-                    {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
-                  </Badge>
-                )}
+              <div className={`relative flex flex-col items-center justify-center rounded-full px-3 py-1.5 transition-colors ${isActive ? 'bg-blue-100' : ''}`}>
+                <div className="relative">
+                  <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
+                  {item.id === 'notifications' && unreadNotificationsCount > 0 && (
+                    <Badge 
+                      className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-rose-500 text-white text-xs font-bold"
+                    >
+                      {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                    </Badge>
+                  )}
+                </div>
+                <span className={`text-xs leading-tight whitespace-nowrap ${isActive ? 'font-semibold' : 'font-medium'}`}>
+                  {item.label}
+                </span>
               </div>
-              <span className={`text-xs mt-1 leading-tight whitespace-nowrap ${isActive ? 'font-semibold' : 'font-medium'}`}>
-                {item.label}
-              </span>
             </Link>
           );
         })}
