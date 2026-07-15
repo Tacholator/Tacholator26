@@ -38,12 +38,12 @@ export default function TenCommandmentsBento() {
           <Link
             key={cmd.number}
             to={createPageUrl('TenCommandments')}
-            className="flex-none w-36 h-36 snap-start rounded-2xl bg-gradient-to-br from-[#071739] to-[#0d2a5e] p-4 flex flex-col items-center justify-center text-center hover:ring-2 hover:ring-[#F7B602] transition-all shadow-sm"
+            className="flex-none w-36 h-36 snap-start rounded-2xl bg-gradient-to-br from-amber-100 to-yellow-200 p-4 flex flex-col items-center justify-center text-center hover:ring-2 hover:ring-[#071739] transition-all shadow-sm"
           >
-            <div className="w-9 h-9 rounded-full bg-[#F7B602] flex items-center justify-center mb-2">
-              <span className="text-sm font-bold text-[#071739]">{cmd.number}</span>
+            <div className="w-9 h-9 rounded-full bg-[#071739] flex items-center justify-center mb-2">
+              <span className="text-sm font-bold text-[#F7B602]">{cmd.number}</span>
             </div>
-            <p className="text-xs font-semibold text-white leading-tight">{cmd.title}</p>
+            <p className="text-xs font-semibold text-[#071739] leading-tight">{cmd.title}</p>
           </Link>
         ))}
       </div>
