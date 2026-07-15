@@ -57,7 +57,10 @@ export default function LearnerBookingList({
   initialListView = false,
 }) {
   const [showListView, setShowListView] = useState(() => {
-    try { return localStorage.getItem('learner_list_view') === 'true'; } catch { return initialListView; }
+    try {
+      const stored = localStorage.getItem('learner_list_view');
+      return stored === null ? true : stored === 'true';
+    } catch { return true; }
   });
   const [availableOnly, setAvailableOnly] = useState(false);
   const [currentDate, setCurrentDate] = useState(moment());
