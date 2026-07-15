@@ -756,10 +756,24 @@ export default function Calendar() {
         {/* Calendar View */}
         {showListView ? (
           <div className="bg-white rounded-2xl shadow-sm border p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-800 capitalize">
-              {viewMode}{availableOnly ? ' — Available Only' : ' — All Bookings'}
-            </h3>
+            <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().subtract(1, 'month'))}>
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <div className="text-center min-w-[140px]">
+                  <h3 className="text-lg font-semibold text-slate-800 capitalize leading-tight">
+                    {currentDate.format('MMMM YYYY')}
+                  </h3>
+                  <span className="text-xs text-slate-400 capitalize">{viewMode}{availableOnly ? ' — Available Only' : ' — All Bookings'}</span>
+                </div>
+                <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().add(1, 'month'))}>
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setCurrentDate(moment())} className="ml-1">
+                  Today
+                </Button>
+              </div>
               <span className="text-sm text-slate-500">
                 {(availableOnly ? filteredBookings.filter(b => b.isSlot) : filteredBookings).length} booking{filteredBookings.length !== 1 ? 's' : ''}
               </span>
