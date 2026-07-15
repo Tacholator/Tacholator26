@@ -41,12 +41,6 @@ export default function InstructorSchedule() {
   const [showBookingDetails, setShowBookingDetails] = useState(false);
   const todayRef = useRef(null);
 
-  useEffect(() => {
-    if (todayRef.current) {
-      todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [groupedBookings, viewMode]);
-
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
@@ -118,6 +112,12 @@ export default function InstructorSchedule() {
       items,
     }));
   }, [bookings, rangeStart, rangeEnd]);
+
+  useEffect(() => {
+    if (todayRef.current) {
+      todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [groupedBookings, viewMode]);
 
   const handlePrev = () => {
     if (viewMode === 'day') setCurrentDate(moment(currentDate).subtract(1, 'day'));
