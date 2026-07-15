@@ -55,7 +55,9 @@ const VIEW_MODES = ['day', 'week', 'month'];
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(moment());
   const [viewMode, setViewMode] = useState('week');
-  const [showListView, setShowListView] = useState(false);
+  const [showListView, setShowListView] = useState(() => {
+    try { return localStorage.getItem('calendar_list_view') === 'true'; } catch { return false; }
+  });
   const [availableOnly, setAvailableOnly] = useState(false);
   const [showLessonModal, setShowLessonModal] = useState(false);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
@@ -703,7 +705,10 @@ export default function Calendar() {
               <span className={`text-sm font-medium ${showListView ? 'text-teal-700' : 'text-slate-600'}`}>List</span>
               <Switch
                 checked={showListView}
-                onCheckedChange={(checked) => setShowListView(checked)}
+                onCheckedChange={(checked) => {
+                  setShowListView(checked);
+                  try { localStorage.setItem('calendar_list_view', String(checked)); } catch {}
+                }}
               />
             </div>
 
