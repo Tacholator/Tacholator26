@@ -648,10 +648,10 @@ export default function LearnerDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-100 to-amber-100">
+            <Card className="border-0 shadow-sm bg-gradient-to-br from-sky-100 to-blue-100">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-orange-600" />
+                  <TrendingUp className="w-5 h-5 text-sky-600" />
                   Overall Driving Progress
                 </CardTitle>
               </CardHeader>
@@ -696,7 +696,7 @@ export default function LearnerDashboard() {
                   </div>
                 </div>
                 <Link to={createPageUrl('LearnerProgress')}>
-                  <Button className="w-full gap-2 bg-orange-500 hover:bg-orange-600 text-white">
+                  <Button className="w-full gap-2 bg-sky-500 hover:bg-sky-600 text-white">
                     <TrendingUp className="w-4 h-4" />
                     View Progress
                   </Button>
