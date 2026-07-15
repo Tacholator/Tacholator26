@@ -89,11 +89,17 @@ export default function InstructorSchedule() {
 
   // Group bookings by date
   const groupedBookings = useMemo(() => {
+    const todayMoment = moment().startOf('day');
+    const weekContainsToday = viewMode === 'week' && todayMoment.isBetween(rangeStart, rangeEnd, null, '[]');
+
     const filtered = bookings.filter(b => {
       if (!b.startAtUtc) return false;
       const bookingDate = moment(b.startAtUtc);
       if (!bookingDate.isValid()) return false;
-      return bookingDate.isBetween(rangeStart, rangeEnd, null, '[]');
+      if (!bookingDate.isBetween(rangeStart, rangeEnd, null, '[]')) return false;
+      // In week view, when today falls within the current week, start from today
+      if (weekContainsToday && bookingDate.isBefore(todayMoment, 'day')) return false;
+      return true;
     });
 
     const sorted = filtered.sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
@@ -110,7 +116,7 @@ export default function InstructorSchedule() {
       dateLabel: moment(dateKey).format('dddd, D MMMM'),
       items,
     }));
-  }, [bookings, rangeStart, rangeEnd]);
+  }, [bookings, rangeStart, rangeEnd, viewMode]);
 
   const handlePrev = () => {
     if (viewMode === 'day') setCurrentDate(moment(currentDate).subtract(1, 'day'));
