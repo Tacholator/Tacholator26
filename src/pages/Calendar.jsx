@@ -784,18 +784,32 @@ export default function Calendar() {
                   const showDateHeader = !prevDateKey || prevDateKey !== bookingDateKey;
                   const isToday = startMoment.isSame(moment(), 'day');
                   const statusColors = {
-                    available: 'bg-amber-100 text-amber-700',
-                    pending: 'bg-orange-100 text-orange-700',
-                    reserved_pending_instructor: 'bg-yellow-100 text-yellow-700',
-                    reserved_pending: 'bg-yellow-100 text-yellow-700',
-                    confirmed: 'bg-lime-100 text-lime-700',
-                    in_progress: 'bg-emerald-100 text-emerald-700',
-                    completed: 'bg-stone-100 text-stone-600',
-                    cancelled: 'bg-rose-100 text-rose-700',
-                    cancelled_by_pupil: 'bg-red-100 text-red-700',
-                    cancelled_late_by_pupil: 'bg-pink-100 text-pink-700',
-                    declined_by_instructor: 'bg-rose-100 text-rose-800',
-                    no_show: 'bg-red-100 text-red-800',
+                    available: 'bg-amber-50 text-amber-700',
+                    pending: 'bg-orange-50 text-orange-700',
+                    reserved_pending_instructor: 'bg-yellow-50 text-yellow-700',
+                    reserved_pending: 'bg-yellow-50 text-yellow-700',
+                    confirmed: 'bg-lime-50 text-lime-700',
+                    in_progress: 'bg-emerald-50 text-emerald-700',
+                    completed: 'bg-stone-50 text-stone-600',
+                    cancelled: 'bg-rose-50 text-rose-700',
+                    cancelled_by_pupil: 'bg-red-50 text-red-700',
+                    cancelled_late_by_pupil: 'bg-pink-50 text-pink-700',
+                    declined_by_instructor: 'bg-rose-50 text-rose-800',
+                    no_show: 'bg-red-50 text-red-800',
+                  };
+                  const statusBadgeColors = {
+                    available: 'bg-amber-200 text-amber-800',
+                    pending: 'bg-orange-200 text-orange-800',
+                    reserved_pending_instructor: 'bg-yellow-200 text-yellow-800',
+                    reserved_pending: 'bg-yellow-200 text-yellow-800',
+                    confirmed: 'bg-lime-200 text-lime-800',
+                    in_progress: 'bg-emerald-200 text-emerald-800',
+                    completed: 'bg-stone-200 text-stone-700',
+                    cancelled: 'bg-rose-200 text-rose-800',
+                    cancelled_by_pupil: 'bg-red-200 text-red-800',
+                    cancelled_late_by_pupil: 'bg-pink-200 text-pink-800',
+                    declined_by_instructor: 'bg-rose-200 text-rose-900',
+                    no_show: 'bg-red-200 text-red-900',
                   };
                   const statusBorders = {
                     available: 'border-l-amber-400',
@@ -811,7 +825,8 @@ export default function Calendar() {
                     declined_by_instructor: 'border-l-rose-500',
                     no_show: 'border-l-red-500',
                   };
-                  const statusStyle = statusColors[booking.status] || 'bg-slate-100 text-slate-600';
+                  const statusStyle = statusColors[booking.status] || 'bg-slate-50 text-slate-600';
+                  const badgeStyle = statusBadgeColors[booking.status] || 'bg-slate-200 text-slate-600';
                   const borderStyle = statusBorders[booking.status] || 'border-l-slate-300';
                   const statusLabel = booking.status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
@@ -840,42 +855,42 @@ export default function Calendar() {
                           setShowBookingDetailsModal(true);
                         }
                       }}
-                      className={`flex items-center gap-4 p-3 rounded-xl border border-slate-100 border-l-4 ${borderStyle} hover:border-slate-300 hover:bg-slate-50/50 cursor-pointer transition-colors`}
+                      className={`flex items-center gap-4 p-3 rounded-xl border border-slate-100 border-l-4 ${borderStyle} ${statusStyle} hover:brightness-95 cursor-pointer transition-all`}
                     >
                       {/* Date block */}
                       <div className="flex flex-col items-center justify-center min-w-[56px]">
-                        <span className="text-lg font-bold text-slate-800">{startMoment.format('DD')}</span>
-                        <span className="text-xs text-slate-400 uppercase">{startMoment.format('MMM')}</span>
+                        <span className="text-lg font-bold opacity-80">{startMoment.format('DD')}</span>
+                        <span className="text-xs opacity-60 uppercase">{startMoment.format('MMM')}</span>
                       </div>
 
-                      <div className="w-px h-10 bg-slate-100" />
+                      <div className="w-px h-10 bg-current opacity-20" />
 
                       {/* Time block */}
                       <div className="flex flex-col items-center justify-center min-w-[55px]">
-                        <span className="text-sm font-bold text-teal-700">{startMoment.format('HH:mm')}</span>
-                        <span className="text-xs text-slate-400">{endMoment.format('HH:mm')}</span>
+                        <span className="text-sm font-bold opacity-90">{startMoment.format('HH:mm')}</span>
+                        <span className="text-xs opacity-60">{endMoment.format('HH:mm')}</span>
                       </div>
 
-                      <div className="w-px h-10 bg-slate-100" />
+                      <div className="w-px h-10 bg-current opacity-20" />
 
                       {/* Details */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-slate-800 truncate">
+                          <span className="text-sm font-medium truncate">
                             {booking.isSlot ? 'Available Slot' : pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown pupil'}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 mt-1">
                           {booking.durationHours && (
-                            <span className="text-xs text-slate-500">{Math.round(booking.durationHours * 10) / 10}h</span>
+                            <span className="text-xs opacity-70">{Math.round(booking.durationHours * 10) / 10}h</span>
                           )}
                           {!booking.isSlot && booking.pickupLocation && (
-                            <span className="text-xs text-slate-500 truncate">{booking.pickupLocation}</span>
+                            <span className="text-xs opacity-70 truncate">{booking.pickupLocation}</span>
                           )}
                         </div>
                       </div>
 
-                      <Badge className={`shrink-0 text-xs ${statusStyle}`}>{statusLabel}</Badge>
+                      <Badge className={`shrink-0 text-xs ${badgeStyle}`}>{statusLabel}</Badge>
                       </div>
                     </React.Fragment>
                   );
