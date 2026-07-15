@@ -771,11 +771,17 @@ export default function Calendar() {
                 <p className="text-xs text-slate-400 mt-1">Available slots for this {viewMode} will appear here.</p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {(availableOnly ? filteredBookings.filter(b => b.isSlot) : filteredBookings).map(booking => {
                   const pupil = pupilMap[booking.pupilId];
                   const startMoment = moment(booking.startAtUtc).local();
                   const endMoment = moment(booking.endAtUtc).local();
+                  const bookingDateKey = startMoment.format('YYYY-MM-DD');
+                  const prevBooking = (availableOnly ? filteredBookings.filter(b => b.isSlot) : filteredBookings)[
+                    (availableOnly ? filteredBookings.filter(b => b.isSlot) : filteredBookings).indexOf(booking) - 1
+                  ];
+                  const prevDateKey = prevBooking ? moment(prevBooking.startAtUtc).local().format('YYYY-MM-DD') : null;
+                  const showDateHeader = !prevDateKey || prevDateKey !== bookingDateKey;
                   const isToday = startMoment.isSame(moment(), 'day');
                   const statusColors = {
                     available: 'bg-amber-100 text-amber-700',
@@ -810,9 +816,22 @@ export default function Calendar() {
                   const statusLabel = booking.status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
                   return (
-                    <div
-                      key={booking.id}
-                      onClick={() => {
+                    <React.Fragment key={booking.id}>
+                      {showDateHeader && (
+                        <div className="flex items-center gap-3 pt-2 pb-1">
+                          <div className="flex flex-col items-center justify-center min-w-[48px]">
+                            <span className="text-xs font-bold uppercase text-[#F7B602]">{startMoment.format('ddd')}</span>
+                            <span className="text-xl font-bold text-[#071739]">{startMoment.format('DD')}</span>
+                          </div>
+                          <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent" />
+                          <span className="text-xs font-medium text-slate-400 uppercase">{startMoment.format('MMMM YYYY')}</span>
+                          {isToday && (
+                            <Badge className="bg-[#F7B602] text-[#071739] text-xs">Today</Badge>
+                          )}
+                        </div>
+                      )}
+                      <div
+                        onClick={() => {
                         if (booking.isSlot) {
                           setSelectedSlotInstance(booking);
                           setShowSlotDetailsModal(true);
@@ -845,9 +864,6 @@ export default function Calendar() {
                           <span className="text-sm font-medium text-slate-800 truncate">
                             {booking.isSlot ? 'Available Slot' : pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown pupil'}
                           </span>
-                          {isToday && (
-                            <Badge className="bg-teal-600 text-white text-xs">Today</Badge>
-                          )}
                         </div>
                         <div className="flex items-center gap-3 mt-1">
                           {booking.durationHours && (
@@ -860,7 +876,8 @@ export default function Calendar() {
                       </div>
 
                       <Badge className={`shrink-0 text-xs ${statusStyle}`}>{statusLabel}</Badge>
-                    </div>
+                      </div>
+                    </React.Fragment>
                   );
                 })}
               </div>
