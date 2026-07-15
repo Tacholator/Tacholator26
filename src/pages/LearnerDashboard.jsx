@@ -654,7 +654,6 @@ export default function LearnerDashboard() {
                   <TrendingUp className="w-5 h-5 text-orange-600" />
                   Overall Driving Progress
                 </CardTitle>
-                <p className="text-sm text-slate-600">{drivingProgress.length} of 24 skills tracked</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-around py-2">
@@ -695,12 +694,6 @@ export default function LearnerDashboard() {
                       uniqueId="mileage-grad"
                     />
                   </div>
-                </div>
-                <div className="pt-2">
-                  <p className="text-xs text-slate-600 mb-1">Next Focus</p>
-                  <p className="text-sm font-medium text-slate-800">
-                    {nextFocusTopic?.label || 'All skills completed! 🎉'}
-                  </p>
                 </div>
                 <Link to={createPageUrl('LearnerProgress')}>
                   <Button className="w-full gap-2 bg-orange-500 hover:bg-orange-600 text-white">
