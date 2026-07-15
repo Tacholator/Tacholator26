@@ -48,7 +48,7 @@ import {
 import { Label } from '@/components/ui/label';
 import moment from 'moment';
 
-const VIEW_MODES = ['day', 'week', 'month'];
+const VIEW_MODES = ['day', 'week', 'month', 'list'];
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(moment());
@@ -520,9 +520,16 @@ export default function Calendar() {
   };
 
   const navigate = (direction) => {
+    if (viewMode === 'list') return;
     const unit = viewMode === 'day' ? 'day' : viewMode === 'week' ? 'week' : 'month';
     setCurrentDate(prev => moment(prev).add(direction, unit));
   };
+
+  const upcomingBookings = useMemo(() => {
+    return bookings
+      .filter(b => b.startAtUtc && moment(b.startAtUtc).isSameOrAfter(moment().startOf('day')))
+      .sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
+  }, [bookings]);
 
   const getDaysToShow = useMemo(() => {
     if (viewMode === 'day') {
@@ -692,7 +699,88 @@ export default function Calendar() {
         )}
 
         {/* Calendar View */}
-        {viewMode === 'day' ? (
+        {viewMode === 'list' ? (
+          <div className="bg-white rounded-2xl shadow-sm border p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-800">All Upcoming Lessons</h3>
+              <span className="text-sm text-slate-500">{upcomingBookings.length} lesson{upcomingBookings.length !== 1 ? 's' : ''}</span>
+            </div>
+            {upcomingBookings.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <CalendarIcon className="w-10 h-10 text-slate-300 mb-3" />
+                <p className="text-sm font-medium text-slate-500">No upcoming lessons</p>
+                <p className="text-xs text-slate-400 mt-1">New bookings will appear here.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {upcomingBookings.map(booking => {
+                  const pupil = pupilMap[booking.pupilId];
+                  const startMoment = moment(booking.startAtUtc).local();
+                  const endMoment = moment(booking.endAtUtc).local();
+                  const isToday = startMoment.isSame(moment(), 'day');
+                  const statusColors = {
+                    pending: 'bg-amber-100 text-amber-700',
+                    reserved_pending_instructor: 'bg-amber-100 text-amber-700',
+                    confirmed: 'bg-emerald-100 text-emerald-700',
+                    in_progress: 'bg-blue-100 text-blue-700',
+                    completed: 'bg-slate-100 text-slate-600',
+                    cancelled: 'bg-rose-100 text-rose-700',
+                    no_show: 'bg-rose-100 text-rose-700',
+                  };
+                  const statusStyle = statusColors[booking.status] || 'bg-slate-100 text-slate-600';
+                  const statusLabel = booking.status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+                  return (
+                    <div
+                      key={booking.id}
+                      onClick={() => {
+                        setSelectedBooking(booking);
+                        setShowBookingDetailsModal(true);
+                      }}
+                      className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:border-teal-300 hover:bg-teal-50/30 cursor-pointer transition-colors"
+                    >
+                      {/* Date block */}
+                      <div className="flex flex-col items-center justify-center min-w-[56px]">
+                        <span className="text-lg font-bold text-slate-800">{startMoment.format('DD')}</span>
+                        <span className="text-xs text-slate-400 uppercase">{startMoment.format('MMM')}</span>
+                      </div>
+
+                      <div className="w-px h-10 bg-slate-100" />
+
+                      {/* Time block */}
+                      <div className="flex flex-col items-center justify-center min-w-[55px]">
+                        <span className="text-sm font-bold text-teal-700">{startMoment.format('HH:mm')}</span>
+                        <span className="text-xs text-slate-400">{endMoment.format('HH:mm')}</span>
+                      </div>
+
+                      <div className="w-px h-10 bg-slate-100" />
+
+                      {/* Details */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-slate-800 truncate">
+                            {pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown pupil'}
+                          </span>
+                          {isToday && (
+                            <Badge className="bg-teal-600 text-white text-xs">Today</Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xs text-slate-500">{booking.durationHours}h</span>
+                          {booking.pickupLocation && (
+                            <span className="text-xs text-slate-500 truncate">{booking.pickupLocation}</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <Badge className={`shrink-0 text-xs ${statusStyle}`}>{statusLabel}</Badge>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : viewMode === 'day' ? (
           <CalendarDayView
             date={currentDate.format('YYYY-MM-DD')}
             lessons={getLessonsForDay(currentDate)}
