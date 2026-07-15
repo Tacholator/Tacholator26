@@ -142,7 +142,7 @@ export default function InstructorSchedule() {
           <p className="text-sm text-slate-500 mt-0.5">Your upcoming and past lessons</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm">
+          <Button asChild size="sm" className="bg-sky-500 hover:bg-sky-600 text-white">
             <Link to={createPageUrl('Calendar')}>
               <Calendar className="w-4 h-4 mr-1.5" />
               Calendar
