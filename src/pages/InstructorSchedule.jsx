@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -39,6 +39,13 @@ export default function InstructorSchedule() {
   const [currentDate, setCurrentDate] = useState(moment());
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBookingDetails, setShowBookingDetails] = useState(false);
+  const todayRef = useRef(null);
+
+  useEffect(() => {
+    if (todayRef.current) {
+      todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [groupedBookings, viewMode]);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -89,17 +96,11 @@ export default function InstructorSchedule() {
 
   // Group bookings by date
   const groupedBookings = useMemo(() => {
-    const todayMoment = moment().startOf('day');
-    const weekContainsToday = viewMode === 'week' && todayMoment.isBetween(rangeStart, rangeEnd, null, '[]');
-
     const filtered = bookings.filter(b => {
       if (!b.startAtUtc) return false;
       const bookingDate = moment(b.startAtUtc);
       if (!bookingDate.isValid()) return false;
-      if (!bookingDate.isBetween(rangeStart, rangeEnd, null, '[]')) return false;
-      // In week view, when today falls within the current week, start from today
-      if (weekContainsToday && bookingDate.isBefore(todayMoment, 'day')) return false;
-      return true;
+      return bookingDate.isBetween(rangeStart, rangeEnd, null, '[]');
     });
 
     const sorted = filtered.sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
@@ -116,7 +117,7 @@ export default function InstructorSchedule() {
       dateLabel: moment(dateKey).format('dddd, D MMMM'),
       items,
     }));
-  }, [bookings, rangeStart, rangeEnd, viewMode]);
+  }, [bookings, rangeStart, rangeEnd]);
 
   const handlePrev = () => {
     if (viewMode === 'day') setCurrentDate(moment(currentDate).subtract(1, 'day'));
@@ -214,7 +215,7 @@ export default function InstructorSchedule() {
             const isPast = groupDate.isBefore(moment(), 'day');
 
             return (
-              <div key={group.dateKey}>
+              <div key={group.dateKey} ref={isDateToday ? todayRef : null}>
                 {/* Date header */}
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className={`text-sm font-semibold ${isPast ? 'text-slate-400' : 'text-[#071739]'}`}>
