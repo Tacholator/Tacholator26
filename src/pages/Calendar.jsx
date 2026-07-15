@@ -526,11 +526,26 @@ export default function Calendar() {
     setCurrentDate(prev => moment(prev).add(direction, unit));
   };
 
-  const upcomingBookings = useMemo(() => {
+  const filteredBookings = useMemo(() => {
+    let rangeStart, rangeEnd;
+    if (viewMode === 'day') {
+      rangeStart = currentDate.clone().startOf('day');
+      rangeEnd = currentDate.clone().endOf('day');
+    } else if (viewMode === 'week') {
+      rangeStart = currentDate.clone().startOf('week');
+      rangeEnd = currentDate.clone().endOf('week');
+    } else {
+      rangeStart = currentDate.clone().startOf('month');
+      rangeEnd = currentDate.clone().endOf('month');
+    }
     return bookings
-      .filter(b => b.startAtUtc)
+      .filter(b => {
+        if (!b.startAtUtc) return false;
+        const m = moment(b.startAtUtc).local();
+        return m.isSameOrAfter(rangeStart) && m.isSameOrBefore(rangeEnd);
+      })
       .sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
-  }, [bookings]);
+  }, [bookings, viewMode, currentDate]);
 
   const getDaysToShow = useMemo(() => {
     if (viewMode === 'day') {
@@ -654,12 +669,9 @@ export default function Calendar() {
               {VIEW_MODES.map(mode => (
                 <button
                   key={mode}
-                  onClick={() => {
-                    setViewMode(mode);
-                    setShowListView(false);
-                  }}
+                  onClick={() => setViewMode(mode)}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    !showListView && viewMode === mode 
+                    viewMode === mode 
                       ? 'bg-teal-100 text-teal-700' 
                       : 'text-slate-600 hover:bg-slate-50'
                   }`}
@@ -715,18 +727,18 @@ export default function Calendar() {
         {showListView ? (
           <div className="bg-white rounded-2xl shadow-sm border p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-800">All Lessons</h3>
-              <span className="text-sm text-slate-500">{upcomingBookings.length} lesson{upcomingBookings.length !== 1 ? 's' : ''}</span>
+              <h3 className="text-lg font-semibold text-slate-800 capitalize">{viewMode} — All Bookings</h3>
+              <span className="text-sm text-slate-500">{filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''}</span>
             </div>
-            {upcomingBookings.length === 0 ? (
+            {filteredBookings.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <CalendarIcon className="w-10 h-10 text-slate-300 mb-3" />
-                <p className="text-sm font-medium text-slate-500">No lessons found</p>
-                <p className="text-xs text-slate-400 mt-1">Bookings will appear here.</p>
+                <p className="text-sm font-medium text-slate-500">No bookings found</p>
+                <p className="text-xs text-slate-400 mt-1">Bookings for this {viewMode} will appear here.</p>
               </div>
             ) : (
               <div className="space-y-2">
-                {upcomingBookings.map(booking => {
+                {filteredBookings.map(booking => {
                   const pupil = pupilMap[booking.pupilId];
                   const startMoment = moment(booking.startAtUtc).local();
                   const endMoment = moment(booking.endAtUtc).local();
