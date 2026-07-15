@@ -109,17 +109,15 @@ export default function LearnerBookingList({
         <span className={`text-sm font-medium ${showListView ? 'text-teal-700' : 'text-slate-600'}`}>List</span>
         <Switch checked={showListView} onCheckedChange={toggleList} />
       </div>
-      {showListView && (
-        <Button
-          variant={availableOnly ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setAvailableOnly(prev => !prev)}
-          className={availableOnly ? 'bg-teal-600 hover:bg-teal-700 text-white' : ''}
-        >
-          <CalendarCheck className="w-4 h-4 sm:mr-2" />
-          <span className="hidden sm:inline">Available</span>
-        </Button>
-      )}
+      <Button
+        variant={availableOnly ? 'default' : 'outline'}
+        size="sm"
+        onClick={() => setAvailableOnly(prev => !prev)}
+        className={availableOnly ? 'bg-teal-600 hover:bg-teal-700 text-white' : ''}
+      >
+        <CalendarCheck className="w-4 h-4 sm:mr-2" />
+        <span className="hidden sm:inline">Available</span>
+      </Button>
     </div>
   );
 
