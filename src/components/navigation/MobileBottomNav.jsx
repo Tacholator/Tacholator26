@@ -28,7 +28,7 @@ const instructorNavItems = [
     id: 'calendar',
     label: 'Calendar',
     icon: Calendar,
-    page: 'InstructorBookingCalendar'
+    page: 'Calendar'
   },
   {
     id: 'schedule',
