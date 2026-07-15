@@ -753,6 +753,26 @@ export default function Calendar() {
           </div>
         )}
 
+        {/* Month Navigation — only in calendar (non-list) mode */}
+        {!showListView && (
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().subtract(1, 'month'))}>
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <h3 className="text-lg font-semibold text-slate-800 min-w-[140px] text-center">
+                {currentDate.format('MMMM YYYY')}
+              </h3>
+              <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().add(1, 'month'))}>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(moment())} className="ml-1">
+                Today
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Calendar View */}
         {showListView ? (
           <div className="bg-white rounded-2xl shadow-sm border p-4">
