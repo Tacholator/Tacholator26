@@ -35,7 +35,7 @@ function formatStatusLabel(status) {
 }
 
 export default function InstructorSchedule() {
-  const [viewMode, setViewMode] = useState('week');
+  const [viewMode, setViewMode] = useState('day');
   const [currentDate, setCurrentDate] = useState(moment());
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBookingDetails, setShowBookingDetails] = useState(false);
