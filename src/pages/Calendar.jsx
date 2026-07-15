@@ -528,7 +528,7 @@ export default function Calendar() {
 
   const upcomingBookings = useMemo(() => {
     return bookings
-      .filter(b => b.startAtUtc && moment(b.startAtUtc).isSameOrAfter(moment().startOf('day')))
+      .filter(b => b.startAtUtc)
       .sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
   }, [bookings]);
 
@@ -715,14 +715,14 @@ export default function Calendar() {
         {showListView ? (
           <div className="bg-white rounded-2xl shadow-sm border p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-800">All Upcoming Lessons</h3>
+              <h3 className="text-lg font-semibold text-slate-800">All Lessons</h3>
               <span className="text-sm text-slate-500">{upcomingBookings.length} lesson{upcomingBookings.length !== 1 ? 's' : ''}</span>
             </div>
             {upcomingBookings.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <CalendarIcon className="w-10 h-10 text-slate-300 mb-3" />
-                <p className="text-sm font-medium text-slate-500">No upcoming lessons</p>
-                <p className="text-xs text-slate-400 mt-1">New bookings will appear here.</p>
+                <p className="text-sm font-medium text-slate-500">No lessons found</p>
+                <p className="text-xs text-slate-400 mt-1">Bookings will appear here.</p>
               </div>
             ) : (
               <div className="space-y-2">
