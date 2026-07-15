@@ -14,6 +14,7 @@ const VIEW_OPTIONS = [
   { value: 'day', label: 'Day' },
   { value: 'week', label: 'Week' },
   { value: 'month', label: 'Month' },
+  { value: 'list', label: 'List' },
 ];
 
 const STATUS_STYLES = {
@@ -71,7 +72,11 @@ export default function InstructorSchedule() {
   // Compute the date range based on view mode
   const { rangeStart, rangeEnd, periodLabel } = useMemo(() => {
     let start, end, label;
-    if (viewMode === 'day') {
+    if (viewMode === 'list') {
+      start = moment().startOf('day');
+      end = moment().add(10, 'years');
+      label = 'All upcoming lessons';
+    } else if (viewMode === 'day') {
       start = moment(currentDate).startOf('day');
       end = moment(currentDate).endOf('day');
       label = start.format('dddd, D MMMM YYYY');
@@ -115,13 +120,13 @@ export default function InstructorSchedule() {
   const handlePrev = () => {
     if (viewMode === 'day') setCurrentDate(moment(currentDate).subtract(1, 'day'));
     else if (viewMode === 'week') setCurrentDate(moment(currentDate).subtract(1, 'week'));
-    else setCurrentDate(moment(currentDate).subtract(1, 'month'));
+    else if (viewMode === 'month') setCurrentDate(moment(currentDate).subtract(1, 'month'));
   };
 
   const handleNext = () => {
     if (viewMode === 'day') setCurrentDate(moment(currentDate).add(1, 'day'));
     else if (viewMode === 'week') setCurrentDate(moment(currentDate).add(1, 'week'));
-    else setCurrentDate(moment(currentDate).add(1, 'month'));
+    else if (viewMode === 'month') setCurrentDate(moment(currentDate).add(1, 'month'));
   };
 
   const handleToday = () => setCurrentDate(moment());
@@ -169,15 +174,19 @@ export default function InstructorSchedule() {
       {/* Period Navigation */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={handlePrev}>
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={handleNext}>
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleToday}>
-            Today
-          </Button>
+          {viewMode !== 'list' && (
+            <>
+              <Button variant="outline" size="icon" onClick={handlePrev}>
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button variant="outline" size="icon" onClick={handleNext}>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleToday}>
+                Today
+              </Button>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <CalendarDays className="w-4 h-4 text-slate-400" />
@@ -196,10 +205,88 @@ export default function InstructorSchedule() {
             <CalendarDays className="w-10 h-10 text-slate-300 mb-3" />
             <p className="text-sm font-medium text-slate-500">No lessons scheduled</p>
             <p className="text-xs text-slate-400 mt-1">
-              There are no lessons in this {viewMode === 'day' ? 'day' : viewMode === 'week' ? 'week' : 'month'}.
+              {viewMode === 'list'
+                ? 'There are no upcoming lessons.'
+                : `There are no lessons in this ${viewMode === 'day' ? 'day' : viewMode === 'week' ? 'week' : 'month'}.`}
             </p>
           </CardContent>
         </Card>
+      ) : viewMode === 'list' ? (
+        <div className="space-y-2">
+          {groupedBookings.flatMap(group => group.items).map(booking => {
+            const pupil = pupilMap[booking.pupilId];
+            const startMoment = moment(booking.startAtUtc).local();
+            const endMoment = moment(booking.endAtUtc).local();
+            const statusStyle = STATUS_STYLES[booking.status] || 'bg-slate-100 text-slate-600';
+            const isDateToday = startMoment.isSame(moment(), 'day');
+
+            return (
+              <Card
+                key={booking.id}
+                className="cursor-pointer hover:border-[#F7B602] transition-colors"
+                onClick={() => openBookingDetails(booking)}
+              >
+                <CardContent className="flex items-center gap-4 p-3">
+                  {/* Date + Time block */}
+                  <div className="flex flex-col items-center justify-center min-w-[60px]">
+                    <span className="text-sm font-semibold text-slate-500">
+                      {startMoment.format('DD')}
+                    </span>
+                    <span className="text-xs text-slate-400 uppercase">
+                      {startMoment.format('MMM')}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center justify-center min-w-[55px] border-l pl-3">
+                    <span className="text-base font-bold text-[#071739]">
+                      {startMoment.format('HH:mm')}
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      {endMoment.format('HH:mm')}
+                    </span>
+                  </div>
+
+                  {/* Vertical divider */}
+                  <div className="w-px h-10 bg-slate-100" />
+
+                  {/* Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span className="text-sm font-medium text-[#071739] truncate">
+                        {pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown pupil'}
+                      </span>
+                      {isDateToday && (
+                        <Badge className="bg-[#F7B602] text-[#071739] text-xs">Today</Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-slate-400" />
+                        <span className="text-xs text-slate-500">
+                          {booking.durationHours}h
+                        </span>
+                      </div>
+                      {booking.pickupLocation && (
+                        <div className="flex items-center gap-1 min-w-0">
+                          <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                          <span className="text-xs text-slate-500 truncate">
+                            {booking.pickupLocation}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Status badge */}
+                  <Badge className={`shrink-0 text-xs ${statusStyle}`}>
+                    {formatStatusLabel(booking.status)}
+                  </Badge>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       ) : (
         <div className="space-y-6">
           {groupedBookings.map(group => {
