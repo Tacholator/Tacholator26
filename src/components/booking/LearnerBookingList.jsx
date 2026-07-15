@@ -115,8 +115,8 @@ export default function LearnerBookingList({
         onClick={() => setAvailableOnly(prev => !prev)}
         className={availableOnly ? 'bg-teal-600 hover:bg-teal-700 text-white' : ''}
       >
-        <CalendarCheck className="w-4 h-4 sm:mr-2" />
-        <span className="hidden sm:inline">Available</span>
+        <CalendarCheck className="w-4 h-4 mr-2" />
+        <span>Available</span>
       </Button>
     </div>
   );
