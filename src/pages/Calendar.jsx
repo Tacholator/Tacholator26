@@ -9,6 +9,7 @@ import {
   ChevronRight, 
   Plus,
   Calendar as CalendarIcon,
+  CalendarCheck,
   Loader2,
   Settings
 } from 'lucide-react';
@@ -55,6 +56,7 @@ export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(moment());
   const [viewMode, setViewMode] = useState('week');
   const [showListView, setShowListView] = useState(false);
+  const [availableOnly, setAvailableOnly] = useState(false);
   const [showLessonModal, setShowLessonModal] = useState(false);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
   const [showDetailsDrawer, setShowDetailsDrawer] = useState(false);
@@ -704,6 +706,19 @@ export default function Calendar() {
                 onCheckedChange={(checked) => setShowListView(checked)}
               />
             </div>
+
+            {/* Available Only Filter — only relevant in List view */}
+            {showListView && (
+              <Button
+                variant={availableOnly ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setAvailableOnly(prev => !prev)}
+                className={availableOnly ? 'bg-teal-600 hover:bg-teal-700 text-white' : ''}
+              >
+                <CalendarCheck className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Available</span>
+              </Button>
+            )}
             
             <Button
               variant="outline"
@@ -742,18 +757,22 @@ export default function Calendar() {
         {showListView ? (
           <div className="bg-white rounded-2xl shadow-sm border p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-800 capitalize">{viewMode} — All Bookings</h3>
-              <span className="text-sm text-slate-500">{filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''}</span>
+              <h3 className="text-lg font-semibold text-slate-800 capitalize">
+              {viewMode}{availableOnly ? ' — Available Only' : ' — All Bookings'}
+            </h3>
+              <span className="text-sm text-slate-500">
+                {(availableOnly ? filteredBookings.filter(b => b.isSlot) : filteredBookings).length} booking{filteredBookings.length !== 1 ? 's' : ''}
+              </span>
             </div>
-            {filteredBookings.length === 0 ? (
+            {(availableOnly ? filteredBookings.filter(b => b.isSlot) : filteredBookings).length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <CalendarIcon className="w-10 h-10 text-slate-300 mb-3" />
-                <p className="text-sm font-medium text-slate-500">No bookings found</p>
-                <p className="text-xs text-slate-400 mt-1">Bookings for this {viewMode} will appear here.</p>
+                <CalendarCheck className="w-10 h-10 text-slate-300 mb-3" />
+                <p className="text-sm font-medium text-slate-500">No available slots found</p>
+                <p className="text-xs text-slate-400 mt-1">Available slots for this {viewMode} will appear here.</p>
               </div>
             ) : (
               <div className="space-y-2">
-                {filteredBookings.map(booking => {
+                {(availableOnly ? filteredBookings.filter(b => b.isSlot) : filteredBookings).map(booking => {
                   const pupil = pupilMap[booking.pupilId];
                   const startMoment = moment(booking.startAtUtc).local();
                   const endMoment = moment(booking.endAtUtc).local();
