@@ -538,14 +538,29 @@ export default function Calendar() {
       rangeStart = currentDate.clone().startOf('month');
       rangeEnd = currentDate.clone().endOf('month');
     }
-    return bookings
-      .filter(b => {
-        if (!b.startAtUtc) return false;
-        const m = moment(b.startAtUtc).local();
-        return m.isSameOrAfter(rangeStart) && m.isSameOrBefore(rangeEnd);
-      })
+
+    const inRange = (dateStr) => {
+      if (!dateStr) return false;
+      const m = moment(dateStr).local();
+      return m.isSameOrAfter(rangeStart) && m.isSameOrBefore(rangeEnd);
+    };
+
+    // Map available slot instances into booking-like entries
+    const availableSlots = slotInstances
+      .filter(s => s.status === 'available' && inRange(s.startAtUtc))
+      .map(s => ({
+        ...s,
+        isSlot: true,
+        pupilId: null,
+        durationHours: moment(s.endAtUtc).diff(moment(s.startAtUtc), 'minutes') / 60,
+        pickupLocation: null,
+      }));
+
+    const matchingBookings = bookings.filter(b => inRange(b.startAtUtc));
+
+    return [...matchingBookings, ...availableSlots]
       .sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
-  }, [bookings, viewMode, currentDate]);
+  }, [bookings, slotInstances, viewMode, currentDate]);
 
   const getDaysToShow = useMemo(() => {
     if (viewMode === 'day') {
@@ -744,12 +759,17 @@ export default function Calendar() {
                   const endMoment = moment(booking.endAtUtc).local();
                   const isToday = startMoment.isSame(moment(), 'day');
                   const statusColors = {
+                    available: 'bg-teal-100 text-teal-700',
                     pending: 'bg-amber-100 text-amber-700',
                     reserved_pending_instructor: 'bg-amber-100 text-amber-700',
+                    reserved_pending: 'bg-amber-100 text-amber-700',
                     confirmed: 'bg-emerald-100 text-emerald-700',
                     in_progress: 'bg-blue-100 text-blue-700',
                     completed: 'bg-slate-100 text-slate-600',
                     cancelled: 'bg-rose-100 text-rose-700',
+                    cancelled_by_pupil: 'bg-rose-100 text-rose-700',
+                    cancelled_late_by_pupil: 'bg-rose-100 text-rose-700',
+                    declined_by_instructor: 'bg-rose-100 text-rose-700',
                     no_show: 'bg-rose-100 text-rose-700',
                   };
                   const statusStyle = statusColors[booking.status] || 'bg-slate-100 text-slate-600';
@@ -759,8 +779,13 @@ export default function Calendar() {
                     <div
                       key={booking.id}
                       onClick={() => {
-                        setSelectedBooking(booking);
-                        setShowBookingDetailsModal(true);
+                        if (booking.isSlot) {
+                          setSelectedSlotInstance(booking);
+                          setShowSlotDetailsModal(true);
+                        } else {
+                          setSelectedBooking(booking);
+                          setShowBookingDetailsModal(true);
+                        }
                       }}
                       className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:border-teal-300 hover:bg-teal-50/30 cursor-pointer transition-colors"
                     >
@@ -784,15 +809,17 @@ export default function Calendar() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium text-slate-800 truncate">
-                            {pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown pupil'}
+                            {booking.isSlot ? 'Available Slot' : pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown pupil'}
                           </span>
                           {isToday && (
                             <Badge className="bg-teal-600 text-white text-xs">Today</Badge>
                           )}
                         </div>
                         <div className="flex items-center gap-3 mt-1">
-                          <span className="text-xs text-slate-500">{booking.durationHours}h</span>
-                          {booking.pickupLocation && (
+                          {booking.durationHours && (
+                            <span className="text-xs text-slate-500">{Math.round(booking.durationHours * 10) / 10}h</span>
+                          )}
+                          {!booking.isSlot && booking.pickupLocation && (
                             <span className="text-xs text-slate-500 truncate">{booking.pickupLocation}</span>
                           )}
                         </div>
