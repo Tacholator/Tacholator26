@@ -35,16 +35,15 @@ export default function TenCommandmentsBento() {
       </div>
       <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
         {commandments.map((cmd) => (
-          <Link
+          <div
             key={cmd.number}
-            to={createPageUrl('TenCommandments')}
-            className="flex-none w-36 h-36 snap-start rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 p-4 flex flex-col items-center justify-center text-center hover:ring-2 hover:ring-[#071739] transition-all shadow-sm"
+            className="flex-none w-36 h-36 snap-start rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 p-4 flex flex-col items-center justify-center text-center shadow-sm"
           >
             <div className="w-9 h-9 rounded-full bg-[#071739] flex items-center justify-center mb-2">
               <span className="text-sm font-bold text-[#F7B602]">{cmd.number}</span>
             </div>
             <p className="text-xs font-semibold text-rose-950 leading-tight">{cmd.title}</p>
-          </Link>
+          </div>
         ))}
       </div>
     </motion.div>
