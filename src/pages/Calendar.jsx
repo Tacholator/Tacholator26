@@ -778,20 +778,35 @@ export default function Calendar() {
                   const endMoment = moment(booking.endAtUtc).local();
                   const isToday = startMoment.isSame(moment(), 'day');
                   const statusColors = {
-                    available: 'bg-teal-100 text-teal-700',
-                    pending: 'bg-amber-100 text-amber-700',
-                    reserved_pending_instructor: 'bg-amber-100 text-amber-700',
-                    reserved_pending: 'bg-amber-100 text-amber-700',
-                    confirmed: 'bg-emerald-100 text-emerald-700',
-                    in_progress: 'bg-blue-100 text-blue-700',
-                    completed: 'bg-slate-100 text-slate-600',
+                    available: 'bg-amber-100 text-amber-700',
+                    pending: 'bg-orange-100 text-orange-700',
+                    reserved_pending_instructor: 'bg-yellow-100 text-yellow-700',
+                    reserved_pending: 'bg-yellow-100 text-yellow-700',
+                    confirmed: 'bg-lime-100 text-lime-700',
+                    in_progress: 'bg-emerald-100 text-emerald-700',
+                    completed: 'bg-stone-100 text-stone-600',
                     cancelled: 'bg-rose-100 text-rose-700',
-                    cancelled_by_pupil: 'bg-rose-100 text-rose-700',
-                    cancelled_late_by_pupil: 'bg-rose-100 text-rose-700',
-                    declined_by_instructor: 'bg-rose-100 text-rose-700',
-                    no_show: 'bg-rose-100 text-rose-700',
+                    cancelled_by_pupil: 'bg-red-100 text-red-700',
+                    cancelled_late_by_pupil: 'bg-pink-100 text-pink-700',
+                    declined_by_instructor: 'bg-rose-100 text-rose-800',
+                    no_show: 'bg-red-100 text-red-800',
+                  };
+                  const statusBorders = {
+                    available: 'border-l-amber-400',
+                    pending: 'border-l-orange-400',
+                    reserved_pending_instructor: 'border-l-yellow-400',
+                    reserved_pending: 'border-l-yellow-400',
+                    confirmed: 'border-l-lime-400',
+                    in_progress: 'border-l-emerald-400',
+                    completed: 'border-l-stone-400',
+                    cancelled: 'border-l-rose-400',
+                    cancelled_by_pupil: 'border-l-red-400',
+                    cancelled_late_by_pupil: 'border-l-pink-400',
+                    declined_by_instructor: 'border-l-rose-500',
+                    no_show: 'border-l-red-500',
                   };
                   const statusStyle = statusColors[booking.status] || 'bg-slate-100 text-slate-600';
+                  const borderStyle = statusBorders[booking.status] || 'border-l-slate-300';
                   const statusLabel = booking.status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
                   return (
@@ -806,7 +821,7 @@ export default function Calendar() {
                           setShowBookingDetailsModal(true);
                         }
                       }}
-                      className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:border-teal-300 hover:bg-teal-50/30 cursor-pointer transition-colors"
+                      className={`flex items-center gap-4 p-3 rounded-xl border border-slate-100 border-l-4 ${borderStyle} hover:border-slate-300 hover:bg-slate-50/50 cursor-pointer transition-colors`}
                     >
                       {/* Date block */}
                       <div className="flex flex-col items-center justify-center min-w-[56px]">
