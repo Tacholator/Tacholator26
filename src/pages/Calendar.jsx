@@ -46,13 +46,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import moment from 'moment';
 
-const VIEW_MODES = ['day', 'week', 'month', 'list'];
+const VIEW_MODES = ['day', 'week', 'month'];
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(moment());
   const [viewMode, setViewMode] = useState('week');
+  const [showListView, setShowListView] = useState(false);
   const [showLessonModal, setShowLessonModal] = useState(false);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
   const [showDetailsDrawer, setShowDetailsDrawer] = useState(false);
@@ -520,7 +522,6 @@ export default function Calendar() {
   };
 
   const navigate = (direction) => {
-    if (viewMode === 'list') return;
     const unit = viewMode === 'day' ? 'day' : viewMode === 'week' ? 'week' : 'month';
     setCurrentDate(prev => moment(prev).add(direction, unit));
   };
@@ -653,9 +654,12 @@ export default function Calendar() {
               {VIEW_MODES.map(mode => (
                 <button
                   key={mode}
-                  onClick={() => setViewMode(mode)}
+                  onClick={() => {
+                    setViewMode(mode);
+                    setShowListView(false);
+                  }}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    viewMode === mode 
+                    !showListView && viewMode === mode 
                       ? 'bg-teal-100 text-teal-700' 
                       : 'text-slate-600 hover:bg-slate-50'
                   }`}
@@ -663,6 +667,15 @@ export default function Calendar() {
                   {mode.charAt(0).toUpperCase() + mode.slice(1)}
                 </button>
               ))}
+            </div>
+
+            {/* List View Toggle Switch */}
+            <div className="flex items-center gap-2 bg-white rounded-lg border shadow-sm px-3 py-2">
+              <span className={`text-sm font-medium ${showListView ? 'text-teal-700' : 'text-slate-600'}`}>List</span>
+              <Switch
+                checked={showListView}
+                onCheckedChange={(checked) => setShowListView(checked)}
+              />
             </div>
             
             <Button
@@ -699,7 +712,7 @@ export default function Calendar() {
         )}
 
         {/* Calendar View */}
-        {viewMode === 'list' ? (
+        {showListView ? (
           <div className="bg-white rounded-2xl shadow-sm border p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-800">All Upcoming Lessons</h3>
