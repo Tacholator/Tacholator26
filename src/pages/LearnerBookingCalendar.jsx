@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { ArrowLeft, Clock, Calendar, Loader2, XCircle, AlertTriangle } from 'lucide-react';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
+import LearnerBookingList from '@/components/booking/LearnerBookingList';
 import PupilReserveLessonModal from '@/components/booking/PupilReserveLessonModal';
 import PupilBookingDetailsModal from '@/components/booking/PupilBookingDetailsModal';
 import { useToast } from '@/components/ui/use-toast';
@@ -427,22 +428,30 @@ export default function LearnerBookingCalendar() {
           </Card>
         )}
 
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-6">
-            <Calendar24Hour
-              viewMode="week"
-              rules={rules}
-              bookings={bookings}
-              slotInstances={slotInstances}
-              availabilityMode="published_slots_only"
-              onSlotClick={handleSlotClick}
-              onPendingSlotClick={handleBookingClick}
-              isInstructor={false}
-              currentPupilId={pupil?.id}
-              pupils={[]}
-            />
-          </CardContent>
-        </Card>
+        <LearnerBookingList
+          bookings={bookings}
+          slotInstances={slotInstances}
+          onSlotClick={handleSlotClick}
+          onBookingClick={handleBookingClick}
+          calendarView={
+            <Card className="border-0 shadow-sm">
+              <CardContent className="p-6">
+                <Calendar24Hour
+                  viewMode="week"
+                  rules={rules}
+                  bookings={bookings}
+                  slotInstances={slotInstances}
+                  availabilityMode="published_slots_only"
+                  onSlotClick={handleSlotClick}
+                  onPendingSlotClick={handleBookingClick}
+                  isInstructor={false}
+                  currentPupilId={pupil?.id}
+                  pupils={[]}
+                />
+              </CardContent>
+            </Card>
+          }
+        />
 
         <PupilReserveLessonModal
           open={showReserveModal}
