@@ -94,9 +94,15 @@ export default function LearnerBookingList({
   }, [bookings, slotInstances]);
 
   const filtered = useMemo(() => {
-    if (!availableOnly) return merged;
-    return merged.filter(item => item.isSlot && item.status === 'available');
-  }, [merged, availableOnly]);
+    const monthStart = currentDate.clone().startOf('month');
+    const monthEnd = currentDate.clone().endOf('month');
+    const inMonth = merged.filter(item => {
+      const start = moment(item.startAtUtc).local();
+      return start.isSameOrAfter(monthStart) && start.isSameOrBefore(monthEnd);
+    });
+    if (!availableOnly) return inMonth;
+    return inMonth.filter(item => item.isSlot && item.status === 'available');
+  }, [merged, availableOnly, currentDate]);
 
   const toggleList = (checked) => {
     setShowListView(checked);
