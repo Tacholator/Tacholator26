@@ -39,7 +39,8 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
     fetchTopicDurations();
   }, [lessonId, existingEntry?.id, open]);
 
-  // Update formData when existingEntry changes
+  // Update formData only when the modal opens or the entry ID changes
+  // (not on every parent re-render which would wipe user input)
   React.useEffect(() => {
     if (existingEntry) {
       setFormData(existingEntry);
@@ -55,7 +56,7 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
         aiSummary: ''
       });
     }
-  }, [existingEntry, open]);
+  }, [existingEntry?.id, open]);
 
   // Calculate lesson duration for display
   const lessonDuration = lesson ? (() => {
