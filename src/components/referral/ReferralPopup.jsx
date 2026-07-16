@@ -14,7 +14,7 @@ export default function ReferralPopup({ pupilProfile }) {
   const [isOpen, setIsOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
-  const { data: globalSetting } = useQuery({
+  const { data: globalSetting, isLoading: isGlobalLoading } = useQuery({
     queryKey: ['appSetting', 'referral_program_enabled'],
     queryFn: async () => {
       const results = await base44.entities.AppSetting.filter({ key: 'referral_program_enabled' });
@@ -22,7 +22,7 @@ export default function ReferralPopup({ pupilProfile }) {
     },
   });
 
-  const { data: instructorProfile, isLoading } = useQuery({
+  const { data: instructorProfile, isLoading: isInstructorLoading } = useQuery({
     queryKey: ['instructorProfilePopup', pupilProfile?.instructorEmail],
     queryFn: async () => {
       if (!pupilProfile?.instructorEmail) return null;
@@ -32,10 +32,13 @@ export default function ReferralPopup({ pupilProfile }) {
     enabled: !!pupilProfile?.instructorEmail,
   });
 
-  const globalReferralEnabled = globalSetting ? globalSetting.value !== false : true;
+  const globalReferralEnabled = globalSetting ? globalSetting.value !== false : false;
 
   useEffect(() => {
-    if (isLoading) return;
+    // Wait for both settings to load before deciding to show the popup
+    if (isGlobalLoading) return;
+    // If instructor has an email, wait for that profile too
+    if (pupilProfile?.instructorEmail && isInstructorLoading) return;
     if (!globalReferralEnabled || instructorProfile?.referralProgramEnabled === false) {
       setIsOpen(false);
       return;
@@ -44,7 +47,7 @@ export default function ReferralPopup({ pupilProfile }) {
     if (!isDismissed) {
       setIsOpen(true);
     }
-  }, [globalReferralEnabled, instructorProfile?.referralProgramEnabled, isLoading]);
+  }, [globalReferralEnabled, instructorProfile?.referralProgramEnabled, isGlobalLoading, isInstructorLoading, pupilProfile?.instructorEmail]);
 
   const handleDismiss = () => {
     if (dontShowAgain) {

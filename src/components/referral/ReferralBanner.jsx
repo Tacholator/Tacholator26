@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
 export default function ReferralBanner({ pupilProfile }) {
-  const { data: globalSetting } = useQuery({
+  const { data: globalSetting, isLoading: isGlobalLoading } = useQuery({
     queryKey: ['appSetting', 'referral_program_enabled'],
     queryFn: async () => {
       const results = await base44.entities.AppSetting.filter({ key: 'referral_program_enabled' });
@@ -14,7 +14,7 @@ export default function ReferralBanner({ pupilProfile }) {
     },
   });
 
-  const { data: instructorProfile, isLoading } = useQuery({
+  const { data: instructorProfile, isLoading: isInstructorLoading } = useQuery({
     queryKey: ['instructorProfileReferral', pupilProfile?.instructorEmail],
     queryFn: async () => {
       if (!pupilProfile?.instructorEmail) return null;
@@ -24,11 +24,12 @@ export default function ReferralBanner({ pupilProfile }) {
     enabled: !!pupilProfile?.instructorEmail,
   });
 
-  const globalReferralEnabled = globalSetting ? globalSetting.value !== false : true;
+  const globalReferralEnabled = globalSetting ? globalSetting.value !== false : false;
   const heading = instructorProfile?.referralPromoHeading?.trim() || 'Refer a Friend & Earn Free Lessons!';
   const promoText = instructorProfile?.referralPromoText?.trim() || 'Bring a new pupil who commits to 10+ hours → Get a FREE 1.5-hour lesson!';
 
-  if (!globalReferralEnabled || isLoading || !instructorProfile || instructorProfile?.referralProgramEnabled === false) {
+  // Wait for settings to load before rendering; default to hidden until confirmed enabled
+  if (isGlobalLoading || !globalSetting || !globalReferralEnabled || isInstructorLoading || !instructorProfile || instructorProfile?.referralProgramEnabled === false) {
     return null;
   }
   return (
