@@ -37,7 +37,7 @@ export default function TenCommandmentsBento() {
         {commandments.map((cmd) => (
           <div
             key={cmd.number}
-            className="flex-none w-36 h-36 snap-start rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 p-4 flex flex-col items-center justify-center text-center shadow-sm"
+            className="flex-none w-36 h-36 snap-start rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 p-4 flex flex-col items-center justify-start text-center shadow-sm pt-5"
           >
             <div className="w-9 h-9 rounded-full bg-[#071739] flex items-center justify-center mb-2">
               <span className="text-sm font-bold text-[#F7B602]">{cmd.number}</span>
