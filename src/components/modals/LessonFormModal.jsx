@@ -266,18 +266,18 @@ export default function LessonFormModal({ open, onClose, existingLesson, pupils,
               variant="destructive" 
               onClick={handleDelete} 
               disabled={isDeleting}
-              className="mr-auto"
+              className="sm:mr-auto w-full sm:w-auto"
             >
               {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
             </Button>
           )}
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
             Cancel
           </Button>
           <Button 
             onClick={handleSubmit} 
             disabled={isSaving || !formData.pupilId || !formData.date} 
-            className="bg-teal-600 hover:bg-teal-700 gap-2"
+            className="bg-teal-600 hover:bg-teal-700 gap-2 w-full sm:w-auto"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             {existingLesson ? 'Update' : 'Schedule'}

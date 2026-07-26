@@ -128,22 +128,22 @@ Write a warm, supportive summary that highlights progress and next steps.`;
 
         {/* Lesson Info Banner */}
         {lesson && pupil && (
-          <div className="bg-slate-50 rounded-lg p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
+          <div className="bg-slate-50 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 shrink-0 rounded-full bg-teal-100 flex items-center justify-center">
                 <User className="w-5 h-5 text-teal-600" />
               </div>
-              <div>
-                <p className="font-medium text-slate-800">{pupil.firstName} {pupil.lastName}</p>
+              <div className="min-w-0">
+                <p className="font-medium text-slate-800 truncate">{pupil.firstName} {pupil.lastName}</p>
                 <p className="text-sm text-slate-500">{moment(lesson.date).format('ddd, D MMM YYYY')}</p>
               </div>
             </div>
-            <div className="text-right">
+            <div className="flex items-center gap-3 sm:flex-col sm:items-end sm:gap-1">
               <div className="flex items-center gap-2 text-slate-600">
-                <Clock className="w-4 h-4" />
+                <Clock className="w-4 h-4 shrink-0" />
                 <span className="text-sm">{lesson.startTime} - {lesson.endTime}</span>
               </div>
-              <Badge className="mt-1 bg-blue-100 text-blue-700">
+              <Badge className="bg-blue-100 text-blue-700">
                 {lessonDuration} mins
               </Badge>
             </div>
@@ -295,7 +295,7 @@ Write a warm, supportive summary that highlights progress and next steps.`;
 
           {!readOnly && (
             <div className="border-t pt-5 space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <Label>AI Summary</Label>
                 <Button
                   type="button"
@@ -310,7 +310,7 @@ Write a warm, supportive summary that highlights progress and next steps.`;
                   ) : (
                     <Sparkles className="w-4 h-4" />
                   )}
-                  Generate Summary
+                  <span className="hidden sm:inline">Generate</span> Summary
                 </Button>
               </div>
               {formData.aiSummary && (
@@ -333,15 +333,15 @@ Write a warm, supportive summary that highlights progress and next steps.`;
 
         <DialogFooter className="gap-2">
           {readOnly ? (
-            <Button onClick={onClose}>
+            <Button onClick={onClose} className="w-full sm:w-auto">
               Close
             </Button>
           ) : (
             <>
-              <Button variant="outline" onClick={onClose}>
+              <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 gap-2">
+              <Button onClick={handleSubmit} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 gap-2 w-full sm:w-auto">
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                 {lesson?.status === 'Scheduled' ? 'Save & Mark Completed' : 'Save Entry'}
               </Button>
