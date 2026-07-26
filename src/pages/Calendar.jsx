@@ -4,14 +4,15 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
+import {
+  ChevronLeft,
+  ChevronRight,
   Plus,
   Calendar as CalendarIcon,
   CalendarCheck,
   Loader2,
-  Settings
+  Settings,
+  Lock
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -38,6 +39,7 @@ import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModa
 import SlotDetailsModal from '@/components/booking/SlotDetailsModal';
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
 import InstructorScheduleLessonModal from '@/components/booking/InstructorScheduleLessonModal';
+import CloseDayModal from '@/components/booking/CloseDayModal';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Select,
@@ -84,6 +86,7 @@ export default function Calendar() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [showNewLessonModal, setShowNewLessonModal] = useState(false);
+  const [showCloseDayModal, setShowCloseDayModal] = useState(false);
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -207,6 +210,37 @@ export default function Calendar() {
       toast({ title: 'Lunch breaks updated successfully' });
       setShowLunchModal(false);
       setShowSettingsModal(false);
+    }
+  });
+
+  const closedRules = rules.filter(r => r.ruleType === 'closed');
+
+  const createClosedRuleMutation = useMutation({
+    mutationFn: async (data) => {
+      await base44.entities.CalendarRule.create({
+        instructorId: currentUser.id,
+        ruleType: 'closed',
+        startTimeLocal: data.startTimeLocal,
+        endTimeLocal: data.endTimeLocal,
+        daysOfWeek: [data.dayOfWeek],
+        isRecurring: data.recurring,
+        specificDate: data.recurring ? null : data.specificDate,
+        startDate: data.recurring ? data.specificDate : null,
+        rrule: data.recurring ? 'FREQ=WEEKLY;INTERVAL=1' : null
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['calendarRules']);
+      toast({ title: 'Calendar closed successfully' });
+      setShowCloseDayModal(false);
+    }
+  });
+
+  const deleteClosedRuleMutation = useMutation({
+    mutationFn: (ruleId) => base44.entities.CalendarRule.delete(ruleId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['calendarRules']);
+      toast({ title: 'Closure removed' });
     }
   });
 
@@ -560,11 +594,58 @@ export default function Calendar() {
         pickupLocation: null,
       }));
 
+    // Map closed rules into booking-like entries for the list view
+    const closedEntries = [];
+    rules.filter(r => r.ruleType === 'closed').forEach(rule => {
+      const targetDay = currentDate.clone();
+      // For one-time closures, check if the specific date is in range
+      if (rule.isRecurring === false && rule.specificDate) {
+        const ruleDate = moment(rule.specificDate);
+        if (inRange(ruleDate.format('YYYY-MM-DDTHH:mm:ss'))) {
+          const startMoment = ruleDate.clone().hour(0).minute(0);
+          const endMoment = ruleDate.clone().hour(23).minute(59);
+          closedEntries.push({
+                id: `closed-${rule.id}`,
+                isClosed: true,
+                startAtUtc: startMoment.toISOString(),
+                endAtUtc: endMoment.toISOString(),
+                pupilId: null,
+                pickupLocation: null,
+                status: 'closed'
+              });
+        }
+      } else if (rule.daysOfWeek) {
+        // For recurring rules, find occurrences in the current view range
+        const dayMap = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6, sun: 0 };
+        let day = rangeStart.clone();
+        while (day.isSameOrBefore(rangeEnd)) {
+          if (rule.daysOfWeek.includes(day.format('ddd').toLowerCase())) {
+            if (!rule.excludeDates?.includes(day.format('YYYY-MM-DD'))) {
+              const [sh, sm] = rule.startTimeLocal.split(':').map(Number);
+              const [eh, em] = rule.endTimeLocal.split(':').map(Number);
+              const startMoment = day.clone().hour(sh).minute(sm);
+              const endMoment = day.clone().hour(eh).minute(em);
+              closedEntries.push({
+                id: `closed-${rule.id}-${day.format('YYYY-MM-DD')}`,
+                isClosed: true,
+                startAtUtc: startMoment.toISOString(),
+                endAtUtc: endMoment.toISOString(),
+                pupilId: null,
+                pickupLocation: null,
+                status: 'closed'
+              });
+            }
+          }
+          day.add(1, 'day');
+        }
+      }
+    });
+
     const matchingBookings = bookings.filter(b => inRange(b.startAtUtc));
 
-    return [...matchingBookings, ...availableSlots]
+    return [...matchingBookings, ...availableSlots, ...closedEntries]
       .sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
-  }, [bookings, slotInstances, viewMode, currentDate]);
+  }, [bookings, slotInstances, rules, viewMode, currentDate]);
 
   const getDaysToShow = useMemo(() => {
     if (viewMode === 'day') {
@@ -727,6 +808,16 @@ export default function Calendar() {
             
             <Button
               variant="outline"
+              size="sm"
+              onClick={() => setShowCloseDayModal(true)}
+              className="gap-2 border-lime-300 text-lime-700 hover:bg-lime-50"
+            >
+              <Lock className="w-4 h-4" />
+              <span className="hidden sm:inline">Close Day</span>
+            </Button>
+
+            <Button
+              variant="outline"
               size="icon"
               onClick={() => setShowSettingsModal(true)}
             >
@@ -824,6 +915,7 @@ export default function Calendar() {
                   const isToday = startMoment.isSame(moment(), 'day');
                   const statusColors = {
                     available: 'bg-amber-50 text-amber-700',
+                    closed: 'bg-lime-50 text-lime-700',
                     pending: 'bg-orange-50 text-orange-700',
                     reserved_pending_instructor: 'bg-yellow-50 text-yellow-700',
                     reserved_pending: 'bg-yellow-50 text-yellow-700',
@@ -838,6 +930,7 @@ export default function Calendar() {
                   };
                   const statusBadgeColors = {
                     available: 'bg-amber-200 text-amber-800',
+                    closed: 'bg-lime-200 text-lime-800',
                     pending: 'bg-orange-200 text-orange-800',
                     reserved_pending_instructor: 'bg-yellow-200 text-yellow-800',
                     reserved_pending: 'bg-yellow-200 text-yellow-800',
@@ -852,6 +945,7 @@ export default function Calendar() {
                   };
                   const statusBorders = {
                     available: 'border-l-amber-400',
+                    closed: 'border-l-lime-500',
                     pending: 'border-l-orange-400',
                     reserved_pending_instructor: 'border-l-yellow-400',
                     reserved_pending: 'border-l-yellow-400',
@@ -886,6 +980,10 @@ export default function Calendar() {
                       )}
                       <div
                         onClick={() => {
+                        if (booking.isClosed) {
+                          setShowCloseDayModal(true);
+                          return;
+                        }
                         if (booking.isSlot) {
                           setSelectedSlotInstance(booking);
                           setShowSlotDetailsModal(true);
@@ -916,7 +1014,7 @@ export default function Calendar() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium truncate">
-                            {booking.isSlot ? 'Available Slot' : pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown pupil'}
+                            {booking.isClosed ? 'Calendar Closed' : booking.isSlot ? 'Available Slot' : pupil ? `${pupil.firstName} ${pupil.lastName}` : 'Unknown pupil'}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 mt-1">
@@ -1033,6 +1131,16 @@ export default function Calendar() {
       <NewLessonModal
         open={showNewLessonModal}
         onOpenChange={setShowNewLessonModal}
+      />
+
+      <CloseDayModal
+        open={showCloseDayModal}
+        onOpenChange={setShowCloseDayModal}
+        onSave={(data) => createClosedRuleMutation.mutate(data)}
+        isSaving={createClosedRuleMutation.isPending}
+        defaultDate={currentDate}
+        existingRules={closedRules}
+        onDeleteRule={(ruleId) => deleteClosedRuleMutation.mutate(ruleId)}
       />
 
       <LessonFormModal

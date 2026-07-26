@@ -90,12 +90,36 @@ export default function LearnerBookingCalendar() {
     }
   });
 
+  // Closed rules — hide available slots that overlap with these periods from pupils
+  const closedRules = rules.filter(r => r.ruleType === 'closed');
+  const isSlotInClosedPeriod = (slot) => {
+    const slotStartLocal = moment(slot.startAtUtc).local();
+    const slotEndLocal = moment(slot.endAtUtc).local();
+    const slotDate = slotStartLocal.format('YYYY-MM-DD');
+    const slotDayOfWeek = slotStartLocal.format('ddd').toLowerCase();
+
+    return closedRules.some(rule => {
+      const ruleApplies = rule.isRecurring === false && rule.specificDate
+        ? rule.specificDate === slotDate
+        : rule.daysOfWeek?.includes(slotDayOfWeek);
+      if (!ruleApplies) return false;
+
+      const ruleStart = moment(rule.startTimeLocal, 'HH:mm');
+      const ruleEnd = moment(rule.endTimeLocal, 'HH:mm');
+      const slotStart = moment(slotStartLocal.format('HH:mm'), 'HH:mm');
+      const slotEnd = moment(slotEndLocal.format('HH:mm'), 'HH:mm');
+      return slotStart.isBefore(ruleEnd) && slotEnd.isAfter(ruleStart);
+    });
+  };
+
   const slotInstances = allSlotInstances.filter(slot => {
     const slotStart = moment(slot.startAtUtc);
     const belongsToPupil = slot.reservedByPupilId === pupil?.id;
     const belongsToOtherPupil = slot.reservedByPupilId && slot.reservedByPupilId !== pupil?.id;
     if (slotStart.isAfter(now)) {
       if (belongsToOtherPupil) return false;
+      // Hide available slots during closed periods
+      if (slot.status === 'available' && isSlotInClosedPeriod(slot)) return false;
       return slot.status === 'available' || 
              (belongsToPupil && ['reserved_pending', 'confirmed'].includes(slot.status));
     } else {

@@ -14,10 +14,29 @@ const SLOT_COLORS = {
   no_show: '#FF8A80',
   lunch: '#F7B602',
   unavailable: '#FFB3B3',
+  closed: '#E2F35E',
   outside_working_hours: '#E8E8E8',
   reserved_pending: '#B39DDB',
   // Light grey for others viewing pending/confirmed
   reserved_confirmed_other: '#F2F2F2'
+};
+
+// Checks whether a rule applies to a given calendar day
+const ruleMatchesDate = (rule, day) => {
+  const dayOfWeek = day.format('ddd').toLowerCase();
+  const dateStr = day.format('YYYY-MM-DD');
+
+  // One-time closure: match exact date
+  if (rule.isRecurring === false && rule.specificDate) {
+    return dateStr === rule.specificDate;
+  }
+
+  // Recurring rule: match by day of week
+  if (!rule.daysOfWeek || !rule.daysOfWeek.includes(dayOfWeek)) return false;
+  if (rule.excludeDates && rule.excludeDates.includes(dateStr)) return false;
+  if (rule.startDate && day.isBefore(moment(rule.startDate), 'day')) return false;
+  if (rule.endDate && day.isAfter(moment(rule.endDate), 'day')) return false;
+  return true;
 };
 
 export default function Calendar24Hour({ 
@@ -121,6 +140,23 @@ export default function Calendar24Hour({
       }
       if (overlappingBooking.status === 'reserved_pending_instructor') {
         return { state: 'reserved_pending', booking: overlappingBooking, blockType: 'booking' };
+      }
+    }
+
+    // Check closed rules (after bookings, before available slots)
+    const closedRules = rules.filter(r => r.ruleType === 'closed');
+    for (const closedRule of closedRules) {
+      if (!ruleMatchesDate(closedRule, day)) continue;
+
+      const slotStartTime = moment(timeSlot, 'HH:mm');
+      const closedStart = moment(closedRule.startTimeLocal, 'HH:mm');
+      const closedEnd = moment(closedRule.endTimeLocal, 'HH:mm');
+      if (slotStartTime.isSameOrAfter(closedStart) && slotStartTime.isBefore(closedEnd)) {
+        // For non-instructors, don't show closed blocks — just empty space
+        if (!isInstructor) {
+          return { state: 'outside_working_hours' };
+        }
+        return { state: 'closed', rule: closedRule, blockType: 'rule' };
       }
     }
 
@@ -331,7 +367,8 @@ export default function Calendar24Hour({
                   cancelled: 'Cancelled',
                   no_show: 'No Show',
                   lunch: 'Lunch',
-                  unavailable: 'Unavailable'
+                  unavailable: 'Unavailable',
+                  closed: 'Closed'
                 };
 
                 // For non-instructors viewing pending/confirmed slots
@@ -404,6 +441,7 @@ export default function Calendar24Hour({
                   cancelled: '#F57C00',
                   no_show: '#D32F2F',
                   unavailable: '#D32F2F',
+                  closed: '#8B9A0A',
                   lunch: '#F57C00'
                 };
 
@@ -416,6 +454,7 @@ export default function Calendar24Hour({
                   cancelled: '#E65100',
                   no_show: '#C62828',
                   unavailable: '#C62828',
+                  closed: '#6B7A08',
                   lunch: '#E65100'
                 };
 

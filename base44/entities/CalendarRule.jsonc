@@ -12,7 +12,8 @@
         "working_hours",
         "available",
         "unavailable",
-        "lunch_break"
+        "lunch_break",
+        "closed"
       ],
       "description": "Type of calendar rule"
     },
@@ -38,7 +39,7 @@
           "sun"
         ]
       },
-      "description": "Days this rule applies to"
+      "description": "Days this rule applies to (for recurring rules)"
     },
     "isRecurring": {
       "type": "boolean",
@@ -58,6 +59,11 @@
       "type": "string",
       "format": "date",
       "description": "Optional end date for the rule"
+    },
+    "specificDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Specific date for one-time closures (used when isRecurring is false)"
     },
     "excludeDates": {
       "type": "array",
