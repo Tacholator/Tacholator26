@@ -61,6 +61,7 @@ export default function BookingSummaryModal({
   });
 
   React.useEffect(() => {
+    if (!open) return;
     if (existingDiaryEntry) {
       setSummaryData({
         mainTopic: existingDiaryEntry.mainTopic || '',
@@ -80,7 +81,7 @@ export default function BookingSummaryModal({
         aiSummary: ''
       });
     }
-  }, [existingDiaryEntry?.id]);
+  }, [existingDiaryEntry?.id, open]);
 
   React.useEffect(() => {
     if (booking?.startMileage != null) {
@@ -92,6 +93,7 @@ export default function BookingSummaryModal({
   }, [booking?.startMileage, booking?.endMileage]);
 
   React.useEffect(() => {
+    if (!open) return;
     if (existingTopicDurations.length > 0) {
       setSelectedTopics(existingTopicDurations.map(td => ({
         topicId: td.topicId,
@@ -101,7 +103,7 @@ export default function BookingSummaryModal({
     } else {
       setSelectedTopics([]);
     }
-  }, [existingTopicDurations.length, booking?.id]);
+  }, [existingTopicDurations, booking?.id, open]);
 
   const handleGenerateAISummary = async () => {
     setIsGeneratingSummary(true);
