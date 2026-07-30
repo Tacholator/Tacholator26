@@ -302,12 +302,49 @@ async function handleRefundUpdated(refund, base44) {
   return { success: true };
 }
 
+async function upsertCityVideoSubscription(subscription, base44, userId, cityId) {
+  const statusMap = { trialing: 'active', active: 'active', past_due: 'past_due', canceled: 'inactive', cancelled: 'inactive' };
+  const status = statusMap[subscription.status] || 'active';
+  const cityName = subscription.metadata?.cityName || '';
+  const currentPeriodEndAt = subscription.current_period_end
+    ? new Date(subscription.current_period_end * 1000).toISOString()
+    : null;
+  const stripePriceId = subscription.items?.data?.[0]?.price?.id || null;
+
+  const data = {
+    userId,
+    cityId,
+    cityName,
+    status,
+    stripeSubscriptionId: subscription.id,
+    stripePriceId,
+    currentPeriodEndAt,
+    cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+  };
+
+  const existing = await base44.asServiceRole.entities.CityVideoSubscription.filter({
+    userId,
+    stripeSubscriptionId: subscription.id
+  });
+  if (existing.length > 0) {
+    await base44.asServiceRole.entities.CityVideoSubscription.update(existing[0].id, data);
+  } else {
+    await base44.asServiceRole.entities.CityVideoSubscription.create(data);
+  }
+  return { success: true };
+}
+
 async function handleSubscriptionCreated(subscription, base44) {
   console.log('Processing customer.subscription.created:', subscription.id);
   const userId = subscription.metadata?.userId;
   if (!userId) {
     console.warn('No userId in subscription metadata, skipping');
     return { success: true };
+  }
+
+  const cityId = subscription.metadata?.cityId;
+  if (cityId) {
+    return await upsertCityVideoSubscription(subscription, base44, userId, cityId);
   }
 
   const statusMap = { trialing: 'trialing', active: 'active', past_due: 'past_due', canceled: 'cancelled' };
@@ -358,6 +395,22 @@ async function handleSubscriptionCreated(subscription, base44) {
 
 async function handleSubscriptionUpdated(subscription, base44) {
   console.log('Processing customer.subscription.updated:', subscription.id);
+  const cityId = subscription.metadata?.cityId;
+  if (cityId) {
+    const userId = subscription.metadata?.userId;
+    if (userId) return await upsertCityVideoSubscription(subscription, base44, userId, cityId);
+    const existingCity = await base44.asServiceRole.entities.CityVideoSubscription.filter({ stripeSubscriptionId: subscription.id });
+    if (existingCity.length > 0) {
+      const cityStatusMap = { trialing: 'active', active: 'active', past_due: 'past_due', canceled: 'inactive', cancelled: 'inactive' };
+      await base44.asServiceRole.entities.CityVideoSubscription.update(existingCity[0].id, {
+        status: cityStatusMap[subscription.status] || 'active',
+        currentPeriodEndAt: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+      });
+    }
+    return { success: true };
+  }
+
   const statusMap = { trialing: 'trialing', active: 'active', past_due: 'past_due', canceled: 'cancelled' };
   const status = statusMap[subscription.status] || 'active';
 
@@ -398,6 +451,18 @@ async function handleSubscriptionUpdated(subscription, base44) {
 
 async function handleSubscriptionDeleted(subscription, base44) {
   console.log('Processing customer.subscription.deleted:', subscription.id);
+  const cityId = subscription.metadata?.cityId;
+  if (cityId) {
+    const existingCity = await base44.asServiceRole.entities.CityVideoSubscription.filter({ stripeSubscriptionId: subscription.id });
+    if (existingCity.length > 0) {
+      await base44.asServiceRole.entities.CityVideoSubscription.update(existingCity[0].id, {
+        status: 'inactive',
+        cancelAtPeriodEnd: false,
+      });
+    }
+    return { success: true };
+  }
+
   const existing = await base44.asServiceRole.entities.UserSubscription.filter({ stripeSubscriptionId: subscription.id });
   if (existing.length > 0) {
     await base44.asServiceRole.entities.UserSubscription.update(existing[0].id, {
