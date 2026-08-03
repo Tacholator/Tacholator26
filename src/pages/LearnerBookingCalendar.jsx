@@ -163,6 +163,36 @@ export default function LearnerBookingCalendar() {
         }
       }
 
+      // Overlap guard: block booking if any other slot or booking for this instructor
+      // already overlaps the selected time (prevents double-bookings from duplicate slots)
+      {
+        const guardStartMs = new Date(startMoment.utc().toISOString()).getTime();
+        const guardEndMs = new Date(endMoment.utc().toISOString()).getTime();
+        const overlaps = (exStart, exEnd) =>
+          new Date(exStart).getTime() < guardEndMs && new Date(exEnd).getTime() > guardStartMs;
+
+        const freshAllSlots = await base44.entities.BookableSlotInstance.filter({ instructorId: pupil.instructorId });
+        const conflictingSlot = freshAllSlots.find(s => {
+          if (s.id === selectedSlotInstance?.id) return false;
+          if (s.status === 'available' || s.status === 'blocked') return false;
+          return overlaps(s.startAtUtc, s.endAtUtc);
+        });
+        if (conflictingSlot) {
+          throw new Error('This time overlaps with another booking. Please choose a different time.');
+        }
+
+        const freshAllBookings = await base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId });
+        const activeStatuses = ['reserved_pending_instructor', 'confirmed', 'in_progress'];
+        const conflictingBooking = freshAllBookings.find(b => {
+          if (b.isDeleted) return false;
+          if (!activeStatuses.includes(b.status)) return false;
+          return overlaps(b.startAtUtc, b.endAtUtc);
+        });
+        if (conflictingBooking) {
+          throw new Error('This time overlaps with another booking. Please choose a different time.');
+        }
+      }
+
       // Fetch fresh instructor profile to get latest requireBookingApproval setting
       const freshInstructorProfiles = await base44.entities.Instructor.filter({ created_by: pupil.instructorEmail });
       const freshInstructorProfile = freshInstructorProfiles[0] || null;
