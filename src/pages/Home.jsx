@@ -27,7 +27,10 @@ export default function Home() {
     enabled: !!user?.id && !!user?.email
   });
 
-  const isLearner = !!pupilRecord;
+  // A learner is identified either by an existing linked Pupil record, or by having
+  // selected "I'm a Learner" at role selection (userType === 'learner'). Without this,
+  // a self-signup learner with no Pupil record yet would loop back to RoleSelection.
+  const isLearner = !!pupilRecord || user?.userType === 'learner';
   const isInstructor = !isLearner && user?.role === 'admin';
   const needsRoleSelection = !isLoading && !isPupilLoading && user && !isLearner && user?.role !== 'admin';
 
