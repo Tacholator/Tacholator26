@@ -131,7 +131,7 @@ export const learnerOnlyLinks = [
   },
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
   { name: 'Test Readiness Checker', icon: CheckSquare, page: 'TestReadinessChecker' },
-  { name: 'Book a Lesson', icon: Calendar, page: 'LearnerCalendar' },
+  { name: 'Book a Lesson', icon: Calendar, page: 'LearnerBookingCalendar' },
   { name: 'My Bookings', icon: BookMarked, page: 'LearnerMyBookings' },
   { name: 'My Instructor', icon: UserCircle, page: 'LearnerMyInstructor' },
   { name: 'Refer a Friend', icon: Gift, page: 'ReferAFriend' }
@@ -187,7 +187,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
         (isInstructor ? s.instructorPage : s.learnerPage) === link.page
       )?.id)
     );
-    const bookLessonLink = learnerOnlyLinks.find(l => l.page === 'LearnerCalendar');
+    const bookLessonLink = learnerOnlyLinks.find(l => l.page === 'LearnerBookingCalendar');
     const myBookingsLink = learnerOnlyLinks.find(l => l.page === 'LearnerMyBookings');
     
     return [
