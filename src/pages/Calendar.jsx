@@ -57,7 +57,7 @@ const VIEW_MODES = ['day', 'week', 'month'];
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(moment());
-  const [viewMode, setViewMode] = useState('week');
+  const [viewMode, setViewMode] = useState('month');
   const [showListView, setShowListView] = useState(() => {
     try { return localStorage.getItem('calendar_list_view') === 'true'; } catch { return false; }
   });
