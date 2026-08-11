@@ -18,6 +18,7 @@ import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
+import InstructorMonthCalendar from '@/components/booking/InstructorMonthCalendar';
 import WorkingHoursModal from '@/components/booking/WorkingHoursModal';
 import UnavailableModal from '@/components/booking/UnavailableModal';
 import LunchBreakModal from '@/components/booking/LunchBreakModal';
@@ -471,6 +472,20 @@ export default function InstructorBookingCalendar() {
             <p className="text-xs sm:text-sm text-slate-500">Manage your availability and bookings</p>
           </div>
           <div className="flex items-center gap-2">
+            <div className="flex rounded-md border overflow-hidden">
+              <button
+                onClick={() => setViewMode('month')}
+                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${viewMode === 'month' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+              >
+                Month
+              </button>
+              <button
+                onClick={() => setViewMode('week')}
+                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors border-l ${viewMode !== 'month' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+              >
+                Schedule
+              </button>
+            </div>
             <Button
               onClick={() => setShowNewLessonModal(true)}
               className="bg-[#071739] hover:bg-[#0d2659] text-white gap-2"
@@ -585,19 +600,33 @@ export default function InstructorBookingCalendar() {
         {/* Calendar */}
         <Card className="border-0 shadow-sm">
           <CardContent className="p-2 sm:p-6">
-            <Calendar24Hour
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              rules={rules}
-              bookings={bookings}
-              slotInstances={slotInstances}
-              availabilityMode={availabilityMode}
-              isInstructor={true}
-              onSlotClick={handleSlotClick}
-              onPendingSlotClick={handlePendingSlotClick}
-              onDeleteBooking={handleDeleteBooking}
-              pupils={pupils}
-            />
+            {viewMode === 'month' ? (
+              <InstructorMonthCalendar
+                slotInstances={slotInstances}
+                bookings={bookings}
+                pupils={pupils}
+                onSlotClick={handleSlotClick}
+                onBookingClick={(booking) => handlePendingSlotClick(booking, null)}
+                onCreateSlot={(dateStr) => {
+                  setClickedSlotDateTime(dateStr);
+                  setShowCreateSlotModal(true);
+                }}
+              />
+            ) : (
+              <Calendar24Hour
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                rules={rules}
+                bookings={bookings}
+                slotInstances={slotInstances}
+                availabilityMode={availabilityMode}
+                isInstructor={true}
+                onSlotClick={handleSlotClick}
+                onPendingSlotClick={handlePendingSlotClick}
+                onDeleteBooking={handleDeleteBooking}
+                pupils={pupils}
+              />
+            )}
           </CardContent>
         </Card>
 
