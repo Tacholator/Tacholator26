@@ -30,6 +30,7 @@ import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import CalendarDayView from '@/components/calendar/CalendarDayView';
 import LessonDetailsDrawer from '@/components/calendar/LessonDetailsDrawer';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
+import InstructorMonthCalendar from '@/components/booking/InstructorMonthCalendar';
 import WorkingHoursModal from '@/components/booking/WorkingHoursModal';
 import UnavailableModal from '@/components/booking/UnavailableModal';
 import LunchBreakModal from '@/components/booking/LunchBreakModal';
@@ -1045,56 +1046,25 @@ export default function Calendar() {
             currentUser={currentUser}
           />
         ) : viewMode === 'month' ? (
-          <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-            <div className="grid grid-cols-7 border-b">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="py-3 text-center text-sm font-medium text-slate-500">
-                  {day}
-                </div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7">
-              {getDaysToShow.map((day, idx) => {
-                const dayLessons = getLessonsForDay(day);
-                const isToday = day.isSame(moment(), 'day');
-                const isCurrentMonth = day.isSame(currentDate, 'month');
-                
-                return (
-                  <div
-                    key={idx}
-                    className={`min-h-[100px] p-2 border-b border-r ${
-                      !isCurrentMonth ? 'bg-slate-50' : ''
-                    }`}
-                  >
-                    <div className={`text-sm font-medium mb-1 ${
-                      isToday 
-                        ? 'w-7 h-7 rounded-full bg-teal-600 text-white flex items-center justify-center' 
-                        : isCurrentMonth ? 'text-slate-700' : 'text-slate-400'
-                    }`}>
-                      {day.date()}
-                    </div>
-                    <div className="space-y-1">
-                      {dayLessons.slice(0, 3).map(lesson => {
-                        const pupil = pupilMap[lesson.pupilId];
-                        return (
-                          <div
-                            key={lesson.id}
-                            onClick={() => openEditLesson(lesson)}
-                            className="text-xs p-1 rounded bg-teal-100 text-teal-700 truncate cursor-pointer hover:bg-teal-200 transition-colors"
-                          >
-                            {lesson.startTime} {pupil?.firstName}
-                          </div>
-                        );
-                      })}
-                      {dayLessons.length > 3 && (
-                        <div className="text-xs text-slate-400">+{dayLessons.length - 3} more</div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <InstructorMonthCalendar
+            slotInstances={slotInstances}
+            bookings={bookings}
+            pupils={pupils}
+            onSlotClick={(_, slotInstance) => {
+              setSelectedSlotInstance(slotInstance);
+              setShowSlotDetailsModal(true);
+            }}
+            onBookingClick={(booking) => {
+              setSelectedBooking(booking);
+              setSelectedBookingSlotInstance(null);
+              setShowBookingDetailsModal(true);
+            }}
+            onCreateSlot={(dateStr) => {
+              setSelectedSlotDateTime(dateStr);
+              setSelectedSlotInstance(null);
+              setShowCreateSlotModal(true);
+            }}
+          />
         ) : (
           <Calendar24Hour
             viewMode={viewMode}
