@@ -40,6 +40,28 @@ function formatLabel(status, isPracticalTest) {
   return map[status] || status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
+// Dedupe bookings sharing the same slot instance (or same pupil+time when no
+// slotInstanceId), keeping the most "active" status. Prevents cancelled/declined
+// duplicates on the same slot from rendering alongside the active booking.
+const BOOKING_STATUS_PRIORITY = {
+  completed: 1, in_progress: 2, confirmed: 3, reserved_pending_instructor: 4,
+  pending: 5, cancelled_late_by_pupil: 6, cancelled_by_pupil: 7, cancelled: 8,
+  declined_by_instructor: 9, no_show: 10,
+};
+function dedupeBookingsBySlot(list) {
+  const keepers = {};
+  list.forEach(b => {
+    const key = b.slotInstanceId || `${b.pupilId}|${b.startAtUtc}|${b.endAtUtc}`;
+    const cur = keepers[key];
+    const pNew = BOOKING_STATUS_PRIORITY[b.status] ?? 99;
+    const pCur = cur ? (BOOKING_STATUS_PRIORITY[cur.status] ?? 99) : Infinity;
+    if (!cur || pNew < pCur || (pNew === pCur && new Date(b.created_date) > new Date(cur.created_date))) {
+      keepers[key] = b;
+    }
+  });
+  return Object.values(keepers);
+}
+
 export default function InstructorMonthCalendar({
   slotInstances = [],
   bookings = [],
@@ -65,7 +87,7 @@ export default function InstructorMonthCalendar({
     return map;
   }, [slotInstances]);
 
-  // Map of 'YYYY-MM-DD' -> [bookings] (non-deleted)
+  // Map of 'YYYY-MM-DD' -> [bookings] (non-deleted, deduped per slot)
   const bookingsByDate = useMemo(() => {
     const map = {};
     bookings.forEach(b => {
@@ -73,6 +95,7 @@ export default function InstructorMonthCalendar({
       const key = moment(b.startAtUtc).local().format('YYYY-MM-DD');
       (map[key] = map[key] || []).push(b);
     });
+    Object.keys(map).forEach(k => { map[k] = dedupeBookingsBySlot(map[k]); });
     return map;
   }, [bookings]);
 
