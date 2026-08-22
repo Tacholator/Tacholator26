@@ -33,7 +33,8 @@ import {
   Fuel,
   CheckSquare,
   Brain,
-  Scroll
+  Scroll,
+  Video
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -159,7 +160,8 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
 
   let roleSpecific = isInstructor ? instructorOnlyLinks.filter(link => (!link.requiresGpsAccess || gpsRoutesAccessEnabled) && !(isMainAdmin && link.page === 'InstructorGpsRoutes')) : [
     ...learnerOnlyLinks,
-    ...(testRoutesAccessEnabled ? [] : []) // Test Route Videos moved into Test Readiness page
+    // Reinstate direct learner sidebar link to Test Route Videos (gated by instructor access flag)
+    ...(testRoutesAccessEnabled ? [{ name: 'Test Route Videos', icon: Video, page: 'LearnerTestRoutes' }] : [])
   ];
   
   // Filter out admin-only links for non-admin instructors
