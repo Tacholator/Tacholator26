@@ -131,6 +131,7 @@ export const learnerOnlyLinks = [
     ]
   },
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
+  { name: 'Test Preparation', icon: ClipboardCheck, page: 'TestReadiness' },
   { name: 'Test Readiness Checker', icon: CheckSquare, page: 'TestReadinessChecker' },
   { name: 'Book a Lesson', icon: Calendar, page: 'LearnerBookingCalendar' },
   { name: 'My Bookings', icon: BookMarked, page: 'LearnerMyBookings' },
