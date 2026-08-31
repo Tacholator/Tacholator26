@@ -147,7 +147,7 @@ export const getPageForRole = (linkId, isInstructor) => {
 };
 
 // Build complete navigation array for a role
-export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active', testRoutesAccessEnabled = false, gpsRoutesAccessEnabled = false, practicalTestPassDate = null) => {
+export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active', testRoutesAccessEnabled = false, gpsRoutesAccessEnabled = false, practicalTestPassDate = null, hasPublishedTestRoutes = true) => {
   const shared = sharedNavLinks
     .map(link => ({
       name: link.name,
@@ -168,6 +168,11 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
   // Filter out admin-only links for non-admin instructors
   if (isInstructor && !isMainAdmin) {
     roleSpecific = roleSpecific.filter(link => !link.adminOnly);
+  }
+
+  // Hide the Test Routes tab entirely when no published test centres exist
+  if (!hasPublishedTestRoutes) {
+    roleSpecific = roleSpecific.filter(link => link.page !== 'TestRoutes');
   }
 
 

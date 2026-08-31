@@ -147,7 +147,17 @@ export default function Layout({ children, currentPageName }) {
   const testRoutesAccessEnabled = pupilProfile?.testRoutesAccessEnabled || false;
   const gpsRoutesAccessEnabled = isMainAdmin || (instructorProfile?.gpsRoutesAccessEnabled || false);
   const practicalTestPassDate = pupilProfile?.practicalTestPassDate || null;
-  const navItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus, testRoutesAccessEnabled, gpsRoutesAccessEnabled, practicalTestPassDate);
+
+  // Whether any test centre is published (gates the "Test Routes" nav tab)
+  const { data: hasPublishedTestRoutes = false } = useQuery({
+    queryKey: ['hasPublishedTestRoutes'],
+    queryFn: async () => {
+      const all = await base44.entities.NationalTestCentre.list();
+      return all.some(c => c.isPublished);
+    }
+  });
+
+  const navItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus, testRoutesAccessEnabled, gpsRoutesAccessEnabled, practicalTestPassDate, hasPublishedTestRoutes);
 
   const handleLogout = () => {
     base44.auth.logout();
