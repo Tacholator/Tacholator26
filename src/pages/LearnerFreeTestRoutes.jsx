@@ -59,7 +59,7 @@ export default function LearnerFreeTestRoutes() {
     const combined = [];
     const push = (r) => {
       if (!r || !r.youtubeVideoId) return;
-      const key = r.youtubeVideoId + '|' + (r.routeName || '');
+      const key = r.youtubeVideoId;
       if (seen.has(key)) return;
       seen.add(key);
       combined.push({ ...r, source: r.instructorId ? 'instructor' : 'catalogue' });
