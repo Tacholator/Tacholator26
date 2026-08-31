@@ -162,7 +162,9 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
   let roleSpecific = isInstructor ? instructorOnlyLinks.filter(link => (!link.requiresGpsAccess || gpsRoutesAccessEnabled) && !(isMainAdmin && link.page === 'InstructorGpsRoutes')) : [
     ...learnerOnlyLinks,
     // Reinstate direct learner sidebar link to Test Route Videos (gated by instructor access flag)
-    ...(testRoutesAccessEnabled ? [{ name: 'Test Route Videos', icon: Video, page: 'LearnerTestRoutes' }] : [])
+    ...(testRoutesAccessEnabled ? [{ name: 'Test Route Videos', icon: Video, page: 'LearnerTestRoutes' }] : []),
+    // Free Test Routes tab — gated by instructor access flag, shown with a FREE badge
+    ...(testRoutesAccessEnabled ? [{ name: 'Test Routes', icon: Video, page: 'LearnerFreeTestRoutes', isFreeBadge: true }] : [])
   ];
   
   // Filter out admin-only links for non-admin instructors

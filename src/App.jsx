@@ -50,6 +50,7 @@ import ManageNerves from './pages/ManageNerves';
 import TenCommandments from './pages/TenCommandments';
 import TenCommandmentsChecklist from './pages/TenCommandmentsChecklist';
 import PupilTopicDetail from './pages/PupilTopicDetail';
+import LearnerFreeTestRoutes from './pages/LearnerFreeTestRoutes';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -304,6 +305,11 @@ const AuthenticatedApp = () => {
       <Route path="/PupilTopicDetail" element={
         <LayoutWrapper currentPageName="PupilTopicDetail">
           <PupilTopicDetail />
+        </LayoutWrapper>
+      } />
+      <Route path="/LearnerFreeTestRoutes" element={
+        <LayoutWrapper currentPageName="LearnerFreeTestRoutes">
+          <LearnerFreeTestRoutes />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

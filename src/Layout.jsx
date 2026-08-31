@@ -40,6 +40,10 @@ import {
   Star
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+
+const FreeBadge = ({ isActive }) => (
+  <span className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none ${isActive ? 'bg-[#071739] text-emerald-300' : 'bg-emerald-500 text-white'}`}>FREE</span>
+);
 import { buildNavigation } from '@/components/navigation/roleBasedNav';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
 import AccountProfilePanel from '@/components/account/AccountProfilePanel';
@@ -292,6 +296,9 @@ export default function Layout({ children, currentPageName }) {
                         {item.name}
                         {item.isPremium && (
                           <Star className={`w-3 h-3 ml-auto ${isActive ? 'text-[#071739] fill-[#071739]' : 'text-[#F7B602] fill-[#F7B602]'}`} />
+                        )}
+                        {item.isFreeBadge && (
+                          <FreeBadge isActive={isActive} />
                         )}
                         {item.name === 'Chats' && unreadMessagesCount > 0 && (
                           <Badge className="ml-auto bg-[#F7B602] text-[#071739] text-xs font-bold px-2 h-5">
