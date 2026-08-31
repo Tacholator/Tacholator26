@@ -165,7 +165,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
   // Learners: inject the "Test Route Videos" link (gated by instructor access flag) above "My Instructor"
   if (!isInstructor && testRoutesAccessEnabled) {
     const myInstructorIdx = roleSpecific.findIndex(l => l.page === 'LearnerMyInstructor');
-    const testRouteVideosLink = { name: 'Test Route Videos', icon: Video, page: 'LearnerTestRoutes', isFreeBadge: true };
+    const testRouteVideosLink = { name: 'Test Route Videos', icon: Video, page: 'LearnerFreeTestRoutes', isFreeBadge: true };
     if (myInstructorIdx >= 0) {
       roleSpecific.splice(myInstructorIdx, 0, testRouteVideosLink);
     } else {

@@ -114,7 +114,6 @@ import LearnerSkillStudy from './pages/LearnerSkillStudy';
 import LearnerSkills from './pages/LearnerSkills';
 import LearnerSubscription from './pages/LearnerSubscription';
 import LearnerTestRouteDetail from './pages/LearnerTestRouteDetail';
-import LearnerTestRoutes from './pages/LearnerTestRoutes';
 import LessonTermsAndConditions from './pages/LessonTermsAndConditions';
 import LiveRouteViewer from './pages/LiveRouteViewer';
 import PaymentMethods from './pages/PaymentMethods';
@@ -200,7 +199,6 @@ export const PAGES = {
     "LearnerSkills": LearnerSkills,
     "LearnerSubscription": LearnerSubscription,
     "LearnerTestRouteDetail": LearnerTestRouteDetail,
-    "LearnerTestRoutes": LearnerTestRoutes,
     "LessonTermsAndConditions": LessonTermsAndConditions,
     "LiveRouteViewer": LiveRouteViewer,
     "PaymentMethods": PaymentMethods,

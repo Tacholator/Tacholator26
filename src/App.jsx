@@ -23,7 +23,6 @@ import InstructorSubscription from './pages/InstructorSubscription';
 import AdminTestRoutes from './pages/AdminTestRoutes';
 import AdminTestRouteCityDetail from './pages/AdminTestRouteCityDetail';
 import VideoSubscription from './pages/VideoSubscription';
-import TestReadiness from './pages/TestReadiness';
 import AdminNationalCentreDetail from './pages/AdminNationalCentreDetail';
 import TestRoutes from './pages/TestRoutes';
 import TestCentreDetail from './pages/TestCentreDetail';
@@ -170,11 +169,6 @@ const AuthenticatedApp = () => {
       <Route path="/VideoSubscription" element={
         <LayoutWrapper currentPageName="VideoSubscription">
           <VideoSubscription />
-        </LayoutWrapper>
-      } />
-      <Route path="/TestReadiness" element={
-        <LayoutWrapper currentPageName="TestReadiness">
-          <TestReadiness />
         </LayoutWrapper>
       } />
       <Route path="/AdminNationalCentreDetail" element={
