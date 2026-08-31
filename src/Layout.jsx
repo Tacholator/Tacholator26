@@ -501,6 +501,9 @@ export default function Layout({ children, currentPageName }) {
                           {item.isPremium && (
                             <Star className={`w-3 h-3 ml-auto ${isActive ? 'text-[#071739] fill-[#071739]' : 'text-[#F7B602] fill-[#F7B602]'}`} />
                           )}
+                          {item.isFreeBadge && (
+                            <FreeBadge isActive={isActive} />
+                          )}
                           {item.name === 'Chats' && unreadMessagesCount > 0 && (
                             <Badge className="ml-auto bg-[#F7B602] text-[#071739] text-xs font-bold px-2 h-5">
                               {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
