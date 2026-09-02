@@ -14,7 +14,7 @@ export default function GoldenRuleCard() {
           <Crown className="w-4 h-4 text-[#071739]" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-[11px] font-bold text-[#F7B602] uppercase tracking-wide leading-tight">
+          <h3 className="text-[11px] font-extrabold text-[#071739] uppercase tracking-wide leading-tight">
             The Golden Rule
           </h3>
           <p className="mt-0.5 text-[#071739] text-xs leading-snug">
