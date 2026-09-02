@@ -483,9 +483,6 @@ export default function LearnerDashboard() {
           </motion.div>
         )}
 
-        {/* Golden Rule */}
-        <GoldenRuleCard />
-
         {/* Next Lesson (compact) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -535,6 +532,9 @@ export default function LearnerDashboard() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Golden Rule */}
+        <GoldenRuleCard />
 
         {/* Top 10 Reasons for Test Fails */}
         <TopTenReasonsBento />
