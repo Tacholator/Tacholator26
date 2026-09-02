@@ -30,7 +30,7 @@ export default function ShowMeTellMeBento() {
         <p className="text-sm font-bold text-[#071739]">Tell Me Questions</p>
         <span className="text-xs text-slate-400">(14 questions)</span>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-3 px-4 scrollbar-hide snap-x snap-mandatory">
+      <div className="flex gap-3 overflow-x-auto pb-3 px-4 scrollbar-thin snap-x snap-mandatory">
         {tellMeQuestions.map((q) => (
           <button
             key={`tell-${q.number}`}
@@ -54,7 +54,7 @@ export default function ShowMeTellMeBento() {
         <p className="text-sm font-bold text-[#071739]">Show Me Questions</p>
         <span className="text-xs text-slate-400">(7 questions)</span>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-3 px-4 scrollbar-hide snap-x snap-mandatory">
+      <div className="flex gap-3 overflow-x-auto pb-3 px-4 scrollbar-thin snap-x snap-mandatory">
         {showMeQuestions.map((q) => (
           <button
             key={`show-${q.number}`}
