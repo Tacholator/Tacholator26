@@ -70,9 +70,7 @@ export default function ShowMeTellMeBento() {
         ))}
       </div>
 
-      <p className="text-xs text-slate-400 italic px-4 pb-4 pt-1">
-        Source: DVSA — Show me, tell me vehicle safety questions (gov.uk)
-      </p>
+      <div className="pb-4" />
 
       <AnimatePresence>
         {selected && (
