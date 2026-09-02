@@ -30,12 +30,12 @@ export default function ShowMeTellMeBento() {
         <p className="text-sm font-bold text-[#071739]">Tell Me Questions</p>
         <span className="text-xs text-slate-400">(14 questions)</span>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-3 px-6 scrollbar-thin snap-x snap-mandatory">
+      <div className="flex gap-3 overflow-x-auto pb-3 px-4 scrollbar-thin snap-x snap-mandatory">
         {tellMeQuestions.map((q) => (
           <button
             key={`tell-${q.number}`}
             onClick={() => setSelected(q)}
-            className="flex-none w-52 h-44 snap-start rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100 p-4 flex flex-col items-start justify-start text-left shadow-sm hover:shadow-md hover:from-amber-100 hover:to-amber-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="flex-none w-44 h-44 snap-start rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100 p-4 flex flex-col items-start justify-start text-left shadow-sm hover:shadow-md hover:from-amber-100 hover:to-amber-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400"
           >
             <div className="w-8 h-8 rounded-full bg-[#071739] flex items-center justify-center mb-2 shrink-0">
               <span className="text-xs font-bold text-[#F7B602]">{q.number}</span>
@@ -54,12 +54,12 @@ export default function ShowMeTellMeBento() {
         <p className="text-sm font-bold text-[#071739]">Show Me Questions</p>
         <span className="text-xs text-slate-400">(7 questions)</span>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-3 px-6 scrollbar-thin snap-x snap-mandatory">
+      <div className="flex gap-3 overflow-x-auto pb-3 px-4 scrollbar-thin snap-x snap-mandatory">
         {showMeQuestions.map((q) => (
           <button
             key={`show-${q.number}`}
             onClick={() => setSelected(q)}
-            className="flex-none w-52 h-44 snap-start rounded-2xl bg-gradient-to-br from-sky-50 to-sky-100 p-4 flex flex-col items-start justify-start text-left shadow-sm hover:shadow-md hover:from-sky-100 hover:to-sky-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            className="flex-none w-44 h-44 snap-start rounded-2xl bg-gradient-to-br from-sky-50 to-sky-100 p-4 flex flex-col items-start justify-start text-left shadow-sm hover:shadow-md hover:from-sky-100 hover:to-sky-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400"
           >
             <div className="w-8 h-8 rounded-full bg-[#071739] flex items-center justify-center mb-2 shrink-0">
               <span className="text-xs font-bold text-[#F7B602]">{q.number}</span>
