@@ -457,47 +457,6 @@ Requirements:
             </CardContent>
           </Card>
 
-          {/* Mileage Tracking */}
-          <Card className="border-teal-200 bg-teal-50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Gauge className="w-4 h-4 text-teal-600" />
-                Lesson Mileage
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="startMileage" className="text-sm text-slate-600">Start Mileage (miles)</Label>
-                  <Input
-                    id="startMileage"
-                    type="number"
-                    value={startMileage}
-                    onChange={(e) => setStartMileage(e.target.value)}
-                    placeholder="e.g., 12345"
-                    disabled={readOnly}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="endMileage" className="text-sm text-slate-600">End Mileage (miles)</Label>
-                  <Input
-                    id="endMileage"
-                    type="number"
-                    value={endMileage}
-                    onChange={(e) => setEndMileage(e.target.value)}
-                    placeholder="e.g., 12385"
-                    disabled={readOnly}
-                  />
-                </div>
-              </div>
-              {startMileage && endMileage && Number(endMileage) >= Number(startMileage) && (
-                <p className="text-xs text-teal-600 mt-2">
-                  Distance covered: {Number(endMileage) - Number(startMileage)} miles
-                </p>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Summary Form */}
           <div className="space-y-4">
             {/* Topic Duration Selector */}

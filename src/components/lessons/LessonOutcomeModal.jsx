@@ -300,15 +300,6 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
       return;
     }
 
-    if (formData.completionOutcome === 'completed' && !formData.endMileage) {
-      toast({ title: 'Please enter the end mileage', variant: 'destructive' });
-      return;
-    }
-    if (formData.completionOutcome === 'completed' && formData.startMileage && Number(formData.endMileage) < Number(formData.startMileage)) {
-      toast({ title: 'End mileage cannot be less than start mileage', variant: 'destructive' });
-      return;
-    }
-
     // Prevent marking future lessons as completed or no show
     if (isFutureLesson && (formData.completionOutcome === 'completed' || formData.completionOutcome === 'no_show')) {
       toast({ 
@@ -559,43 +550,6 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-            )}
-
-            {/* Mileage Tracking */}
-            {formData.completionOutcome === 'completed' && (
-              <div className="bg-teal-50 rounded-lg p-3 space-y-2">
-                <Label className="text-xs font-semibold text-teal-700 flex items-center gap-1">
-                  <Gauge className="w-3.5 h-3.5" />
-                  Lesson Mileage
-                </Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label htmlFor="startMileage" className="text-xs text-slate-600">Start Mileage</Label>
-                    <Input
-                      id="startMileage"
-                      type="number"
-                      value={formData.startMileage}
-                      onChange={(e) => setFormData({ ...formData, startMileage: e.target.value })}
-                      placeholder="e.g., 12345"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="endMileage" className="text-xs text-slate-600">End Mileage *</Label>
-                    <Input
-                      id="endMileage"
-                      type="number"
-                      value={formData.endMileage}
-                      onChange={(e) => setFormData({ ...formData, endMileage: e.target.value })}
-                      placeholder="e.g., 12385"
-                    />
-                  </div>
-                </div>
-                {formData.startMileage && formData.endMileage && Number(formData.endMileage) >= Number(formData.startMileage) && (
-                  <p className="text-xs text-teal-600">
-                    Distance covered: {Number(formData.endMileage) - Number(formData.startMileage)} miles
-                  </p>
-                )}
               </div>
             )}
 
