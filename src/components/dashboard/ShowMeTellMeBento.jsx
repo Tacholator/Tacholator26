@@ -20,12 +20,8 @@ export default function ShowMeTellMeBento() {
         <h3 className="text-lg font-semibold text-white">Show Me, Tell Me Questions</h3>
       </div>
 
-      <p className="text-xs text-slate-500 mb-3 px-4 pt-3 leading-relaxed">
-        You'll be asked 2 vehicle safety questions on your test. Tap a card to see the answer.
-      </p>
-
       {/* Tell Me questions */}
-      <div className="flex items-center gap-1.5 mb-2 px-4">
+      <div className="flex items-center gap-1.5 mb-2 px-4 pt-3">
         <MessageSquareText className="w-4 h-4 text-[#071739]" />
         <p className="text-sm font-bold text-[#071739]">Tell Me Questions</p>
         <span className="text-xs text-slate-400">(14 questions)</span>
