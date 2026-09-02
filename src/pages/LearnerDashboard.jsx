@@ -486,6 +486,56 @@ export default function LearnerDashboard() {
         {/* Golden Rule */}
         <GoldenRuleCard />
 
+        {/* Next Lesson (compact) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.06 }}
+        >
+          <Card className="border-0 shadow-sm bg-gradient-to-br from-[#071739] to-[#0a2142] text-white">
+            <CardContent className="p-4">
+              {nextLesson ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-white/70">Next Lesson</p>
+                    <p className="font-semibold truncate">
+                      {moment(nextLesson.startAtUtc).local().format('ddd, D MMM · HH:mm')}
+                    </p>
+                    {nextLesson.pickupLocation && (
+                      <p className="text-xs text-white/70 truncate flex items-center gap-1">
+                        <MapPin className="w-3 h-3" /> {nextLesson.pickupLocation}
+                      </p>
+                    )}
+                  </div>
+                  <Link to={createPageUrl('LearnerScheduledLessons')}>
+                    <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                      View
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold">No lesson booked</p>
+                    <p className="text-xs text-white/70">Book your next lesson</p>
+                  </div>
+                  <Link to={createPageUrl('LearnerBookingCalendar')}>
+                    <Button size="sm" className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
+                      Book
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
         {/* Top 10 Reasons for Test Fails */}
         <TopTenReasonsBento />
 
@@ -646,8 +696,8 @@ export default function LearnerDashboard() {
           });
         })()}
 
-        {/* Overall Driving Progress & Next Lesson */}
-        <div className="grid md:grid-cols-2 gap-6">
+        {/* Overall Driving Progress */}
+        <div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -706,108 +756,6 @@ export default function LearnerDashboard() {
                     View Progress
                   </Button>
                 </Link>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Card className="border-0 shadow-sm bg-gradient-to-br from-[#071739] to-[#0a2142] text-white">
-              <CardHeader>
-                <CardTitle className="text-lg text-white/90">Next Lesson & Hours Booked</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {nextLesson ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                        <Calendar className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <p className="text-xl font-semibold">
-                          {moment(nextLesson.startAtUtc).local().format('dddd, D MMMM')}
-                        </p>
-                        <p className="text-white/80">{moment(nextLesson.startAtUtc).fromNow()}</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 pt-2">
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-white/70" />
-                        <span className="text-sm">{moment(nextLesson.startAtUtc).local().format('HH:mm')} - {moment(nextLesson.endAtUtc).local().format('HH:mm')}</span>
-                      </div>
-                      {nextLesson.pickupLocation && (
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-5 h-5 text-white/70" />
-                          <span className="truncate text-sm">{nextLesson.pickupLocation}</span>
-                        </div>
-                      )}
-                    </div>
-                    {(() => {
-                      const futureBookings = bookings.filter(b => 
-                        b.status === 'confirmed' && 
-                        moment(b.startAtUtc).isAfter(now)
-                      );
-                      const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
-                      
-                      return (
-                        <div className="pt-3 border-t border-white/20">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-white/80">Total Hours Booked</span>
-                            <span className="text-2xl font-bold">{totalHoursBooked.toFixed(1)}h</span>
-                          </div>
-                          <p className="text-xs text-white/70 mt-1">
-                            {futureBookings.length} upcoming lesson{futureBookings.length !== 1 ? 's' : ''}
-                          </p>
-                        </div>
-                      );
-                    })()}
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      <Link to={createPageUrl('LearnerScheduledLessons')}>
-                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
-                          View Lessons
-                        </Button>
-                      </Link>
-                      <Link to={createPageUrl('LearnerChats')}>
-                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
-                          <MessageCircle className="w-4 h-4 mr-2" />
-                          Message
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-6">
-                    <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p className="text-white/80 mb-2">You don't have a lesson booked</p>
-                    {(() => {
-                      const futureBookings = bookings.filter(b => 
-                        b.status === 'confirmed' && 
-                        moment(b.startAtUtc).isAfter(now)
-                      );
-                      const totalHoursBooked = futureBookings.reduce((sum, b) => sum + (b.durationHours || 0), 0);
-                      
-                      if (totalHoursBooked > 0) {
-                        return (
-                          <div className="mb-4 p-3 rounded-lg bg-white/10">
-                            <span className="text-white/80 text-sm">{totalHoursBooked.toFixed(1)}h booked</span>
-                            <p className="text-xs text-white/60 mt-1">
-                              {futureBookings.length} upcoming lesson{futureBookings.length !== 1 ? 's' : ''}
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()}
-                    <Link to={createPageUrl('LearnerBookingCalendar')}>
-                      <Button className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
-                        Book a Lesson
-                      </Button>
-                    </Link>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </motion.div>
