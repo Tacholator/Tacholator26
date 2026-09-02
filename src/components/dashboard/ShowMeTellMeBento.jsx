@@ -11,23 +11,24 @@ export default function ShowMeTellMeBento() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.05 }}
+      className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
     >
-      <div className="flex items-center gap-2 mb-3 px-1">
+      <div className="px-4 pt-4 pb-2 flex items-center gap-2">
         <HelpCircle className="w-5 h-5 text-[#071739]" />
         <h3 className="text-lg font-semibold text-[#071739]">Show Me, Tell Me Questions</h3>
       </div>
 
-      <p className="text-xs text-slate-500 mb-3 px-1 leading-relaxed">
+      <p className="text-xs text-slate-500 mb-3 px-4 leading-relaxed">
         You'll be asked 2 vehicle safety questions on your test. Tap a card to see the answer.
       </p>
 
       {/* Tell Me questions */}
-      <div className="flex items-center gap-1.5 mb-2 px-1">
+      <div className="flex items-center gap-1.5 mb-2 px-4">
         <MessageSquareText className="w-4 h-4 text-[#071739]" />
         <p className="text-sm font-bold text-[#071739]">Tell Me Questions</p>
         <span className="text-xs text-slate-400">(14 questions)</span>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
+      <div className="flex gap-3 overflow-x-auto pb-3 px-4 scrollbar-hide snap-x snap-mandatory">
         {tellMeQuestions.map((q) => (
           <button
             key={`tell-${q.number}`}
@@ -43,13 +44,15 @@ export default function ShowMeTellMeBento() {
         ))}
       </div>
 
+      <div className="h-px bg-slate-100 mx-4 my-2" />
+
       {/* Show Me questions */}
-      <div className="flex items-center gap-1.5 mb-2 mt-4 px-1">
+      <div className="flex items-center gap-1.5 mb-2 px-4">
         <Eye className="w-4 h-4 text-[#071739]" />
         <p className="text-sm font-bold text-[#071739]">Show Me Questions</p>
         <span className="text-xs text-slate-400">(7 questions)</span>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
+      <div className="flex gap-3 overflow-x-auto pb-3 px-4 scrollbar-hide snap-x snap-mandatory">
         {showMeQuestions.map((q) => (
           <button
             key={`show-${q.number}`}
@@ -65,7 +68,7 @@ export default function ShowMeTellMeBento() {
         ))}
       </div>
 
-      <p className="text-xs text-slate-400 italic mt-2 px-1">
+      <p className="text-xs text-slate-400 italic px-4 pb-4 pt-1">
         Source: DVSA — Show me, tell me vehicle safety questions (gov.uk)
       </p>
 
