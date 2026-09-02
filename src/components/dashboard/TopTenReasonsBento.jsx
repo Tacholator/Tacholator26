@@ -15,15 +15,15 @@ export default function TopTenReasonsBento() {
       transition={{ delay: 0.05 }}
       className="rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden"
     >
-      {/* Master card header */}
-      <div className="bg-[#071739] px-4 py-3 flex items-center justify-between">
+      {/* Card header */}
+      <div className="px-4 pt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-[#F7B602]" />
-          <h3 className="text-base font-semibold text-white">Top 10 Reasons for Test Fails</h3>
+          <AlertTriangle className="w-5 h-5 text-[#071739]" />
+          <h3 className="text-base font-semibold text-[#071739]">Top 10 Reasons for Test Fails</h3>
         </div>
         <Link
           to={createPageUrl('TopTenReasons')}
-          className="inline-flex items-center gap-0.5 text-xs font-semibold text-[#F7B602] hover:text-white transition-colors"
+          className="inline-flex items-center gap-0.5 text-xs font-semibold text-[#071739] hover:text-[#F7B602] transition-colors"
         >
           View all
           <ChevronRight className="w-3.5 h-3.5" />
@@ -31,7 +31,7 @@ export default function TopTenReasonsBento() {
       </div>
 
       {/* Horizontal scroll row */}
-      <div className="px-6 py-4">
+      <div className="px-6 pb-4 pt-3">
         <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-thin snap-x snap-mandatory">
           {topReasons.map((reason) => (
             <button
