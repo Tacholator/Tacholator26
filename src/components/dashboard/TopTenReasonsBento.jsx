@@ -13,33 +13,39 @@ export default function TopTenReasonsBento() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.05 }}
+      className="rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden"
     >
-      <div className="flex items-center justify-between mb-3 px-1">
+      {/* Master card header */}
+      <div className="bg-[#071739] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-[#071739]" />
-          <h3 className="text-lg font-semibold text-[#071739]">Top 10 Reasons for Test Fails</h3>
+          <AlertTriangle className="w-5 h-5 text-[#F7B602]" />
+          <h3 className="text-base font-semibold text-white">Top 10 Reasons for Test Fails</h3>
         </div>
         <Link
           to={createPageUrl('TopTenReasons')}
-          className="inline-flex items-center gap-0.5 text-xs font-semibold text-[#071739] hover:text-[#F7B602] transition-colors"
+          className="inline-flex items-center gap-0.5 text-xs font-semibold text-[#F7B602] hover:text-white transition-colors"
         >
           View all
           <ChevronRight className="w-3.5 h-3.5" />
         </Link>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
-        {topReasons.map((reason) => (
-          <button
-            key={reason.number}
-            onClick={() => setSelected(reason)}
-            className="flex-none w-40 h-36 snap-start rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 p-4 flex flex-col items-center justify-start text-center shadow-sm pt-5 hover:shadow-md hover:from-rose-200 hover:to-rose-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-400"
-          >
-            <div className="w-9 h-9 rounded-full bg-[#071739] flex items-center justify-center mb-2">
-              <span className="text-sm font-bold text-[#F7B602]">{reason.number}</span>
-            </div>
-            <p className="text-xs font-semibold text-rose-950 leading-tight">{reason.title}</p>
-          </button>
-        ))}
+
+      {/* Horizontal scroll row */}
+      <div className="px-6 py-4">
+        <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-thin snap-x snap-mandatory">
+          {topReasons.map((reason) => (
+            <button
+              key={reason.number}
+              onClick={() => setSelected(reason)}
+              className="flex-none w-40 h-36 snap-start rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 p-4 flex flex-col items-center justify-start text-center shadow-sm pt-5 hover:shadow-md hover:from-rose-200 hover:to-rose-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-400"
+            >
+              <div className="w-9 h-9 rounded-full bg-[#071739] flex items-center justify-center mb-2">
+                <span className="text-sm font-bold text-[#F7B602]">{reason.number}</span>
+              </div>
+              <p className="text-xs font-semibold text-rose-950 leading-tight">{reason.title}</p>
+            </button>
+          ))}
+        </div>
       </div>
 
       <AnimatePresence>
