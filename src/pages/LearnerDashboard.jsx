@@ -45,7 +45,7 @@ import LearnerOnboardingPopup from '@/components/onboarding/LearnerOnboardingPop
 import LearnerAppTour from '@/components/onboarding/LearnerAppTour';
 import TestReadinessCard from '@/components/dashboard/TestReadinessCard';
 import GoldenRuleCard from '@/components/dashboard/GoldenRuleCard';
-import TenCommandmentsBento from '@/components/dashboard/TenCommandmentsBento';
+import TopTenReasonsBento from '@/components/dashboard/TopTenReasonsBento';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
@@ -484,8 +484,8 @@ export default function LearnerDashboard() {
         {/* Golden Rule */}
         <GoldenRuleCard />
 
-        {/* Ten Commandments Bento Boxes */}
-        <TenCommandmentsBento />
+        {/* Top 10 Reasons for Test Fails */}
+        <TopTenReasonsBento />
 
         {/* Arrival Notification Banner */}
         {arrivalNotification && (
