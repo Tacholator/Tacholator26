@@ -11,14 +11,16 @@ export default function ShowMeTellMeBento() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.05 }}
-      className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
+      className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden ring-1 ring-[#F7B602]/20"
     >
-      <div className="px-4 pt-4 pb-2 flex items-center gap-2">
-        <HelpCircle className="w-5 h-5 text-[#071739]" />
-        <h3 className="text-lg font-semibold text-[#071739]">Show Me, Tell Me Questions</h3>
+      <div className="bg-[#071739] px-4 py-3 flex items-center gap-2">
+        <div className="w-8 h-8 rounded-lg bg-[#F7B602] flex items-center justify-center shrink-0">
+          <HelpCircle className="w-5 h-5 text-[#071739]" />
+        </div>
+        <h3 className="text-lg font-semibold text-white">Show Me, Tell Me Questions</h3>
       </div>
 
-      <p className="text-xs text-slate-500 mb-3 px-4 leading-relaxed">
+      <p className="text-xs text-slate-500 mb-3 px-4 pt-3 leading-relaxed">
         You'll be asked 2 vehicle safety questions on your test. Tap a card to see the answer.
       </p>
 
