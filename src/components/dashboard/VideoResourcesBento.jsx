@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { PlayCircle, Video } from 'lucide-react';
 import { youtubeThumbnail } from '@/lib/youtube';
+import TestRoutesSection from '@/components/dashboard/TestRoutesSection';
 
 export default function VideoResourcesBento() {
   const { data: videos = [], isLoading } = useQuery({
@@ -77,6 +78,11 @@ export default function VideoResourcesBento() {
           </div>
         )}
       </div>
+
+      {/* Subtle divider before Test Routes */}
+      <div className="mx-6 border-t border-slate-100" />
+
+      <TestRoutesSection />
     </motion.div>
   );
 }
