@@ -50,6 +50,7 @@ import TenCommandments from './pages/TenCommandments';
 import TenCommandmentsChecklist from './pages/TenCommandmentsChecklist';
 import PupilTopicDetail from './pages/PupilTopicDetail';
 import LearnerFreeTestRoutes from './pages/LearnerFreeTestRoutes';
+import TopTenReasons from './pages/TopTenReasons';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -304,6 +305,11 @@ const AuthenticatedApp = () => {
       <Route path="/LearnerFreeTestRoutes" element={
         <LayoutWrapper currentPageName="LearnerFreeTestRoutes">
           <LearnerFreeTestRoutes />
+        </LayoutWrapper>
+      } />
+      <Route path="/TopTenReasons" element={
+        <LayoutWrapper currentPageName="TopTenReasons">
+          <TopTenReasons />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

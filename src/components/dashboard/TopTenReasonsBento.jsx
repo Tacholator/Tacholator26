@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X, ChevronRight } from 'lucide-react';
 import { topReasons } from './topReasonsData';
 
 export default function TopTenReasonsBento() {
@@ -17,6 +19,13 @@ export default function TopTenReasonsBento() {
           <AlertTriangle className="w-5 h-5 text-[#071739]" />
           <h3 className="text-lg font-semibold text-[#071739]">Top 10 Reasons for Test Fails</h3>
         </div>
+        <Link
+          to={createPageUrl('TopTenReasons')}
+          className="inline-flex items-center gap-0.5 text-xs font-semibold text-[#071739] hover:text-[#F7B602] transition-colors"
+        >
+          View all
+          <ChevronRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
         {topReasons.map((reason) => (
