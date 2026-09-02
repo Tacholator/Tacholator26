@@ -30,7 +30,6 @@ export default function VideoResourcesBento() {
         </div>
         <div className="min-w-0">
           <h3 className="text-white font-semibold text-base">Video Resources</h3>
-          <p className="text-slate-400 text-xs">Watch official DVSA demonstration videos</p>
         </div>
       </div>
 
