@@ -433,55 +433,6 @@ export default function LearnerBookingCalendar() {
           <p className="text-slate-500">Click on available slots to book a lesson instantly</p>
         </div>
 
-        {upcomingBookings.length > 0 && (
-          <Card className="border-0 shadow-sm mb-6">
-            <CardHeader>
-              <CardTitle className="text-lg">Your Upcoming Lessons</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {upcomingBookings.map(booking => (
-                <div key={booking.id} className="bg-slate-50 border border-slate-200 rounded-lg p-4 flex items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-slate-600" />
-                      <span className="font-medium text-slate-700">
-                        {moment(booking.startAtUtc).local().format('ddd, D MMM YYYY')}
-                      </span>
-                      <Badge className={
-                        booking.status === 'confirmed' 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'bg-purple-100 text-purple-700'
-                      }>
-                        {booking.status === 'confirmed' ? 'Confirmed' : 'Pending'}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <Clock className="w-4 h-4" />
-                      <span>
-                        {moment(booking.startAtUtc).local().format('HH:mm')} - {moment(booking.endAtUtc).local().format('HH:mm')}
-                        {' '}({booking.durationHours}h)
-                      </span>
-                    </div>
-                    <div className="text-sm font-medium text-emerald-700">
-                      £{booking.totalPriceGbp.toFixed(2)}
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleCancelClick(booking)}
-                    disabled={cancelBookingMutation.isPending}
-                    className="text-rose-600 hover:text-rose-700"
-                  >
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Cancel
-                  </Button>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
-
         <LearnerBookingList
           bookings={bookings}
           slotInstances={slotInstances}
