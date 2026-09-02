@@ -7,19 +7,18 @@ export default function GoldenRuleCard() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl bg-gradient-to-br from-[#071739] to-[#0e2a5c] p-5 shadow-lg"
+      className="rounded-xl bg-gradient-to-br from-[#071739] to-[#0e2a5c] p-3 shadow-md"
     >
-      <div className="flex items-start gap-3">
-        <div className="shrink-0 w-10 h-10 rounded-xl bg-[#F7B602] flex items-center justify-center">
-          <Crown className="w-5 h-5 text-[#071739]" />
+      <div className="flex items-center gap-2.5">
+        <div className="shrink-0 w-7 h-7 rounded-lg bg-[#F7B602] flex items-center justify-center">
+          <Crown className="w-4 h-4 text-[#071739]" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-bold text-[#F7B602] uppercase tracking-wide">
+          <h3 className="text-[11px] font-bold text-[#F7B602] uppercase tracking-wide leading-tight">
             The Golden Rule
           </h3>
-          <p className="mt-1 text-white text-sm leading-relaxed">
-            If another road user has to slow down, stop, swerve, or take action because of you,
-            you are probably making a serious fault.
+          <p className="mt-0.5 text-white text-xs leading-snug">
+            If another road user has to slow down, stop, swerve, or take action because of you, you are probably making a serious fault.
           </p>
         </div>
       </div>
