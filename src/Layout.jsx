@@ -363,10 +363,10 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-x-4 bg-slate-50 border-b border-slate-200 px-4 shadow-sm" style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(4rem + env(safe-area-inset-top))', willChange: 'transform', transform: 'translateZ(0)' }}>
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-x-4 bg-[#071739] px-4" style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(4rem + env(safe-area-inset-top))', willChange: 'transform', transform: 'translateZ(0)' }}>
         <button
           onClick={() => setMobileMenuOpen(true)}
-          className="p-2 -m-2 text-[#071739]"
+          className="p-2 -m-2 text-white"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -376,7 +376,7 @@ export default function Layout({ children, currentPageName }) {
                         alt="Mobrage" 
                         className="w-8 h-8 rounded-lg object-cover"
                         />
-                        <span className="font-bold text-lg text-[#071739]">Tacholator</span>
+                        <span className="font-bold text-lg text-white">Tacholator</span>
                                 </div>
                       <div className="flex items-center gap-2">
                       <button 
