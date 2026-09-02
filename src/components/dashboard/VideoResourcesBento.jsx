@@ -22,7 +22,7 @@ export default function VideoResourcesBento() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.18 }}
-      className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100"
+      className="bg-white rounded-2xl shadow-sm overflow-hidden border-2 border-[#071739]"
     >
       {/* Navy header with gold accent */}
       <div className="bg-[#071739] px-5 py-4 flex items-center gap-3">
