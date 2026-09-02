@@ -737,18 +737,6 @@ export default function LearnerDashboard() {
                       uniqueId="hours-grad"
                     />
                   </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <ProgressRing 
-                      current={totalMileage} 
-                      target={500} 
-                      size={100} 
-                      strokeWidth={8}
-                      label="miles"
-                      colorFrom="#3b82f6"
-                      colorTo="#6366f1"
-                      uniqueId="mileage-grad"
-                    />
-                  </div>
                 </div>
                 <Link to={createPageUrl('LearnerProgress')}>
                   <Button className="w-full gap-2 bg-sky-500 hover:bg-sky-600 text-white">
