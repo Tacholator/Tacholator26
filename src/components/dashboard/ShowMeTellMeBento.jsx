@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle, MessageSquareText, Eye, X, PlayCircle } from 'lucide-react';
+import { HelpCircle, MessageSquareText, Eye, X } from 'lucide-react';
 import { tellMeQuestions, showMeQuestions } from './showMeTellMeData';
 
 export default function ShowMeTellMeBento() {
@@ -29,15 +29,6 @@ export default function ShowMeTellMeBento() {
         <MessageSquareText className="w-4 h-4 text-[#071739]" />
         <p className="text-sm font-bold text-[#071739]">Tell Me Questions</p>
         <span className="text-xs text-slate-400">(14 questions)</span>
-        <a
-          href="https://youtu.be/xwLH_sT4MIY"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto inline-flex items-center gap-1 text-[11px] font-bold text-[#071739] bg-[#F7B602] hover:bg-[#e0a800] transition-colors px-2 py-1 rounded-full"
-        >
-          <PlayCircle className="w-3.5 h-3.5" />
-          Watch video
-        </a>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-3 px-6 scrollbar-thin snap-x snap-mandatory">
         {tellMeQuestions.map((q) => (
@@ -62,15 +53,6 @@ export default function ShowMeTellMeBento() {
         <Eye className="w-4 h-4 text-[#071739]" />
         <p className="text-sm font-bold text-[#071739]">Show Me Questions</p>
         <span className="text-xs text-slate-400">(7 questions)</span>
-        <a
-          href="https://youtu.be/upT_ClLDKww"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto inline-flex items-center gap-1 text-[11px] font-bold text-[#071739] bg-[#F7B602] hover:bg-[#e0a800] transition-colors px-2 py-1 rounded-full"
-        >
-          <PlayCircle className="w-3.5 h-3.5" />
-          Watch video
-        </a>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-3 px-6 scrollbar-thin snap-x snap-mandatory">
         {showMeQuestions.map((q) => (
