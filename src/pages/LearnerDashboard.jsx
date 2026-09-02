@@ -46,6 +46,7 @@ import LearnerAppTour from '@/components/onboarding/LearnerAppTour';
 import TestReadinessCard from '@/components/dashboard/TestReadinessCard';
 import GoldenRuleCard from '@/components/dashboard/GoldenRuleCard';
 import TopTenReasonsBento from '@/components/dashboard/TopTenReasonsBento';
+import ShowMeTellMeBento from '@/components/dashboard/ShowMeTellMeBento';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
@@ -486,6 +487,9 @@ export default function LearnerDashboard() {
 
         {/* Top 10 Reasons for Test Fails */}
         <TopTenReasonsBento />
+
+        {/* Show Me, Tell Me Questions */}
+        <ShowMeTellMeBento />
 
         {/* Arrival Notification Banner */}
         {arrivalNotification && (
