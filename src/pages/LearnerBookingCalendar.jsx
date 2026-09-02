@@ -60,21 +60,21 @@ export default function LearnerBookingCalendar() {
     queryKey: ['instructorCalendarRules', pupil?.instructorId],
     queryFn: () => base44.entities.CalendarRule.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
-    refetchInterval: 5000
+    refetchInterval: 60000
   });
 
   const { data: allInstructorBookings = [] } = useQuery({
     queryKey: ['instructorBookings', pupil?.instructorId],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
-    refetchInterval: 5000
+    refetchInterval: 15000
   });
 
   const { data: allSlotInstances = [] } = useQuery({
     queryKey: ['instructorSlotInstances', pupil?.instructorId],
     queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
-    refetchInterval: 5000
+    refetchInterval: 15000
   });
 
   const now = moment();

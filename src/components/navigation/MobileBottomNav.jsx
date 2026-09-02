@@ -83,7 +83,7 @@ const pupilNavItems = [
   }
 ];
 
-export default function MobileBottomNav({ userId, currentPageName, isInstructor }) {
+export default function MobileBottomNav({ userId, currentPageName, isInstructor, unreadNotificationsCount = 0 }) {
   // Fetch pupil status for learners
   const { data: pupilProfile } = useQuery({
     queryKey: ['learnerPupilProfile', userId],
@@ -104,17 +104,7 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor 
         ? pupilNavItems.filter(item => item.id === 'book')
         : pupilNavItems);
 
-  const { data: unreadNotifications = [] } = useQuery({
-    queryKey: ['unreadNotificationsBottom', userId],
-    queryFn: async () => {
-      if (!userId) return [];
-      return await base44.entities.Notification.filter({ userId, readAt: null });
-    },
-    enabled: !!userId,
-    refetchInterval: 30000
-  });
 
-  const unreadNotificationsCount = unreadNotifications.length;
 
   return (
     <div

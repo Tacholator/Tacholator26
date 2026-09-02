@@ -550,6 +550,7 @@ export default function Layout({ children, currentPageName }) {
         userId={user?.id} 
         currentPageName={currentPageName}
         isInstructor={isInstructor}
+        unreadNotificationsCount={unreadNotificationsCount}
       />
 
       {/* Mobile Account Panel Full Screen */}

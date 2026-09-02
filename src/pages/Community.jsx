@@ -22,8 +22,8 @@ export default function Community() {
     queryKey: ['communityUserProfile', user?.id, user?.email, isInstructor],
     queryFn: async () => {
       if (isInstructor) {
-        const results = await base44.entities.Instructor.list();
-        return results.find(i => i.created_by === user.email) || null;
+        const results = await base44.entities.Instructor.filter({ created_by: user.email });
+        return results[0] || null;
       } else {
         const pupils = await base44.entities.Pupil.filter({ linkedUserId: user.id });
         return pupils[0] || null;

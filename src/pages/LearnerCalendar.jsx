@@ -60,11 +60,8 @@ export default function LearnerCalendar() {
         if (byLinkedId.length > 0) return byLinkedId[0];
       }
       if (user.email) {
-        const allPupils = await base44.entities.Pupil.list();
-        const matchingPupil = allPupils.find(p => 
-          p.email?.toLowerCase() === user.email.toLowerCase()
-        );
-        return matchingPupil || null;
+        const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+        if (byEmail.length > 0) return byEmail[0];
       }
       return null;
     },
@@ -81,21 +78,21 @@ export default function LearnerCalendar() {
     queryKey: ['instructorCalendarRules', pupil?.instructorId],
     queryFn: () => base44.entities.CalendarRule.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
-    refetchInterval: 5000
+    refetchInterval: 60000
   });
 
   const { data: bookings = [] } = useQuery({
     queryKey: ['instructorBookings', pupil?.instructorId],
     queryFn: () => base44.entities.LessonBooking.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
-    refetchInterval: 5000
+    refetchInterval: 15000
   });
 
   const { data: slotInstances = [] } = useQuery({
     queryKey: ['instructorSlotInstances', pupil?.instructorId],
     queryFn: () => base44.entities.BookableSlotInstance.filter({ instructorId: pupil.instructorId }),
     enabled: !!pupil?.instructorId,
-    refetchInterval: 5000
+    refetchInterval: 15000
   });
 
   const { data: myBookings = [] } = useQuery({
