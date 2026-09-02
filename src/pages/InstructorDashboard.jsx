@@ -743,54 +743,8 @@ export default function InstructorDashboard() {
             </Card>
           )}
 
-          {/* 5. Notifications + Pupil Activities */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {(unreadNotifications.length > 0 || notifications.length > 0) && (
-              <Card className={`${warmPalette.card_notifications} border-0 shadow-sm overflow-hidden`}>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-                      <Bell className="w-5 h-5 text-amber-600" />
-                      Notifications
-                    </h3>
-                    {unreadNotifications.length > 0 && (
-                      <Badge className="bg-amber-600 text-white">
-                        {unreadNotifications.length} unread
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {notifications.slice(0, 5).map(notif => (
-                      <div
-                        key={notif.id}
-                        className={`bg-white/70 rounded-lg p-3 ${!notif.readAt ? 'border-l-2 border-l-amber-500' : ''}`}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-slate-800 truncate">{notif.title}</p>
-                            {notif.message && (
-                              <p className="text-xs text-slate-600 mt-1 line-clamp-2 break-words">{notif.message}</p>
-                            )}
-                            <p className="text-xs text-slate-400 mt-1">
-                              {moment(notif.created_date).fromNow()}
-                            </p>
-                          </div>
-                          {!notif.readAt && (
-                            <Badge variant="secondary" className="text-xs">New</Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <Link to={createPageUrl('InstructorNotifications')}>
-                    <Button variant="outline" className="w-full mt-4">
-                      View All Notifications
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            )}
-
+          {/* Pupil Activities */}
+          <div>
             {pupilActivities.length > 0 && (
               <Card className={`${warmPalette.card_pupil_activities} border-0 shadow-sm overflow-hidden`}>
                 <CardContent className="p-6">

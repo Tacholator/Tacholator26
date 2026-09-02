@@ -968,8 +968,8 @@ export default function LearnerDashboard() {
           </motion.div>
         )}
 
-        {/* 6. Homework & Notifications */}
-        <div className="grid md:grid-cols-2 gap-6">
+        {/* Homework & Study Tasks */}
+        <div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1038,46 +1038,6 @@ export default function LearnerDashboard() {
             </Card>
           </motion.div>
 
-          {notifications.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
-            >
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-indigo-100 to-purple-100">
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Bell className="w-5 h-5 text-indigo-600" />
-                    Recent Notifications
-                  </CardTitle>
-                  {unreadNotifications > 0 && (
-                    <Badge className="bg-indigo-600 text-white">{unreadNotifications} unread</Badge>
-                  )}
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {notifications.slice(0, 3).map(notification => (
-                    <div 
-                      key={notification.id}
-                      className={`flex items-start gap-3 p-3 rounded-lg ${
-                        notification.readAt ? 'bg-white/70' : 'bg-white border border-indigo-200'
-                      }`}
-                    >
-                      <Bell className={`w-5 h-5 mt-0.5 ${notification.readAt ? 'text-slate-400' : 'text-indigo-600'}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-800">{notification.title}</p>
-                        <p className="text-xs text-slate-500 mt-1">{moment(notification.created_date).fromNow()}</p>
-                      </div>
-                    </div>
-                  ))}
-                  <Link to={createPageUrl('LearnerNotifications')}>
-                    <Button className="w-full gap-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white">
-                      View All Notifications <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
         </div>
 
         {/* 8. Instructor Snapshot */}
