@@ -482,11 +482,7 @@ export default function PupilProfile() {
                   target={pupil.targetHours || 45}
                   uniqueId="hours-gradient"
                 />
-                <div className="flex flex-col items-center justify-center px-4 py-3 rounded-xl bg-teal-50 border border-teal-200">
-                  <Gauge className="w-5 h-5 text-teal-600 mb-1" />
-                  <span className="text-2xl font-bold text-slate-800">{totalMileage.toLocaleString()}</span>
-                  <span className="text-xs text-slate-500">miles</span>
-                </div>
+
               </div>
               
               <div className="flex-1 space-y-2.5">
