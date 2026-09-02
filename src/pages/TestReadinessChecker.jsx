@@ -241,8 +241,8 @@ export default function TestReadinessChecker() {
     queryFn: async () => {
       const byId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
       if (byId.length > 0) return byId[0];
-      const all = await base44.entities.Pupil.list();
-      return all.find(p => p.email?.toLowerCase() === user.email?.toLowerCase()) || null;
+      const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+      return byEmail[0] || null;
     },
     enabled: !!user?.id
   });

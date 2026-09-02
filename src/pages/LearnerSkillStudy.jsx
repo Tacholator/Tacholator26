@@ -33,8 +33,8 @@ export default function LearnerSkillStudy() {
       if (!user) return null;
       const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
       if (byLinkedId.length > 0) return byLinkedId[0];
-      const allPupils = await base44.entities.Pupil.list();
-      return allPupils.find(p => p.email?.toLowerCase() === user.email?.toLowerCase()) || null;
+      const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+      return byEmail[0] || null;
     },
     enabled: !!user
   });

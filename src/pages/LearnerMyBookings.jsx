@@ -125,10 +125,13 @@ export default function LearnerMyBookings() {
   const { data: pupilProfile, isLoading: pupilLoading } = useQuery({
     queryKey: ['learnerPupilProfile', user?.id, user?.email],
     queryFn: async () => {
-      const allPupils = await base44.entities.Pupil.list();
-      let match = allPupils.find(p => p.linkedUserId === user.id);
-      if (!match) match = allPupils.find(p => p.email?.toLowerCase() === user.email?.toLowerCase());
-      return match || null;
+      const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (byLinkedId.length > 0) return byLinkedId[0];
+      if (user?.email) {
+        const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+        if (byEmail.length > 0) return byEmail[0];
+      }
+      return null;
     },
     enabled: !!user?.id,
   });

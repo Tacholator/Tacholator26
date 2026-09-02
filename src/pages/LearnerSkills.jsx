@@ -28,8 +28,8 @@ export default function LearnerSkills() {
         if (byLinkedId.length > 0) return byLinkedId[0];
       }
       if (user.email) {
-        const allPupils = await base44.entities.Pupil.list();
-        return allPupils.find(p => p.email?.toLowerCase() === user.email.toLowerCase()) || null;
+        const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+        if (byEmail.length > 0) return byEmail[0];
       }
       return null;
     },

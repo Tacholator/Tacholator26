@@ -57,12 +57,13 @@ export default function ProfileSettings() {
     queryKey: ['myPupilProfile', user?.id, user?.email],
     queryFn: async () => {
       if (!user?.id) return null;
-      const allPupils = await base44.entities.Pupil.list();
-      let match = allPupils.find(p => p.linkedUserId === user.id);
-      if (!match && user?.email) {
-        match = allPupils.find(p => p.email && p.email.toLowerCase() === user.email.toLowerCase());
+      const byLinkedId = await base44.entities.Pupil.filter({ linkedUserId: user.id });
+      if (byLinkedId.length > 0) return byLinkedId[0];
+      if (user?.email) {
+        const byEmail = await base44.entities.Pupil.filter({ email: user.email });
+        if (byEmail.length > 0) return byEmail[0];
       }
-      return match || null;
+      return null;
     },
     enabled: !!user?.id && !isInstructor
   });
