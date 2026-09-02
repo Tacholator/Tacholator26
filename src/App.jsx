@@ -51,6 +51,7 @@ import TenCommandmentsChecklist from './pages/TenCommandmentsChecklist';
 import PupilTopicDetail from './pages/PupilTopicDetail';
 import LearnerFreeTestRoutes from './pages/LearnerFreeTestRoutes';
 import TopTenReasons from './pages/TopTenReasons';
+import AdminVideoResources from './pages/AdminVideoResources';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -310,6 +311,11 @@ const AuthenticatedApp = () => {
       <Route path="/TopTenReasons" element={
         <LayoutWrapper currentPageName="TopTenReasons">
           <TopTenReasons />
+        </LayoutWrapper>
+      } />
+      <Route path="/AdminVideoResources" element={
+        <LayoutWrapper currentPageName="AdminVideoResources">
+          <AdminVideoResources />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

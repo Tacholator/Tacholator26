@@ -99,6 +99,13 @@ const adminCards = [
     icon: Megaphone,
     page: 'AdminMarketing',
     color: 'from-orange-500 to-rose-600'
+  },
+  {
+    title: 'Video Resources',
+    description: 'Add demonstration videos shown on the learner dashboard',
+    icon: Video,
+    page: 'AdminVideoResources',
+    color: 'from-fuchsia-500 to-fuchsia-600'
   }
 ];
 

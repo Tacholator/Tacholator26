@@ -1,0 +1,64 @@
+{
+  "name": "LearnerVideo",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Video title shown on the learner dashboard card"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description shown under the title"
+    },
+    "youtubeUrl": {
+      "type": "string",
+      "description": "Full YouTube URL"
+    },
+    "youtubeVideoId": {
+      "type": "string",
+      "description": "Extracted YouTube video ID used for thumbnail"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "tell_me",
+        "show_me",
+        "general"
+      ],
+      "default": "general",
+      "description": "Category grouping for the video"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order (lower first)"
+    },
+    "published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the video is visible to learners"
+    }
+  },
+  "required": [
+    "title",
+    "youtubeUrl"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
