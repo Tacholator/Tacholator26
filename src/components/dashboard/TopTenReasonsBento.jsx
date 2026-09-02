@@ -13,7 +13,7 @@ export default function TopTenReasonsBento() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.05 }}
-      className="rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden"
+      className="rounded-2xl bg-green-50 shadow-sm border border-green-100 overflow-hidden"
     >
       {/* Card header */}
       <div className="px-4 pt-4 flex items-center justify-between">
