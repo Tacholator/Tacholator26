@@ -35,7 +35,6 @@ export default async function(req) {
         chargesApplied: true,
         hourlyRateAtBookingGbp: hourlyRate,
         totalPriceGbp: totalPrice,
-        escrowAmountGbp: totalPrice,
         pickupLocation,
         requestedAt: now,
         confirmedAt: now,
@@ -43,12 +42,8 @@ export default async function(req) {
       created.push({ id: booking.id, start: slot.start, end: slot.end });
     }
 
-    // Escrow is held on each booking (escrowAmountGbp) but NOT deducted from
-    // the pupil's available balance. The charge is applied on completion.
-
     return Response.json({
       createdBookings: created,
-      escrowHeldNotDeducted: true,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

@@ -136,40 +136,11 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         const hourlyRate = pupil.hourlyRate || 0;
         const lessonCost = durationHours * hourlyRate;
         
-        // Check if this booking had escrow (was auto-confirmed with balance deduction)
-        const hasEscrow = bookingId && (booking?.escrowAmountGbp || 0) > 0;
-
         // Handle COMPLETED lessons
         if (data.completionOutcome === 'completed') {
-          // Always add to actual lesson hours
           const newHoursCompleted = (pupil.hoursCompleted || 0) + durationHours;
 
-          if (hasEscrow) {
-            // Escrow was held but NOT deducted at booking time — charge now on completion
-            await base44.entities.LessonBooking.update(bookingId, {
-              escrowAmountGbp: 0,
-              escrowReleasedAt: new Date().toISOString()
-            });
-            const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
-            await base44.entities.Pupil.update(pupil.id, {
-              hoursCompleted: newHoursCompleted,
-              bulkPaymentBalance: newBalance
-            });
-
-            if (lessonCost > 0) {
-              await base44.entities.PaymentLedger.create({
-                userId: pupil.linkedUserId || pupil.id,
-                bookingId: bookingId,
-                type: 'charge',
-                reason: 'lesson_confirmed_charge',
-                amountGbp: lessonCost,
-                hours: durationHours,
-                createdByRole: 'instructor',
-                note: `Lesson completed: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
-              });
-            }
-          } else if (data.chargesApplied) {
-            // No escrow (manually scheduled lesson) - deduct now
+          if (data.chargesApplied) {
             const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
             await base44.entities.Pupil.update(pupil.id, { 
               hoursCompleted: newHoursCompleted,
@@ -188,36 +159,14 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
               });
             }
           } else {
-            // No charges waived
             await base44.entities.Pupil.update(pupil.id, { hoursCompleted: newHoursCompleted });
           }
-        } 
+        }
         // Handle NO_SHOW lessons
         else if (data.completionOutcome === 'no_show') {
           const newAuditNoShowHours = (pupil.auditNoShowHours || 0) + durationHours;
           
-          if (hasEscrow) {
-            // Escrow was held but NOT deducted at booking time — charge now for no-show
-            await base44.entities.LessonBooking.update(bookingId, {
-              escrowAmountGbp: 0,
-              escrowReleasedAt: new Date().toISOString()
-            });
-            const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
-            await base44.entities.Pupil.update(pupil.id, {
-              auditNoShowHours: newAuditNoShowHours,
-              bulkPaymentBalance: newBalance
-            });
-            await base44.entities.PaymentLedger.create({
-              userId: pupil.linkedUserId || pupil.id,
-              bookingId: bookingId,
-              type: 'charge',
-              reason: 'late_cancellation_penalty',
-              amountGbp: lessonCost,
-              hours: durationHours,
-              createdByRole: 'instructor',
-              note: `No show penalty: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
-            });
-          } else if (data.chargesApplied) {
+          if (data.chargesApplied) {
             const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
             await base44.entities.Pupil.update(pupil.id, { 
               auditNoShowHours: newAuditNoShowHours,
@@ -241,28 +190,7 @@ export default function LessonOutcomeModal({ open, onClose, lessonId, bookingId 
         }
         // Handle CANCELLED lessons
         else if (data.completionOutcome === 'cancelled') {
-          if (hasEscrow) {
-            const escrowAmount = booking.escrowAmountGbp || 0;
-            if (data.chargesApplied) {
-              // Escrow was held but NOT deducted at booking — charge now
-              await base44.entities.LessonBooking.update(bookingId, { escrowAmountGbp: 0, escrowReleasedAt: new Date().toISOString() });
-              const newBalance = (pupil.bulkPaymentBalance || 0) - escrowAmount;
-              await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: newBalance });
-              await base44.entities.PaymentLedger.create({
-                userId: pupil.linkedUserId || pupil.id,
-                bookingId: bookingId,
-                type: 'charge',
-                reason: 'late_cancellation_penalty',
-                amountGbp: escrowAmount,
-                hours: durationHours,
-                createdByRole: 'instructor',
-                note: `Cancellation charge: ${durationHours.toFixed(2)}h @ £${hourlyRate}/h`
-              });
-            } else {
-              // No charges — clear escrow, no balance change
-              await base44.entities.LessonBooking.update(bookingId, { escrowAmountGbp: 0 });
-            }
-          } else if (data.chargesApplied) {
+          if (data.chargesApplied) {
             const newAuditLateCancellationHours = (pupil.auditLateCancellationHours || 0) + durationHours;
             const newBalance = (pupil.bulkPaymentBalance || 0) - lessonCost;
             await base44.entities.Pupil.update(pupil.id, { 

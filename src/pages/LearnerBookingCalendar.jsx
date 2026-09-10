@@ -210,17 +210,12 @@ export default function LearnerBookingCalendar() {
         confirmedAt: requiresApproval ? null : new Date().toISOString(),
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
         totalPriceGbp: totalPrice,
-        escrowAmountGbp: requiresApproval ? 0 : totalPrice,
         pickupLocation,
         dropoffLocation,
         notesFromPupil: [notesFromPupil, firstTimeData ? `First booking — Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''].filter(Boolean).join(' | ') || null,
         requestedAt: new Date().toISOString(),
         slotInstanceId: selectedSlotInstance?.id || null
       });
-
-      // Escrow is held on the booking (escrowAmountGbp) but NOT deducted from
-      // available balance at confirmation. The charge is applied when the
-      // lesson is completed or cancelled late / no-show.
 
       // Update slot instance status
       if (selectedSlotInstance?.id) {
@@ -247,7 +242,7 @@ export default function LearnerBookingCalendar() {
           title: requiresApproval ? 'Booking Request Sent' : 'Lesson Confirmed!',
           message: requiresApproval
             ? `Your lesson request for ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} has been sent. Awaiting instructor approval.`
-            : `Your lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} is confirmed. £${totalPrice.toFixed(2)} is held in escrow and will be charged on completion.`,
+            : `Your lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} is confirmed.`,
           type: 'booking',
           linkTarget: 'LearnerMyBookings'
         });
@@ -275,10 +270,9 @@ export default function LearnerBookingCalendar() {
 
   const cancelBookingMutation = useMutation({
     mutationFn: async ({ bookingId, isLate }) => {
-      // Fetch fresh booking data to ensure slotInstanceId and escrow are up to date
+      // Fetch fresh booking data
       const freshBookings = await base44.entities.LessonBooking.filter({ id: bookingId });
       const booking = freshBookings[0] || myBookings.find(b => b.id === bookingId);
-      const escrowAmount = booking.escrowAmountGbp || 0;
 
       const updates = {
         status: isLate ? 'cancelled_late_by_pupil' : 'cancelled_by_pupil',
@@ -286,8 +280,7 @@ export default function LearnerBookingCalendar() {
         cancelledByRole: 'pupil',
         lateCancellation: isLate,
         penaltyAmountGbp: isLate ? booking.totalPriceGbp : 0,
-        penaltyHours: isLate ? booking.durationHours : 0,
-        escrowAmountGbp: 0 // escrow is cleared either way
+        penaltyHours: isLate ? booking.durationHours : 0
       };
 
       await base44.entities.LessonBooking.update(bookingId, updates);
@@ -300,24 +293,18 @@ export default function LearnerBookingCalendar() {
         });
       }
 
-      // Escrow was held but NOT deducted from balance at booking time.
-      if (!isLate && escrowAmount > 0) {
-        // Early cancellation: nothing was deducted, so no refund needed.
-        // Escrow is cleared on the booking (escrowAmountGbp: 0 set above).
-      }
-
-      if (isLate && escrowAmount > 0) {
-        // Late cancellation: deduct the escrow amount from balance now
+      if (isLate) {
+        // Late cancellation: deduct the lesson cost from balance
         const currentPupilData = await base44.entities.Pupil.filter({ id: pupil.id });
         const currentBalance = currentPupilData[0]?.bulkPaymentBalance || 0;
-        await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: currentBalance - escrowAmount });
+        await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: currentBalance - booking.totalPriceGbp });
 
         await base44.entities.PaymentLedger.create({
           userId: pupil.id,
           bookingId: bookingId,
           type: 'charge',
           reason: 'late_cancellation_penalty',
-          amountGbp: escrowAmount,
+          amountGbp: booking.totalPriceGbp,
           hours: booking.durationHours,
           createdByRole: 'system',
           note: 'Late cancellation charge deducted from balance'
