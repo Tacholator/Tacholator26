@@ -43,15 +43,12 @@ export default async function(req) {
       created.push({ id: booking.id, start: slot.start, end: slot.end });
     }
 
-    // Deduct escrow from pupil bulk payment balance (3 × £60 = £180; £400 → £220)
-    await base44.asServiceRole.entities.Pupil.update(pupilId, {
-      bulkPaymentBalance: 220,
-    });
+    // Escrow is held on each booking (escrowAmountGbp) but NOT deducted from
+    // the pupil's available balance. The charge is applied on completion.
 
     return Response.json({
       createdBookings: created,
-      pupilBalanceUpdated: true,
-      newBulkPaymentBalance: 220,
+      escrowHeldNotDeducted: true,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

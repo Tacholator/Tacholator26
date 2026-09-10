@@ -218,23 +218,9 @@ export default function LearnerBookingCalendar() {
         slotInstanceId: selectedSlotInstance?.id || null
       });
 
-      if (!requiresApproval) {
-        // Deduct escrow amount from pupil's balance immediately
-        const newBalance = (pupil.bulkPaymentBalance || 0) - totalPrice;
-        await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: newBalance });
-
-        // Log the escrow deduction in ledger
-        await base44.entities.PaymentLedger.create({
-          userId: pupil.id,
-          bookingId: booking.id,
-          type: 'charge',
-          reason: 'lesson_confirmed_charge',
-          amountGbp: totalPrice,
-          hours: durationHours,
-          createdByRole: 'system',
-          note: `Escrow held: £${totalPrice.toFixed(2)} deducted on booking confirmation`
-        });
-      }
+      // Escrow is held on the booking (escrowAmountGbp) but NOT deducted from
+      // available balance at confirmation. The charge is applied when the
+      // lesson is completed or cancelled late / no-show.
 
       // Update slot instance status
       if (selectedSlotInstance?.id) {
@@ -261,7 +247,7 @@ export default function LearnerBookingCalendar() {
           title: requiresApproval ? 'Booking Request Sent' : 'Lesson Confirmed!',
           message: requiresApproval
             ? `Your lesson request for ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} has been sent. Awaiting instructor approval.`
-            : `Your lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} is confirmed. £${totalPrice.toFixed(2)} has been deducted from your balance.`,
+            : `Your lesson on ${startMoment.format('D MMM')} at ${startMoment.format('HH:mm')} is confirmed. £${totalPrice.toFixed(2)} is held in escrow and will be charged on completion.`,
           type: 'booking',
           linkTarget: 'LearnerMyBookings'
         });
@@ -314,35 +300,27 @@ export default function LearnerBookingCalendar() {
         });
       }
 
+      // Escrow was held but NOT deducted from balance at booking time.
       if (!isLate && escrowAmount > 0) {
-        // Early cancellation: refund escrow back to pupil balance
-        const currentPupilData = await base44.entities.Pupil.filter({ id: pupil.id });
-        const currentBalance = currentPupilData[0]?.bulkPaymentBalance || 0;
-        await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: currentBalance + escrowAmount });
-
-        await base44.entities.PaymentLedger.create({
-          userId: pupil.id,
-          bookingId: bookingId,
-          type: 'refund',
-          reason: 'refund_issued',
-          amountGbp: escrowAmount,
-          hours: booking.durationHours,
-          createdByRole: 'system',
-          note: `Escrow refunded on early cancellation`
-        });
+        // Early cancellation: nothing was deducted, so no refund needed.
+        // Escrow is cleared on the booking (escrowAmountGbp: 0 set above).
       }
 
-      if (isLate) {
-        // Late cancellation: balance was already deducted at booking time (escrow), no further change needed
+      if (isLate && escrowAmount > 0) {
+        // Late cancellation: deduct the escrow amount from balance now
+        const currentPupilData = await base44.entities.Pupil.filter({ id: pupil.id });
+        const currentBalance = currentPupilData[0]?.bulkPaymentBalance || 0;
+        await base44.entities.Pupil.update(pupil.id, { bulkPaymentBalance: currentBalance - escrowAmount });
+
         await base44.entities.PaymentLedger.create({
           userId: pupil.id,
           bookingId: bookingId,
           type: 'charge',
           reason: 'late_cancellation_penalty',
-          amountGbp: booking.totalPriceGbp,
+          amountGbp: escrowAmount,
           hours: booking.durationHours,
           createdByRole: 'system',
-          note: 'Full deduction retained - late cancellation (<48h)'
+          note: 'Late cancellation charge deducted from balance'
         });
       }
 
