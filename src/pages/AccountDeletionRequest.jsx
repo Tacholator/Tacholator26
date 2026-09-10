@@ -13,14 +13,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { AlertTriangle, Loader2, CheckCircle2 } from 'lucide-react';
-import moment from 'moment';
+import { createPageUrl } from '@/utils';
+import { Link } from 'react-router-dom';
 
 export default function AccountDeletionRequest() {
   const [reason, setReason] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
-  const [isSending, setIsSending] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [done, setDone] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const { data: user } = useQuery({
@@ -28,41 +40,35 @@ export default function AccountDeletionRequest() {
     queryFn: () => base44.auth.me()
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!reason || !user?.id) return;
+  const handleConfirmDelete = async () => {
     setErrorMsg('');
-    setIsSending(true);
+    setIsDeleting(true);
     try {
-      await base44.entities.DeletionRequest.create({
-        userId: user.id,
-        userEmail: user.email,
-        userName: user.full_name,
+      const res = await base44.functions.invoke('deleteOwnAccount', {
         reason,
-        additionalInfo,
-        status: 'pending'
+        additionalInfo
       });
-      await base44.integrations.Core.SendEmail({
-        to: 'fasobah@gmail.com',
-        subject: 'Account Deletion Request - Mobrage Tacholator',
-        body: `Account Deletion Request\n\n` +
-              `Name: ${user?.full_name || 'N/A'}\n` +
-              `Email: ${user?.email}\n` +
-              `User ID: ${user?.id}\n\n` +
-              `Reason for Deletion: ${reason}\n\n` +
-              `Additional Information:\n${additionalInfo || 'None provided'}\n\n` +
-              `Request Date: ${moment().format('D MMM YYYY, h:mm a')}`
-      });
-      setSubmitted(true);
+      if (res?.data?.error) throw new Error(res.data.error);
+      setConfirmOpen(false);
+      setDone(true);
+      // Session is now invalid — clear it and return to login
+      setTimeout(() => {
+        base44.auth.logout();
+      }, 2500);
     } catch (error) {
-      console.error('Failed to send deletion request:', error);
-      setErrorMsg('Something went wrong submitting your request. Please try again.');
+      console.error('Failed to delete account:', error);
+      setErrorMsg(
+        error?.message?.includes('Unauthorized')
+          ? 'Your session has expired. Please log in again and retry.'
+          : 'Something went wrong deleting your account. Please try again.'
+      );
+      setConfirmOpen(false);
     } finally {
-      setIsSending(false);
+      setIsDeleting(false);
     }
   };
 
-  if (submitted) {
+  if (done) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 flex items-center justify-center p-6">
         <Card className="max-w-md w-full border-0 shadow-lg">
@@ -70,9 +76,9 @@ export default function AccountDeletionRequest() {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-8 h-8 text-green-600" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">Request Submitted</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">Account Deleted</h2>
             <p className="text-slate-600 mb-6">
-              Your account deletion request has been sent to the admin. You will be contacted shortly regarding your request.
+              Your account and associated data have been permanently removed. You'll be signed out shortly.
             </p>
           </CardContent>
         </Card>
@@ -83,37 +89,40 @@ export default function AccountDeletionRequest() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6">
       <div className="max-w-2xl mx-auto py-8">
+        <Link to={createPageUrl('ProfileSettings')} className="text-sm text-slate-500 hover:text-slate-700 mb-4 inline-block">
+          ← Back to settings
+        </Link>
         <Card className="border-0 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl text-slate-800">Account Deletion Request</CardTitle>
+            <CardTitle className="text-2xl text-slate-800">Delete Your Account</CardTitle>
             <CardDescription>
-              Submit a request to permanently delete your Tacholator account and all associated data
+              Permanently delete your Tacholator account and all associated data — no admin approval required.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 mb-6 flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-rose-600 mt-0.5 shrink-0" />
               <div>
-                <p className="font-medium text-rose-800">Warning: This action is permanent</p>
-                <p className="text-sm text-rose-700">Once your account is deleted, all your data including lessons, progress, and homework will be permanently removed.</p>
+                <p className="font-medium text-rose-800">Warning: This action is permanent and immediate</p>
+                <p className="text-sm text-rose-700">Once you confirm, your account will be deleted right away. All your data including lessons, progress, and homework will be permanently removed. This cannot be undone.</p>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={(e) => { e.preventDefault(); setConfirmOpen(true); }} className="space-y-6">
               <div className="space-y-2">
                 <Label>Name</Label>
-                <Input 
-                  value={user?.full_name || ''} 
-                  disabled 
+                <Input
+                  value={user?.full_name || ''}
+                  disabled
                   className="bg-slate-50"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label>Email</Label>
-                <Input 
-                  value={user?.email || ''} 
-                  disabled 
+                <Input
+                  value={user?.email || ''}
+                  disabled
                   className="bg-slate-50"
                 />
               </div>
@@ -136,7 +145,7 @@ export default function AccountDeletionRequest() {
 
               <div className="space-y-2">
                 <Label>Additional Information (Optional)</Label>
-                <Textarea 
+                <Textarea
                   value={additionalInfo}
                   onChange={(e) => setAdditionalInfo(e.target.value)}
                   placeholder="Provide any additional details..."
@@ -149,24 +158,47 @@ export default function AccountDeletionRequest() {
                   {errorMsg}
                 </div>
               )}
-              <Button 
-                type="submit" 
-                disabled={!reason || isSending || !user?.id}
+              <Button
+                type="submit"
+                disabled={!reason || isDeleting || !user?.id}
                 className="w-full bg-rose-600 hover:bg-rose-700 text-white"
               >
-                {isSending ? (
+                {isDeleting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting Request...
+                    Deleting Account...
                   </>
                 ) : (
-                  'Submit Deletion Request'
+                  'Delete My Account Now'
                 )}
               </Button>
             </form>
           </CardContent>
         </Card>
       </div>
+
+      <AlertDialog open={confirmOpen} onOpenChange={(open) => !isDeleting && setConfirmOpen(open)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete your account permanently?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will immediately and permanently delete <strong>{user?.email}</strong> and remove all associated data. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleConfirmDelete(); }}
+              disabled={isDeleting}
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              {isDeleting ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Deleting...</>
+              ) : 'Yes, Delete My Account'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
