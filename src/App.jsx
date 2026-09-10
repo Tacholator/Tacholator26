@@ -52,6 +52,7 @@ import PupilTopicDetail from './pages/PupilTopicDetail';
 import LearnerFreeTestRoutes from './pages/LearnerFreeTestRoutes';
 import TopTenReasons from './pages/TopTenReasons';
 import AdminVideoResources from './pages/AdminVideoResources';
+import AdminDeletedAccounts from './pages/AdminDeletedAccounts';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -316,6 +317,11 @@ const AuthenticatedApp = () => {
       <Route path="/AdminVideoResources" element={
         <LayoutWrapper currentPageName="AdminVideoResources">
           <AdminVideoResources />
+        </LayoutWrapper>
+      } />
+      <Route path="/AdminDeletedAccounts" element={
+        <LayoutWrapper currentPageName="AdminDeletedAccounts">
+          <AdminDeletedAccounts />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

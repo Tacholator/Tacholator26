@@ -222,7 +222,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
         { name: 'GPS Route Access', icon: MapPin, page: 'AdminGpsRouteAccess' },
         { name: 'Support Messages', icon: HeadphonesIcon, page: 'AdminSupportMessages' },
         { name: 'App Feedback', icon: MessageSquarePlus, page: 'AdminFeedback' },
-        { name: 'Deletion Requests', icon: UserX, page: 'AdminDeletionRequests' }
+        { name: 'Deleted Accounts', icon: UserX, page: 'AdminDeletedAccounts' }
       ] 
     : [];
   
