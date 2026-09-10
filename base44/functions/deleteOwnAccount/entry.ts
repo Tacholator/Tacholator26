@@ -11,6 +11,7 @@ export default async function(req) {
     const reason = body.reason || 'Self-service deletion';
     const additionalInfo = body.additionalInfo || '';
     const userId = user.id;
+    const role = user.role === 'admin' ? 'instructor' : 'learner';
 
     // Audit log (service role so RLS cannot block it)
     try {
@@ -18,6 +19,7 @@ export default async function(req) {
         userId,
         userEmail: user.email,
         userName: user.full_name,
+        role,
         reason,
         additionalInfo,
         status: 'resolved'

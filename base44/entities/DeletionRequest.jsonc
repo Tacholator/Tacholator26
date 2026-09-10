@@ -11,6 +11,15 @@
     "userName": {
       "type": "string"
     },
+    "role": {
+      "type": "string",
+      "enum": [
+        "learner",
+        "instructor"
+      ],
+      "default": "learner",
+      "description": "Role of the deleted user at the time of deletion"
+    },
     "reason": {
       "type": "string"
     },
