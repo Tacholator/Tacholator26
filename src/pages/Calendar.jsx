@@ -765,7 +765,7 @@ export default function Calendar() {
             <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap justify-end">
             <div className="flex items-center bg-white rounded-lg border shadow-sm p-1">
               {VIEW_MODES.map(mode => (
                 <button
