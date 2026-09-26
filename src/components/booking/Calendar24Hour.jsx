@@ -317,7 +317,7 @@ export default function Calendar24Hour({
       </div>
 
       {/* Calendar Grid */}
-      <div className="border rounded-lg bg-white overflow-x-auto">
+      <div className="border rounded-lg bg-slate-50 overflow-x-auto">
         <div className="inline-block min-w-full">
           {/* Header Row */}
           <div className="grid border-b bg-slate-50" style={{ gridTemplateColumns: viewMode === 'day' ? '50px 1fr' : `50px repeat(${days.length}, minmax(90px, 1fr))` }}>
