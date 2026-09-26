@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -51,10 +51,20 @@ export default function Calendar24Hour({
   onDeleteBooking,
   isInstructor = false,
   currentPupilId = null,
-  pupils = []
+  pupils = [],
+  syncedDate
 }) {
   const [currentDateStr, setCurrentDateStr] = useState(() => moment().format('YYYY-MM-DD'));
   const currentDate = moment(currentDateStr, 'YYYY-MM-DD');
+
+  // When the parent month changes (via the top month/year slider), jump to the first week of that month
+  const syncedMonthKey = syncedDate ? syncedDate.format('YYYY-MM') : '';
+  useEffect(() => {
+    if (syncedDate) {
+      setCurrentDateStr(syncedDate.clone().startOf('month').format('YYYY-MM-DD'));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [syncedMonthKey]);
 
   const getDaysInView = () => {
     if (viewMode === 'day') {
