@@ -857,7 +857,7 @@ export default function Calendar() {
               <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().subtract(1, 'month'))}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <h3 className="text-lg font-semibold text-slate-800 min-w-[140px] text-center">
+              <h3 className="text-lg font-semibold text-slate-800 min-w-fit text-center px-2">
                 {currentDate.format('MMMM')}
               </h3>
               <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().add(1, 'month'))}>
@@ -875,7 +875,7 @@ export default function Calendar() {
                 <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().subtract(1, 'month'))}>
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <div className="text-center min-w-[140px]">
+                <div className="text-center min-w-fit px-2">
                   <h3 className="text-lg font-semibold text-slate-800 capitalize leading-tight">
                     {currentDate.format('MMMM')}
                   </h3>

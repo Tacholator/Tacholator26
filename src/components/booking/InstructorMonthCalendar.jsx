@@ -219,7 +219,7 @@ export default function InstructorMonthCalendar({
           <Button variant="outline" size="icon" onClick={goPrev}>
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <div className="text-center min-w-[140px]">
+          <div className="text-center min-w-fit px-2">
             <h3 className="text-lg font-semibold text-slate-800 capitalize leading-tight">
               {currentDate.format('MMMM')}
             </h3>
