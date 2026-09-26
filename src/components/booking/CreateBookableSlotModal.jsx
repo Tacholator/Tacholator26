@@ -149,7 +149,7 @@ export default function CreateBookableSlotModal({
         <DialogHeader>
           <DialogTitle>{existingSlot ? 'Edit Slot' : 'New Slot'}</DialogTitle>
           <DialogDescription>
-            {existingSlot ? 'Update the time slot details' : 'Publish a time slot that pupils can book'}
+            {existingSlot ? 'Update the time slot details' : 'Create a personal event or bookable lesson slot'}
           </DialogDescription>
         </DialogHeader>
 
