@@ -390,7 +390,8 @@ export default function Calendar24Hour({
                   cancelled: 'Cancelled',
                   no_show: 'No Show',
                   unavailable: 'Unavailable',
-                  closed: 'Closed'
+                  closed: 'Closed',
+                  personal: 'Personal'
                 };
 
                 // For non-instructors viewing pending/confirmed slots
@@ -454,6 +455,16 @@ export default function Calendar24Hour({
                       blockStartTime = rule.startTimeLocal;
                       blockEndTime = rule.endTimeLocal;
                     }
+                  } else if (blockType === 'personal' && slotStateData.personalEvent) {
+                    const evStart = moment(slotStateData.personalEvent.startAtUtc).local();
+                    const evEnd = moment(slotStateData.personalEvent.endAtUtc).local();
+                    isBlockStart = evStart.format('HH:mm') === timeSlot;
+                    if (isBlockStart) {
+                      const durationMinutes = evEnd.diff(evStart, 'minutes');
+                      blockSpan = Math.max(1, Math.ceil(durationMinutes / 15));
+                      blockStartTime = evStart.format('HH:mm');
+                      blockEndTime = evEnd.format('HH:mm');
+                    }
                   }
                 }
 
@@ -466,7 +477,8 @@ export default function Calendar24Hour({
                   cancelled: '#F57C00',
                   no_show: '#D32F2F',
                   unavailable: '#D32F2F',
-                  closed: '#8B9A0A'
+                  closed: '#8B9A0A',
+                  personal: '#475569'
                 };
 
                 const accentColors = {
@@ -478,7 +490,8 @@ export default function Calendar24Hour({
                   cancelled: '#E65100',
                   no_show: '#C62828',
                   unavailable: '#C62828',
-                  closed: '#6B7A08'
+                  closed: '#6B7A08',
+                  personal: '#334155'
                 };
 
                 // Render card-style block
@@ -566,6 +579,11 @@ export default function Calendar24Hour({
                           {pupilName && (
                             <div className={`text-[9px] sm:text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-0.5 truncate w-full`} title={pupilName}>
                               {pupilName}
+                            </div>
+                          )}
+                          {blockType === 'personal' && slotStateData.personalEvent?.title && (
+                            <div className="text-[9px] sm:text-xs font-bold text-slate-800 mb-0.5 truncate w-full" title={slotStateData.personalEvent.title}>
+                              {slotStateData.personalEvent.title}
                             </div>
                           )}
                           <div className={`text-[9px] sm:text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'} truncate`}>
