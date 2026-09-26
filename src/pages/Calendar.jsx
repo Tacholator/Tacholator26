@@ -850,8 +850,8 @@ export default function Calendar() {
           </div>
         )}
 
-        {/* Month Navigation — only in calendar (non-list) mode */}
-        {!showListView && (
+        {/* Month Navigation — only in calendar (non-list) mode, except month view (InstructorMonthCalendar renders its own) */}
+        {!showListView && viewMode !== 'month' && (
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().subtract(1, 'month'))}>
