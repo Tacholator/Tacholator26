@@ -2,14 +2,15 @@ import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Clock, ClipboardCheck, Eye } from 'lucide-react';
+import { Clock, ClipboardCheck, Eye, Lock } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
-export default function CalendarSettingsDrawer({ 
-  open, 
-  onOpenChange, 
+export default function CalendarSettingsDrawer({
+  open,
+  onOpenChange,
   onOpenWorkingHours,
+  onOpenCloseDay,
   availabilityMode,
   onAvailabilityModeChange
 }) {
@@ -56,6 +57,21 @@ export default function CalendarSettingsDrawer({
             <div className="text-left">
               <div className="font-medium">Working Hours</div>
               <div className="text-xs text-slate-500">Set your weekly availability</div>
+            </div>
+          </Button>
+
+          <Button
+            onClick={() => {
+              onOpenChange(false);
+              onOpenCloseDay();
+            }}
+            className="w-full justify-start gap-3 h-auto py-4 border-lime-300 text-lime-700 hover:bg-lime-50"
+            variant="outline"
+          >
+            <Lock className="w-5 h-5 text-lime-600" />
+            <div className="text-left">
+              <div className="font-medium">Close Day</div>
+              <div className="text-xs text-slate-500">Mark a day as unavailable</div>
             </div>
           </Button>
 

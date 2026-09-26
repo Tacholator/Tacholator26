@@ -11,8 +11,7 @@ import {
   Calendar as CalendarIcon,
   CalendarCheck,
   Loader2,
-  Settings,
-  Lock
+  Settings
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -852,16 +851,6 @@ export default function Calendar() {
             
             <Button
               variant="outline"
-              size="sm"
-              onClick={() => setShowCloseDayModal(true)}
-              className="gap-2 border-lime-300 text-lime-700 hover:bg-lime-50"
-            >
-              <Lock className="w-4 h-4" />
-              <span className="hidden sm:inline">Close Day</span>
-            </Button>
-
-            <Button
-              variant="outline"
               size="icon"
               onClick={() => setShowSettingsModal(true)}
             >
@@ -1219,6 +1208,7 @@ export default function Calendar() {
         open={showSettingsModal}
         onOpenChange={setShowSettingsModal}
         onOpenWorkingHours={() => setShowWorkingHoursModal(true)}
+        onOpenCloseDay={() => setShowCloseDayModal(true)}
         availabilityMode={availabilityMode}
         onAvailabilityModeChange={setAvailabilityMode}
       />
