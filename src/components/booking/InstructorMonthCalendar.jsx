@@ -221,7 +221,7 @@ export default function InstructorMonthCalendar({
           </Button>
           <div className="text-center min-w-[140px]">
             <h3 className="text-lg font-semibold text-slate-800 capitalize leading-tight">
-              {currentDate.format('MMMM YYYY')}
+              {currentDate.format('MMMM')}
             </h3>
             <span className="text-xs text-slate-400">Tap a day for details</span>
           </div>
