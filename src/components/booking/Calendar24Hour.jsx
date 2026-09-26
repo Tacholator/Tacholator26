@@ -283,11 +283,17 @@ export default function Calendar24Hour({
   return (
     <div className="space-y-4">
       {/* Navigation */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-1 sm:gap-2">
           <Button onClick={handlePrevious} variant="outline" size="sm" className="px-2 sm:px-3">
             <ChevronLeft className="w-4 h-4" />
           </Button>
+          <h3 className="text-xs sm:text-lg font-semibold text-slate-700 text-center whitespace-nowrap min-w-[110px] sm:min-w-[150px]">
+            {viewMode === 'day'
+              ? currentDate.format('ddd, D MMM YYYY')
+              : `${days[0].format('D MMM')} – ${days[6].format('D MMM')}`
+            }
+          </h3>
           <Button onClick={handleNext} variant="outline" size="sm" className="px-2 sm:px-3">
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -311,12 +317,6 @@ export default function Calendar24Hour({
             </div>
           )}
         </div>
-        <h3 className="text-xs sm:text-lg font-semibold text-slate-700 text-right whitespace-nowrap">
-          {viewMode === 'day' 
-            ? currentDate.format('ddd, D MMM YYYY')
-            : `${days[0].format('D MMM')} – ${days[6].format('D MMM')}`
-          }
-        </h3>
       </div>
 
       {/* Calendar Grid */}
