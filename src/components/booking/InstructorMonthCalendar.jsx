@@ -223,6 +223,7 @@ export default function InstructorMonthCalendar({
             <h3 className="text-lg font-semibold text-slate-800 capitalize leading-tight">
               {currentDate.format('MMMM YYYY')}
             </h3>
+            <span className="text-xs text-slate-400">Tap a day for details</span>
           </div>
           <Button variant="outline" size="icon" onClick={goNext}>
             <ChevronRight className="w-4 h-4" />
