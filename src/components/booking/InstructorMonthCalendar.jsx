@@ -228,9 +228,6 @@ export default function InstructorMonthCalendar({
           <Button variant="outline" size="icon" onClick={goNext}>
             <ChevronRight className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={goToday} className="ml-1">
-            Today
-          </Button>
         </div>
       </div>
 
