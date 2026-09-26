@@ -57,11 +57,15 @@ export default function Calendar24Hour({
   const [currentDateStr, setCurrentDateStr] = useState(() => moment().format('YYYY-MM-DD'));
   const currentDate = moment(currentDateStr, 'YYYY-MM-DD');
 
-  // When the parent month changes (via the top month/year slider), jump to the first week of that month
+  // When the parent month changes (via the top month/year slider), jump to the
+  // current week if it's today's month, otherwise the first week of that month
   const syncedMonthKey = syncedDate ? syncedDate.format('YYYY-MM') : '';
   useEffect(() => {
     if (syncedDate) {
-      setCurrentDateStr(syncedDate.clone().startOf('month').format('YYYY-MM-DD'));
+      const target = syncedDate.isSame(moment(), 'month')
+        ? moment()
+        : syncedDate.clone().startOf('month');
+      setCurrentDateStr(target.format('YYYY-MM-DD'));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [syncedMonthKey]);
