@@ -305,21 +305,32 @@ export default function InstructorMonthCalendar({
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 mt-4 flex-wrap text-xs text-slate-500">
-        <div className="flex items-center gap-1.5">
-          <span className="inline-flex items-center justify-center min-w-[1.4rem] h-5 px-1 rounded-full text-[11px] font-bold bg-emerald-500 text-white">3</span>
-          <span>Available slots</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="inline-flex items-center justify-center min-w-[1.4rem] h-5 px-1 rounded-full text-[11px] font-bold bg-blue-500 text-white">2</span>
-          <span>Bookings</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-amber-500" />
-          <span>Pending request</span>
-        </div>
-      </div>
+      {/* Legend — real month totals */}
+      {(() => {
+        const monthKeys = weeks.flat()
+          .filter(d => d.isSame(currentDate, 'month'))
+          .map(d => d.format('YYYY-MM-DD'));
+        const totalSlots = monthKeys.reduce((sum, k) => sum + (availableByDate[k]?.length || 0), 0);
+        const totalBookings = monthKeys.reduce((sum, k) => sum + (bookingsByDate[k]?.length || 0), 0);
+        const totalPending = monthKeys.reduce((sum, k) =>
+          sum + (bookingsByDate[k]?.filter(b => b.status === 'reserved_pending_instructor').length || 0), 0);
+        return (
+          <div className="flex items-center gap-4 mt-4 flex-wrap text-xs text-slate-500">
+            <div className="flex items-center gap-1.5">
+              <span className="inline-flex items-center justify-center min-w-[1.4rem] h-5 px-1 rounded-full text-[11px] font-bold bg-emerald-500 text-white">{totalSlots}</span>
+              <span>Available slots</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="inline-flex items-center justify-center min-w-[1.4rem] h-5 px-1 rounded-full text-[11px] font-bold bg-blue-500 text-white">{totalBookings}</span>
+              <span>Bookings</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="inline-flex items-center justify-center min-w-[1.4rem] h-5 px-1 rounded-full text-[11px] font-bold bg-amber-500 text-white">{totalPending}</span>
+              <span>Pending request</span>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
