@@ -36,6 +36,7 @@ export default function CreateBookableSlotModal({
   const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [selectedDays, setSelectedDays] = useState([dayOfWeek]);
   const [stopDate, setStopDate] = useState('');
+  const [slotType, setSlotType] = useState('personal');
 
   // Pre-fill form when editing existing slot
   React.useEffect(() => {
@@ -60,6 +61,7 @@ export default function CreateBookableSlotModal({
       setRepeatWeekly(false);
       setSelectedDays([dayOfWeek]);
       setStopDate('');
+      setSlotType('personal');
     }
   }, [existingSlot, open, slotDateTime, dayOfWeek]);
 
@@ -80,7 +82,8 @@ export default function CreateBookableSlotModal({
       endTime,
       repeatWeekly,
       selectedDays,
-      stopDate: stopDate || null
+      stopDate: stopDate || null,
+      slotType
     });
   };
 
@@ -88,11 +91,37 @@ export default function CreateBookableSlotModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{existingSlot ? 'Edit Bookable Slot' : 'Create Bookable Slot'}</DialogTitle>
+          <DialogTitle>{existingSlot ? 'Edit Slot' : 'New Slot'}</DialogTitle>
           <DialogDescription>
             {existingSlot ? 'Update the time slot details' : 'Publish a time slot that pupils can book'}
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex items-center justify-center gap-2 p-1 bg-slate-100 rounded-full w-fit mx-auto">
+          <button
+            type="button"
+            onClick={() => setSlotType('personal')}
+            className={`px-6 py-1.5 text-sm font-semibold rounded-full transition-colors ${
+              slotType === 'personal'
+                ? 'bg-[#F7B602] text-[#071739]'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            Personal
+          </button>
+          <button
+            type="button"
+            onClick={() => setSlotType('lesson')}
+            className={`px-6 py-1.5 text-sm font-semibold rounded-full transition-colors ${
+              slotType === 'lesson'
+                ? 'bg-[#F7B602] text-[#071739]'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            Lesson
+          </button>
+        </div>
+
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label>Title (optional)</Label>
