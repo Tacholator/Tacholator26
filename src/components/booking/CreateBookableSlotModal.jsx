@@ -201,25 +201,11 @@ export default function CreateBookableSlotModal({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Start Time</Label>
-                <Select value={personalStartTime} onValueChange={setPersonalStartTime}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select start time" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {Array.from({ length: 96 }, (_, i) => {
-                      const h = Math.floor(i / 4);
-                      const m = (i % 4) * 15;
-                      const val = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-                      const period = h < 12 ? 'AM' : 'PM';
-                      const displayH = h === 0 ? 12 : h > 12 ? h - 12 : h;
-                      return (
-                        <SelectItem key={val} value={val}>
-                          {`${displayH.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${period}`}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
+                <Input
+                  type="time"
+                  value={personalStartTime}
+                  onChange={(e) => setPersonalStartTime(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Duration</Label>
