@@ -802,9 +802,31 @@ export default function Calendar() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-800">Calendar</h1>
-            <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800">Calendar</h1>
+              <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
+            </div>
+            {/* Mobile: settings + new slot aligned to the right of the title */}
+            <div className="flex items-center gap-2 sm:hidden ml-auto">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setShowSettingsModal(true)}
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
+              <Button
+                onClick={() => {
+                  setSelectedSlotDateTime(null);
+                  setSelectedSlotInstance(null);
+                  setShowCreateSlotModal(true);
+                }}
+                className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
           
           <div className="flex items-center gap-3 flex-wrap justify-end">
@@ -853,6 +875,7 @@ export default function Calendar() {
               variant="outline"
               size="icon"
               onClick={() => setShowSettingsModal(true)}
+              className="hidden sm:inline-flex"
             >
               <Settings className="w-4 h-4" />
             </Button>
@@ -863,7 +886,7 @@ export default function Calendar() {
                 setSelectedSlotInstance(null);
                 setShowCreateSlotModal(true);
               }}
-              className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
+              className="bg-[#071739] hover:bg-[#0e2a5a] text-white hidden sm:inline-flex"
             >
               <Plus className="w-4 h-4 sm:mr-2" />
               <span className="hidden sm:inline">New Slot</span>
