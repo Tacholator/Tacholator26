@@ -363,17 +363,6 @@ export default function CreateBookableSlotModal({
               </div>
             )}
 
-            {lessonMode === 'bookable' && (
-              <div className="space-y-2">
-                <Label>Title (optional)</Label>
-                <Input
-                  placeholder="e.g., Morning slot"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label>{lessonMode === 'booking' ? 'Date' : 'Start Date'}</Label>
               <Input
