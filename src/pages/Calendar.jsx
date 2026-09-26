@@ -854,13 +854,15 @@ export default function Calendar() {
         {!showListView && viewMode !== 'month' && (
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().subtract(1, 'month'))}>
+              <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().subtract(1, viewMode === 'week' ? 'week' : 'month'))}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
               <h3 className="text-lg font-semibold text-slate-800 min-w-[140px] text-center">
-                {currentDate.format('MMMM YYYY')}
+                {viewMode === 'week'
+                  ? `${currentDate.clone().startOf('week').format('D MMM')} – ${currentDate.clone().endOf('week').format('D MMM')}`
+                  : currentDate.format('MMMM YYYY')}
               </h3>
-              <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().add(1, 'month'))}>
+              <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().add(1, viewMode === 'week' ? 'week' : 'month'))}>
                 <ChevronRight className="w-4 h-4" />
               </Button>
               <Button variant="outline" size="sm" onClick={() => setCurrentDate(moment())} className="ml-1">
