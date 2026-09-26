@@ -131,6 +131,12 @@ export default function Calendar() {
     enabled: !!currentUser?.id
   });
 
+  const { data: calendarEvents = [] } = useQuery({
+    queryKey: ['calendarEvents', currentUser?.id],
+    queryFn: () => base44.entities.CalendarEvent.filter({ instructorId: currentUser.id }),
+    enabled: !!currentUser?.id
+  });
+
   const createLessonMutation = useMutation({
     mutationFn: (data) => base44.entities.Lesson.create({
       ...data,
@@ -147,6 +153,18 @@ export default function Calendar() {
   const deleteLessonMutation = useMutation({
     mutationFn: (id) => base44.entities.Lesson.delete(id),
     onSuccess: () => queryClient.invalidateQueries(['lessons'])
+  });
+
+  const createCalendarEventMutation = useMutation({
+    mutationFn: (data) => base44.entities.CalendarEvent.create({
+      ...data,
+      instructorId: currentUser.id
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['calendarEvents']);
+      toast({ title: 'Personal event saved' });
+      setShowCreateSlotModal(false);
+    }
   });
 
   const createRuleMutation = useMutation({
@@ -1020,6 +1038,7 @@ export default function Calendar() {
             rules={rules}
             bookings={bookings}
             slotInstances={slotInstances}
+            personalEvents={calendarEvents}
             availabilityMode={availabilityMode}
             isInstructor={true}
             pupils={pupils}
@@ -1132,8 +1151,8 @@ export default function Calendar() {
             setSelectedSlotDateTime(null);
           }
         }}
-        onSave={(data) => createBookableSlotMutation.mutate(data)}
-        isSaving={createBookableSlotMutation.isPending}
+        onSave={(data) => data.slotType === 'personal' ? createCalendarEventMutation.mutate(data) : createBookableSlotMutation.mutate(data)}
+        isSaving={createBookableSlotMutation.isPending || createCalendarEventMutation.isPending}
         slotDateTime={selectedSlotDateTime}
         existingSlot={selectedSlotInstance}
       />

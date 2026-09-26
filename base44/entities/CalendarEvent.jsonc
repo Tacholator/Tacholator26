@@ -1,0 +1,49 @@
+{
+  "name": "CalendarEvent",
+  "type": "object",
+  "properties": {
+    "instructorId": {
+      "type": "string",
+      "description": "Reference to instructor user ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Event title"
+    },
+    "startAtUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event start time in UTC"
+    },
+    "endAtUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event end time in UTC"
+    },
+    "durationMinutes": {
+      "type": "number",
+      "description": "Event duration in minutes"
+    },
+    "repeatType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "daily",
+        "weekly"
+      ],
+      "default": "none",
+      "description": "Recurrence type for the event"
+    },
+    "color": {
+      "type": "string",
+      "description": "Hex color used to render the event on the calendar"
+    }
+  },
+  "required": [
+    "instructorId",
+    "title",
+    "startAtUtc",
+    "endAtUtc",
+    "color"
+  ]
+}

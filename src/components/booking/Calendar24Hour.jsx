@@ -52,6 +52,7 @@ export default function Calendar24Hour({
   isInstructor = false,
   currentPupilId = null,
   pupils = [],
+  personalEvents = [],
   syncedDate
 }) {
   const [currentDateStr, setCurrentDateStr] = useState(() => moment().format('YYYY-MM-DD'));
@@ -82,28 +83,31 @@ export default function Calendar24Hour({
   const getTimeSlots = () => {
     // Get working hours range from rules
     const workingHoursRules = rules.filter(r => r.ruleType === 'working_hours');
-    
-    if (workingHoursRules.length === 0) {
-      // Fallback: 07:00 to 20:00 with 15-minute intervals
-      const slots = [];
-      for (let hour = 7; hour <= 19; hour++) {
-        slots.push(`${hour.toString().padStart(2, '0')}:00`);
-        slots.push(`${hour.toString().padStart(2, '0')}:15`);
-        slots.push(`${hour.toString().padStart(2, '0')}:30`);
-        slots.push(`${hour.toString().padStart(2, '0')}:45`);
-      }
-      return slots;
-    }
 
-    // Find earliest start and latest end time from working hours
     let earliestStart = 24;
     let latestEnd = 0;
 
-    workingHoursRules.forEach(rule => {
-      const startHour = parseInt(rule.startTimeLocal.split(':')[0]);
-      const endHour = parseInt(rule.endTimeLocal.split(':')[0]);
-      const endMinute = parseInt(rule.endTimeLocal.split(':')[1]);
-      
+    if (workingHoursRules.length === 0) {
+      // Fallback bounds: 07:00 to 20:00
+      earliestStart = 7;
+      latestEnd = 20;
+    } else {
+      workingHoursRules.forEach(rule => {
+        const startHour = parseInt(rule.startTimeLocal.split(':')[0]);
+        const endHour = parseInt(rule.endTimeLocal.split(':')[0]);
+        const endMinute = parseInt(rule.endTimeLocal.split(':')[1]);
+        if (startHour < earliestStart) earliestStart = startHour;
+        if (endHour > latestEnd || (endHour === latestEnd && endMinute > 0)) {
+          latestEnd = endMinute > 0 ? endHour + 1 : endHour;
+        }
+      });
+    }
+
+    // Widen bounds to include personal events (they may fall outside working hours)
+    personalEvents.forEach(ev => {
+      const startHour = parseInt(moment(ev.startAtUtc).local().format('HH'));
+      const endHour = parseInt(moment(ev.endAtUtc).local().format('HH'));
+      const endMinute = parseInt(moment(ev.endAtUtc).local().format('mm'));
       if (startHour < earliestStart) earliestStart = startHour;
       if (endHour > latestEnd || (endHour === latestEnd && endMinute > 0)) {
         latestEnd = endMinute > 0 ? endHour + 1 : endHour;
@@ -155,6 +159,27 @@ export default function Calendar24Hour({
       if (overlappingBooking.status === 'reserved_pending_instructor') {
         return { state: 'reserved_pending', booking: overlappingBooking, blockType: 'booking' };
       }
+    }
+
+    // Check personal events (instructor-created, shown regardless of working hours)
+    const personalOccurrence = personalEvents.find(ev => {
+      const evStartLocal = moment(ev.startAtUtc).local();
+      let occurs = false;
+      if (ev.repeatType === 'daily') {
+        occurs = evStartLocal.isSameOrBefore(day, 'day');
+      } else if (ev.repeatType === 'weekly') {
+        occurs = evStartLocal.isSameOrBefore(day, 'day') && evStartLocal.day() === day.day();
+      } else {
+        occurs = evStartLocal.isSame(day, 'day');
+      }
+      if (!occurs) return false;
+      const evStartTime = evStartLocal.format('HH:mm');
+      const evEndTime = moment(ev.endAtUtc).local().format('HH:mm');
+      const slotStart = moment(timeSlot, 'HH:mm');
+      return slotStart.isSameOrAfter(moment(evStartTime, 'HH:mm')) && slotStart.isBefore(moment(evEndTime, 'HH:mm'));
+    });
+    if (personalOccurrence) {
+      return { state: 'personal', personalEvent: personalOccurrence, blockType: 'personal' };
     }
 
     // Check closed rules (after bookings, before available slots)
@@ -353,7 +378,7 @@ export default function Calendar24Hour({
                 const slotDateTime = `${dateStr}T${timeSlot}:00`;
 
                 // Determine if this should be rendered as a card
-                const shouldRenderAsCard = state !== 'outside_working_hours' && (blockType === 'booking' || blockType === 'slotInstance' || blockType === 'rule');
+                const shouldRenderAsCard = state !== 'outside_working_hours' && (blockType === 'booking' || blockType === 'slotInstance' || blockType === 'rule' || blockType === 'personal');
 
                 // Define status labels first
                 const statusLabels = {
@@ -374,7 +399,9 @@ export default function Calendar24Hour({
                 const isOwnBooking = !isInstructor && booking && booking.pupilId === currentPupilId;
                 const isOthersReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test') && !isOwnBooking;
                 const isAvailableSlotCard = state === 'available' && blockType === 'slotInstance';
-                const displayColor = isOthersReserved ? SLOT_COLORS.reserved_confirmed_other : (isAvailableSlotCard ? SLOT_COLORS.available_slot : SLOT_COLORS[state]);
+                const displayColor = isOthersReserved
+                  ? SLOT_COLORS.reserved_confirmed_other
+                  : (state === 'personal' ? (slotStateData.personalEvent?.color || SLOT_COLORS.available) : (isAvailableSlotCard ? SLOT_COLORS.available_slot : SLOT_COLORS[state]));
 
                 // Override status label for others' confirmed slots
                 const displayStatusLabel = isOthersReserved && (state === 'confirmed' || state === 'confirmed_test') ? 'Unavailable' : (statusLabels[state] || state);
