@@ -2,7 +2,7 @@ import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Clock, Coffee, CalendarDays, ClipboardCheck, Eye } from 'lucide-react';
+import { Clock, ClipboardCheck, Eye } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
@@ -10,8 +10,6 @@ export default function CalendarSettingsDrawer({
   open, 
   onOpenChange, 
   onOpenWorkingHours,
-  onOpenLunch,
-  onOpenUnavailable,
   availabilityMode,
   onAvailabilityModeChange
 }) {
@@ -58,36 +56,6 @@ export default function CalendarSettingsDrawer({
             <div className="text-left">
               <div className="font-medium">Working Hours</div>
               <div className="text-xs text-slate-500">Set your weekly availability</div>
-            </div>
-          </Button>
-
-          <Button
-            onClick={() => {
-              onOpenChange(false);
-              onOpenLunch();
-            }}
-            className="w-full justify-start gap-3 h-auto py-4"
-            variant="outline"
-          >
-            <Coffee className="w-5 h-5 text-orange-600" />
-            <div className="text-left">
-              <div className="font-medium">Lunch Breaks</div>
-              <div className="text-xs text-slate-500">Block time for lunch</div>
-            </div>
-          </Button>
-
-          <Button
-            onClick={() => {
-              onOpenChange(false);
-              onOpenUnavailable();
-            }}
-            className="w-full justify-start gap-3 h-auto py-4"
-            variant="outline"
-          >
-            <CalendarDays className="w-5 h-5 text-slate-600" />
-            <div className="text-left">
-              <div className="font-medium">Unavailable Time</div>
-              <div className="text-xs text-slate-500">Block specific times</div>
             </div>
           </Button>
 

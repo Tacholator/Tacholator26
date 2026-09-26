@@ -32,8 +32,6 @@ import LessonDetailsDrawer from '@/components/calendar/LessonDetailsDrawer';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
 import InstructorMonthCalendar from '@/components/booking/InstructorMonthCalendar';
 import WorkingHoursModal from '@/components/booking/WorkingHoursModal';
-import UnavailableModal from '@/components/booking/UnavailableModal';
-import LunchBreakModal from '@/components/booking/LunchBreakModal';
 import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
 import CalendarSettingsDrawer from '@/components/booking/CalendarSettingsDrawer';
 import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModal';
@@ -69,8 +67,6 @@ export default function Calendar() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showWorkingHoursModal, setShowWorkingHoursModal] = useState(false);
-  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
-  const [showLunchModal, setShowLunchModal] = useState(false);
   const [showCreateSlotModal, setShowCreateSlotModal] = useState(false);
   const [selectedSlotDateTime, setSelectedSlotDateTime] = useState(null);
   const [showSlotDetailsModal, setShowSlotDetailsModal] = useState(false);
@@ -162,8 +158,6 @@ export default function Calendar() {
       queryClient.invalidateQueries(['calendarRules']);
       toast({ title: 'Rule saved successfully' });
       setShowWorkingHoursModal(false);
-      setShowUnavailableModal(false);
-      setShowLunchModal(false);
       setShowSettingsModal(false);
     }
   });
@@ -187,29 +181,6 @@ export default function Calendar() {
       queryClient.invalidateQueries(['calendarRules']);
       toast({ title: 'Working hours updated successfully' });
       setShowWorkingHoursModal(false);
-      setShowSettingsModal(false);
-    }
-  });
-
-  const saveLunchBreaksMutation = useMutation({
-    mutationFn: async (rulesData) => {
-      // Delete existing lunch break rules
-      const existingLunchBreaks = rules.filter(r => r.ruleType === 'lunch_break');
-      await Promise.all(existingLunchBreaks.map(r => base44.entities.CalendarRule.delete(r.id)));
-      
-      // Create new rules
-      await Promise.all(rulesData.map(data => 
-        base44.entities.CalendarRule.create({
-          ...data,
-          instructorId: currentUser.id,
-          ruleType: 'lunch_break'
-        })
-      ));
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['calendarRules']);
-      toast({ title: 'Lunch breaks updated successfully' });
-      setShowLunchModal(false);
       setShowSettingsModal(false);
     }
   });
@@ -242,29 +213,6 @@ export default function Calendar() {
     onSuccess: () => {
       queryClient.invalidateQueries(['calendarRules']);
       toast({ title: 'Closure removed' });
-    }
-  });
-
-  const saveUnavailableMutation = useMutation({
-    mutationFn: async (rulesData) => {
-      // Delete existing unavailable rules
-      const existingUnavailable = rules.filter(r => r.ruleType === 'unavailable');
-      await Promise.all(existingUnavailable.map(r => base44.entities.CalendarRule.delete(r.id)));
-      
-      // Create new rules
-      await Promise.all(rulesData.map(data => 
-        base44.entities.CalendarRule.create({
-          ...data,
-          instructorId: currentUser.id,
-          ruleType: 'unavailable'
-        })
-      ));
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['calendarRules']);
-      toast({ title: 'Unavailable times updated successfully' });
-      setShowUnavailableModal(false);
-      setShowSettingsModal(false);
     }
   });
 
@@ -1168,28 +1116,10 @@ export default function Calendar() {
         existingRules={rules}
       />
 
-      <UnavailableModal
-        open={showUnavailableModal}
-        onOpenChange={setShowUnavailableModal}
-        onSave={(data) => saveUnavailableMutation.mutate(data)}
-        isSaving={saveUnavailableMutation.isPending}
-        existingRules={rules}
-      />
-
-      <LunchBreakModal
-        open={showLunchModal}
-        onOpenChange={setShowLunchModal}
-        onSave={(data) => saveLunchBreaksMutation.mutate(data)}
-        isSaving={saveLunchBreaksMutation.isPending}
-        existingRules={rules}
-      />
-
       <CalendarSettingsDrawer
         open={showSettingsModal}
         onOpenChange={setShowSettingsModal}
         onOpenWorkingHours={() => setShowWorkingHoursModal(true)}
-        onOpenLunch={() => setShowLunchModal(true)}
-        onOpenUnavailable={() => setShowUnavailableModal(true)}
         availabilityMode={availabilityMode}
         onAvailabilityModeChange={setAvailabilityMode}
       />
