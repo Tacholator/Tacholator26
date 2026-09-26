@@ -7,6 +7,7 @@ import moment from 'moment';
 
 const SLOT_COLORS = {
   available: '#F5F5F5',
+  available_slot: '#CCFF66',
   confirmed: '#87CEFA',
   confirmed_test: '#D2B48C',
   completed: '#CFCFCF',
@@ -372,7 +373,8 @@ export default function Calendar24Hour({
                 // If it's someone else's, show as unavailable with grey hatch
                 const isOwnBooking = !isInstructor && booking && booking.pupilId === currentPupilId;
                 const isOthersReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test') && !isOwnBooking;
-                const displayColor = isOthersReserved ? SLOT_COLORS.reserved_confirmed_other : SLOT_COLORS[state];
+                const isAvailableSlotCard = state === 'available' && blockType === 'slotInstance';
+                const displayColor = isOthersReserved ? SLOT_COLORS.reserved_confirmed_other : (isAvailableSlotCard ? SLOT_COLORS.available_slot : SLOT_COLORS[state]);
 
                 // Override status label for others' confirmed slots
                 const displayStatusLabel = isOthersReserved && (state === 'confirmed' || state === 'confirmed_test') ? 'Unavailable' : (statusLabels[state] || state);
