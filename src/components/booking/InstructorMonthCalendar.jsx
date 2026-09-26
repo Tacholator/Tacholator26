@@ -87,11 +87,22 @@ export default function InstructorMonthCalendar({
     return map;
   }, [slotInstances]);
 
-  // Map of 'YYYY-MM-DD' -> [bookings] (non-deleted, deduped per slot)
+  // Map of 'YYYY-MM-DD' -> [bookings] (active only, deduped per slot).
+  // Cancelled/declined bookings are excluded so they don't inflate the
+  // "Bookings" count — when a slot's booking is cancelled/declined the slot
+  // reverts to available, so counting the cancelled booking would double-count
+  // the same time slot as both an available slot and a booking.
+  const INACTIVE_BOOKING_STATUSES = new Set([
+    'cancelled',
+    'cancelled_by_pupil',
+    'cancelled_late_by_pupil',
+    'declined_by_instructor',
+    'deleted',
+  ]);
   const bookingsByDate = useMemo(() => {
     const map = {};
     bookings.forEach(b => {
-      if (b.isDeleted || b.status === 'deleted') return;
+      if (b.isDeleted || INACTIVE_BOOKING_STATUSES.has(b.status)) return;
       const key = moment(b.startAtUtc).local().format('YYYY-MM-DD');
       (map[key] = map[key] || []).push(b);
     });
