@@ -486,7 +486,7 @@ export default function Calendar24Hour({
                     <div
                       key={dayIdx}
                       onClick={handleClick}
-                      className={`border-r last:border-r-0 relative ${
+                      className={`border-r border-b border-slate-200 last:border-r-0 relative ${
                         clickable ? 'cursor-pointer group' : isOthersReserved ? 'cursor-not-allowed' : 'cursor-default'
                       }`}
                       style={{ 
@@ -575,7 +575,7 @@ export default function Calendar24Hour({
 
                 // Skip slots covered by multi-slot blocks — must be transparent so the overflowing card above covers them
                 if (shouldRenderAsCard && !isBlockStart) {
-                  return <div key={dayIdx} className="border-r last:border-r-0" style={{ height: '22.5px', backgroundColor: 'transparent' }} />;
+                  return <div key={dayIdx} className="border-r border-b border-slate-200 last:border-r-0" style={{ height: '22.5px', backgroundColor: 'transparent' }} />;
                 }
 
                 // Render flat background slot (for outside_working_hours or default available)
@@ -586,7 +586,7 @@ export default function Calendar24Hour({
                       if (!clickable) return;
                       onSlotClick && onSlotClick(slotDateTime, state);
                     }}
-                    className={`border-r last:border-r-0 p-1 ${
+                    className={`border-r border-b border-slate-200 last:border-r-0 p-1 ${
                       clickable ? 'cursor-pointer hover:opacity-80' : 'cursor-default'
                     }`}
                     style={{ backgroundColor: displayColor, height: '22.5px' }}
