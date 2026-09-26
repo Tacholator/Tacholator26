@@ -22,6 +22,20 @@ const SLOT_COLORS = {
 };
 
 // Checks whether a rule applies to a given calendar day
+// Returns true when a hex background is dark enough to need light text
+const isDarkColor = (hex) => {
+  if (!hex) return false;
+  const c = hex.replace('#', '');
+  if (c.length !== 6) return false;
+  const r = parseInt(c.slice(0, 2), 16);
+  const g = parseInt(c.slice(2, 4), 16);
+  const b = parseInt(c.slice(4, 6), 16);
+  // Perceived luminance (Rec. 601)
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance < 140;
+};
+
+// Checks whether a rule applies to a given calendar day
 const ruleMatchesDate = (rule, day) => {
   const dayOfWeek = day.format('ddd').toLowerCase();
   const dateStr = day.format('YYYY-MM-DD');
@@ -400,9 +414,16 @@ export default function Calendar24Hour({
                 const isOwnBooking = !isInstructor && booking && booking.pupilId === currentPupilId;
                 const isOthersReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test') && !isOwnBooking;
                 const isAvailableSlotCard = state === 'available' && blockType === 'slotInstance';
+                const personalBg = state === 'personal' ? (slotStateData.personalEvent?.color || SLOT_COLORS.available) : null;
                 const displayColor = isOthersReserved
                   ? SLOT_COLORS.reserved_confirmed_other
-                  : (state === 'personal' ? (slotStateData.personalEvent?.color || SLOT_COLORS.available) : (isAvailableSlotCard ? SLOT_COLORS.available_slot : SLOT_COLORS[state]));
+                  : (personalBg || (isAvailableSlotCard ? SLOT_COLORS.available_slot : SLOT_COLORS[state]));
+                // Personal events use the user-chosen color, so pick readable text color by luminance
+                const personalTextClass = state === 'personal' && isDarkColor(personalBg) ? 'text-white' : 'text-slate-900';
+                const personalTimeClass = state === 'personal' && isDarkColor(personalBg) ? 'text-slate-100' : 'text-slate-800';
+                const personalDark = state === 'personal' && isDarkColor(personalBg);
+                const personalBadgeBg = personalDark ? 'rgba(255,255,255,0.25)' : '#E2E8F0';
+                const personalBadgeText = personalDark ? '#ffffff' : '#334155';
 
                 // Override status label for others' confirmed slots
                 const displayStatusLabel = isOthersReserved && (state === 'confirmed' || state === 'confirmed_test') ? 'Unavailable' : (statusLabels[state] || state);
@@ -577,29 +598,29 @@ export default function Calendar24Hour({
                         {/* Content */}
                         <div className={`${isOthersReserved ? 'pl-1 sm:pl-2' : 'pl-1.5 sm:pl-3'} pr-1 sm:pr-2 py-1 sm:py-2 h-full flex flex-col justify-center relative z-10 overflow-hidden min-w-0`}>
                           {pupilName && (
-                            <div className={`text-[9px] sm:text-xs font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mb-0.5 truncate w-full`} title={pupilName}>
+                            <div className={`text-[10px] sm:text-sm font-bold ${isOthersReserved ? 'text-slate-400' : 'text-slate-900'} mb-0.5 truncate w-full`} title={pupilName}>
                               {pupilName}
                             </div>
                           )}
                           {blockType === 'personal' && slotStateData.personalEvent?.title && (
-                            <div className="text-[9px] sm:text-xs font-bold text-slate-800 mb-0.5 truncate w-full" title={slotStateData.personalEvent.title}>
+                            <div className={`text-[10px] sm:text-sm font-bold ${personalTextClass} mb-0.5 truncate w-full`} title={slotStateData.personalEvent.title}>
                               {slotStateData.personalEvent.title}
                             </div>
                           )}
-                          <div className={`text-[9px] sm:text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-700'} truncate`}>
+                          <div className={`text-[10px] sm:text-xs font-semibold ${isOthersReserved ? 'text-slate-400' : (blockType === 'personal' ? personalTimeClass : 'text-slate-800')} truncate`}>
                             {blockStartTime} - {blockEndTime}
                           </div>
                           {state === 'confirmed_test' && booking?.practicalTestTime && (
-                            <div className={`text-[8px] sm:text-[10px] font-medium ${isOthersReserved ? 'text-slate-400' : 'text-slate-600'} mt-0.5 truncate`}>
+                            <div className={`text-[9px] sm:text-[11px] font-semibold ${isOthersReserved ? 'text-slate-400' : 'text-slate-800'} mt-0.5 truncate`}>
                               Test: {booking.practicalTestTime}
                             </div>
                           )}
                           <div className="mt-0.5 sm:mt-1">
                             <span 
-                              className="inline-block px-1 sm:px-1.5 py-0.5 text-[8px] sm:text-[10px] font-bold uppercase rounded whitespace-nowrap"
+                              className="inline-block px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[11px] font-bold uppercase rounded whitespace-nowrap"
                               style={{ 
-                                backgroundColor: isOthersReserved ? '#E0E0E0' : `${accentColors[state]}20`,
-                                color: isOthersReserved ? '#999999' : accentColors[state]
+                                backgroundColor: blockType === 'personal' ? personalBadgeBg : (isOthersReserved ? '#E0E0E0' : `${accentColors[state]}20`),
+                                color: blockType === 'personal' ? personalBadgeText : (isOthersReserved ? '#999999' : accentColors[state])
                               }}
                             >
                               {displayStatusLabel}
