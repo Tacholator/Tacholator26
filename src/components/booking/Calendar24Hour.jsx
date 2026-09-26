@@ -228,9 +228,9 @@ export default function Calendar24Hour({
       }
     }
 
-    // If published slots only mode and no slot instance found, treat as unavailable
+    // If published slots only mode and no slot instance found, show as light grey available
     if (availabilityMode === 'published_slots_only') {
-      return { state: 'unavailable' };
+      return { state: 'available' };
     }
 
     return { state: 'available' };
