@@ -170,6 +170,61 @@ export default function Calendar() {
     }
   });
 
+  const createInstructorBookingMutation = useMutation({
+    mutationFn: async (data) => {
+      const pupil = pupils.find(p => p.id === data.pupilId);
+      const hourlyRate = pupil?.hourlyRate || 0;
+      const totalPriceGbp = hourlyRate * data.durationHours;
+
+      const booking = await base44.entities.LessonBooking.create({
+        instructorId: currentUser.id,
+        pupilId: data.pupilId,
+        startAtUtc: data.startAtUtc,
+        endAtUtc: data.endAtUtc,
+        durationHours: data.durationHours,
+        pickupLocation: data.pickupLocation,
+        dropoffLocation: data.dropoffLocation,
+        status: 'confirmed',
+        confirmedAt: new Date().toISOString(),
+        hourlyRateAtBookingGbp: hourlyRate,
+        totalPriceGbp,
+        isPracticalTest: data.isPracticalTest || false,
+        practicalTestTime: data.isPracticalTest ? data.practicalTestTime : undefined
+      });
+
+      await base44.entities.PaymentLedger.create({
+        userId: data.pupilId,
+        bookingId: booking.id,
+        type: 'charge',
+        reason: 'lesson_confirmed_charge',
+        amountGbp: totalPriceGbp,
+        hours: data.durationHours,
+        createdByRole: 'instructor',
+        note: 'Charge applied on confirmation'
+      });
+
+      if (pupil?.linkedUserId) {
+        await base44.entities.Notification.create({
+          userId: pupil.linkedUserId,
+          title: 'Lesson Scheduled',
+          message: `Your instructor has scheduled a lesson for ${moment(data.startAtUtc).local().format('D MMM')} at ${moment(data.startAtUtc).local().format('HH:mm')}.`,
+          type: 'booking',
+          linkTarget: 'LearnerCalendar'
+        });
+      }
+
+      return booking;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['lessonBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
+      queryClient.invalidateQueries(['myBookings']);
+      toast({ title: 'Lesson scheduled for pupil' });
+      setShowCreateSlotModal(false);
+      setSelectedSlotDateTime(null);
+    }
+  });
+
   const updateCalendarEventMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.CalendarEvent.update(id, data),
     onSuccess: () => {
@@ -1177,8 +1232,12 @@ export default function Calendar() {
             setSelectedSlotDateTime(null);
           }
         }}
-        onSave={(data) => data.slotType === 'personal' ? createCalendarEventMutation.mutate(data) : createBookableSlotMutation.mutate(data)}
-        isSaving={createBookableSlotMutation.isPending || createCalendarEventMutation.isPending}
+        onSave={(data) => {
+          if (data.slotType === 'personal') return createCalendarEventMutation.mutate(data);
+          if (data.slotType === 'lesson_booking') return createInstructorBookingMutation.mutate(data);
+          return createBookableSlotMutation.mutate(data);
+        }}
+        isSaving={createBookableSlotMutation.isPending || createCalendarEventMutation.isPending || createInstructorBookingMutation.isPending}
         slotDateTime={selectedSlotDateTime}
         existingSlot={selectedSlotInstance}
       />
