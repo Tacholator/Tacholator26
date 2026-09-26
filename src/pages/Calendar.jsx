@@ -774,11 +774,15 @@ export default function Calendar() {
             </Button>
 
             <Button
-              onClick={() => setShowNewLessonModal(true)}
+              onClick={() => {
+                setSelectedSlotDateTime(null);
+                setSelectedSlotInstance(null);
+                setShowCreateSlotModal(true);
+              }}
               className="bg-[#071739] hover:bg-[#0e2a5a] text-white"
             >
               <Plus className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">New Lesson</span>
+              <span className="hidden sm:inline">New Slot</span>
             </Button>
           </div>
         </div>
@@ -1043,11 +1047,6 @@ export default function Calendar() {
           />
         )}
       </div>
-
-      <NewLessonModal
-        open={showNewLessonModal}
-        onOpenChange={setShowNewLessonModal}
-      />
 
       <CloseDayModal
         open={showCloseDayModal}
