@@ -35,6 +35,7 @@ import WorkingHoursModal from '@/components/booking/WorkingHoursModal';
 import PendingBookingsPanel from '@/components/booking/PendingBookingsPanel';
 import CalendarSettingsDrawer from '@/components/booking/CalendarSettingsDrawer';
 import CreateBookableSlotModal from '@/components/booking/CreateBookableSlotModal';
+import PersonalEventModal from '@/components/booking/PersonalEventModal';
 import SlotDetailsModal from '@/components/booking/SlotDetailsModal';
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
 import InstructorScheduleLessonModal from '@/components/booking/InstructorScheduleLessonModal';
@@ -84,6 +85,8 @@ export default function Calendar() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [showNewLessonModal, setShowNewLessonModal] = useState(false);
   const [showCloseDayModal, setShowCloseDayModal] = useState(false);
+  const [selectedPersonalEvent, setSelectedPersonalEvent] = useState(null);
+  const [showPersonalEventModal, setShowPersonalEventModal] = useState(false);
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -164,6 +167,25 @@ export default function Calendar() {
       queryClient.invalidateQueries(['calendarEvents']);
       toast({ title: 'Personal event saved' });
       setShowCreateSlotModal(false);
+    }
+  });
+
+  const updateCalendarEventMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.CalendarEvent.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['calendarEvents']);
+      toast({ title: 'Personal event updated' });
+      setShowPersonalEventModal(false);
+    }
+  });
+
+  const deleteCalendarEventMutation = useMutation({
+    mutationFn: (id) => base44.entities.CalendarEvent.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['calendarEvents']);
+      toast({ title: 'Personal event deleted' });
+      setShowPersonalEventModal(false);
+      setShowDeleteDialog(false);
     }
   });
 
@@ -1063,6 +1085,10 @@ export default function Calendar() {
               setShowBookingDetailsModal(true);
             }}
             onDeleteBooking={handleDeleteBooking}
+            onPersonalEventClick={(personalEvent) => {
+              setSelectedPersonalEvent(personalEvent);
+              setShowPersonalEventModal(true);
+            }}
           />
         )}
       </div>
@@ -1185,6 +1211,16 @@ export default function Calendar() {
         onOpenChange={setShowBookingDetailsModal}
         booking={selectedBooking}
         slotInstance={selectedBookingSlotInstance}
+      />
+
+      <PersonalEventModal
+        open={showPersonalEventModal}
+        onOpenChange={setShowPersonalEventModal}
+        event={selectedPersonalEvent}
+        onSave={({ id, ...data }) => updateCalendarEventMutation.mutate({ id, data })}
+        onDelete={(event) => deleteCalendarEventMutation.mutate(event.id)}
+        isSaving={updateCalendarEventMutation.isPending}
+        isDeleting={deleteCalendarEventMutation.isPending}
       />
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

@@ -63,6 +63,7 @@ export default function Calendar24Hour({
   onSlotClick,
   onPendingSlotClick,
   onDeleteBooking,
+  onPersonalEventClick,
   isInstructor = false,
   currentPupilId = null,
   pupils = [],
@@ -302,6 +303,10 @@ export default function Calendar24Hour({
       if ((state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test') && booking) {
         return true;
       }
+      // Instructors can click personal events to view / edit / delete them
+      if (state === 'personal' && onPersonalEventClick) {
+        return true;
+      }
       // In published slots mode, instructors can click available slots or anywhere to create new slots
       if (availabilityMode === 'published_slots_only') {
         return state === 'outside_working_hours' || state === 'unavailable' || state === 'available';
@@ -521,6 +526,12 @@ export default function Calendar24Hour({
 
                   const handleClick = () => {
                     if (!clickable) return;
+
+                    // Personal events open their own edit / delete modal
+                    if (blockType === 'personal' && onPersonalEventClick) {
+                      onPersonalEventClick(slotStateData.personalEvent);
+                      return;
+                    }
 
                     // If instructor clicking any booking, open booking details
                     if (isInstructor && booking) {
