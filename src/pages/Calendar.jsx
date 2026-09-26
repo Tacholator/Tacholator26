@@ -858,7 +858,7 @@ export default function Calendar() {
                 <ChevronLeft className="w-4 h-4" />
               </Button>
               <h3 className="text-lg font-semibold text-slate-800 min-w-[140px] text-center">
-                {currentDate.format('MMMM YYYY')}
+                {currentDate.format('MMMM')}
               </h3>
               <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().add(1, 'month'))}>
                 <ChevronRight className="w-4 h-4" />
@@ -877,7 +877,7 @@ export default function Calendar() {
                 </Button>
                 <div className="text-center min-w-[140px]">
                   <h3 className="text-lg font-semibold text-slate-800 capitalize leading-tight">
-                    {currentDate.format('MMMM YYYY')}
+                    {currentDate.format('MMMM')}
                   </h3>
                   <span className="text-xs text-slate-400 capitalize">{viewMode}{availableOnly ? ' — Available Only' : ' — All Bookings'}</span>
                 </div>
