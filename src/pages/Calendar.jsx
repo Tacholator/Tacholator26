@@ -762,15 +762,7 @@ export default function Calendar() {
         <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
           <div>
             <h1 className="text-3xl font-bold text-slate-800">Calendar</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().subtract(1, 'month'))}>
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <p className="text-slate-500 min-w-[110px] text-center capitalize">{currentDate.format('MMMM')}</p>
-              <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().add(1, 'month'))}>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
+            <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
           </div>
           
           <div className="flex items-center gap-3 flex-wrap justify-end">
