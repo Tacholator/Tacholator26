@@ -57,7 +57,7 @@ export default function NewLessonModal({ open, onOpenChange, defaultPupilId }) {
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffLocation, setDropoffLocation] = useState('');
-  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(true);
+  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(false);
   const [recurrence, setRecurrence] = useState('once');
   const [recurrenceEndDate, setRecurrenceEndDate] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,7 +111,7 @@ export default function NewLessonModal({ open, onOpenChange, defaultPupilId }) {
       setSelectedPupilId(defaultPupilId || '');
       setPickupLocation('');
       setDropoffLocation('');
-      setDropoffSameAsPickup(true);
+      setDropoffSameAsPickup(false);
       setRecurrence('once');
       setRecurrenceEndDate('');
       setSearchQuery('');
@@ -476,30 +476,15 @@ export default function NewLessonModal({ open, onOpenChange, defaultPupilId }) {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="dropoff-same"
-                  checked={dropoffSameAsPickup}
-                  onChange={e => setDropoffSameAsPickup(e.target.checked)}
-                  className="rounded"
+              <div className="relative">
+                <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                <Input
+                  value={dropoffLocation}
+                  onChange={e => setDropoffLocation(e.target.value)}
+                  placeholder="Drop-off address..."
+                  className="pl-8 text-sm"
                 />
-                <label htmlFor="dropoff-same" className="text-xs text-slate-600 cursor-pointer">
-                  Drop-off same as pickup
-                </label>
               </div>
-
-              {!dropoffSameAsPickup && (
-                <div className="relative">
-                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-                  <Input
-                    value={dropoffLocation}
-                    onChange={e => setDropoffLocation(e.target.value)}
-                    placeholder="Drop-off address..."
-                    className="pl-8 text-sm"
-                  />
-                </div>
-              )}
 
               <div className="grid grid-cols-2 gap-2">
                 <Select value={recurrence} onValueChange={v => { setRecurrence(v); setRecurrenceEndDate(''); }}>

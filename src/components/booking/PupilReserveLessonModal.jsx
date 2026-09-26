@@ -24,7 +24,7 @@ export default function PupilReserveLessonModal({
   hourlyRate 
 }) {
   const [pickupLocation, setPickupLocation] = useState('');
-  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(true);
+  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(false);
   const [dropoffLocation, setDropoffLocation] = useState('');
 
   const [drivingExperience, setDrivingExperience] = useState('');
@@ -210,28 +210,15 @@ export default function PupilReserveLessonModal({
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="dropoff-same"
-                checked={dropoffSameAsPickup}
-                onCheckedChange={setDropoffSameAsPickup}
+            <div className="space-y-2">
+              <Label htmlFor="dropoff">Drop-off location *</Label>
+              <Input
+                id="dropoff"
+                value={dropoffLocation}
+                onChange={(e) => setDropoffLocation(e.target.value)}
+                placeholder="Enter drop-off address or area"
               />
-              <label htmlFor="dropoff-same" className="text-sm text-slate-700 cursor-pointer">
-                Drop-off location same as pickup
-              </label>
             </div>
-
-            {!dropoffSameAsPickup && (
-              <div className="space-y-2">
-                <Label htmlFor="dropoff">Drop-off location *</Label>
-                <Input
-                  id="dropoff"
-                  value={dropoffLocation}
-                  onChange={(e) => setDropoffLocation(e.target.value)}
-                  placeholder="Enter drop-off address or area"
-                />
-              </div>
-            )}
 
 
           </div>

@@ -77,7 +77,7 @@ export default function CreateBookableSlotModal({
   const [lessonMode, setLessonMode] = useState('bookable'); // 'bookable' | 'booking'
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
-  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(true);
+  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(false);
   const [dropoffLocation, setDropoffLocation] = useState('');
   const [pupilSearch, setPupilSearch] = useState('');
   const [isPracticalTest, setIsPracticalTest] = useState(false);
@@ -156,7 +156,7 @@ export default function CreateBookableSlotModal({
       setLessonMode('bookable');
       setSelectedPupilId('');
       setPickupLocation('');
-      setDropoffSameAsPickup(true);
+      setDropoffSameAsPickup(false);
       setDropoffLocation('');
       setPupilSearch('');
       setIsPracticalTest(false);
@@ -477,25 +477,14 @@ export default function CreateBookableSlotModal({
                   />
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="dropoffSame"
-                    checked={dropoffSameAsPickup}
-                    onCheckedChange={setDropoffSameAsPickup}
+                <div className="space-y-2">
+                  <Label>Drop-off Location <span className="text-rose-500">*</span></Label>
+                  <Input
+                    value={dropoffLocation}
+                    onChange={(e) => setDropoffLocation(e.target.value)}
+                    placeholder="Enter drop-off address..."
                   />
-                  <Label htmlFor="dropoffSame" className="cursor-pointer">Drop-off same as pickup</Label>
                 </div>
-
-                {!dropoffSameAsPickup && (
-                  <div className="space-y-2">
-                    <Label>Drop-off Location <span className="text-rose-500">*</span></Label>
-                    <Input
-                      value={dropoffLocation}
-                      onChange={(e) => setDropoffLocation(e.target.value)}
-                      placeholder="Enter drop-off address..."
-                    />
-                  </div>
-                )}
 
                 <div className={`rounded-lg border p-3 transition-colors ${isPracticalTest ? 'border-amber-700 bg-amber-50' : 'bg-slate-50'}`}>
                   <div className="flex items-center justify-between mb-3">

@@ -35,7 +35,7 @@ export default function InstructorScheduleLessonModal({
   
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
-  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(true);
+  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(false);
   const [dropoffLocation, setDropoffLocation] = useState('');
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -193,7 +193,7 @@ export default function InstructorScheduleLessonModal({
   const handleClose = () => {
     setSelectedPupilId('');
     setPickupLocation('');
-    setDropoffSameAsPickup(true);
+    setDropoffSameAsPickup(false);
     setDropoffLocation('');
 
     setSearchQuery('');
@@ -327,30 +327,16 @@ export default function InstructorScheduleLessonModal({
             />
           </div>
 
-          {/* Drop-off Same as Pickup */}
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="dropoffSame"
-              checked={dropoffSameAsPickup}
-              onCheckedChange={setDropoffSameAsPickup}
-            />
-            <Label htmlFor="dropoffSame" className="cursor-pointer">
-              Drop-off same as pickup
-            </Label>
-          </div>
-
           {/* Drop-off Location */}
-          {!dropoffSameAsPickup && (
-            <div className="space-y-2">
-              <Label htmlFor="dropoff">Drop-off Location *</Label>
-              <Input
-                id="dropoff"
-                value={dropoffLocation}
-                onChange={(e) => setDropoffLocation(e.target.value)}
-                placeholder="Enter drop-off address..."
-              />
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="dropoff">Drop-off Location *</Label>
+            <Input
+              id="dropoff"
+              value={dropoffLocation}
+              onChange={(e) => setDropoffLocation(e.target.value)}
+              placeholder="Enter drop-off address..."
+            />
+          </div>
 
 
 
