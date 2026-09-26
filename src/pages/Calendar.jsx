@@ -798,34 +798,36 @@ export default function Calendar() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8 relative">
-      {/* Mobile: settings + new slot fixed to top-right of the page */}
-      <div className="sm:hidden fixed top-[calc(4rem+env(safe-area-inset-top))] right-4 z-30 flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setShowSettingsModal(true)}
-          className="bg-white shadow-md"
-        >
-          <Settings className="w-4 h-4" />
-        </Button>
-        <Button
-          onClick={() => {
-            setSelectedSlotDateTime(null);
-            setSelectedSlotInstance(null);
-            setShowCreateSlotModal(true);
-          }}
-          className="bg-[#071739] hover:bg-[#0e2a5a] text-white shadow-md"
-        >
-          <Plus className="w-4 h-4" />
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-800">Calendar</h1>
-            <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800">Calendar</h1>
+              <p className="text-slate-500 mt-1">{currentDate.format('MMMM YYYY')}</p>
+            </div>
+            {/* Mobile: settings + new slot on the same line as the title, aligned right */}
+            <div className="flex items-center gap-2 sm:hidden ml-auto">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setShowSettingsModal(true)}
+                className="bg-white shadow-md"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
+              <Button
+                onClick={() => {
+                  setSelectedSlotDateTime(null);
+                  setSelectedSlotInstance(null);
+                  setShowCreateSlotModal(true);
+                }}
+                className="bg-[#071739] hover:bg-[#0e2a5a] text-white shadow-md"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
           
           <div className="flex items-center gap-3 flex-wrap justify-end">
