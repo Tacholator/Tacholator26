@@ -12,7 +12,6 @@ const SLOT_COLORS = {
   completed: '#CFCFCF',
   cancelled: '#FFCC80',
   no_show: '#FF8A80',
-  lunch: '#F7B602',
   unavailable: '#FFB3B3',
   closed: '#E2F35E',
   outside_working_hours: '#E8E8E8',
@@ -216,19 +215,6 @@ export default function Calendar24Hour({
       return { state: 'outside_working_hours' };
     }
 
-    // Check lunch break
-    const lunchRule = rules.find(r => 
-      r.ruleType === 'lunch_break' && 
-      r.daysOfWeek.includes(dayOfWeek)
-    );
-    if (lunchRule) {
-      const lunchStart = moment(lunchRule.startTimeLocal, 'HH:mm');
-      const lunchEnd = moment(lunchRule.endTimeLocal, 'HH:mm');
-      if (workingStart.isSameOrAfter(lunchStart) && workingStart.isBefore(lunchEnd)) {
-        return { state: 'lunch', rule: lunchRule, blockType: 'rule' };
-      }
-    }
-
     // Check unavailable blocks (there may be multiple per day)
     const unavailableRules = rules.filter(r => 
       r.ruleType === 'unavailable' && 
@@ -377,7 +363,6 @@ export default function Calendar24Hour({
                   completed: 'Completed',
                   cancelled: 'Cancelled',
                   no_show: 'No Show',
-                  lunch: 'Lunch',
                   unavailable: 'Unavailable',
                   closed: 'Closed'
                 };
@@ -452,8 +437,7 @@ export default function Calendar24Hour({
                   cancelled: '#F57C00',
                   no_show: '#D32F2F',
                   unavailable: '#D32F2F',
-                  closed: '#8B9A0A',
-                  lunch: '#F57C00'
+                  closed: '#8B9A0A'
                 };
 
                 const accentColors = {
@@ -465,8 +449,7 @@ export default function Calendar24Hour({
                   cancelled: '#E65100',
                   no_show: '#C62828',
                   unavailable: '#C62828',
-                  closed: '#6B7A08',
-                  lunch: '#E65100'
+                  closed: '#6B7A08'
                 };
 
                 // Render card-style block
