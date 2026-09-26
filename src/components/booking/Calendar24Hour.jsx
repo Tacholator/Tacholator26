@@ -582,13 +582,7 @@ export default function Calendar24Hour({
                 return (
                   <div
                     key={dayIdx}
-                    onClick={() => {
-                      if (!clickable) return;
-                      onSlotClick && onSlotClick(slotDateTime, state);
-                    }}
-                    className={`border-r border-b border-slate-200 last:border-r-0 p-1 ${
-                      clickable ? 'cursor-pointer hover:opacity-80' : 'cursor-default'
-                    }`}
+                    className="border-r border-b border-slate-200 last:border-r-0 p-1 cursor-default"
                     style={{ backgroundColor: displayColor, height: '22.5px' }}
                     title={state}
                   />
