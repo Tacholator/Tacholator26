@@ -863,9 +863,6 @@ export default function Calendar() {
               <Button variant="outline" size="icon" onClick={() => setCurrentDate(prev => prev.clone().add(1, 'month'))}>
                 <ChevronRight className="w-4 h-4" />
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(moment())} className="ml-1">
-                Today
-              </Button>
             </div>
           </div>
         )}
