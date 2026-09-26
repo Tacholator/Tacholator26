@@ -195,7 +195,7 @@ export default function CreateBookableSlotModal({
         endAtUtc: endLocal.toISOString(),
         durationHours: endLocal.diff(startLocal, 'hours', true),
         pickupLocation,
-        dropoffLocation: dropoffSameAsPickup ? pickupLocation : dropoffLocation,
+        dropoffLocation: pickupLocation,
         isPracticalTest,
         practicalTestTime: isPracticalTest ? practicalTestTime : undefined
       });
@@ -218,7 +218,6 @@ export default function CreateBookableSlotModal({
   const isLessonBookableValid = !repeatWeekly || selectedDays.length > 0;
   const isLessonBookingValid = !!selectedPupilId
     && pickupLocation.trim().length > 0
-    && (dropoffSameAsPickup || dropoffLocation.trim().length > 0)
     && (!isPracticalTest || !!practicalTestTime);
   const isLessonValid = lessonMode === 'bookable' ? isLessonBookableValid : isLessonBookingValid;
 
@@ -474,15 +473,6 @@ export default function CreateBookableSlotModal({
                     value={pickupLocation}
                     onChange={(e) => setPickupLocation(e.target.value)}
                     placeholder="Enter pickup address..."
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Drop-off Location <span className="text-rose-500">*</span></Label>
-                  <Input
-                    value={dropoffLocation}
-                    onChange={(e) => setDropoffLocation(e.target.value)}
-                    placeholder="Enter drop-off address..."
                   />
                 </div>
 
