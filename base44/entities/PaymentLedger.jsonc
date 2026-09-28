@@ -26,6 +26,7 @@
         "lesson_confirmed_charge",
         "late_cancellation_penalty",
         "balance_top_up",
+        "card_fee_surcharge",
         "manual_adjustment",
         "refund_issued"
       ],

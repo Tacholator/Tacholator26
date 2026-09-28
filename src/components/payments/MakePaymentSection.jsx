@@ -5,8 +5,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CreditCard, Building2, Copy, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { CreditCard, Building2, Copy, CheckCircle2, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+// Mirrors the backend UK domestic rate (base44/shared/stripeFees.ts).
+// Card country is unknown before payment, so the UI shows the UK estimate.
+const STRIPE_UK_PERCENT = 0.015;
+const STRIPE_UK_FIXED = 0.20;
+function estimateCardFee(amount) {
+  const fee = amount * STRIPE_UK_PERCENT + STRIPE_UK_FIXED;
+  return Math.max(0, Math.round(fee * 100) / 100);
+}
 
 function BankRow({ label, value, onCopy, copied, highlight }) {
   return (
@@ -32,6 +51,7 @@ export default function MakePaymentSection({ pupil, instructor }) {
   const [copied, setCopied] = useState('');
   const [showCardForm, setShowCardForm] = useState(false);
   const [showBankDetails, setShowBankDetails] = useState(false);
+  const [showFeeWarning, setShowFeeWarning] = useState(false);
 
   const quickAmounts = [25, 50, 100, 200];
 
@@ -71,6 +91,12 @@ export default function MakePaymentSection({ pupil, instructor }) {
       toast({ title: 'Invalid amount', description: 'Please enter a valid amount', variant: 'destructive' });
       return;
     }
+    setShowFeeWarning(true);
+  };
+
+  const confirmCardPay = () => {
+    setShowFeeWarning(false);
+    const amount = parseFloat(topUpAmount);
     createPaymentMutation.mutate(amount);
   };
 
@@ -160,6 +186,36 @@ export default function MakePaymentSection({ pupil, instructor }) {
                     {createPaymentMutation.isPending ? 'Redirecting...' : 'Make Payment'}
                   </Button>
                 </div>
+
+                {/* Card fee surcharge breakdown */}
+                {(() => {
+                  const amount = parseFloat(topUpAmount);
+                  if (isNaN(amount) || amount < 1) return null;
+                  const fee = estimateCardFee(amount);
+                  const total = amount + fee;
+                  return (
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm">
+                      <div className="flex items-center justify-between py-0.5">
+                        <span className="text-slate-600">Lesson credits</span>
+                        <span className="font-medium text-slate-800">£{amount.toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center justify-between py-0.5">
+                        <span className="text-slate-600">
+                          Card processing fee
+                          <span className="text-xs text-slate-400 ml-1">(UK card estimate)</span>
+                        </span>
+                        <span className="font-medium text-slate-800">£{fee.toFixed(2)}</span>
+                      </div>
+                      <div className="border-t border-slate-200 mt-1.5 pt-1.5 flex items-center justify-between">
+                        <span className="font-semibold text-slate-800">Total charged</span>
+                        <span className="font-bold text-[#071739]">£{total.toFixed(2)}</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-2">
+                        The card fee covers Stripe's processing charge so your instructor receives the full lesson value. International/EEA cards may incur a higher fee.
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -212,6 +268,49 @@ export default function MakePaymentSection({ pupil, instructor }) {
         )}
 
       </CardContent>
+
+      {/* Card fee warning popup */}
+      <AlertDialog open={showFeeWarning} onOpenChange={setShowFeeWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              Card processing fee applies
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2">
+                <p>
+                  When you pay by card, a Stripe processing fee is added to your lesson credits so your instructor receives the full amount.
+                </p>
+                {(() => {
+                  const amount = parseFloat(topUpAmount);
+                  const fee = isNaN(amount) ? 0 : estimateCardFee(amount);
+                  const total = (isNaN(amount) ? 0 : amount) + fee;
+                  return (
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm">
+                      <div className="flex justify-between"><span>Lesson credits</span><span>£{(isNaN(amount) ? 0 : amount).toFixed(2)}</span></div>
+                      <div className="flex justify-between"><span>Card processing fee (UK estimate)</span><span>£{fee.toFixed(2)}</span></div>
+                      <div className="flex justify-between font-bold border-t mt-1 pt-1"><span>Total</span><span>£{total.toFixed(2)}</span></div>
+                    </div>
+                  );
+                })()}
+                <p className="text-xs text-slate-500">
+                  Only the lesson credits are added to your balance — the fee is not refundable as lessons. International/EEA cards may incur a higher fee.
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmCardPay}
+              className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]"
+            >
+              Continue to Payment
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

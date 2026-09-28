@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import Stripe from 'npm:stripe@17.5.0';
+import { computeStripeFee } from '../../shared/stripeFees.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), {
   apiVersion: '2024-11-20.acacia'
@@ -148,18 +149,35 @@ async function handleCheckoutSessionCompleted(session, base44) {
   console.log('Processing checkout.session.completed:', session.id);
   
   const { id, amount_total, metadata } = session;
-  const amountGbp = amount_total / 100;
+  const totalGbp = amount_total / 100;
+
+  // Lesson credits (credited to balance) and card fee surcharge (not credited).
+  // Fall back to the total if legacy sessions without the fee breakdown are received.
+  const lessonAmount = metadata?.lessonAmount ? parseFloat(metadata.lessonAmount) : totalGbp;
+  const cardFeeAmount = metadata?.cardFeeAmount ? parseFloat(metadata.cardFeeAmount) : 0;
 
   try {
-    // Create a payment ledger entry
+    // Balance top-up ledger entry — lesson credits only (excludes card fee)
     const payment = await base44.asServiceRole.entities.PaymentLedger.create({
       userId: metadata?.pupilId || 'unknown',
       type: 'payment',
       reason: 'balance_top_up',
-      amountGbp,
+      amountGbp: lessonAmount,
       createdByRole: 'system',
-      note: `Stripe card payment - Session ${id}`
+      note: `Stripe card top-up - Session ${id}`
     });
+
+    // Card fee surcharge ledger entry (not added to lesson balance)
+    if (cardFeeAmount > 0) {
+      await base44.asServiceRole.entities.PaymentLedger.create({
+        userId: metadata?.pupilId || 'unknown',
+        type: 'payment',
+        reason: 'card_fee_surcharge',
+        amountGbp: cardFeeAmount,
+        createdByRole: 'system',
+        note: `Stripe card processing fee - Session ${id}`
+      });
+    }
 
     // If there's a pupil ID in metadata, update their balance and create invoice
     if (metadata?.pupilId) {
@@ -168,10 +186,10 @@ async function handleCheckoutSessionCompleted(session, base44) {
       if (pupils.length > 0) {
         const pupil = pupils[0];
 
-        // Update pupil balance
+        // Credit balance with the lesson amount ONLY (surcharge excluded)
         await base44.asServiceRole.entities.Pupil.update(pupil.id, {
-          bulkAmountPaid: (pupil.bulkAmountPaid || 0) + amountGbp,
-          bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + amountGbp
+          bulkAmountPaid: (pupil.bulkAmountPaid || 0) + lessonAmount,
+          bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + lessonAmount
         });
 
         // Get instructor info for the invoice
@@ -207,6 +225,9 @@ async function handleCheckoutSessionCompleted(session, base44) {
         const invoiceNumber = `${currentYear}${String(nextSeq).padStart(6, '0')}`;
 
         // Create a single invoice record visible to both instructor and pupil
+        const invoiceDescription = cardFeeAmount > 0
+          ? `Lesson credits top-up £${lessonAmount.toFixed(2)} + card processing fee £${cardFeeAmount.toFixed(2)}`
+          : 'Lesson credits top-up (card payment)';
         await base44.asServiceRole.entities.Invoice.create({
           invoiceNumber,
           status: 'PAID',
@@ -218,9 +239,9 @@ async function handleCheckoutSessionCompleted(session, base44) {
           instructorName,
           instructorEmail,
           instructorPhone,
-          amount: amountGbp,
+          amount: totalGbp,
           hours: 0,
-          description: 'Lesson credits top-up (card payment)',
+          description: invoiceDescription,
           paymentMethod: 'STRIPE_CARD',
           paymentDate: new Date().toISOString(),
           stripePaymentIntentId: id,
@@ -241,15 +262,49 @@ async function handleCheckoutSessionCompleted(session, base44) {
 async function handlePaymentIntentSucceeded(paymentIntent, base44) {
   console.log('Processing payment_intent.succeeded:', paymentIntent.id);
   
-  // Update existing payment ledger entry or create new one
-  const existingPayments = await base44.asServiceRole.entities.PaymentLedger.filter({
-    stripePaymentIntentId: paymentIntent.id
-  });
+  const metadata = paymentIntent.metadata || {};
+  const lessonAmount = metadata.lessonAmount ? parseFloat(metadata.lessonAmount) : null;
+  const estimatedFee = metadata.cardFeeAmount ? parseFloat(metadata.cardFeeAmount) : null;
 
-  // Payment intent succeeded events are handled by checkout.session.completed
-  // Just log this for tracking
-  console.log('Payment intent succeeded, already processed via checkout session');
-  return { success: true, skipped: true };
+  // Only reconcile bulk top-ups that carry the fee breakdown in metadata
+  if (lessonAmount == null || estimatedFee == null) {
+    console.log('Payment intent succeeded, already processed via checkout session');
+    return { success: true, skipped: true };
+  }
+
+  try {
+    const chargeId = typeof paymentIntent.latest_charge === 'string'
+      ? paymentIntent.latest_charge
+      : paymentIntent.latest_charge?.id;
+    if (!chargeId) return { success: true, skipped: true };
+
+    const charge = await stripe.charges.retrieve(chargeId);
+    const cardCountry = charge.payment_method_details?.card?.country;
+
+    // UK card — the estimate already matches the actual fee, nothing to reconcile
+    if (!cardCountry || cardCountry === 'GB') {
+      return { success: true, reconciled: true, country: cardCountry || 'GB' };
+    }
+
+    const actualFee = computeStripeFee(lessonAmount, cardCountry);
+    const difference = Math.round((actualFee - estimatedFee) * 100) / 100;
+
+    if (Math.abs(difference) > 0.01) {
+      await base44.asServiceRole.entities.PaymentLedger.create({
+        userId: metadata.pupilId || 'unknown',
+        type: 'adjustment',
+        reason: 'manual_adjustment',
+        amountGbp: difference, // positive = extra fee absorbed by instructor; negative = instructor received more
+        createdByRole: 'system',
+        note: `Card fee reconciliation — ${cardCountry} card. Estimated £${estimatedFee.toFixed(2)}, actual £${actualFee.toFixed(2)}. PI ${paymentIntent.id}`
+      });
+    }
+
+    return { success: true, reconciled: true, country: cardCountry, difference };
+  } catch (error) {
+    console.error('Fee reconciliation error:', error);
+    return { success: true, reconciled: false, error: error.message };
+  }
 }
 
 async function handleInvoicePaid(invoice, base44) {

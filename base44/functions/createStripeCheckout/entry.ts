@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import Stripe from 'npm:stripe@17.7.0';
+import { computeDefaultStripeFee } from '../../shared/stripeFees.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), {
   apiVersion: '2024-12-18.acacia'
@@ -44,27 +45,55 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Calculate platform fee (5% of total)
-    const platformFeeAmount = Math.round(amount * 100 * 0.05);
-    const totalAmount = Math.round(amount * 100);
+    const lessonAmount = Math.round(amount * 100) / 100;
+    // Card country is unknown before payment — estimate using the UK domestic rate.
+    // Reconciled against the actual card country in stripeWebhook (payment_intent.succeeded).
+    const cardFeeAmount = computeDefaultStripeFee(lessonAmount);
+    const totalAmount = Math.round((lessonAmount + cardFeeAmount) * 100);
 
-    // Create Stripe checkout session with connected account
+    // Platform fee (5%) is on the lesson amount only — NOT on the card surcharge,
+    // so the platform never takes a cut of the processing fee.
+    const platformFeeAmount = Math.round(lessonAmount * 100 * 0.05);
+
+    // Two line items so the invoice clearly shows credits vs. card fee.
+    const lineItems = [
+      {
+        price_data: {
+          currency: 'gbp',
+          product_data: {
+            name: 'Lesson Credits Top-Up',
+            description: `Add £${lessonAmount.toFixed(2)} to your lesson balance`
+          },
+          unit_amount: Math.round(lessonAmount * 100)
+        },
+        quantity: 1
+      },
+      {
+        price_data: {
+          currency: 'gbp',
+          product_data: {
+            name: 'Card Processing Fee',
+            description: 'Stripe card processing fee (UK card rate)'
+          },
+          unit_amount: Math.round(cardFeeAmount * 100)
+        },
+        quantity: 1
+      }
+    ];
+
+    const sessionMetadata = {
+      pupilId: pupilId,
+      userId: user.id,
+      instructorId: instructorAccount.id,
+      lessonAmount: lessonAmount.toString(),
+      cardFeeAmount: cardFeeAmount.toString(),
+      feeEstimated: 'true'
+    };
+
     const session = await stripe.checkout.sessions.create({
       allow_promotion_codes: true,
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'gbp',
-            product_data: {
-              name: 'Lesson Credits Top-Up',
-              description: `Add £${amount.toFixed(2)} to your lesson balance`
-            },
-            unit_amount: totalAmount
-          },
-          quantity: 1
-        }
-      ],
+      line_items: lineItems,
       mode: 'payment',
       success_url: successUrl,
       cancel_url: cancelUrl,
@@ -72,14 +101,12 @@ Deno.serve(async (req) => {
         application_fee_amount: platformFeeAmount,
         transfer_data: {
           destination: instructorAccount.stripeAccountId
-        }
+        },
+        // Mirror metadata onto the PaymentIntent so the webhook can reconcile
+        // the estimated fee against the actual card-country fee.
+        metadata: sessionMetadata
       },
-      metadata: {
-        pupilId: pupilId,
-        userId: user.id,
-        instructorId: instructorAccount.id,
-        amount: amount.toString()
-      },
+      metadata: sessionMetadata,
       ...(promoCode && { discounts: [{ coupon: promoCode }] })
     });
 
