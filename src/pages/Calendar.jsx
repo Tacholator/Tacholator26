@@ -11,8 +11,10 @@ import {
   Calendar as CalendarIcon,
   CalendarCheck,
   Loader2,
-  Settings
+  Settings,
+  Clock
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -895,18 +897,16 @@ export default function Calendar() {
           </div>
         </div>
 
-        {/* Pending Bookings */}
+        {/* Pending Booking Request Button */}
         {pendingBookings.length > 0 && (
-          <div className="mb-6">
-            <PendingBookingsPanel
-              bookings={pendingBookings}
-              pupils={pupils}
-              onConfirm={(id) => confirmBookingMutation.mutate(id)}
-              onDecline={(id, reason) => declineBookingMutation.mutate({ bookingId: id, reason })}
-              onConfirmAll={() => confirmAllBookingsMutation.mutate()}
-              isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending}
-              isConfirmingAll={confirmAllBookingsMutation.isPending}
-            />
+          <div className="mb-4">
+            <Link to="/PendingBookingRequests">
+              <Button className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white shadow-md gap-2">
+                <Clock className="w-4 h-4" />
+                Pending Booking Request
+                <Badge className="bg-white text-purple-700 ml-1">{pendingBookings.length}</Badge>
+              </Button>
+            </Link>
           </div>
         )}
 

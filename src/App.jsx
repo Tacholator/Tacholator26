@@ -53,6 +53,7 @@ import LearnerFreeTestRoutes from './pages/LearnerFreeTestRoutes';
 import TopTenReasons from './pages/TopTenReasons';
 import AdminVideoResources from './pages/AdminVideoResources';
 import AdminDeletedAccounts from './pages/AdminDeletedAccounts';
+import PendingBookingRequests from './pages/PendingBookingRequests';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -322,6 +323,11 @@ const AuthenticatedApp = () => {
       <Route path="/AdminDeletedAccounts" element={
         <LayoutWrapper currentPageName="AdminDeletedAccounts">
           <AdminDeletedAccounts />
+        </LayoutWrapper>
+      } />
+      <Route path="/PendingBookingRequests" element={
+        <LayoutWrapper currentPageName="PendingBookingRequests">
+          <PendingBookingRequests />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
