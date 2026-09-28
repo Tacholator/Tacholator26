@@ -297,17 +297,37 @@ export default function MakePaymentSection({ pupil, instructor }) {
                 <p className="text-xs text-slate-500">
                   Only the lesson credits are added to your balance — the fee is not refundable as lessons. International/EEA cards may incur a higher fee.
                 </p>
+                {canPayByBankTransfer && (
+                  <div className="flex items-start gap-2 bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-sm">
+                    <Building2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-medium text-emerald-800">Want to avoid the card fee?</p>
+                      <p className="text-emerald-700">
+                        Pay by bank transfer instead — no processing fee is added. Tap “Pay by Bank Transfer” below to view your instructor’s bank details.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
             <AlertDialogAction
               onClick={confirmCardPay}
-              className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]"
+              className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] w-full"
             >
-              Continue to Payment
+              Continue to Card Payment
             </AlertDialogAction>
+            {canPayByBankTransfer ? (
+              <AlertDialogCancel
+                className="w-full border-emerald-300 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
+                onClick={() => { setShowCardForm(false); setShowBankDetails(true); }}
+              >
+                Pay by Bank Transfer instead
+              </AlertDialogCancel>
+            ) : (
+              <AlertDialogCancel className="w-full">Cancel</AlertDialogCancel>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
