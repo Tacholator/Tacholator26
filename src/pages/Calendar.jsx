@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,8 +11,7 @@ import {
   Calendar as CalendarIcon,
   CalendarCheck,
   Loader2,
-  Settings,
-  Clock
+  Settings
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -719,12 +718,6 @@ export default function Calendar() {
 
   const pendingBookings = bookings.filter(b => b.status === 'reserved_pending_instructor');
 
-  const pendingRef = useRef(null);
-
-  const scrollToPending = () => {
-    pendingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-
   const confirmAllBookingsMutation = useMutation({
     mutationFn: async () => {
       await Promise.all(pendingBookings.map(booking =>
@@ -819,19 +812,6 @@ export default function Calendar() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={scrollToPending}
-                className="bg-white shadow-md relative"
-              >
-                <Clock className="w-4 h-4" />
-                {pendingBookings.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-400 text-[#071739] text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {pendingBookings.length}
-                  </span>
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
                 onClick={() => setShowSettingsModal(true)}
                 className="bg-white shadow-md"
               >
@@ -894,20 +874,6 @@ export default function Calendar() {
             
             <Button
               variant="outline"
-              size="sm"
-              onClick={scrollToPending}
-              className="hidden sm:inline-flex relative"
-            >
-              <Clock className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Pending</span>
-              {pendingBookings.length > 0 && (
-                <span className="sm:ml-1 bg-amber-400 text-[#071739] text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                  {pendingBookings.length}
-                </span>
-              )}
-            </Button>
-            <Button
-              variant="outline"
               size="icon"
               onClick={() => setShowSettingsModal(true)}
               className="hidden sm:inline-flex"
@@ -930,8 +896,8 @@ export default function Calendar() {
         </div>
 
         {/* Pending Bookings */}
-        <div ref={pendingRef} className="mb-6 scroll-mt-24">
-          {pendingBookings.length > 0 && (
+        {pendingBookings.length > 0 && (
+          <div className="mb-6">
             <PendingBookingsPanel
               bookings={pendingBookings}
               pupils={pupils}
@@ -941,8 +907,8 @@ export default function Calendar() {
               isLoading={confirmBookingMutation.isPending || declineBookingMutation.isPending}
               isConfirmingAll={confirmAllBookingsMutation.isPending}
             />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Month Navigation — only in calendar (non-list) mode, except month view (InstructorMonthCalendar renders its own) */}
         {!showListView && viewMode !== 'month' && (
