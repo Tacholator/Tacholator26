@@ -124,13 +124,7 @@ export default function InstructorPupilPayments() {
 
   const now = moment();
   const upcomingBookings = confirmedBookings.filter(b => moment(b.startAtUtc).isAfter(now));
-  const totalEscrow = upcomingBookings.reduce((sum, b) => {
-    const cost = b.escrowAmountGbp || (b.durationHours * (pupil.hourlyRate || 0));
-    return sum + cost;
-  }, 0);
   const availableBalance = pupil.bulkPaymentBalance || 0;
-  const totalBalance = availableBalance + totalEscrow;
-  const shortfall = totalEscrow > availableBalance ? totalEscrow - availableBalance : 0;
 
   const totalPaid = ledgerEntries.filter(e => e.type === 'credit').reduce((sum, e) => sum + (e.amountGbp || 0), 0);
   const totalCharged = ledgerEntries.filter(e => e.type === 'charge').reduce((sum, e) => sum + (e.amountGbp || 0), 0);
@@ -189,35 +183,18 @@ export default function InstructorPupilPayments() {
         </Card>
 
         {/* Balance Summary */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <Card className={`${availableBalance > 0 ? 'border-emerald-300 bg-emerald-50' : availableBalance < 0 ? 'border-rose-300 bg-rose-50' : ''}`}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500 font-medium">Available Balance</CardTitle>
+              <CardTitle className="text-xs text-slate-500 font-medium">Account Balance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${availableBalance > 0 ? 'text-emerald-700' : availableBalance < 0 ? 'text-rose-700' : 'text-slate-600'}`}>
                 £{availableBalance.toFixed(2)}
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className={`${shortfall > 0 ? 'border-rose-300 bg-rose-50' : 'border-amber-300 bg-amber-50'}`}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500 font-medium">Held in Escrow</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${shortfall > 0 ? 'text-rose-700' : 'text-amber-700'}`}>
-                £{totalEscrow.toFixed(2)}
-              </div>
               {upcomingBookings.length > 0 && (
-                <div className={`text-xs ${shortfall > 0 ? 'text-rose-500' : 'text-amber-600'}`}>
-                  {upcomingBookings.length} lesson{upcomingBookings.length !== 1 ? 's' : ''}
-                </div>
-              )}
-              {shortfall > 0 && (
-                <div className="mt-2 text-xs font-semibold text-rose-700 flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  £{shortfall.toFixed(2)} still needed
+                <div className="text-xs text-slate-500 mt-1">
+                  {upcomingBookings.length} upcoming lesson{upcomingBookings.length !== 1 ? 's' : ''}
                 </div>
               )}
             </CardContent>
@@ -355,7 +332,7 @@ export default function InstructorPupilPayments() {
               <div className="space-y-2">
                 {upcomingBookings.map(booking => {
                   const start = moment(booking.startAtUtc).local();
-                  const cost = booking.escrowAmountGbp || (booking.durationHours * (pupil.hourlyRate || 0));
+                  const cost = booking.durationHours * (pupil.hourlyRate || 0);
                   return (
                     <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg border bg-slate-50">
                       <div className="flex items-center gap-3">
@@ -366,7 +343,7 @@ export default function InstructorPupilPayments() {
                         </div>
                       </div>
                       {cost > 0 && (
-                        <div className="text-sm font-semibold text-amber-700">£{cost.toFixed(2)} held</div>
+                        <div className="text-sm font-semibold text-slate-700">£{cost.toFixed(2)}</div>
                       )}
                     </div>
                   );

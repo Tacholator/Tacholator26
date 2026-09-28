@@ -162,12 +162,7 @@ export default function PupilProfile() {
     enabled: !!pupilId
   });
 
-  // Calculate total escrowed amount from upcoming confirmed bookings
-  const now = moment();
-  const upcomingConfirmedBookings = confirmedBookings.filter(b => moment(b.startAtUtc).isAfter(now));
-  const totalEscrowedGbp = upcomingConfirmedBookings.reduce((sum, b) => sum + (b.escrowAmountGbp || 0), 0);
   const availableBalance = (pupil?.bulkPaymentBalance || 0);
-  const totalBalance = availableBalance + totalEscrowedGbp;
 
   // Calculate total mileage from completed bookings
   const totalMileage = completedBookings.reduce((sum, b) => {
@@ -582,9 +577,9 @@ export default function PupilProfile() {
                       <p className="text-sm font-medium text-slate-700">Allow booking without balance</p>
                       <p className="text-xs text-slate-400">
                         Bypass the balance requirement for this pupil
-                        {pupil.allowBookingWithoutBalance && totalEscrowedGbp > 0 && (
+                        {pupil.allowBookingWithoutBalance && availableBalance < 0 && (
                           <span className="block text-amber-600 mt-0.5">
-                            Balance left after booked lessons: £{availableBalance.toFixed(2)}
+                            Current balance: £{availableBalance.toFixed(2)}
                           </span>
                         )}
                       </p>
@@ -604,20 +599,10 @@ export default function PupilProfile() {
                       <div className={`px-2 py-1 rounded-lg ${availableBalance < 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
                         Available: £{availableBalance.toFixed(2)}
                       </div>
-                      {totalEscrowedGbp > 0 && (
-                        <div className="px-2 py-1 rounded-lg bg-amber-100 text-amber-700 text-xs">
-                          In escrow: £{totalEscrowedGbp.toFixed(2)}
-                        </div>
-                      )}
                       {pupil.hourlyRate > 0 && (
                         <span className="text-slate-400">@ £{pupil.hourlyRate}/hr</span>
                       )}
                     </div>
-                    {totalEscrowedGbp > 0 && (
-                      <div className="text-xs text-slate-500 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
-                        Total balance: £{totalBalance.toFixed(2)} ({upcomingConfirmedBookings.length} lesson{upcomingConfirmedBookings.length !== 1 ? 's' : ''} pending)
-                      </div>
-                    )}
                     {((pupil.auditNoShowHours || 0) > 0 || (pupil.auditLateCancellationHours || 0) > 0) && (
                       <div className="text-xs text-slate-500 space-y-0.5">
                         {(pupil.auditNoShowHours || 0) > 0 && (

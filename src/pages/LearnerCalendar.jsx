@@ -161,7 +161,6 @@ export default function LearnerCalendar() {
         confirmedAt: requiresApproval ? null : new Date().toISOString(),
         hourlyRateAtBookingGbp: pupil.hourlyRate || 50,
         totalPriceGbp: totalPrice,
-        escrowAmountGbp: requiresApproval ? 0 : totalPrice,
         notesFromPupil: `Pickup: ${pickupLocation} | Dropoff: ${dropoffLocation}${notesFromPupil ? ' | ' + notesFromPupil : ''}${firstTimeData ? ` | First booking - Experience: ${firstTimeData.drivingExperience}, Transmission: ${firstTimeData.transmissionType}` : ''}`,
         requestedAt: new Date().toISOString(),
         slotInstanceId: selectedSlotInstance?.id || null
@@ -180,7 +179,7 @@ export default function LearnerCalendar() {
           amountGbp: totalPrice,
           hours: durationHours,
           createdByRole: 'system',
-          note: `Escrow held: £${totalPrice.toFixed(2)} deducted on booking confirmation`
+          note: `Charge applied: £${totalPrice.toFixed(2)} deducted on booking confirmation`
         });
       }
 
