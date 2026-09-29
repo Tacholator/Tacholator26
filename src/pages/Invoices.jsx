@@ -90,27 +90,27 @@ export default function Invoices() {
 
   const createManualInvoiceMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await base44.functions.invoke('createManualInvoice', data);
-      return response.data;
+    const response = await base44.functions.invoke('createManualInvoice', data);
+    return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['invoices'] });
-      setShowManualDialog(false);
-      setManualForm({
-        pupilId: '',
-        amount: '',
-        hours: '',
-        paymentMethod: 'CASH',
-        paymentDate: new Date().toISOString().split('T')[0],
-        reference: '',
-        notes: ''
-      });
-      toast({
-        title: 'Invoice Created',
-        description: 'Manual invoice has been created successfully'
-      });
-      // Prompt instructor to share with pupil
-      setShareDialogInvoice(data);
+    queryClient.invalidateQueries({ queryKey: ['invoices'] });
+    setShowManualDialog(false);
+    setManualForm({
+      pupilId: '',
+      amount: '',
+      hours: '',
+      paymentMethod: 'CASH',
+      paymentDate: new Date().toISOString().split('T')[0],
+      reference: '',
+      notes: ''
+    });
+    toast({
+      title: 'Invoice Created',
+      description: 'Manual invoice has been created successfully'
+    });
+    // Open the invoice preview with the Share action
+    setSelectedInvoice(data.invoice || data);
     },
     onError: (error) => {
       toast({
@@ -551,11 +551,11 @@ export default function Invoices() {
           </TabsContent>
         </Tabs>
 
-        {/* Invoice Detail Modal */}
+        {/* Invoice Detail / Preview Modal */}
         <Dialog open={!!selectedInvoice} onOpenChange={() => setSelectedInvoice(null)}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Invoice Details</DialogTitle>
+              <DialogTitle>Invoice Preview</DialogTitle>
             </DialogHeader>
             {selectedInvoice && !selectedInvoice.sharedWithPupil && (
               <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-lg p-3">
