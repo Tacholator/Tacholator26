@@ -1,30 +1,64 @@
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, ArrowLeft, Plus, Calendar as CalendarIcon } from 'lucide-react';
 import moment from 'moment';
 
 const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-const STATUS_BADGE_COLORS = {
-  available: 'bg-amber-200 text-amber-800',
-  reserved_pending_instructor: 'bg-yellow-200 text-yellow-800',
-  reserved_pending: 'bg-yellow-200 text-yellow-800',
-  confirmed: 'bg-lime-200 text-lime-800',
-  completed: 'bg-stone-200 text-stone-700',
-  cancelled: 'bg-orange-200 text-orange-800',
-  no_show: 'bg-rose-200 text-rose-800',
+// Week-view color palette (mirrors Calendar24Hour.jsx so the day detail list
+// matches the colors used in the week/day grid view).
+const SLOT_COLORS = {
+  available: '#F5F5F5',
+  available_slot: '#CCFF66',
+  confirmed: '#87CEFA',
+  confirmed_test: '#D2B48C',
+  completed: '#CFCFCF',
+  cancelled: '#FFCC80',
+  no_show: '#FF8A80',
+  reserved_pending: '#B39DDB',
 };
 
-const STATUS_ROW_COLORS = {
-  available: 'bg-amber-50 text-amber-800 border-l-amber-400',
-  reserved_pending_instructor: 'bg-yellow-50 text-yellow-700 border-l-yellow-400',
-  reserved_pending: 'bg-yellow-50 text-yellow-700 border-l-yellow-400',
-  confirmed: 'bg-lime-50 text-lime-700 border-l-lime-400',
-  completed: 'bg-stone-50 text-stone-600 border-l-stone-400',
-  cancelled: 'bg-orange-50 text-orange-700 border-l-orange-400',
-  no_show: 'bg-rose-50 text-rose-700 border-l-rose-400',
+const SLOT_BORDER_COLORS = {
+  available_slot: '#2E7D32',
+  reserved_pending: '#5E35B1',
+  confirmed: '#1565C0',
+  confirmed_test: '#8B7355',
+  completed: '#757575',
+  cancelled: '#F57C00',
+  no_show: '#D32F2F',
 };
+
+const SLOT_ACCENT_COLORS = {
+  available_slot: '#1B5E20',
+  reserved_pending: '#4527A0',
+  confirmed: '#0D47A1',
+  confirmed_test: '#6B5840',
+  completed: '#616161',
+  cancelled: '#E65100',
+  no_show: '#C62828',
+};
+
+const isDarkColor = (hex) => {
+  if (!hex) return false;
+  const c = hex.replace('#', '');
+  if (c.length !== 6) return false;
+  const r = parseInt(c.slice(0, 2), 16);
+  const g = parseInt(c.slice(2, 4), 16);
+  const b = parseInt(c.slice(4, 6), 16);
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance < 140;
+};
+
+// Maps a day-list item (slot or booking) to the same "state" key the week view
+// uses to pick its background color.
+function getSlotState(item) {
+  if (item.isSlot) return 'available_slot';
+  const s = item.status;
+  if (s === 'reserved_pending_instructor' || s === 'reserved_pending') return 'reserved_pending';
+  if (s === 'confirmed' && item.isPracticalTest) return 'confirmed_test';
+  if (['confirmed', 'completed', 'cancelled', 'no_show'].includes(s)) return s;
+  return null;
+}
 
 function formatLabel(status, isPracticalTest) {
   if (isPracticalTest && status === 'confirmed') return 'Test Day';
@@ -185,34 +219,49 @@ export default function InstructorMonthCalendar({
             {dayItems.map((item, idx) => {
               const startMoment = moment(item.startAtUtc).local();
               const endMoment = moment(item.endAtUtc).local();
-              const rowColor = STATUS_ROW_COLORS[item.status] || 'bg-slate-50 text-slate-600 border-l-slate-300';
-              const badgeColor = STATUS_BADGE_COLORS[item.status] || 'bg-slate-200 text-slate-600';
+              const state = getSlotState(item);
+              const bgColor = (state && SLOT_COLORS[state]) || '#F1F5F9';
+              const borderColor = (state && SLOT_BORDER_COLORS[state]) || '#CBD5E1';
+              const accentColor = (state && SLOT_ACCENT_COLORS[state]) || '#475569';
+              const dark = isDarkColor(bgColor);
+              const textClass = dark ? 'text-white' : 'text-slate-900';
+              const subTextClass = dark ? 'text-slate-100' : 'text-slate-700';
               const name = item.isSlot ? null : pupilName(item);
               return (
                 <div
                   key={item.id || `item-${idx}`}
                   onClick={() => item.isSlot ? onSlotClick?.(startMoment, item) : onBookingClick?.(item)}
-                  className={`flex items-center gap-4 p-3 rounded-xl border border-slate-100 border-l-4 ${rowColor} hover:brightness-95 cursor-pointer transition-all`}
+                  className={`relative flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:brightness-95 cursor-pointer transition-all overflow-hidden ${textClass}`}
+                  style={{ backgroundColor: bgColor }}
                 >
+                  <div
+                    className="absolute left-0 top-0 bottom-0 w-1"
+                    style={{ backgroundColor: borderColor }}
+                  />
                   <div className="flex flex-col items-center justify-center min-w-[55px]">
                     <span className="text-sm font-bold opacity-90">{startMoment.format('HH:mm')}</span>
-                    <span className="text-xs opacity-60">{endMoment.format('HH:mm')}</span>
+                    <span className="text-xs opacity-70">{endMoment.format('HH:mm')}</span>
                   </div>
                   <div className="w-px h-10 bg-current opacity-20" />
                   <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium truncate block">
                       {item.isSlot ? 'Available Slot' : (name || 'Lesson')}
                     </span>
-                    {item.durationHours && (
-                      <span className="text-xs opacity-70">{Math.round(item.durationHours * 10) / 10}h</span>
-                    )}
-                    {!item.isSlot && item.pickupLocation && (
-                      <span className="text-xs opacity-70 truncate block">{item.pickupLocation}</span>
-                    )}
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {item.durationHours && (
+                        <span className={`text-xs opacity-80 ${subTextClass}`}>{Math.round(item.durationHours * 10) / 10}h</span>
+                      )}
+                      {!item.isSlot && item.pickupLocation && (
+                        <span className={`text-xs opacity-80 truncate ${subTextClass}`}>{item.pickupLocation}</span>
+                      )}
+                    </div>
                   </div>
-                  <Badge className={`shrink-0 text-xs ${badgeColor}`}>
+                  <span
+                    className="inline-block px-1.5 py-0.5 text-[11px] font-bold uppercase rounded whitespace-nowrap shrink-0"
+                    style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
+                  >
                     {item.isSlot ? formatLabel('available') : formatLabel(item.status, item.isPracticalTest)}
-                  </Badge>
+                  </span>
                 </div>
               );
             })}
