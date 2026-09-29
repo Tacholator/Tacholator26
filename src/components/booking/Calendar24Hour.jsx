@@ -277,6 +277,32 @@ export default function Calendar24Hour({
     return { state: 'available' };
   };
 
+  // Returns ALL personal events occurring on `day` whose start matches `timeSlot`.
+  // Used to detect overlapping personal events so they can be rendered side by
+  // side (each at half width) instead of one hiding the other.
+  const getPersonalEventsStartingAtSlot = (day, timeSlot) => {
+    return personalEvents.filter(ev => {
+      const evStartLocal = moment(ev.startAtUtc).local();
+      let occurs = false;
+      if (ev.repeatType === 'daily') {
+        occurs = evStartLocal.isSameOrBefore(day, 'day');
+      } else if (ev.repeatType === 'weekly') {
+        occurs = evStartLocal.isSameOrBefore(day, 'day') && evStartLocal.day() === day.day();
+      } else {
+        occurs = evStartLocal.isSame(day, 'day');
+      }
+      if (!occurs) return false;
+      return evStartLocal.format('HH:mm') === timeSlot;
+    });
+  };
+
+  const personalSpan = (ev) => {
+    const evStart = moment(ev.startAtUtc).local();
+    const evEnd = moment(ev.endAtUtc).local();
+    const durationMinutes = evEnd.diff(evStart, 'minutes');
+    return Math.max(1, Math.ceil(durationMinutes / 15));
+  };
+
   const handlePrevious = () => {
     setCurrentDateStr(currentDate.clone().subtract(viewMode === 'day' ? 1 : 7, 'days').format('YYYY-MM-DD'));
   };
@@ -490,8 +516,13 @@ export default function Calendar24Hour({
                     const evEnd = moment(slotStateData.personalEvent.endAtUtc).local();
                     isBlockStart = evStart.format('HH:mm') === timeSlot;
                     if (isBlockStart) {
-                      const durationMinutes = evEnd.diff(evStart, 'minutes');
-                      blockSpan = Math.max(1, Math.ceil(durationMinutes / 15));
+                      // Detect any other personal events starting at this same slot
+                      // (overlaps) so the cell can render them side by side.
+                      const peers = getPersonalEventsStartingAtSlot(day, timeSlot);
+                      slotStateData.personalPeers = peers;
+                      blockSpan = peers.length > 1
+                        ? Math.max(...peers.map(personalSpan))
+                        : Math.max(1, Math.ceil(evEnd.diff(evStart, 'minutes') / 15));
                       blockStartTime = evStart.format('HH:mm');
                       blockEndTime = evEnd.format('HH:mm');
                     }
@@ -527,6 +558,60 @@ export default function Calendar24Hour({
                 // Render card-style block
                 if (shouldRenderAsCard && isBlockStart) {
                   const exactHeight = blockSpan * 22.5;
+
+                  // Overlapping personal events: render them side by side, each
+                  // occupying half the column width, instead of one hiding the other.
+                  const personalPeers = blockType === 'personal' ? (slotStateData.personalPeers || []) : [];
+                  if (blockType === 'personal' && personalPeers.length > 1) {
+                    return (
+                      <div
+                        key={dayIdx}
+                        className="border-r border-b border-slate-200 last:border-r-0 relative flex gap-[2px]"
+                        style={{ height: `${exactHeight}px`, padding: '2px', gridRow: `span ${blockSpan}` }}
+                      >
+                        {personalPeers.map((ev, peerIdx) => {
+                          const evStart = moment(ev.startAtUtc).local();
+                          const evEnd = moment(ev.endAtUtc).local();
+                          const peerSpan = personalSpan(ev);
+                          const peerHeight = peerSpan * 22.5 - 4; // minus cell padding
+                          const bg = ev.color || SLOT_COLORS.available;
+                          const dark = isDarkColor(bg);
+                          const txt = dark ? 'text-white' : 'text-slate-900';
+                          const timeTxt = dark ? 'text-slate-100' : 'text-slate-800';
+                          const badgeBg = dark ? 'rgba(255,255,255,0.25)' : '#E2E8F0';
+                          const badgeText = dark ? '#ffffff' : '#334155';
+                          return (
+                            <div
+                              key={ev.id || peerIdx}
+                              onClick={() => onPersonalEventClick?.(ev)}
+                              className="relative rounded-md border-2 overflow-hidden cursor-pointer group hover:shadow-md transition-shadow min-w-0"
+                              style={{ borderColor: '#475569', backgroundColor: bg, height: `${peerHeight}px`, width: '50%' }}
+                            >
+                              <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: '#334155' }} />
+                              <div className="pl-1.5 sm:pl-2 pr-1 py-1 h-full flex flex-col justify-center relative z-10 overflow-hidden min-w-0">
+                                {ev.title && (
+                                  <div className={`text-[10px] sm:text-sm font-bold ${txt} mb-0.5 truncate w-full`} title={ev.title}>
+                                    {ev.title}
+                                  </div>
+                                )}
+                                <div className={`text-[10px] sm:text-xs font-semibold ${timeTxt} truncate`}>
+                                  {evStart.format('HH:mm')} - {evEnd.format('HH:mm')}
+                                </div>
+                                <div className="mt-0.5">
+                                  <span
+                                    className="inline-block px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[11px] font-bold uppercase rounded whitespace-nowrap"
+                                    style={{ backgroundColor: badgeBg, color: badgeText }}
+                                  >
+                                    Personal
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  }
 
                   const handleClick = () => {
                     if (!clickable) return;
