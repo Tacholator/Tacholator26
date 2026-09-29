@@ -360,7 +360,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                   </div>
                   <Tabs value={balanceTab} onValueChange={setBalanceTab}>
                     <TabsList>
-                      <TabsTrigger value="active">Active</TabsTrigger>
+                      <TabsTrigger value="active" className="data-[state=active]:bg-[#F7B602] data-[state=active]:text-[#071739] data-[state=active]:font-bold">Active</TabsTrigger>
                       <TabsTrigger value="onhold">On Hold</TabsTrigger>
                     </TabsList>
                   </Tabs>
