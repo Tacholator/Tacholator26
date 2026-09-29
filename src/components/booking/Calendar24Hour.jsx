@@ -195,15 +195,16 @@ export default function Calendar24Hour({
         pushBlock(bs, be, { kind: 'booking', booking: b, state });
       });
 
-      // Slot instances
+      // Slot instances — only render slots that are NOT already represented by
+      // a booking block. A slot with status 'confirmed' or 'reserved_pending'
+      // has a corresponding LessonBooking that renders in its place, so drawing
+      // both would make them overlap and split into side-by-side columns.
       slotInstances.forEach(si => {
+        if (si.status !== 'available' && si.status !== 'blocked') return;
         const bs = moment(si.startAtUtc).local();
         const be = moment(si.endAtUtc).local();
         if (!bs.isSame(day, 'day') && !(bs.isBefore(day.clone().endOf('day')) && be.isAfter(dayStart))) return;
-        let state = 'available';
-        if (si.status === 'reserved_pending') state = 'reserved_pending';
-        else if (si.status === 'confirmed') state = 'confirmed';
-        else if (si.status === 'blocked') state = 'unavailable';
+        const state = si.status === 'blocked' ? 'unavailable' : 'available';
         pushBlock(bs, be, { kind: 'slot', slotInstance: si, state });
       });
 
