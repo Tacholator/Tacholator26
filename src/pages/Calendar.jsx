@@ -1309,6 +1309,11 @@ export default function Calendar() {
         onOpenChange={setShowSettingsModal}
         onOpenWorkingHours={() => setShowWorkingHoursModal(true)}
         onOpenCloseDay={() => setShowCloseDayModal(true)}
+        onOpenCreateSlot={() => {
+          setSelectedSlotInstance(null);
+          setSelectedSlotDateTime(null);
+          setShowCreateSlotModal(true);
+        }}
         availabilityMode={availabilityMode}
         onAvailabilityModeChange={setAvailabilityMode}
       />

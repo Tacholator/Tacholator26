@@ -2,7 +2,7 @@ import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Clock, ClipboardCheck, Eye, Lock } from 'lucide-react';
+import { Clock, ClipboardCheck, Eye, Lock, CalendarPlus } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
@@ -11,6 +11,7 @@ export default function CalendarSettingsDrawer({
   onOpenChange,
   onOpenWorkingHours,
   onOpenCloseDay,
+  onOpenCreateSlot,
   availabilityMode,
   onAvailabilityModeChange
 }) {
@@ -74,6 +75,23 @@ export default function CalendarSettingsDrawer({
               <div className="text-xs text-slate-500">Mark a day as unavailable</div>
             </div>
           </Button>
+
+          {onOpenCreateSlot && (
+            <Button
+              onClick={() => {
+                onOpenChange(false);
+                onOpenCreateSlot();
+              }}
+              className="w-full justify-start gap-3 h-auto py-4"
+              variant="outline"
+            >
+              <CalendarPlus className="w-5 h-5 text-emerald-600" />
+              <div className="text-left">
+                <div className="font-medium">Create Bookable Slots</div>
+                <div className="text-xs text-slate-500">Publish available lesson slots</div>
+              </div>
+            </Button>
+          )}
 
           {/* Mode Toggle */}
           {onAvailabilityModeChange && (
