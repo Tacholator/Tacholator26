@@ -12,7 +12,6 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import RoleSelection from './pages/RoleSelection';
 import AdminGpsRouteAccess from './pages/AdminGpsRouteAccess';
 import AdminGpsRoutes from './pages/AdminGpsRoutes';
-import InstructorGpsRoutes from './pages/InstructorGpsRoutes';
 import LearnerClassNotes from './pages/LearnerClassNotes';
 import ContactSupport from './pages/ContactSupport';
 import AdminSupportMessages from './pages/AdminSupportMessages';
@@ -29,8 +28,7 @@ import TestCentreDetail from './pages/TestCentreDetail';
 import TestRouteSubscriptions from './pages/TestRouteSubscriptions';
 import SubscriptionTerms from './pages/SubscriptionTerms';
 import TestRouteTerms from './pages/TestRouteTerms';
-import ReferAFriend from './pages/ReferAFriend';
-import InstructorReferralProgram from './pages/InstructorReferralProgram';
+
 import MockTestReportForm from './pages/MockTestReportForm';
 import MockTestReportList from './pages/MockTestReportList';
 import MockTestReportView from './pages/MockTestReportView';
@@ -105,11 +103,6 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
-      <Route path="/InstructorGpsRoutes" element={
-        <LayoutWrapper currentPageName="InstructorGpsRoutes">
-          <InstructorGpsRoutes />
-        </LayoutWrapper>
-      } />
       <Route path="/AdminGpsRoutes" element={
         <LayoutWrapper currentPageName="AdminGpsRoutes">
           <AdminGpsRoutes />
@@ -203,16 +196,6 @@ const AuthenticatedApp = () => {
       <Route path="/TestRouteTerms" element={
         <LayoutWrapper currentPageName="TestRouteTerms">
           <TestRouteTerms />
-        </LayoutWrapper>
-      } />
-      <Route path="/ReferAFriend" element={
-        <LayoutWrapper currentPageName="ReferAFriend">
-          <ReferAFriend />
-        </LayoutWrapper>
-      } />
-      <Route path="/InstructorReferralProgram" element={
-        <LayoutWrapper currentPageName="InstructorReferralProgram">
-          <InstructorReferralProgram />
         </LayoutWrapper>
       } />
       <Route path="/MockTestReportForm" element={

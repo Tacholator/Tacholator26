@@ -71,7 +71,6 @@ import HomeworkLibrary from './pages/HomeworkLibrary';
 import InstructorBookingCalendar from './pages/InstructorBookingCalendar';
 import InstructorChats from './pages/InstructorChats';
 import InstructorDashboard from './pages/InstructorDashboard';
-import InstructorGpsRoutes from './pages/InstructorGpsRoutes';
 import InstructorMcqReporting from './pages/InstructorMcqReporting';
 import InstructorMyTeaching from './pages/InstructorMyTeaching';
 import InstructorNotifications from './pages/InstructorNotifications';
@@ -156,7 +155,6 @@ export const PAGES = {
     "InstructorBookingCalendar": InstructorBookingCalendar,
     "InstructorChats": InstructorChats,
     "InstructorDashboard": InstructorDashboard,
-    "InstructorGpsRoutes": InstructorGpsRoutes,
     "InstructorMcqReporting": InstructorMcqReporting,
     "InstructorMyTeaching": InstructorMyTeaching,
     "InstructorNotifications": InstructorNotifications,
