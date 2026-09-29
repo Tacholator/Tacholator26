@@ -192,11 +192,14 @@ async function handleCheckoutSessionCompleted(session, base44) {
           bulkPaymentBalance: (pupil.bulkPaymentBalance || 0) + lessonAmount
         });
 
-        // Get instructor info for the invoice
+        // Get instructor info for the invoice.
+        // IMPORTANT: Invoice.instructorId must reference the instructor's USER id
+        // (not the Instructor entity id stored in metadata) so the invoice passes
+        // RLS and appears on the instructor's Invoices page.
         let instructorName = pupil.instructorName || '';
         let instructorEmail = pupil.instructorEmail || '';
         let instructorPhone = '';
-        let instructorId = metadata?.instructorId || pupil.instructorId || '';
+        let instructorId = pupil.instructorId || '';
 
         if (instructorEmail) {
           const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by: instructorEmail });
@@ -245,7 +248,8 @@ async function handleCheckoutSessionCompleted(session, base44) {
           paymentMethod: 'STRIPE_CARD',
           paymentDate: new Date().toISOString(),
           stripePaymentIntentId: id,
-          isLocked: true
+          isLocked: true,
+          sharedWithPupil: true
         });
 
         console.log(`Invoice ${invoiceNumber} created for card payment - Session ${id}`);
