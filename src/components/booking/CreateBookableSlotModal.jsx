@@ -192,13 +192,13 @@ export default function CreateBookableSlotModal({
       });
     } else if (lessonMode === 'booking') {
       const startLocal = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
-      const endLocal = moment(`${startDate} ${endTime}`, 'YYYY-MM-DD HH:mm');
+      const endLocal = startLocal.clone().add(lessonDuration, 'minutes');
       onSave({
         slotType: 'lesson_booking',
         pupilId: selectedPupilId,
         startAtUtc: startLocal.toISOString(),
         endAtUtc: endLocal.toISOString(),
-        durationHours: endLocal.diff(startLocal, 'hours', true),
+        durationHours: lessonDuration / 60,
         pickupLocation,
         dropoffLocation: pickupLocation,
         isPracticalTest,
@@ -378,43 +378,29 @@ export default function CreateBookableSlotModal({
               />
             </div>
 
-            {lessonMode === 'bookable' ? (
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>Start Time</Label>
-                  <Input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Lesson Duration</Label>
-                  <Select value={String(lessonDuration)} onValueChange={(v) => setLessonDuration(Number(v))}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select duration" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DURATION_OPTIONS.map(opt => (
-                        <SelectItem key={opt.value} value={String(opt.value)}>{opt.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            ) : (
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Time Range</Label>
-                <TimeRangePicker
-                  startTime={startTime}
-                  endTime={endTime}
-                  onStartChange={setStartTime}
-                  onEndChange={setEndTime}
-                  startPlaceholder="Start time"
-                  endPlaceholder="End time"
+                <Label>Start Time</Label>
+                <Input
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
                 />
               </div>
-            )}
+              <div className="space-y-2">
+                <Label>Lesson Duration</Label>
+                <Select value={String(lessonDuration)} onValueChange={(v) => setLessonDuration(Number(v))}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select duration" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DURATION_OPTIONS.map(opt => (
+                      <SelectItem key={opt.value} value={String(opt.value)}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
             {lessonMode === 'bookable' && (
               <>
