@@ -277,6 +277,22 @@ export default function Calendar24Hour({
     return { state: 'available' };
   };
 
+  const handlePrevious = () => {
+    setCurrentDateStr(currentDate.clone().subtract(viewMode === 'day' ? 1 : 7, 'days').format('YYYY-MM-DD'));
+  };
+
+  const handleNext = () => {
+    setCurrentDateStr(currentDate.clone().add(viewMode === 'day' ? 1 : 7, 'days').format('YYYY-MM-DD'));
+  };
+
+  const handleToday = () => {
+    setCurrentDateStr(moment().format('YYYY-MM-DD'));
+    onViewModeChange && onViewModeChange('day');
+  };
+
+  const days = getDaysInView();
+  const timeSlots = getTimeSlots();
+
   // Expand personal events into per-day occurrences for the visible date range,
   // and assign each occurrence a lane (0 = left, 1 = right) via greedy interval
   // packing. When two occurrences overlap in time they land in different lanes
@@ -329,22 +345,6 @@ export default function Calendar24Hour({
     if (!entry) return [];
     return entry.occs.filter(o => o.startStr === timeSlot);
   };
-
-  const handlePrevious = () => {
-    setCurrentDateStr(currentDate.clone().subtract(viewMode === 'day' ? 1 : 7, 'days').format('YYYY-MM-DD'));
-  };
-
-  const handleNext = () => {
-    setCurrentDateStr(currentDate.clone().add(viewMode === 'day' ? 1 : 7, 'days').format('YYYY-MM-DD'));
-  };
-
-  const handleToday = () => {
-    setCurrentDateStr(moment().format('YYYY-MM-DD'));
-    onViewModeChange && onViewModeChange('day');
-  };
-
-  const days = getDaysInView();
-  const timeSlots = getTimeSlots();
 
   const isSlotClickable = (state, slotInstance, booking) => {
     if (isInstructor) {
