@@ -152,6 +152,11 @@ export default function Calendar24Hour({
   // personal events, unavailable/closed rules) per day. Overlapping blocks of
   // any kind land in different lanes so they render side by side.
   const blocksByDay = useMemo(() => {
+    // Minutes-from-midnight of the first visible time slot (timeSlots[0] is
+    // like "07:00"). Block positions are measured relative to this offset.
+    const offsetMin = timeSlots.length
+      ? (() => { const [h, m] = timeSlots[0].split(':').map(Number); return h * 60 + m; })()
+      : 0;
     const map = {};
     days.forEach(day => {
       const dayKey = day.format('YYYY-MM-DD');
@@ -160,11 +165,15 @@ export default function Calendar24Hour({
 
       const pushBlock = (startMoment, endMoment, data) => {
         if (!startMoment || !endMoment || !endMoment.isAfter(startMoment)) return;
+        // timeSlots starts at the working-hours earliest hour (e.g. 07:00), not
+        // midnight — so slot indices must be measured from that offset, not from
+        // 00:00, otherwise afternoon blocks get dropped by the window guard.
         const startMin = startMoment.diff(dayStart, 'minutes');
         const endMin = endMoment.diff(dayStart, 'minutes');
-        if (endMin <= 0 || startMin >= timeSlots.length * 15) return;
-        const startSlot = Math.max(0, Math.floor(startMin / 15));
-        const span = Math.max(1, Math.ceil((endMin - startSlot * 15) / 15));
+        const windowEnd = offsetMin + timeSlots.length * 15;
+        if (endMin <= offsetMin || startMin >= windowEnd) return;
+        const startSlot = Math.max(0, Math.floor((startMin - offsetMin) / 15));
+        const span = Math.max(1, Math.min(Math.ceil((endMin - offsetMin) / 15) - startSlot, timeSlots.length - startSlot));
         blocks.push({ startSlot, span, startMoment, endMoment, ...data });
       };
 
@@ -234,7 +243,7 @@ export default function Calendar24Hour({
       map[dayKey] = { blocks, maxLane: laneEnds.length };
     });
     return map;
-  }, [days, bookings, slotInstances, personalEvents, rules, timeSlots.length]);
+  }, [days, bookings, slotInstances, personalEvents, rules, timeSlots]);
 
   const isSlotClickable = (block) => {
     const { kind, booking, slotInstance, state, ev } = block;
