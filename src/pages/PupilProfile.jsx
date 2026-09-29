@@ -602,6 +602,13 @@ export default function PupilProfile() {
                       {pupil.hourlyRate > 0 && (
                         <span className="text-slate-400">@ £{pupil.hourlyRate}/hr</span>
                       )}
+                      <Link
+                        to={createPageUrl('InstructorPupilPayments') + `?id=${pupil.id}`}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[#F7B602] text-[#071739] text-xs font-semibold hover:bg-[#d99f02] transition-colors"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        Top Up Balance
+                      </Link>
                     </div>
                     {((pupil.auditNoShowHours || 0) > 0 || (pupil.auditLateCancellationHours || 0) > 0) && (
                       <div className="text-xs text-slate-500 space-y-0.5">
