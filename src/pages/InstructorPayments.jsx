@@ -346,11 +346,11 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
 
           {/* Pupil Balances Tab */}
           <TabsContent value="pupils">
-            <Card>
+            <Card className="border-2 border-blue-500 shadow-lg shadow-blue-100">
               <CardHeader>
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div>
-                    <CardTitle>Pupil Balances</CardTitle>
+                    <CardTitle className="text-blue-700">Pupil Balances</CardTitle>
                     <CardDescription>
                       Showing {balancePupils.filter(p => {
                         const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
@@ -463,9 +463,9 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
 
           {/* Recent Activity Tab */}
           <TabsContent value="activity">
-            <Card>
+            <Card className="border-2 border-emerald-500 shadow-lg shadow-emerald-100">
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
+                <CardTitle className="text-emerald-700">Recent Activity</CardTitle>
                 <CardDescription>Latest payment transactions across all pupils</CardDescription>
               </CardHeader>
               <CardContent>
@@ -525,9 +525,9 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
 
           {/* Latest Card Payments Tab */}
           <TabsContent value="card-payments">
-            <Card>
+            <Card className="border-2 border-purple-500 shadow-lg shadow-purple-100">
               <CardHeader>
-                <CardTitle>Latest Card Payments</CardTitle>
+                <CardTitle className="text-purple-700">Latest Card Payments</CardTitle>
                 <CardDescription>
                   Card payments processed through Stripe (showing fees and net payouts)
                 </CardDescription>
