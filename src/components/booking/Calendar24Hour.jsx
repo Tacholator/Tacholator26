@@ -464,10 +464,14 @@ export default function Calendar24Hour({
                   } else if (blockType === 'slotInstance' && slotInstance) {
                     const blockStart = moment(slotInstance.startAtUtc).local();
                     const blockEnd = moment(slotInstance.endAtUtc).local();
-                    isBlockStart = blockStart.format('HH:mm') === timeSlot;
+                    // Snap to the 15-min grid cell that contains the slot start —
+                    // slots created with a non-aligned start (e.g. 14:01) still render
+                    // instead of vanishing because they never match a grid line exactly.
+                    const cellStart = blockStart.clone().minutes(Math.floor(blockStart.minutes() / 15) * 15).seconds(0);
+                    isBlockStart = cellStart.format('HH:mm') === timeSlot;
                     if (isBlockStart) {
-                      const durationMinutes = blockEnd.diff(blockStart, 'minutes');
-                      blockSpan = Math.ceil(durationMinutes / 15);
+                      const durationMinutes = blockEnd.diff(cellStart, 'minutes');
+                      blockSpan = Math.max(1, Math.ceil(durationMinutes / 15));
                       blockStartTime = blockStart.format('HH:mm');
                       blockEndTime = blockEnd.format('HH:mm');
                     }

@@ -52,7 +52,14 @@ export default function CreateBookableSlotModal({
   existingSlot,
   slotInstances = []
 }) {
-  const slotMoment = slotDateTime ? moment(slotDateTime) : moment();
+  const slotMoment = slotDateTime ? moment(slotDateTime) : (() => {
+    // Snap "now" to the 15-min grid so generated slots align with the calendar grid
+    const now = moment();
+    now.minutes(Math.floor(now.minutes() / 15) * 15);
+    now.seconds(0);
+    now.milliseconds(0);
+    return now;
+  })();
   const dayOfWeek = slotMoment.format('ddd').toLowerCase();
 
   // Lesson tab state
