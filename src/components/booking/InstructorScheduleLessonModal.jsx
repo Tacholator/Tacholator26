@@ -35,8 +35,6 @@ export default function InstructorScheduleLessonModal({
   
   const [selectedPupilId, setSelectedPupilId] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
-  const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(false);
-  const [dropoffLocation, setDropoffLocation] = useState('');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isPracticalTest, setIsPracticalTest] = useState(false);
@@ -118,7 +116,6 @@ export default function InstructorScheduleLessonModal({
       const totalPriceGbp = hourlyRate * durationHours;
 
       // Create booking
-      const finalDropoff = dropoffSameAsPickup ? pickupLocation : dropoffLocation;
       const booking = await base44.entities.LessonBooking.create({
         instructorId: user.id,
         pupilId: selectedPupilId,
@@ -126,7 +123,7 @@ export default function InstructorScheduleLessonModal({
         startAtUtc: slotInstance.startAtUtc,
         endAtUtc: slotInstance.endAtUtc,
         pickupLocation,
-        dropoffLocation: finalDropoff,
+        dropoffLocation: pickupLocation,
         status: 'confirmed',
         confirmedAt: new Date().toISOString(),
         durationHours,
@@ -193,8 +190,6 @@ export default function InstructorScheduleLessonModal({
   const handleClose = () => {
     setSelectedPupilId('');
     setPickupLocation('');
-    setDropoffSameAsPickup(false);
-    setDropoffLocation('');
 
     setSearchQuery('');
     setIsPracticalTest(false);
@@ -207,15 +202,6 @@ export default function InstructorScheduleLessonModal({
       toast({ 
         title: 'Missing information', 
         description: 'Please select a pupil and enter a pickup location',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    if (!dropoffSameAsPickup && !dropoffLocation) {
-      toast({ 
-        title: 'Missing information', 
-        description: 'Please enter a drop-off location',
         variant: 'destructive'
       });
       return;
@@ -327,16 +313,6 @@ export default function InstructorScheduleLessonModal({
             />
           </div>
 
-          {/* Drop-off Location */}
-          <div className="space-y-2">
-            <Label htmlFor="dropoff">Drop-off Location *</Label>
-            <Input
-              id="dropoff"
-              value={dropoffLocation}
-              onChange={(e) => setDropoffLocation(e.target.value)}
-              placeholder="Enter drop-off address..."
-            />
-          </div>
 
 
 
