@@ -223,14 +223,14 @@ export default function Invoices() {
         invoices.map((invoice) => (
           <div
             key={invoice.id}
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border hover:bg-slate-50 transition-colors"
+            className="flex items-center justify-between p-4 rounded-lg border hover:bg-slate-50 transition-colors"
           >
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="p-2 rounded-lg bg-[#F7B602]/10 shrink-0">
+            <div className="flex items-center gap-4 flex-1">
+              <div className="p-2 rounded-lg bg-[#F7B602]/10">
                 {getTypeIcon(invoice.type)}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
                   <span className="font-semibold text-[#071739]">{invoice.invoiceNumber}</span>
                   <Badge className={getStatusColor(invoice.status)}>
                     {invoice.status}
@@ -240,7 +240,7 @@ export default function Invoices() {
                   {invoice.pupilName} • {moment(invoice.created_date).format('DD MMM YYYY')}
                 </div>
               </div>
-              <div className="text-right shrink-0">
+              <div className="text-right">
                 <div className="text-lg font-bold text-[#071739]">
                   £{(invoice.amount || 0).toFixed(2)}
                 </div>
@@ -248,40 +248,40 @@ export default function Invoices() {
                   {invoice.hours}h • {invoice.paymentMethod}
                 </div>
               </div>
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              {!invoice.sharedWithPupil && (
+              <div className="flex gap-2">
+                {!invoice.sharedWithPupil && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShareDialogInvoice(invoice)}
+                    className="gap-2 border-[#F7B602] text-[#F7B602] hover:bg-[#F7B602]/10"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </Button>
+                )}
+                {invoice.sharedWithPupil && (
+                  <Badge className="bg-emerald-100 text-emerald-800">Shared</Badge>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShareDialogInvoice(invoice)}
-                  className="gap-2 border-[#F7B602] text-[#F7B602] hover:bg-[#F7B602]/10"
+                  onClick={() => setSelectedInvoice(invoice)}
+                  className="gap-2"
                 >
-                  <Share2 className="w-4 h-4" />
-                  Share
+                  <FileText className="w-4 h-4" />
+                  View
                 </Button>
-              )}
-              {invoice.sharedWithPupil && (
-                <Badge className="bg-emerald-100 text-emerald-800">Shared</Badge>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSelectedInvoice(invoice)}
-                className="gap-2"
-              >
-                <FileText className="w-4 h-4" />
-                View
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleDownloadPdf(invoice.id, invoice.invoiceNumber)}
-                className="gap-2"
-              >
-                <Download className="w-4 h-4" />
-                PDF
-              </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDownloadPdf(invoice.id, invoice.invoiceNumber)}
+                  className="gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  PDF
+                </Button>
+              </div>
             </div>
           </div>
         ))
@@ -301,7 +301,7 @@ export default function Invoices() {
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+        <div className="flex justify-between items-start">
           <div>
             <Link to={createPageUrl('InstructorPayments')} className="inline-flex items-center gap-2 text-[#071739] hover:text-[#F7B602] mb-3 transition-colors">
               <ArrowLeft className="w-4 h-4" />
@@ -312,7 +312,7 @@ export default function Invoices() {
           </div>
           <Dialog open={showManualDialog} onOpenChange={setShowManualDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2 w-full sm:w-auto">
+              <Button className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2">
                 <Plus className="w-4 h-4" />
                 Create Invoice
               </Button>
@@ -492,7 +492,7 @@ export default function Invoices() {
         {/* Filters */}
         <Card>
           <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input
@@ -503,7 +503,7 @@ export default function Invoices() {
                 />
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-40">
+                <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -520,24 +520,24 @@ export default function Invoices() {
 
         {/* Invoices Tabs */}
         <Tabs defaultValue="all" className="space-y-4">
-          <TabsList className="flex overflow-x-auto scrollbar-thin sm:w-auto p-1.5 gap-1.5 bg-slate-100">
+          <TabsList className="h-auto p-1.5 gap-1.5 bg-slate-100">
             <TabsTrigger
               value="all"
-              className="gap-2 shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 rounded-lg bg-[#071739] text-white shadow-sm hover:bg-[#071739]/90 data-[state=active]:ring-2 data-[state=active]:ring-[#F7B602] data-[state=active]:ring-offset-1 data-[state=active]:ring-offset-slate-100"
+              className="gap-2 px-4 py-2 rounded-lg bg-[#071739] text-white shadow-sm hover:bg-[#071739]/90 data-[state=active]:ring-2 data-[state=active]:ring-[#F7B602] data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-slate-100"
             >
               <FileText className="w-4 h-4" />
               All Invoices ({filteredInvoices.length})
             </TabsTrigger>
             <TabsTrigger
               value="stripe"
-              className="gap-2 shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-600/90 data-[state=active]:ring-2 data-[state=active]:ring-[#F7B602] data-[state=active]:ring-offset-1 data-[state=active]:ring-offset-slate-100"
+              className="gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-600/90 data-[state=active]:ring-2 data-[state=active]:ring-[#F7B602] data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-slate-100"
             >
               <CreditCard className="w-4 h-4" />
               Card Payments ({stripeInvoices.length})
             </TabsTrigger>
             <TabsTrigger
               value="manual"
-              className="gap-2 shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 rounded-lg bg-[#F7B602] text-[#071739] shadow-sm hover:bg-[#d99f02] data-[state=active]:ring-2 data-[state=active]:ring-[#071739] data-[state=active]:ring-offset-1 data-[state=active]:ring-offset-slate-100"
+              className="gap-2 px-4 py-2 rounded-lg bg-[#F7B602] text-[#071739] shadow-sm hover:bg-[#d99f02] data-[state=active]:ring-2 data-[state=active]:ring-[#071739] data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-slate-100"
             >
               <Banknote className="w-4 h-4" />
               Manual ({manualInvoices.length})
@@ -576,14 +576,14 @@ export default function Invoices() {
               <DialogTitle>Invoice Preview</DialogTitle>
             </DialogHeader>
             {selectedInvoice && !selectedInvoice.sharedWithPupil && (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-lg p-3">
                 <div className="text-sm text-amber-800">
                   This invoice hasn't been shared with the pupil yet.
                 </div>
                 <Button
                   size="sm"
                   onClick={() => setShareDialogInvoice(selectedInvoice)}
-                  className="gap-2 w-full sm:w-auto bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]"
+                  className="gap-2 bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]"
                 >
                   <Share2 className="w-4 h-4" />
                   Share with pupil
