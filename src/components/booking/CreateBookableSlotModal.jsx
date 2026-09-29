@@ -62,10 +62,20 @@ export default function CreateBookableSlotModal({
   })();
   const dayOfWeek = slotMoment.format('ddd').toLowerCase();
 
+  // Snap any HH:mm value to the nearest 15-minute grid (00, 15, 30, 45)
+  const snapTo15 = (t) => {
+    if (!t || !/^\d{1,2}:\d{2}$/.test(t)) return t;
+    const [h, m] = t.split(':').map(Number);
+    let hour = h, min = Math.round(m / 15) * 15;
+    if (min === 60) { min = 0; hour = (hour + 1) % 24; }
+    return `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+  };
+
   // Lesson tab state
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState(slotMoment.format('YYYY-MM-DD'));
-  const [startTime, setStartTime] = useState(slotMoment.format('HH:mm'));
+  const [startTime, setStartTimeRaw] = useState(snapTo15(slotMoment.format('HH:mm')));
+  const setStartTime = (t) => setStartTimeRaw(snapTo15(t));
   const [endTime, setEndTime] = useState(slotMoment.clone().add(1, 'hour').format('HH:mm'));
   const [lessonDuration, setLessonDuration] = useState(60);
   const [repeatWeekly, setRepeatWeekly] = useState(false);
@@ -75,7 +85,8 @@ export default function CreateBookableSlotModal({
   // Personal tab state
   const [personalTitle, setPersonalTitle] = useState('');
   const [personalDate, setPersonalDate] = useState(slotMoment.format('YYYY-MM-DD'));
-  const [personalStartTime, setPersonalStartTime] = useState(slotMoment.format('HH:mm'));
+  const [personalStartTime, setPersonalStartTimeRaw] = useState(snapTo15(slotMoment.format('HH:mm')));
+  const setPersonalStartTime = (t) => setPersonalStartTimeRaw(snapTo15(t));
   const [personalDuration, setPersonalDuration] = useState(60);
   const [personalRepeat, setPersonalRepeat] = useState('none');
   const [personalColor, setPersonalColor] = useState(COLOR_OPTIONS[0].value);
