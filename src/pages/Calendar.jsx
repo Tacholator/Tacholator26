@@ -353,10 +353,38 @@ export default function Calendar() {
 
   const createBookableSlotMutation = useMutation({
     mutationFn: async (slotData) => {
+      // Overlap guard: a slot must not overlap an existing slot instance or an
+      // active booking. Throw so the instructor gets a toast instead of a silent fail.
+      const findOverlap = (start, end, excludeId) => {
+        const clashingSlot = slotInstances.find(si => {
+          if (si.id === excludeId) return false;
+          const sStart = moment(si.startAtUtc);
+          const sEnd = moment(si.endAtUtc);
+          return start.isBefore(sEnd) && end.isAfter(sStart);
+        });
+        if (clashingSlot) {
+          return `This time overlaps an existing slot at ${moment(clashingSlot.startAtUtc).local().format('HH:mm')}.`;
+        }
+        const clashingBooking = bookings.find(b => {
+          if (!['confirmed', 'in_progress', 'completed'].includes(b.status)) return false;
+          if (b.isDeleted) return false;
+          const bStart = moment(b.startAtUtc);
+          const bEnd = moment(b.endAtUtc);
+          return start.isBefore(bEnd) && end.isAfter(bStart);
+        });
+        if (clashingBooking) {
+          return `This time overlaps an existing lesson at ${moment(clashingBooking.startAtUtc).local().format('HH:mm')}.`;
+        }
+        return null;
+      };
+
       // If editing existing slot, update it
       if (slotData.slotId) {
         const startDateTime = moment(`${slotData.startDate} ${slotData.startTime}`, 'YYYY-MM-DD HH:mm');
         const endDateTime = moment(`${slotData.startDate} ${slotData.endTime}`, 'YYYY-MM-DD HH:mm');
+        
+        const overlapError = findOverlap(startDateTime, endDateTime, slotData.slotId);
+        if (overlapError) throw new Error(overlapError);
         
         await base44.entities.BookableSlotInstance.update(slotData.slotId, {
           startAtUtc: startDateTime.utc().format(),
@@ -369,6 +397,9 @@ export default function Calendar() {
         // Create single slot instance
         const startDateTime = moment(`${slotData.startDate} ${slotData.startTime}`, 'YYYY-MM-DD HH:mm');
         const endDateTime = moment(`${slotData.startDate} ${slotData.endTime}`, 'YYYY-MM-DD HH:mm');
+        
+        const overlapError = findOverlap(startDateTime, endDateTime);
+        if (overlapError) throw new Error(overlapError);
         
         await base44.entities.BookableSlotInstance.create({
           instructorId: currentUser.id,
@@ -413,15 +444,13 @@ export default function Calendar() {
             const startDateTime = moment(`${currentDate.format('YYYY-MM-DD')} ${template.startTimeLocal}`, 'YYYY-MM-DD HH:mm');
             const endDateTime = moment(`${currentDate.format('YYYY-MM-DD')} ${template.endTimeLocal}`, 'YYYY-MM-DD HH:mm');
 
-            // Check for conflicts
-            const hasConflict = bookings.some(b => {
-              if (!['confirmed', 'completed'].includes(b.status)) return false;
-              const bookingStart = moment(b.startAtUtc);
-              const bookingEnd = moment(b.endAtUtc);
-              return startDateTime.isBefore(bookingEnd) && endDateTime.isAfter(bookingStart);
-            });
+            // Check for overlaps with existing slots or active bookings
+            const overlapError = findOverlap(startDateTime, endDateTime);
+            if (overlapError) {
+              throw new Error(`${overlapError} (on ${currentDate.format('D MMM')})`);
+            }
 
-            if (!hasConflict && currentDate.isSameOrAfter(windowStart)) {
+            if (currentDate.isSameOrAfter(windowStart)) {
               await base44.entities.BookableSlotInstance.create({
                 instructorId: currentUser.id,
                 sourceTemplateId: template.id,
@@ -435,6 +464,9 @@ export default function Calendar() {
           }
         }
       }
+    },
+    onError: (error) => {
+      toast({ title: 'Slot not created', description: error.message, variant: 'destructive' });
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries(['slotInstances']);
