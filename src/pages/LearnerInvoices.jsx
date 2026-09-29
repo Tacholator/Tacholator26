@@ -46,11 +46,12 @@ export default function LearnerInvoices() {
         '-created_date',
         100
       );
-      // Show only system-generated card payments and manually created invoices
-      return allInvoices.filter(inv => 
-        inv.type === 'STRIPE_CARD' || 
-        inv.type === 'MANUAL_CASH' || 
-        inv.type === 'MANUAL_BACS'
+      // Show only invoices the instructor has shared, plus system-generated card payments
+      return allInvoices.filter(inv =>
+        inv.sharedWithPupil === true &&
+        (inv.type === 'STRIPE_CARD' ||
+          inv.type === 'MANUAL_CASH' ||
+          inv.type === 'MANUAL_BACS')
       );
     },
     enabled: !!pupil?.id

@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
     // Generate invoice number (numbers only)
     const invoiceNumber = `${currentYear}${String(nextSeq).padStart(6, '0')}`;
 
-    // Create invoice
+    // Create invoice (does NOT credit pupil balance — instructor can share it separately)
     const invoice = await base44.asServiceRole.entities.Invoice.create({
       invoiceNumber,
       status: 'PAID',
@@ -89,25 +89,8 @@ Deno.serve(async (req) => {
       paymentDate: paymentDate || new Date().toISOString(),
       manualReference: reference || '',
       notes: notes || '',
-      isLocked: false
-    });
-
-    // Update pupil's payment ledger
-    await base44.asServiceRole.entities.PaymentLedger.create({
-      userId: pupil.id,
-      type: 'payment',
-      amountGbp: parseFloat(amount),
-      hours: parseFloat(hours),
-      reason: 'balance_top_up',
-      createdByRole: 'instructor',
-      note: `Manual payment - Invoice ${invoiceNumber}`
-    });
-
-    // Update pupil balance
-    const currentBalance = pupil.bulkPaymentBalance || 0;
-    await base44.asServiceRole.entities.Pupil.update(pupil.id, {
-      bulkPaymentBalance: currentBalance + parseFloat(amount),
-      bulkAmountPaid: (pupil.bulkAmountPaid || 0) + parseFloat(amount)
+      isLocked: false,
+      sharedWithPupil: false
     });
 
     return Response.json({

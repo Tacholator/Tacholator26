@@ -100,6 +100,11 @@
       "type": "boolean",
       "default": false,
       "description": "Whether invoice is locked from editing"
+    },
+    "sharedWithPupil": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the instructor has shared this invoice with the pupil (gates learner visibility)"
     }
   },
   "required": [

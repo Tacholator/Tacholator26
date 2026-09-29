@@ -26,7 +26,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { FileText, Download, Plus, Search, Calendar, DollarSign, CreditCard, Banknote, Eye, ArrowLeft } from 'lucide-react';
+import { FileText, Download, Plus, Search, Calendar, DollarSign, CreditCard, Banknote, Eye, ArrowLeft, Share2, CheckCircle, Loader2 } from 'lucide-react';
 import moment from 'moment';
 
 export default function Invoices() {
@@ -36,6 +36,8 @@ export default function Invoices() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [showManualDialog, setShowManualDialog] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [shareDialogInvoice, setShareDialogInvoice] = useState(null);
+  const [sharing, setSharing] = useState(false);
 
   // Manual invoice form state
   const [manualForm, setManualForm] = useState({
@@ -91,9 +93,8 @@ export default function Invoices() {
       const response = await base44.functions.invoke('createManualInvoice', data);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
-      queryClient.invalidateQueries({ queryKey: ['instructorPupils'] });
       setShowManualDialog(false);
       setManualForm({
         pupilId: '',
@@ -108,6 +109,8 @@ export default function Invoices() {
         title: 'Invoice Created',
         description: 'Manual invoice has been created successfully'
       });
+      // Prompt instructor to share with pupil
+      setShareDialogInvoice(data);
     },
     onError: (error) => {
       toast({
@@ -117,6 +120,27 @@ export default function Invoices() {
       });
     }
   });
+
+  const handleShareInvoice = async (invoice) => {
+    setSharing(true);
+    try {
+      await base44.entities.Invoice.update(invoice.id, { sharedWithPupil: true });
+      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      setShareDialogInvoice(null);
+      toast({
+        title: 'Invoice Shared',
+        description: 'The invoice is now visible to the pupil'
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error?.message || 'Failed to share invoice',
+        variant: 'destructive'
+      });
+    } finally {
+      setSharing(false);
+    }
+  };
 
   const handleDownloadPdf = async (invoiceId, invoiceNumber) => {
     try {
@@ -225,6 +249,20 @@ export default function Invoices() {
                 </div>
               </div>
               <div className="flex gap-2">
+                {!invoice.sharedWithPupil && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShareDialogInvoice(invoice)}
+                    className="gap-2 border-[#F7B602] text-[#F7B602] hover:bg-[#F7B602]/10"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </Button>
+                )}
+                {invoice.sharedWithPupil && (
+                  <Badge className="bg-emerald-100 text-emerald-800">Shared</Badge>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -519,6 +557,21 @@ export default function Invoices() {
             <DialogHeader>
               <DialogTitle>Invoice Details</DialogTitle>
             </DialogHeader>
+            {selectedInvoice && !selectedInvoice.sharedWithPupil && (
+              <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <div className="text-sm text-amber-800">
+                  This invoice hasn't been shared with the pupil yet.
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => setShareDialogInvoice(selectedInvoice)}
+                  className="gap-2 bg-[#F7B602] text-[#071739] hover:bg-[#d99f02]"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share with pupil
+                </Button>
+              </div>
+            )}
             {selectedInvoice && (
               <div className="space-y-4">
                 {/* Business Letterhead */}
@@ -636,6 +689,61 @@ export default function Invoices() {
                 </div>
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Share Invoice Dialog */}
+        <Dialog open={!!shareDialogInvoice} onOpenChange={(open) => !sharing && setShareDialogInvoice(open ? shareDialogInvoice : null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Share invoice with pupil?</DialogTitle>
+              <DialogDescription>
+                {shareDialogInvoice?.pupilName ? `${shareDialogInvoice.pupilName} will be able to view this invoice in their My Invoices page.` : 'The pupil will be able to view this invoice in their My Invoices page.'}
+              </DialogDescription>
+            </DialogHeader>
+            {shareDialogInvoice && (
+              <div className="bg-slate-50 rounded-lg p-4 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Invoice:</span>
+                  <span className="font-medium">{shareDialogInvoice.invoiceNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Pupil:</span>
+                  <span className="font-medium">{shareDialogInvoice.pupilName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Amount:</span>
+                  <span className="font-medium">£{(shareDialogInvoice.amount || 0).toFixed(2)}</span>
+                </div>
+              </div>
+            )}
+            <div className="flex gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setShareDialogInvoice(null)}
+                disabled={sharing}
+                className="flex-1"
+              >
+                Not now
+              </Button>
+              <Button
+                onClick={() => shareDialogInvoice && handleShareInvoice(shareDialogInvoice)}
+                disabled={sharing}
+                className="flex-1 bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2"
+              >
+                {sharing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Sharing...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4" />
+                    Share invoice
+                  </>
+                )}
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
