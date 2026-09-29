@@ -327,6 +327,7 @@ export default function CreateBookableSlotModal({
                 <Label>Start Time</Label>
                 <Input
                   type="time"
+                  step={900}
                   value={personalStartTime}
                   onChange={(e) => setPersonalStartTime(e.target.value)}
                 />
@@ -449,6 +450,7 @@ export default function CreateBookableSlotModal({
                 <Label>Start Time</Label>
                 <Input
                   type="time"
+                  step={900}
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                 />
