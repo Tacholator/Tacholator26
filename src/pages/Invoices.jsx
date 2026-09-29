@@ -314,7 +314,7 @@ export default function Invoices() {
             <DialogTrigger asChild>
               <Button className="bg-[#F7B602] text-[#071739] hover:bg-[#d99f02] gap-2">
                 <Plus className="w-4 h-4" />
-                Add Manual Payment
+                Create Invoice
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
