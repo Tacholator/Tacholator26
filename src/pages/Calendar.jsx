@@ -177,6 +177,33 @@ export default function Calendar() {
       const hourlyRate = pupil?.hourlyRate || 0;
       const totalPriceGbp = hourlyRate * data.durationHours;
 
+      const newStart = moment(data.startAtUtc);
+      const newEnd = moment(data.endAtUtc);
+
+      // Prevent clashes with existing confirmed/in-progress/completed bookings
+      const clashingBooking = bookings.find(b => {
+        if (!['confirmed', 'in_progress', 'completed'].includes(b.status)) return false;
+        if (b.isDeleted) return false;
+        const bStart = moment(b.startAtUtc);
+        const bEnd = moment(b.endAtUtc);
+        return newStart.isBefore(bEnd) && newEnd.isAfter(bStart);
+      });
+      if (clashingBooking) {
+        throw new Error(`This time clashes with an existing lesson at ${moment(clashingBooking.startAtUtc).local().format('HH:mm')}.`);
+      }
+
+      // Prevent clashes with other available slot instances (unless it's the selected one)
+      const clashingSlot = slotInstances.find(si => {
+        if (si.status !== 'available') return false;
+        if (si.id === data.slotInstanceId) return false;
+        const sStart = moment(si.startAtUtc);
+        const sEnd = moment(si.endAtUtc);
+        return newStart.isBefore(sEnd) && newEnd.isAfter(sStart);
+      });
+      if (clashingSlot) {
+        throw new Error('This time clashes with another available slot. Please pick an available time.');
+      }
+
       const booking = await base44.entities.LessonBooking.create({
         instructorId: currentUser.id,
         pupilId: data.pupilId,
@@ -232,6 +259,9 @@ export default function Calendar() {
       toast({ title: 'Lesson scheduled for pupil' });
       setShowCreateSlotModal(false);
       setSelectedSlotDateTime(null);
+    },
+    onError: (error) => {
+      toast({ title: 'Booking not allowed', description: error.message, variant: 'destructive' });
     }
   });
 
