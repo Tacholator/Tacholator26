@@ -161,6 +161,24 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
   const thisMonthCardPayout = thisMonthCardPayments.reduce((sum, p) => sum + p.netPayout, 0);
   const thisMonthCardFees = thisMonthCardPayments.reduce((sum, p) => sum + p.stripeFee, 0);
 
+  // Match a Stripe payment to a pupil (by metadata pupilId first, then by email)
+  const pupilByEmail = pupils.reduce((map, p) => {
+    if (p.email) map[p.email.toLowerCase()] = p;
+    return map;
+  }, {});
+  const pupilById = pupils.reduce((map, p) => {
+    map[p.id] = p;
+    return map;
+  }, {});
+  const getPupilForPayment = (payment) => {
+    const metaId = payment.metadata?.pupilId;
+    if (metaId && pupilById[metaId]) return pupilById[metaId];
+    if (payment.customerEmail && pupilByEmail[payment.customerEmail.toLowerCase()]) {
+      return pupilByEmail[payment.customerEmail.toLowerCase()];
+    }
+    return null;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -500,7 +518,9 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {stripePayments.map((payment) => (
+                    {stripePayments.map((payment) => {
+                      const pupil = getPupilForPayment(payment);
+                      return (
                       <div
                         key={payment.id}
                         className="p-4 rounded-lg border hover:bg-slate-50 transition-colors"
@@ -534,10 +554,29 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                                   {payment.paymentMethod}
                                 </Badge>
                               </div>
-                              {payment.customerEmail && (
-                                <div className="text-sm text-slate-600">
-                                  {payment.customerEmail}
-                                </div>
+                              {pupil ? (
+                                <Link
+                                  to={createPageUrl('PupilProfile') + `?id=${pupil.id}`}
+                                  className="flex items-center gap-2 mt-1 mb-1 group"
+                                >
+                                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] flex items-center justify-center text-xs font-bold shrink-0">
+                                    {(pupil.firstName?.[0] || '?')}{(pupil.lastName?.[0] || '')}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="text-sm font-medium text-[#071739] group-hover:underline truncate">
+                                      {pupil.firstName} {pupil.lastName}
+                                    </div>
+                                    {pupil.email && (
+                                      <div className="text-xs text-slate-500 truncate">{pupil.email}</div>
+                                    )}
+                                  </div>
+                                </Link>
+                              ) : (
+                                payment.customerEmail && (
+                                  <div className="text-sm text-slate-600">
+                                    {payment.customerEmail}
+                                  </div>
+                                )
                               )}
                               {payment.description && (
                                 <div className="text-sm text-slate-600">
@@ -574,7 +613,8 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                           </div>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
