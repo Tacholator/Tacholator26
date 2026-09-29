@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
@@ -50,7 +50,8 @@ export default function CreateBookableSlotModal({
   isSaving,
   slotDateTime,
   existingSlot,
-  slotInstances = []
+  slotInstances = [],
+  defaultSlotType = 'personal'
 }) {
   const slotMoment = slotDateTime ? moment(slotDateTime) : (() => {
     // Snap "now" to the 15-min grid so generated slots align with the calendar grid
@@ -91,7 +92,12 @@ export default function CreateBookableSlotModal({
   const [personalRepeat, setPersonalRepeat] = useState('none');
   const [personalColor, setPersonalColor] = useState(COLOR_OPTIONS[0].value);
 
-  const [slotType, setSlotType] = useState('personal');
+  const [slotType, setSlotType] = useState(defaultSlotType);
+
+  // Reset to the requested default tab whenever the modal opens
+  useEffect(() => {
+    if (open) setSlotType(defaultSlotType);
+  }, [open, defaultSlotType]);
 
   // Lesson booking-for-pupil state
   const [lessonMode, setLessonMode] = useState('bookable'); // 'bookable' | 'booking'

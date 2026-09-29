@@ -71,6 +71,7 @@ export default function Calendar() {
   const [showWorkingHoursModal, setShowWorkingHoursModal] = useState(false);
   const [showCreateSlotModal, setShowCreateSlotModal] = useState(false);
   const [selectedSlotDateTime, setSelectedSlotDateTime] = useState(null);
+  const [createSlotInitialType, setCreateSlotInitialType] = useState('personal');
   const [showSlotDetailsModal, setShowSlotDetailsModal] = useState(false);
   const [selectedSlotInstance, setSelectedSlotInstance] = useState(null);
   const [availabilityMode, setAvailabilityMode] = useState('published_slots_only');
@@ -1312,6 +1313,7 @@ export default function Calendar() {
         onOpenCreateSlot={() => {
           setSelectedSlotInstance(null);
           setSelectedSlotDateTime(null);
+          setCreateSlotInitialType('lesson');
           setShowCreateSlotModal(true);
         }}
         availabilityMode={availabilityMode}
@@ -1320,11 +1322,13 @@ export default function Calendar() {
 
       <CreateBookableSlotModal
         open={showCreateSlotModal}
+        defaultSlotType={createSlotInitialType}
         onOpenChange={(open) => {
           setShowCreateSlotModal(open);
           if (!open) {
             setSelectedSlotInstance(null);
             setSelectedSlotDateTime(null);
+            setCreateSlotInitialType('personal');
           }
         }}
         onSave={(data) => {
