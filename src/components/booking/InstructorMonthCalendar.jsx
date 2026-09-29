@@ -100,8 +100,10 @@ export default function InstructorMonthCalendar({
   slotInstances = [],
   bookings = [],
   pupils = [],
+  personalEvents = [],
   onSlotClick,
   onBookingClick,
+  onPersonalEventClick,
   onCreateSlot,
 }) {
   const [currentDate, setCurrentDate] = useState(moment());
@@ -162,12 +164,40 @@ export default function InstructorMonthCalendar({
     return rows;
   }, [currentDate]);
 
+  // Map of 'YYYY-MM-DD' -> [personal events occurring that day]
+  // Mirrors the recurrence logic used by the week/day (Calendar24Hour) view so
+  // personal events show on the same days they appear in the grid.
+  const personalByDate = useMemo(() => {
+    const map = {};
+    const monthDays = weeks.flat();
+    personalEvents.forEach(ev => {
+      const evStart = moment(ev.startAtUtc).local();
+      monthDays.forEach(day => {
+        let occurs = false;
+        if (ev.repeatType === 'daily') {
+          occurs = evStart.isSameOrBefore(day, 'day');
+        } else if (ev.repeatType === 'weekly') {
+          occurs = evStart.isSameOrBefore(day, 'day') && evStart.day() === day.day();
+        } else {
+          occurs = evStart.isSame(day, 'day');
+        }
+        if (occurs) {
+          const key = day.format('YYYY-MM-DD');
+          (map[key] = map[key] || []).push(ev);
+        }
+      });
+    });
+    return map;
+  }, [personalEvents, weeks]);
+
   const selectedKey = selectedDate ? selectedDate.format('YYYY-MM-DD') : null;
   const daySlots = selectedKey ? availableByDate[selectedKey] || [] : [];
   const dayBookings = selectedKey ? bookingsByDate[selectedKey] || [] : [];
+  const dayPersonal = selectedKey ? personalByDate[selectedKey] || [] : [];
   const dayItems = [
     ...daySlots.map(s => ({ ...s, isSlot: true, status: 'available' })),
     ...dayBookings.map(b => ({ ...b, isSlot: false })),
+    ...dayPersonal.map(ev => ({ ...ev, isPersonal: true, isSlot: false })),
   ].sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
 
   const goPrev = () => { setCurrentDate(p => p.clone().subtract(1, 'month')); setSelectedDate(null); };
@@ -219,18 +249,28 @@ export default function InstructorMonthCalendar({
             {dayItems.map((item, idx) => {
               const startMoment = moment(item.startAtUtc).local();
               const endMoment = moment(item.endAtUtc).local();
-              const state = getSlotState(item);
-              const bgColor = (state && SLOT_COLORS[state]) || '#F1F5F9';
-              const borderColor = (state && SLOT_BORDER_COLORS[state]) || '#CBD5E1';
-              const accentColor = (state && SLOT_ACCENT_COLORS[state]) || '#475569';
+              const isPersonal = item.isPersonal;
+              const state = isPersonal ? 'personal' : getSlotState(item);
+              const bgColor = isPersonal
+                ? (item.color || SLOT_COLORS.available)
+                : ((state && SLOT_COLORS[state]) || '#F1F5F9');
+              const borderColor = isPersonal ? '#475569' : ((state && SLOT_BORDER_COLORS[state]) || '#CBD5E1');
+              const accentColor = isPersonal ? '#334155' : ((state && SLOT_ACCENT_COLORS[state]) || '#475569');
               const dark = isDarkColor(bgColor);
               const textClass = dark ? 'text-white' : 'text-slate-900';
               const subTextClass = dark ? 'text-slate-100' : 'text-slate-700';
-              const name = item.isSlot ? null : pupilName(item);
+              const name = item.isSlot || isPersonal ? null : pupilName(item);
+              const handleClick = isPersonal
+                ? () => onPersonalEventClick?.(item)
+                : () => item.isSlot ? onSlotClick?.(startMoment, item) : onBookingClick?.(item);
+              const titleLabel = isPersonal
+                ? (item.title || 'Personal Event')
+                : item.isSlot ? 'Available Slot' : (name || 'Lesson');
+              const badgeLabel = isPersonal ? 'Personal' : (item.isSlot ? formatLabel('available') : formatLabel(item.status, item.isPracticalTest));
               return (
                 <div
                   key={item.id || `item-${idx}`}
-                  onClick={() => item.isSlot ? onSlotClick?.(startMoment, item) : onBookingClick?.(item)}
+                  onClick={handleClick}
                   className={`relative flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:brightness-95 cursor-pointer transition-all overflow-hidden ${textClass}`}
                   style={{ backgroundColor: bgColor }}
                 >
@@ -245,14 +285,17 @@ export default function InstructorMonthCalendar({
                   <div className="w-px h-10 bg-current opacity-20" />
                   <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium truncate block">
-                      {item.isSlot ? 'Available Slot' : (name || 'Lesson')}
+                      {titleLabel}
                     </span>
                     <div className="flex items-center gap-2 mt-0.5">
                       {item.durationHours && (
                         <span className={`text-xs opacity-80 ${subTextClass}`}>{Math.round(item.durationHours * 10) / 10}h</span>
                       )}
-                      {!item.isSlot && item.pickupLocation && (
+                      {!item.isSlot && !isPersonal && item.pickupLocation && (
                         <span className={`text-xs opacity-80 truncate ${subTextClass}`}>{item.pickupLocation}</span>
+                      )}
+                      {isPersonal && item.repeatType && item.repeatType !== 'none' && (
+                        <span className={`text-xs opacity-80 capitalize ${subTextClass}`}>{item.repeatType}</span>
                       )}
                     </div>
                   </div>
@@ -260,7 +303,7 @@ export default function InstructorMonthCalendar({
                     className="inline-block px-1.5 py-0.5 text-[11px] font-bold uppercase rounded whitespace-nowrap shrink-0"
                     style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
                   >
-                    {item.isSlot ? formatLabel('available') : formatLabel(item.status, item.isPracticalTest)}
+                    {badgeLabel}
                   </span>
                 </div>
               );

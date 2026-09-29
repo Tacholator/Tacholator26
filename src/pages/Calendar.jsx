@@ -1178,6 +1178,7 @@ export default function Calendar() {
             slotInstances={slotInstances}
             bookings={bookings}
             pupils={pupils}
+            personalEvents={calendarEvents}
             onSlotClick={(_, slotInstance) => {
               setSelectedSlotInstance(slotInstance);
               setShowSlotDetailsModal(true);
@@ -1186,6 +1187,10 @@ export default function Calendar() {
               setSelectedBooking(booking);
               setSelectedBookingSlotInstance(null);
               setShowBookingDetailsModal(true);
+            }}
+            onPersonalEventClick={(personalEvent) => {
+              setSelectedPersonalEvent(personalEvent);
+              setShowPersonalEventModal(true);
             }}
             onCreateSlot={(dateStr) => {
               setSelectedSlotDateTime(dateStr);
