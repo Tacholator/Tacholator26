@@ -59,6 +59,7 @@ export default function CreateBookableSlotModal({
   const [startDate, setStartDate] = useState(slotMoment.format('YYYY-MM-DD'));
   const [startTime, setStartTime] = useState(slotMoment.format('HH:mm'));
   const [endTime, setEndTime] = useState(slotMoment.clone().add(1, 'hour').format('HH:mm'));
+  const [lessonDuration, setLessonDuration] = useState(60);
   const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [selectedDays, setSelectedDays] = useState([dayOfWeek]);
   const [stopDate, setStopDate] = useState('');
@@ -131,6 +132,9 @@ export default function CreateBookableSlotModal({
       setStartDate(slotStart.format('YYYY-MM-DD'));
       setStartTime(slotStart.format('HH:mm'));
       setEndTime(slotEnd.format('HH:mm'));
+      const existingMinutes = slotEnd.diff(slotStart, 'minutes');
+      const matchOpt = DURATION_OPTIONS.find(o => o.value === existingMinutes);
+      setLessonDuration(matchOpt ? matchOpt.value : 60);
       setTitle(existingSlot.title || '');
       setRepeatWeekly(false);
       setSelectedDays([dayOfWeek]);
@@ -142,6 +146,7 @@ export default function CreateBookableSlotModal({
       setStartDate(m.format('YYYY-MM-DD'));
       setStartTime(m.format('HH:mm'));
       setEndTime(m.clone().add(1, 'hour').format('HH:mm'));
+      setLessonDuration(60);
       setTitle('');
       setRepeatWeekly(false);
       setSelectedDays([dow]);
@@ -200,13 +205,15 @@ export default function CreateBookableSlotModal({
         practicalTestTime: isPracticalTest ? practicalTestTime : undefined
       });
     } else {
+      const startLocal = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
+      const endLocal = startLocal.clone().add(lessonDuration, 'minutes');
       onSave({
         slotId: existingSlot?.id,
         slotType: 'lesson',
         title,
         startDate,
         startTime,
-        endTime,
+        endTime: endLocal.format('HH:mm'),
         repeatWeekly,
         selectedDays,
         stopDate: stopDate || null
@@ -371,17 +378,43 @@ export default function CreateBookableSlotModal({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Time Range</Label>
-              <TimeRangePicker
-                startTime={startTime}
-                endTime={endTime}
-                onStartChange={setStartTime}
-                onEndChange={setEndTime}
-                startPlaceholder="Start time"
-                endPlaceholder="End time"
-              />
-            </div>
+            {lessonMode === 'bookable' ? (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>Start Time</Label>
+                  <Input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Lesson Duration</Label>
+                  <Select value={String(lessonDuration)} onValueChange={(v) => setLessonDuration(Number(v))}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DURATION_OPTIONS.map(opt => (
+                        <SelectItem key={opt.value} value={String(opt.value)}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label>Time Range</Label>
+                <TimeRangePicker
+                  startTime={startTime}
+                  endTime={endTime}
+                  onStartChange={setStartTime}
+                  onEndChange={setEndTime}
+                  startPlaceholder="Start time"
+                  endPlaceholder="End time"
+                />
+              </div>
+            )}
 
             {lessonMode === 'bookable' && (
               <>
