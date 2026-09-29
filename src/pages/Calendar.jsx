@@ -180,6 +180,7 @@ export default function Calendar() {
       const booking = await base44.entities.LessonBooking.create({
         instructorId: currentUser.id,
         pupilId: data.pupilId,
+        slotInstanceId: data.slotInstanceId || undefined,
         startAtUtc: data.startAtUtc,
         endAtUtc: data.endAtUtc,
         durationHours: data.durationHours,
@@ -192,6 +193,14 @@ export default function Calendar() {
         isPracticalTest: data.isPracticalTest || false,
         practicalTestTime: data.isPracticalTest ? data.practicalTestTime : undefined
       });
+
+      if (data.slotInstanceId) {
+        await base44.entities.BookableSlotInstance.update(data.slotInstanceId, {
+          status: 'confirmed',
+          bookingId: booking.id,
+          reservedByPupilId: data.pupilId
+        });
+      }
 
       await base44.entities.PaymentLedger.create({
         userId: data.pupilId,
@@ -1254,6 +1263,7 @@ export default function Calendar() {
         isSaving={createBookableSlotMutation.isPending || createCalendarEventMutation.isPending || createInstructorBookingMutation.isPending}
         slotDateTime={selectedSlotDateTime}
         existingSlot={selectedSlotInstance}
+        slotInstances={slotInstances}
       />
 
       <SlotDetailsModal
