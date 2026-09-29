@@ -520,10 +520,28 @@ export default function Invoices() {
 
         {/* Invoices Tabs */}
         <Tabs defaultValue="all" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="all">All Invoices ({filteredInvoices.length})</TabsTrigger>
-            <TabsTrigger value="stripe">Card Payments ({stripeInvoices.length})</TabsTrigger>
-            <TabsTrigger value="manual">Manual ({manualInvoices.length})</TabsTrigger>
+          <TabsList className="h-auto p-1.5 gap-1.5 bg-slate-100">
+            <TabsTrigger
+              value="all"
+              className="gap-2 px-4 py-2 rounded-lg data-[state=active]:bg-[#071739] data-[state=active]:text-white data-[state=active]:shadow-md text-slate-600 hover:text-[#071739]"
+            >
+              <FileText className="w-4 h-4" />
+              All Invoices ({filteredInvoices.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="stripe"
+              className="gap-2 px-4 py-2 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-600 hover:text-blue-600"
+            >
+              <CreditCard className="w-4 h-4" />
+              Card Payments ({stripeInvoices.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="manual"
+              className="gap-2 px-4 py-2 rounded-lg data-[state=active]:bg-[#F7B602] data-[state=active]:text-[#071739] data-[state=active]:shadow-md text-slate-600 hover:text-[#d99f02]"
+            >
+              <Banknote className="w-4 h-4" />
+              Manual ({manualInvoices.length})
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="all">
