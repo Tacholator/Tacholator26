@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Search, GraduationCap } from 'lucide-react';
 import moment from 'moment';
-import { TimeRangePicker } from '@/components/ui/TimePicker';
+import { TimeRangePicker, TimePicker } from '@/components/ui/TimePicker';
 
 const DAYS = [
   { value: 'mon', label: 'Mon' },
@@ -336,11 +336,10 @@ export default function CreateBookableSlotModal({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Start Time</Label>
-                <Input
-                  type="time"
-                  step={900}
+                <TimePicker
                   value={personalStartTime}
-                  onChange={(e) => setPersonalStartTime(e.target.value)}
+                  onChange={(v) => setPersonalStartTime(v)}
+                  placeholder="Select time"
                 />
               </div>
               <div className="space-y-2">
@@ -459,11 +458,10 @@ export default function CreateBookableSlotModal({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Start Time</Label>
-                <Input
-                  type="time"
-                  step={900}
+                <TimePicker
                   value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
+                  onChange={(v) => setStartTime(v)}
+                  placeholder="Select time"
                 />
               </div>
               <div className="space-y-2">
