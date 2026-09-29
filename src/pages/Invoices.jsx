@@ -436,9 +436,9 @@ export default function Invoices() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
+          <Card className="border-2 border-emerald-400 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-emerald-700 flex items-center gap-2">
                 <DollarSign className="w-4 h-4" />
                 Total Revenue
               </CardTitle>
@@ -449,9 +449,9 @@ export default function Invoices() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 border-blue-400 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-blue-700 flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 This Month
               </CardTitle>
@@ -462,9 +462,9 @@ export default function Invoices() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 border-[#071739] shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-[#071739] flex items-center gap-2">
                 <FileText className="w-4 h-4" />
                 Paid Invoices
               </CardTitle>
@@ -475,9 +475,9 @@ export default function Invoices() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 border-[#F7B602] shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-[#d99f02] flex items-center gap-2">
                 <FileText className="w-4 h-4" />
                 Pending
               </CardTitle>
