@@ -520,24 +520,24 @@ export default function Invoices() {
 
         {/* Invoices Tabs */}
         <Tabs defaultValue="all" className="space-y-4">
-          <TabsList className="h-auto p-1.5 gap-1.5 bg-slate-100">
+          <TabsList className="h-auto p-1.5 gap-1.5 bg-slate-100 overflow-x-auto scrollbar-thin flex w-full max-w-full">
             <TabsTrigger
               value="all"
-              className="gap-2 px-4 py-2 rounded-lg bg-[#071739] text-white shadow-sm hover:bg-[#071739]/90 data-[state=active]:ring-2 data-[state=active]:ring-[#F7B602] data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-slate-100"
+              className="gap-2 px-4 py-2 rounded-lg bg-[#071739] text-white shadow-sm hover:bg-[#071739]/90 data-[state=active]:ring-2 data-[state=active]:ring-[#F7B602] data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-slate-100 shrink-0 whitespace-nowrap"
             >
               <FileText className="w-4 h-4" />
               All Invoices ({filteredInvoices.length})
             </TabsTrigger>
             <TabsTrigger
               value="stripe"
-              className="gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-600/90 data-[state=active]:ring-2 data-[state=active]:ring-[#F7B602] data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-slate-100"
+              className="gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-600/90 data-[state=active]:ring-2 data-[state=active]:ring-[#F7B602] data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-slate-100 shrink-0 whitespace-nowrap"
             >
               <CreditCard className="w-4 h-4" />
               Card Payments ({stripeInvoices.length})
             </TabsTrigger>
             <TabsTrigger
               value="manual"
-              className="gap-2 px-4 py-2 rounded-lg bg-[#F7B602] text-[#071739] shadow-sm hover:bg-[#d99f02] data-[state=active]:ring-2 data-[state=active]:ring-[#071739] data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-slate-100"
+              className="gap-2 px-4 py-2 rounded-lg bg-[#F7B602] text-[#071739] shadow-sm hover:bg-[#d99f02] data-[state=active]:ring-2 data-[state=active]:ring-[#071739] data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-slate-100 shrink-0 whitespace-nowrap"
             >
               <Banknote className="w-4 h-4" />
               Manual ({manualInvoices.length})
