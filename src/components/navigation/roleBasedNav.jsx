@@ -93,7 +93,6 @@ export const instructorOnlyLinks = [
   },
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
   { name: 'Readiness Reviews', icon: CheckSquare, page: 'InstructorReadinessReview' },
-  { name: 'GPS Routes', icon: MapPin, page: 'InstructorGpsRoutes', requiresGpsAccess: true },
   { name: 'Expenses', icon: Fuel, page: 'InstructorExpenses' },
   { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
 ];
@@ -134,7 +133,7 @@ export const getPageForRole = (linkId, isInstructor) => {
 };
 
 // Build complete navigation array for a role
-export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active', testRoutesAccessEnabled = false, gpsRoutesAccessEnabled = false, practicalTestPassDate = null, hasPublishedTestRoutes = true) => {
+export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus = 'Active', testRoutesAccessEnabled = false, practicalTestPassDate = null, hasPublishedTestRoutes = true) => {
   const shared = sharedNavLinks
     .map(link => ({
       name: link.name,
@@ -146,7 +145,7 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
     }))
     .filter(link => link.page !== null); // Filter out items with null pages
 
-  let roleSpecific = isInstructor ? instructorOnlyLinks.filter(link => (!link.requiresGpsAccess || gpsRoutesAccessEnabled) && !(isMainAdmin && link.page === 'InstructorGpsRoutes')) : [
+  let roleSpecific = isInstructor ? instructorOnlyLinks : [
     ...learnerOnlyLinks,
   ];
 

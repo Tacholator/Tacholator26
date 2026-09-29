@@ -135,21 +135,9 @@ export default function Layout({ children, currentPageName }) {
     refetchInterval: 60000
   });
   
-  // Fetch instructor profile to get GPS routes access flag
-  const { data: instructorProfile } = useQuery({
-    queryKey: ['instructorProfile', user?.id],
-    queryFn: async () => {
-      if (!user?.email) return null;
-      const results = await base44.entities.Instructor.filter({ created_by: user.email });
-      return results[0] || null;
-    },
-    enabled: !!user?.email && isInstructor
-  });
-
   // Build navigation dynamically based on role and pupil status
   const pupilStatus = pupilProfile?.status || 'Active';
   const testRoutesAccessEnabled = pupilProfile?.testRoutesAccessEnabled || false;
-  const gpsRoutesAccessEnabled = isMainAdmin || (instructorProfile?.gpsRoutesAccessEnabled || false);
   const practicalTestPassDate = pupilProfile?.practicalTestPassDate || null;
 
   // Whether any test centre is published (gates the "Test Routes" nav tab)
@@ -161,7 +149,7 @@ export default function Layout({ children, currentPageName }) {
     }
   });
 
-  const navItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus, testRoutesAccessEnabled, gpsRoutesAccessEnabled, practicalTestPassDate, hasPublishedTestRoutes);
+  const navItems = buildNavigation(isInstructor, isMainAdmin, pupilStatus, testRoutesAccessEnabled, practicalTestPassDate, hasPublishedTestRoutes);
 
   const handleLogout = () => {
     base44.auth.logout();
