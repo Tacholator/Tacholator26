@@ -1165,15 +1165,6 @@ export default function Calendar() {
               </div>
             )}
           </div>
-        ) : viewMode === 'day' ? (
-          <CalendarDayView
-            date={currentDate.format('YYYY-MM-DD')}
-            lessons={getLessonsForDay(currentDate)}
-            pupilMap={pupilMap}
-            onLessonClick={openLessonDetails}
-            onSlotClick={openNewLesson}
-            currentUser={currentUser}
-          />
         ) : viewMode === 'month' ? (
           <InstructorMonthCalendar
             slotInstances={slotInstances}
