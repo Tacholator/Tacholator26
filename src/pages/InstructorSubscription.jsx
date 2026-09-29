@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { createPageUrl } from '@/utils';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -154,6 +156,12 @@ export default function InstructorSubscription() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
+
+        {/* Back to Payment Management */}
+        <Link to={createPageUrl('InstructorPayments')} className="inline-flex items-center gap-2 text-[#071739] hover:text-[#F7B602] mb-4 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-sm font-medium">Back to Payment Management</span>
+        </Link>
 
         {/* Header */}
         <div className="text-center mb-8">
