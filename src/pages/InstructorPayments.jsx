@@ -135,6 +135,12 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
   const activePupils = pupils.filter(p => p.status === 'Active');
   const totalBalances = activePupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
 
+  // Pupils owing money (negative balance) among active + on hold
+  const owingPupils = pupils.filter(p =>
+    (p.status === 'Active' || p.status === 'OnHold') && (p.bulkPaymentBalance || 0) < 0
+  );
+  const totalNegativeBalance = owingPupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
+
   // Filter pupils by search
   const filteredPupils = pupils.filter(p => {
     const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
@@ -254,6 +260,17 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                   <div className="text-xs text-slate-500 mb-1">Pupil Balances</div>
                   <div className="text-xl sm:text-2xl font-bold text-[#071739] truncate">£{totalBalances.toFixed(2)}</div>
                   <div className="text-xs text-slate-400 mt-1">Combined</div>
+                </div>
+              </div>
+              {/* Outstanding balances owed by active + on hold pupils */}
+              <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">Outstanding (Owed)</div>
+                  <div className="text-xs text-slate-400">Active & on-hold pupils with negative balances</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl sm:text-2xl font-bold text-rose-600">£{Math.abs(totalNegativeBalance).toFixed(2)}</div>
+                  <div className="text-xs text-slate-400">{owingPupils.length} pupil{owingPupils.length === 1 ? '' : 's'}</div>
                 </div>
               </div>
             </CardContent>
