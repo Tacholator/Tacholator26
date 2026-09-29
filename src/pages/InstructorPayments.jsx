@@ -25,6 +25,7 @@ import moment from 'moment';
 
 export default function InstructorPayments({ adminProxyInstructorId = null }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [balanceTab, setBalanceTab] = useState('active');
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -133,6 +134,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
     .reduce((sum, e) => sum + (e.amountGbp || 0), 0);
 
   const activePupils = pupils.filter(p => p.status === 'Active');
+  const onHoldPupils = pupils.filter(p => p.status === 'OnHold');
   const totalBalances = activePupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
 
   // Pupils owing money (negative balance) among active + on hold
@@ -140,6 +142,8 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
     (p.status === 'Active' || p.status === 'OnHold') && (p.bulkPaymentBalance || 0) < 0
   );
   const totalNegativeBalance = owingPupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
+
+  const balancePupils = balanceTab === 'onhold' ? onHoldPupils : activePupils;
 
   // Filter pupils by search
   const filteredPupils = pupils.filter(p => {
@@ -344,18 +348,28 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
           <TabsContent value="pupils">
             <Card>
               <CardHeader>
-                <CardTitle>Pupil Balances</CardTitle>
-                <CardDescription>
-                  Showing {activePupils.filter(p => {
-                    const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
-                    return fullName.includes(searchQuery.toLowerCase());
-                  }).length} of {activePupils.length} active pupils
-                </CardDescription>
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <CardTitle>Pupil Balances</CardTitle>
+                    <CardDescription>
+                      Showing {balancePupils.filter(p => {
+                        const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
+                        return fullName.includes(searchQuery.toLowerCase());
+                      }).length} of {balancePupils.length} {balanceTab === 'onhold' ? 'on-hold' : 'active'} pupils
+                    </CardDescription>
+                  </div>
+                  <Tabs value={balanceTab} onValueChange={setBalanceTab}>
+                    <TabsList>
+                      <TabsTrigger value="active">Active</TabsTrigger>
+                      <TabsTrigger value="onhold">On Hold</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
                 <div className="mt-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <Input
-                      placeholder="Search active pupils..."
+                      placeholder={`Search ${balanceTab === 'onhold' ? 'on-hold' : 'active'} pupils...`}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10"
@@ -364,20 +378,20 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                 </div>
               </CardHeader>
               <CardContent>
-                {activePupils.length === 0 ? (
+                {balancePupils.length === 0 ? (
                   <div className="text-center py-8 text-slate-500">
-                    No active pupils found
+                    No {balanceTab === 'onhold' ? 'on-hold' : 'active'} pupils found
                   </div>
-                ) : activePupils.filter(p => {
+                ) : balancePupils.filter(p => {
                   const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
                   return fullName.includes(searchQuery.toLowerCase());
                 }).length === 0 ? (
                   <div className="text-center py-8 text-slate-500">
-                    No active pupils match your search
+                    No {balanceTab === 'onhold' ? 'on-hold' : 'active'} pupils match your search
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {activePupils
+                    {balancePupils
                       .filter(p => {
                         const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
                         return fullName.includes(searchQuery.toLowerCase());
