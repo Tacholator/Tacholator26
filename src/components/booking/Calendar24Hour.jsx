@@ -231,7 +231,8 @@ export default function Calendar24Hour({
         pushBlock(rs, re, { kind: 'rule', rule, state: rule.ruleType === 'closed' ? 'closed' : 'unavailable' });
       });
 
-      // Greedy lane packing
+      // Greedy lane packing — assign each block to the first lane whose end is
+      // <= the block's start. This gives a valid lane index per block.
       blocks.sort((a, b) => a.startSlot - b.startSlot || b.span - a.span);
       const laneEnds = [];
       blocks.forEach(bl => {
@@ -240,7 +241,29 @@ export default function Calendar24Hour({
         else laneEnds[lane] = bl.startSlot + bl.span;
         bl.lane = lane;
       });
-      map[dayKey] = { blocks, maxLane: laneEnds.length };
+
+      // Side-by-side splitting must apply ONLY to blocks that actually overlap.
+      // Group blocks into connected overlap clusters; each block's column count
+      // is the number of lanes used inside its own cluster (1 if none overlap).
+      const n = blocks.length;
+      const parent = Array.from({ length: n }, (_, i) => i);
+      const find = x => { while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
+      const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[ra] = rb; };
+      const overlap = (a, b) => a.startSlot < b.startSlot + b.span && b.startSlot < a.startSlot + a.span;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          if (overlap(blocks[i], blocks[j])) union(i, j);
+        }
+      }
+      const groups = {};
+      for (let i = 0; i < n; i++) { const r = find(i); (groups[r] = groups[r] || []).push(i); }
+      Object.values(groups).forEach(idxs => {
+        const cols = idxs.reduce((m, i) => Math.max(m, blocks[i].lane + 1), 1);
+        idxs.forEach(i => { blocks[i].colCount = cols; });
+      });
+      blocks.forEach(bl => { if (!bl.colCount) bl.colCount = 1; });
+
+      map[dayKey] = { blocks };
     });
     return map;
   }, [days, bookings, slotInstances, personalEvents, rules, timeSlots]);
@@ -309,13 +332,14 @@ export default function Calendar24Hour({
     no_show: '#C62828', unavailable: '#C62828', closed: '#6B7A08', personal: '#334155'
   };
 
-  const renderBlock = (block, day, maxLane) => {
-    const { kind, booking, slotInstance, ev, rule, state, startSlot, span, lane } = block;
+  const renderBlock = (block, day) => {
+    const { kind, booking, slotInstance, ev, rule, state, startSlot, span, lane, colCount } = block;
     const top = startSlot * ROW_PX;
     const height = span * ROW_PX;
-    const sideBySide = maxLane > 1;
-    const widthPct = sideBySide ? 100 / maxLane : 100;
-    const leftPct = sideBySide ? lane * (100 / maxLane) : 0;
+    const cols = colCount || 1;
+    const sideBySide = cols > 1;
+    const widthPct = sideBySide ? 100 / cols : 100;
+    const leftPct = sideBySide ? lane * (100 / cols) : 0;
 
     const isOwnBooking = !isInstructor && booking && booking.pupilId === currentPupilId;
     const isOthersReserved = !isInstructor && (state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test') && !isOwnBooking;
@@ -456,7 +480,7 @@ export default function Calendar24Hour({
             {/* Day columns */}
             {days.map((day, dayIdx) => {
               const dayKey = day.format('YYYY-MM-DD');
-              const { blocks, maxLane } = blocksByDay[dayKey] || { blocks: [], maxLane: 0 };
+              const { blocks } = blocksByDay[dayKey] || { blocks: [] };
               return (
                 <div key={dayIdx} className="relative border-r last:border-r-0" style={{ minWidth: 90, flex: 1, height: totalHeight }}>
                   {/* Background grid cells */}
@@ -473,7 +497,7 @@ export default function Calendar24Hour({
                     );
                   })}
                   {/* Foreground blocks (absolute, lane-packed) */}
-                  {blocks.map(bl => renderBlock(bl, day, maxLane))}
+                  {blocks.map(bl => renderBlock(bl, day))}
                 </div>
               );
             })}
