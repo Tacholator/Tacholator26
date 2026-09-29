@@ -176,33 +176,33 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
         {!adminProxyInstructorId && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link to={createPageUrl('PaymentMethods')}>
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer border-2 border-purple-400 bg-purple-50">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
-                    <Wallet className="w-6 h-6 text-[#F7B602]" />
-                    <h3 className="text-lg font-semibold text-[#071739]">Payment Methods</h3>
+                    <Wallet className="w-6 h-6 text-purple-600" />
+                    <h3 className="text-lg font-semibold text-purple-800">Payment Methods</h3>
                   </div>
                 </CardContent>
               </Card>
             </Link>
 
             <Link to={createPageUrl('Invoices')}>
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer border-2 border-emerald-400 bg-emerald-50">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
-                    <DollarSign className="w-6 h-6 text-[#F7B602]" />
-                    <h3 className="text-lg font-semibold text-[#071739]">Invoices</h3>
+                    <DollarSign className="w-6 h-6 text-emerald-600" />
+                    <h3 className="text-lg font-semibold text-emerald-800">Invoices</h3>
                   </div>
                 </CardContent>
               </Card>
             </Link>
 
             <Link to={createPageUrl('InstructorSubscription')}>
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer border-2 border-[#F7B602] bg-amber-50">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
-                    <Star className="w-6 h-6 text-[#F7B602]" />
-                    <h3 className="text-lg font-semibold text-[#071739]">Manage Subscription</h3>
+                    <Star className="w-6 h-6 text-[#d99f02]" />
+                    <h3 className="text-lg font-semibold text-[#d99f02]">Manage Subscription</h3>
                   </div>
                 </CardContent>
               </Card>
