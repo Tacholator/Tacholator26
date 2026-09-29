@@ -21,7 +21,6 @@ import {
   MapPin,
   MessageSquare,
   ThumbsUp,
-  Users,
   Smartphone,
   HelpCircle,
   Rocket,
@@ -280,16 +279,6 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
             <HelpCircle className="w-4 h-4 text-white" />
           </span>
           <span className="text-sm font-medium">App Tour</span>
-        </button>
-
-        <button
-          onClick={() => { window.location.href = createPageUrl('ReferAFriend'); }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
-        >
-          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-pink-500 shrink-0">
-            <Users className="w-4 h-4 text-white" />
-          </span>
-          <span className="text-sm font-medium">Refer a Friend</span>
         </button>
 
         <a

@@ -9,8 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProgressRing from '@/components/ui/ProgressRing';
 import ArrivalBanner from '@/components/lessons/ArrivalBanner';
-import ReferralBanner from '@/components/referral/ReferralBanner';
-import ReferralPopup from '@/components/referral/ReferralPopup';
 import { 
   Calendar, 
   Clock, 
@@ -434,11 +432,7 @@ export default function LearnerDashboard() {
         pupilId={pupil?.id}
       />
       <LearnerAppTour open={showAppTour} onClose={handleTourClose} />
-      <ReferralPopup pupilProfile={pupil} />
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Referral Banner */}
-        <ReferralBanner pupilProfile={pupil} />
-
         {/* Congratulations Banner for Passed Pupils */}
         {pupil.status === 'Passed' && (
           <motion.div
