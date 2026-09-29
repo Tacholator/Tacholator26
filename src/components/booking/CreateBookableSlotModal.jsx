@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Search, GraduationCap, CalendarClock, CheckCircle2 } from 'lucide-react';
+import { Loader2, Search, GraduationCap } from 'lucide-react';
 import moment from 'moment';
 import { TimeRangePicker } from '@/components/ui/TimePicker';
 
@@ -86,13 +86,18 @@ export default function CreateBookableSlotModal({
   const [practicalTestTime, setPracticalTestTime] = useState('');
   const [selectedSlotInstanceId, setSelectedSlotInstanceId] = useState('');
 
-  // Available (unbooked) future slots for the Booking-for-Pupil mode
+  // Available (unbooked) slots for the Booking-for-Pupil mode, filtered by picked date
   const availableSlots = React.useMemo(() => {
-    const now = moment();
+    if (!startDate) return [];
+    const start = moment(startDate).startOf('day');
+    const end = moment(startDate).endOf('day');
     return slotInstances
-      .filter(s => s.status === 'available' && moment(s.startAtUtc).isAfter(now))
+      .filter(s => {
+        const sStart = moment(s.startAtUtc).local();
+        return s.status === 'available' && sStart.isSameOrAfter(moment()) && sStart.isBetween(start, end, null, '[]');
+      })
       .sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
-  }, [slotInstances]);
+  }, [slotInstances, startDate]);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -396,14 +401,19 @@ export default function CreateBookableSlotModal({
               </div>
             )}
 
+            <div className="space-y-2">
+              <Label>{lessonMode === 'booking' ? 'Date' : 'Start Date'}</Label>
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+
             {lessonMode === 'booking' && availableSlots.length > 0 && (
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <CalendarClock className="w-4 h-4 text-teal-600" />
-                  <Label className="text-teal-700">Available Slots</Label>
-                </div>
-                <p className="text-xs text-slate-500">Pick a published slot to auto-fill, or set your own time below.</p>
-                <div className="max-h-32 overflow-y-auto space-y-1 scrollbar-thin pr-1">
+                <Label className="text-teal-700">Available Times</Label>
+                <div className="flex flex-wrap gap-2">
                   {availableSlots.map(slot => {
                     const startLocal = moment(slot.startAtUtc).local();
                     const endLocal = moment(slot.endAtUtc).local();
@@ -413,31 +423,19 @@ export default function CreateBookableSlotModal({
                         key={slot.id}
                         type="button"
                         onClick={() => handleSelectAvailableSlot(slot)}
-                        className={`flex items-center justify-between w-full px-3 py-2 rounded-lg border text-left text-sm transition-colors ${
+                        className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                           isSelected
-                            ? 'border-teal-600 bg-teal-50 text-teal-800'
-                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                            ? 'border-teal-600 bg-teal-600 text-white'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-teal-400 hover:bg-teal-50'
                         }`}
                       >
-                        <span className="font-medium">
-                          {startLocal.format('ddd D MMM')} · {startLocal.format('HH:mm')}–{endLocal.format('HH:mm')}
-                        </span>
-                        {isSelected && <CheckCircle2 className="w-4 h-4 text-teal-600" />}
+                        {startLocal.format('HH:mm')}–{endLocal.format('HH:mm')}
                       </button>
                     );
                   })}
                 </div>
               </div>
             )}
-
-            <div className="space-y-2">
-              <Label>{lessonMode === 'booking' ? 'Date' : 'Start Date'}</Label>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
