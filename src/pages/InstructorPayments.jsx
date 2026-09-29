@@ -339,9 +339,9 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
         {/* Tabs */}
         <Tabs defaultValue="pupils" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="pupils">Pupil Balances</TabsTrigger>
-            <TabsTrigger value="activity">Recent Activity</TabsTrigger>
-            <TabsTrigger value="card-payments">Latest Card Payments</TabsTrigger>
+            <TabsTrigger value="pupils" className="data-[state=active]:bg-[#F7B602] data-[state=active]:text-[#071739] data-[state=active]:font-bold data-[state=inactive]:text-amber-700">Pupil Balances</TabsTrigger>
+            <TabsTrigger value="activity" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-bold data-[state=inactive]:text-blue-700">Recent Activity</TabsTrigger>
+            <TabsTrigger value="card-payments" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:font-bold data-[state=inactive]:text-emerald-700">Latest Card Payments</TabsTrigger>
           </TabsList>
 
           {/* Pupil Balances Tab */}
