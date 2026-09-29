@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -277,30 +277,57 @@ export default function Calendar24Hour({
     return { state: 'available' };
   };
 
-  // Returns ALL personal events occurring on `day` whose start matches `timeSlot`.
-  // Used to detect overlapping personal events so they can be rendered side by
-  // side (each at half width) instead of one hiding the other.
-  const getPersonalEventsStartingAtSlot = (day, timeSlot) => {
-    return personalEvents.filter(ev => {
-      const evStartLocal = moment(ev.startAtUtc).local();
-      let occurs = false;
-      if (ev.repeatType === 'daily') {
-        occurs = evStartLocal.isSameOrBefore(day, 'day');
-      } else if (ev.repeatType === 'weekly') {
-        occurs = evStartLocal.isSameOrBefore(day, 'day') && evStartLocal.day() === day.day();
-      } else {
-        occurs = evStartLocal.isSame(day, 'day');
-      }
-      if (!occurs) return false;
-      return evStartLocal.format('HH:mm') === timeSlot;
+  // Expand personal events into per-day occurrences for the visible date range,
+  // and assign each occurrence a lane (0 = left, 1 = right) via greedy interval
+  // packing. When two occurrences overlap in time they land in different lanes
+  // so they can be rendered side by side (each at half the column width) instead
+  // of one hiding the other.
+  const personalLanesByDay = useMemo(() => {
+    const map = {};
+    days.forEach(day => {
+      const key = day.format('YYYY-MM-DD');
+      const occs = [];
+      personalEvents.forEach(ev => {
+        const evStart = moment(ev.startAtUtc).local();
+        let occurs = false;
+        if (ev.repeatType === 'daily') {
+          occurs = evStart.isSameOrBefore(day, 'day');
+        } else if (ev.repeatType === 'weekly') {
+          occurs = evStart.isSameOrBefore(day, 'day') && evStart.day() === day.day();
+        } else {
+          occurs = evStart.isSame(day, 'day');
+        }
+        if (!occurs) return;
+        const startMoment = day.clone().hour(evStart.hour()).minute(evStart.minute()).second(0);
+        const durMin = moment(ev.endAtUtc).local().diff(evStart, 'minutes');
+        const endMoment = startMoment.clone().add(durMin, 'minutes');
+        occs.push({
+          ev,
+          startMoment,
+          endMoment,
+          startStr: startMoment.format('HH:mm'),
+          endStr: endMoment.format('HH:mm'),
+          span: Math.max(1, Math.ceil(durMin / 15)),
+        });
+      });
+      occs.sort((a, b) => a.startMoment.diff(b.startMoment) || b.span - a.span);
+      const laneEnds = [];
+      occs.forEach(o => {
+        let lane = laneEnds.findIndex(end => !o.startMoment.isBefore(end));
+        if (lane === -1) { lane = laneEnds.length; laneEnds.push(o.endMoment.clone()); }
+        else laneEnds[lane] = o.endMoment.clone();
+        o.lane = lane;
+      });
+      map[key] = { occs, hasOverlap: laneEnds.length > 1 };
     });
-  };
+    return map;
+  }, [days, personalEvents]);
 
-  const personalSpan = (ev) => {
-    const evStart = moment(ev.startAtUtc).local();
-    const evEnd = moment(ev.endAtUtc).local();
-    const durationMinutes = evEnd.diff(evStart, 'minutes');
-    return Math.max(1, Math.ceil(durationMinutes / 15));
+  // Occurrences (with lanes) for a given day that START exactly at `timeSlot`.
+  const personalStartingAtSlot = (day, timeSlot) => {
+    const entry = personalLanesByDay[day.format('YYYY-MM-DD')];
+    if (!entry) return [];
+    return entry.occs.filter(o => o.startStr === timeSlot);
   };
 
   const handlePrevious = () => {
@@ -512,19 +539,16 @@ export default function Calendar24Hour({
                       blockEndTime = rule.endTimeLocal;
                     }
                   } else if (blockType === 'personal' && slotStateData.personalEvent) {
-                    const evStart = moment(slotStateData.personalEvent.startAtUtc).local();
-                    const evEnd = moment(slotStateData.personalEvent.endAtUtc).local();
-                    isBlockStart = evStart.format('HH:mm') === timeSlot;
+                    // Personal events use lane-based layout: an occurrence is a
+                    // "block start" when its own start matches this timeSlot (even
+                    // if another overlapping personal event is already active here).
+                    const startingHere = personalStartingAtSlot(day, timeSlot);
+                    isBlockStart = startingHere.length > 0;
                     if (isBlockStart) {
-                      // Detect any other personal events starting at this same slot
-                      // (overlaps) so the cell can render them side by side.
-                      const peers = getPersonalEventsStartingAtSlot(day, timeSlot);
-                      slotStateData.personalPeers = peers;
-                      blockSpan = peers.length > 1
-                        ? Math.max(...peers.map(personalSpan))
-                        : Math.max(1, Math.ceil(evEnd.diff(evStart, 'minutes') / 15));
-                      blockStartTime = evStart.format('HH:mm');
-                      blockEndTime = evEnd.format('HH:mm');
+                      slotStateData.personalPeers = startingHere;
+                      blockSpan = Math.max(...startingHere.map(o => o.span));
+                      blockStartTime = startingHere[0].startStr;
+                      blockEndTime = startingHere[0].endStr;
                     }
                   }
                 }
@@ -559,33 +583,45 @@ export default function Calendar24Hour({
                 if (shouldRenderAsCard && isBlockStart) {
                   const exactHeight = blockSpan * 22.5;
 
-                  // Overlapping personal events: render them side by side, each
-                  // occupying half the column width, instead of one hiding the other.
+                  // Personal events use lane-based layout: when a day has any
+                  // overlapping personal occurrences, every occurrence on that day
+                  // renders at half width in its assigned lane (left/right), so
+                  // overlapping events sit side by side instead of hiding each other.
                   const personalPeers = blockType === 'personal' ? (slotStateData.personalPeers || []) : [];
-                  if (blockType === 'personal' && personalPeers.length > 1) {
+                  const dayHasPersonalOverlap = blockType === 'personal'
+                    && !!(personalLanesByDay[day.format('YYYY-MM-DD')]?.hasOverlap);
+                  if (blockType === 'personal' && personalPeers.length > 0) {
+                    const laneWidth = dayHasPersonalOverlap ? '50%' : '100%';
                     return (
                       <div
                         key={dayIdx}
                         className="border-r border-b border-slate-200 last:border-r-0 relative flex gap-[2px]"
                         style={{ height: `${exactHeight}px`, padding: '2px', gridRow: `span ${blockSpan}` }}
                       >
-                        {personalPeers.map((ev, peerIdx) => {
-                          const evStart = moment(ev.startAtUtc).local();
-                          const evEnd = moment(ev.endAtUtc).local();
-                          const peerSpan = personalSpan(ev);
-                          const peerHeight = peerSpan * 22.5 - 4; // minus cell padding
+                        {personalPeers.map((o, peerIdx) => {
+                          const ev = o.ev;
+                          const peerHeight = o.span * 22.5 - 4; // minus cell padding
                           const bg = ev.color || SLOT_COLORS.available;
                           const dark = isDarkColor(bg);
                           const txt = dark ? 'text-white' : 'text-slate-900';
                           const timeTxt = dark ? 'text-slate-100' : 'text-slate-800';
                           const badgeBg = dark ? 'rgba(255,255,255,0.25)' : '#E2E8F0';
                           const badgeText = dark ? '#ffffff' : '#334155';
+                          const laneOffset = dayHasPersonalOverlap ? (o.lane % 2) * 50 : 0;
                           return (
                             <div
                               key={ev.id || peerIdx}
                               onClick={() => onPersonalEventClick?.(ev)}
                               className="relative rounded-md border-2 overflow-hidden cursor-pointer group hover:shadow-md transition-shadow min-w-0"
-                              style={{ borderColor: '#475569', backgroundColor: bg, height: `${peerHeight}px`, width: '50%' }}
+                              style={{
+                                borderColor: '#475569',
+                                backgroundColor: bg,
+                                height: `${peerHeight}px`,
+                                width: laneWidth,
+                                marginLeft: dayHasPersonalOverlap ? `${laneOffset}%` : 0,
+                                position: 'relative',
+                                zIndex: 2,
+                              }}
                             >
                               <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: '#334155' }} />
                               <div className="pl-1.5 sm:pl-2 pr-1 py-1 h-full flex flex-col justify-center relative z-10 overflow-hidden min-w-0">
@@ -595,7 +631,7 @@ export default function Calendar24Hour({
                                   </div>
                                 )}
                                 <div className={`text-[10px] sm:text-xs font-semibold ${timeTxt} truncate`}>
-                                  {evStart.format('HH:mm')} - {evEnd.format('HH:mm')}
+                                  {o.startStr} - {o.endStr}
                                 </div>
                                 <div className="mt-0.5">
                                   <span
