@@ -551,7 +551,7 @@ export default function InstructorDashboard() {
                     {ongoingEvents.map(evt => {
                       const evtPupil = pupils.find(p => p.id === evt.pupilId);
                       return (
-                        <div key={evt.id} className="shrink-0 snap-start w-[68vw] sm:w-[20rem] lg:w-[22rem] bg-white/70 rounded-lg p-3 relative border border-emerald-200">
+                        <div key={evt.id} className="shrink-0 snap-start w-[60vw] sm:w-[20rem] lg:w-[22rem] bg-white/70 rounded-lg p-3 relative border border-emerald-200">
                           {isLessonItem(evt) && evtPupil?.phone && (
                             <a href={`tel:${evtPupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-3 right-3">
                               <span className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
