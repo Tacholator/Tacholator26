@@ -276,16 +276,104 @@ export default function InstructorDashboard() {
     })
     .sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()))[0];
 
-  const ongoingEvent = todaySchedule.filter(item => {
+  // All currently relevant events: ongoing now + upcoming today (sorted by start).
+  const relevantEvents = todaySchedule.filter(item => {
     if (!item.startAtUtc || !item.endAtUtc) return false;
     const startTime = moment(item.startAtUtc).local();
     const endTime = moment(item.endAtUtc).local();
+    const isUpcoming = startTime.isAfter(now);
     const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
     const validStatus = item.type === 'personal' || item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
-    return isOngoing && validStatus;
-  }).sort((a, b) => moment(a.endAtUtc).local().diff(moment(b.endAtUtc).local()))[0];
+    return (isUpcoming || isOngoing) && validStatus;
+  }).sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()));
+
+  // Group events whose time ranges overlap (greedy merge on start-sorted list).
+  const overlapGroups = (() => {
+    const groups = [];
+    for (const ev of relevantEvents) {
+      const start = moment(ev.startAtUtc).local();
+      const end = moment(ev.endAtUtc).local();
+      const last = groups[groups.length - 1];
+      if (last && start.isBefore(last.maxEnd)) {
+        last.events.push(ev);
+        if (end.isAfter(last.maxEnd)) last.maxEnd = end;
+      } else {
+        groups.push({ events: [ev], maxEnd: end });
+      }
+    }
+    return groups.map(g => g.events);
+  })();
 
   const isLessonItem = (item) => !!item && (item.type === 'lesson' || (item.type === 'booking' && !item.isPracticalTest));
+
+  const isOngoingItem = (item) => {
+    if (!item?.startAtUtc || !item?.endAtUtc) return false;
+    return moment(item.startAtUtc).local().isSameOrBefore(now) && moment(item.endAtUtc).local().isAfter(now);
+  };
+
+  const renderEventCard = (item, { compact = false } = {}) => {
+    const pupil = pupils.find(p => p.id === item.pupilId);
+    const ongoing = isOngoingItem(item);
+    const isLesson = isLessonItem(item);
+    return (
+      <div className={`rounded-lg p-4 relative ${ongoing ? 'bg-emerald-50/80 border border-emerald-200' : 'bg-white border border-slate-200'}`}>
+        {isLesson && pupil?.phone && (
+          <a href={`tel:${pupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-3 right-3">
+            <span className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
+              <Phone className="w-5 h-5" />
+            </span>
+          </a>
+        )}
+        {ongoing && (
+          <p className="text-xs font-medium text-emerald-600 mb-2 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            Ongoing Now
+          </p>
+        )}
+        <p className="text-lg font-semibold text-slate-800">
+          {moment(item.startAtUtc).local().format('HH:mm')} – {moment(item.endAtUtc).local().format('HH:mm')}
+        </p>
+        <p className="text-slate-700 mt-1 truncate">
+          {item.type === 'personal'
+            ? item.title
+            : `${pupil?.firstName || ''} ${pupil?.lastName || ''}`.trim()}
+        </p>
+        <div className="flex items-center gap-2 mt-2">
+          <Badge className={getCategoryBadge(item).className}>
+            {getCategoryBadge(item).label}
+          </Badge>
+          <span className="text-sm text-slate-600">{item.durationHours}h</span>
+        </div>
+        {item.pickupLocation && (
+          <p className="text-sm text-slate-500 mt-1 truncate">{item.pickupLocation}</p>
+        )}
+        {!compact && (
+          <div className="mt-3 flex flex-col sm:flex-row gap-2">
+            {item.type !== 'personal' && item.pupilId && (
+              <Link to={createPageUrl('PupilProfile') + `?id=${item.pupilId}`} className="w-full sm:flex-1">
+                <Button size="sm" className="w-full bg-[#071739] hover:bg-[#0e2a5a] text-white">
+                  View Pupil Profile
+                </Button>
+              </Link>
+            )}
+            {pupil?.phone && (
+              <a href={`tel:${pupil.phone.replace(/\s+/g, '')}`} className="hidden sm:block sm:flex-1">
+                <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                  <Phone className="w-4 h-4 mr-2" />
+                  Call
+                </Button>
+              </a>
+            )}
+            <Link to={createPageUrl('InstructorSchedule')} className="w-full sm:flex-1">
+              <Button size="sm" className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
+                View Schedule
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const upcomingTodayBookings = todaySchedule.filter(item => {
     if (!item.startAtUtc) return false;
@@ -334,7 +422,6 @@ export default function InstructorDashboard() {
   const pendingBookingsCount = bookings.filter(b => b.status === 'reserved_pending_instructor').length;
 
   const nextPupil = nextRelevantBooking ? pupils.find(p => p.id === nextRelevantBooking.pupilId) : null;
-  const ongoingPupil = ongoingEvent ? pupils.find(p => p.id === ongoingEvent.pupilId) : null;
   const { data: lastDiaryEntry } = useQuery({
     queryKey: ['lastDiaryEntry', nextPupil?.id],
     queryFn: async () => {
@@ -448,113 +535,41 @@ export default function InstructorDashboard() {
                 </h3>
               </div>
 
-              <div className="bg-white/70 rounded-lg p-4 mb-4 relative">
-                {nextRelevantBooking && isLessonItem(nextRelevantBooking) && nextPupil?.phone && (
-                  <a href={`tel:${nextPupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-3 right-3">
-                    <span className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
-                      <Phone className="w-5 h-5" />
-                    </span>
-                  </a>
-                )}
-                <p className="text-xs font-medium text-slate-500 mb-2">Next Event</p>
-                {nextRelevantBooking ? (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-lg font-semibold text-slate-800">
-                        {moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')} – {moment(nextRelevantBooking.endAtUtc).local().format('HH:mm')}
-                      </p>
-                      <p className="text-slate-700 mt-1 truncate">
-                        {nextRelevantBooking.type === 'personal'
-                          ? nextRelevantBooking.title
-                          : `${pupils.find(p => p.id === nextRelevantBooking.pupilId)?.firstName || ''} ${pupils.find(p => p.id === nextRelevantBooking.pupilId)?.lastName || ''}`.trim()}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge className={getCategoryBadge(nextRelevantBooking).className}>
-                          {getCategoryBadge(nextRelevantBooking).label}
-                        </Badge>
-                        <span className="text-sm text-slate-600">
-                          {nextRelevantBooking.durationHours}h
-                        </span>
+              {relevantEvents.length > 0 ? (
+                <div className="space-y-3">
+                  {overlapGroups.map((group, gi) => (
+                    group.length > 1 ? (
+                      <div key={gi} className="flex gap-3 overflow-x-auto scrollbar-thin pb-2 -mx-1 px-1 snap-x">
+                        {group.map((ev, i) => (
+                          <div key={i} className="shrink-0 snap-start w-[80vw] sm:w-[22rem]">
+                            {renderEventCard(ev, { compact: true })}
+                          </div>
+                        ))}
                       </div>
-                      {nextRelevantBooking.pickupLocation && (
-                        <p className="text-sm text-slate-500 mt-1 truncate">{nextRelevantBooking.pickupLocation}</p>
-                      )}
-                      <div className="mt-3 flex flex-col sm:flex-row gap-2">
-                        {nextRelevantBooking.type !== 'personal' && nextRelevantBooking.pupilId && (
-                          <Link to={createPageUrl('PupilProfile') + `?id=${nextRelevantBooking.pupilId}`} className="w-full sm:flex-1">
-                            <Button size="sm" className="w-full bg-[#071739] hover:bg-[#0e2a5a] text-white">
-                              View Pupil Profile
-                            </Button>
-                          </Link>
-                        )}
-                        {nextPupil?.phone && (
-                          <a href={`tel:${nextPupil.phone.replace(/\s+/g, '')}`} className="hidden sm:block sm:flex-1">
-                            <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
-                              <Phone className="w-4 h-4 mr-2" />
-                              Call
-                            </Button>
-                          </a>
-                        )}
-                        <Link to={createPageUrl('InstructorSchedule')} className="w-full sm:flex-1">
-                          <Button size="sm" className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
-                            View Schedule
-                          </Button>
-                        </Link>
+                    ) : (
+                      <div key={gi}>
+                        {renderEventCard(group[0])}
                       </div>
-                    </div>
-
-</div>
-                ) : availableSlotsToday.length > 0 ? (
-                  <div className="text-center py-4">
-                    <PlusCircle className="w-8 h-8 mx-auto mb-2 text-emerald-500" />
-                    <p className="text-sm text-slate-700 font-medium">Available slots found!</p>
-                    <p className="text-xs text-slate-500 mb-3">
-                      You have {availableSlotsToday.length} free slot{availableSlotsToday.length !== 1 ? 's' : ''} today.
-                    </p>
-                    <Link to={createPageUrl('InstructorBookingCalendar')}>
-                      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                        View Available Slots
-                      </Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="text-center py-4">
-                    <Calendar className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                    <p className="text-sm text-slate-500">No more lessons today.</p>
-                  </div>
-                )}
-              </div>
-
-              {ongoingEvent && (
-                <div className="bg-emerald-50/80 border border-emerald-200 rounded-lg p-4 mb-4 relative">
-                  {isLessonItem(ongoingEvent) && ongoingPupil?.phone && (
-                    <a href={`tel:${ongoingPupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-3 right-3">
-                      <span className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
-                        <Phone className="w-5 h-5" />
-                      </span>
-                    </a>
-                  )}
-                  <p className="text-xs font-medium text-emerald-600 mb-2 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Ongoing Now
+                    )
+                  ))}
+                </div>
+              ) : availableSlotsToday.length > 0 ? (
+                <div className="bg-white/70 rounded-lg p-4 text-center">
+                  <PlusCircle className="w-8 h-8 mx-auto mb-2 text-emerald-500" />
+                  <p className="text-sm text-slate-700 font-medium">Available slots found!</p>
+                  <p className="text-xs text-slate-500 mb-3">
+                    You have {availableSlotsToday.length} free slot{availableSlotsToday.length !== 1 ? 's' : ''} today.
                   </p>
-                  <p className="text-lg font-semibold text-slate-800">
-                    {moment(ongoingEvent.startAtUtc).local().format('HH:mm')} – {moment(ongoingEvent.endAtUtc).local().format('HH:mm')}
-                  </p>
-                  <p className="text-slate-700 mt-1 truncate">
-                    {ongoingEvent.type === 'personal'
-                      ? ongoingEvent.title
-                      : `${ongoingPupil?.firstName || ''} ${ongoingPupil?.lastName || ''}`.trim()}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge className={getCategoryBadge(ongoingEvent).className}>
-                      {getCategoryBadge(ongoingEvent).label}
-                    </Badge>
-                    <span className="text-sm text-slate-600">{ongoingEvent.durationHours}h</span>
-                  </div>
-                  {ongoingEvent.pickupLocation && (
-                    <p className="text-sm text-slate-500 mt-1 truncate">{ongoingEvent.pickupLocation}</p>
-                  )}
+                  <Link to={createPageUrl('InstructorBookingCalendar')}>
+                    <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                      View Available Slots
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="bg-white/70 rounded-lg p-4 text-center">
+                  <Calendar className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                  <p className="text-sm text-slate-500">No more lessons today.</p>
                 </div>
               )}
 
