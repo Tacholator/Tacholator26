@@ -547,8 +547,12 @@ export default function InstructorDashboard() {
             </CardContent>
           </Card>
 
-          {/* 3a. Today's Revenue Card */}
-          <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} />
+          {/* 3a. Revenue Cards (Today / Week / Month) */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="today" />
+            <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="week" />
+            <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="month" />
+          </div>
 
           {/* 3b. DVLA Verification Card */}
           <DvlaVerificationCard pupils={pupils} />
