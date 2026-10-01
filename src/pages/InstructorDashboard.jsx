@@ -443,7 +443,11 @@ export default function InstructorDashboard() {
                   <Calendar className="w-5 h-5 text-amber-600" />
                   Today's Schedule
                 </h3>
-
+                <Link to={createPageUrl('InstructorSchedule')}>
+                  <Button size="sm" className="bg-[#071739] hover:bg-[#0e2a5a] text-white">
+                    View Schedule
+                  </Button>
+                </Link>
               </div>
 
               <div className="bg-white/70 rounded-lg p-4 mb-4">
