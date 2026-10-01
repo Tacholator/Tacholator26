@@ -86,7 +86,7 @@ export const instructorOnlyLinks = [
       { name: 'Resources', icon: BookOpen, page: 'InstructorResources' },
       { name: 'Teaching Notes', icon: StickyNote, page: 'InstructorTeachingNotes' },
       { name: 'Manage Nerves', icon: Brain, page: 'ManageNerves' },
-      { name: 'Ten Commandments', icon: Scroll, page: 'TenCommandments' },
+      { name: 'Top 10 Reasons for Test Fails', icon: Scroll, page: 'TopTenReasons' },
       { name: 'Commandments Checklist', icon: CheckSquare, page: 'TenCommandmentsChecklist' },
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
@@ -114,7 +114,7 @@ export const learnerOnlyLinks = [
       { name: 'Class Notes', icon: Notebook, page: 'LearnerClassNotes' },
       { name: 'Mock Tests', icon: ClipboardList, page: 'LearnerMockTests' },
       { name: 'Manage Nerves', icon: Brain, page: 'ManageNerves' },
-      { name: 'Ten Commandments', icon: Scroll, page: 'TenCommandments' },
+      { name: 'Top 10 Reasons for Test Fails', icon: Scroll, page: 'TopTenReasons' },
       { name: 'Lesson Diary', icon: BookOpen, page: 'LearnerDiary' }
     ]
   },

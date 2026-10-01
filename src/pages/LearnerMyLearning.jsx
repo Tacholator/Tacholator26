@@ -143,19 +143,19 @@ export default function LearnerMyLearning() {
             </Card>
           </Link>
 
-          {/* Ten Commandments card */}
-          <Link to="/TenCommandments" className="block">
+          {/* Top 10 Reasons for Test Fails card */}
+          <Link to="/TopTenReasons" className="block">
             <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Scroll className="w-5 h-5 text-[#F7B602]" />
-                  Ten Commandments
+                  Top 10 Reasons for Test Fails
                   <ChevronRight className="w-4 h-4 text-slate-400 ml-auto" />
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-600">
-                  The Ten Commandments of Passing Your Driving Test
+                  The most common reasons learners fail their driving test
                 </p>
               </CardContent>
             </Card>

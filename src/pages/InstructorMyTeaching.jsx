@@ -32,7 +32,7 @@ export default function InstructorMyTeaching() {
               </CardContent>
             </Card>
           </Link>
-          <Link to={createPageUrl('TenCommandments')}>
+          <Link to={createPageUrl('TopTenReasons')}>
             <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -41,8 +41,8 @@ export default function InstructorMyTeaching() {
                       <Scroll className="w-6 h-6 text-[#F7B602]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-slate-800">Ten Commandments</h3>
-                      <p className="text-sm text-slate-500">The Ten Commandments of Passing Your Driving Test</p>
+                      <h3 className="font-semibold text-lg text-slate-800">Top 10 Reasons for Test Fails</h3>
+                      <p className="text-sm text-slate-500">The most common reasons learners fail their driving test</p>
                     </div>
                   </div>
                   <ArrowRight className="w-5 h-5 text-slate-400" />
