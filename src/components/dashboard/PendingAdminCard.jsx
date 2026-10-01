@@ -12,11 +12,14 @@ import moment from 'moment';
  */
 export default function PendingAdminCard({ lessons = [], pupils = [], isLoading, onMarkLesson }) {
   const now = moment();
+  const cutoff = moment('2026-10-01', 'YYYY-MM-DD').startOf('day');
 
   const pending = lessons
     .filter(l => {
       if (!l.date || !l.endTime) return false;
       const end = moment(`${l.date} ${l.endTime}`, 'YYYY-MM-DD HH:mm');
+      // Only consider lessons from 1 Oct 2026 onwards
+      if (end.isBefore(cutoff)) return false;
       // Ended and still awaiting an outcome
       const ended = end.isBefore(now);
       const awaiting = l.status === 'Scheduled' && !l.completionOutcome;
