@@ -14,6 +14,7 @@ import NewLessonModal from '@/components/booking/NewLessonModal';
 import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
 import TodayRevenueCard from '@/components/dashboard/TodayRevenueCard';
 import NegativeBalancesCard from '@/components/dashboard/NegativeBalancesCard';
+import PendingAdminCard from '@/components/dashboard/PendingAdminCard';
 import OnboardingPopup from '@/components/onboarding/OnboardingPopup';
 import InstructorAppTour from '@/components/onboarding/InstructorAppTour';
 
@@ -564,6 +565,14 @@ export default function InstructorDashboard() {
             </div>
           </div>
 
+          {/* 3a. Pending Admin — lessons awaiting completion */}
+          <PendingAdminCard
+            lessons={lessons}
+            pupils={pupils}
+            isLoading={isPupilCheckLoading}
+            onMarkLesson={handleMarkLesson}
+          />
+
           {/* 3b. DVLA Verification Card */}
           <DvlaVerificationCard pupils={pupils} />
 
@@ -727,8 +736,20 @@ export default function InstructorDashboard() {
           setOutcomeModalOpen(false);
           setSelectedLessonId(null);
         }}
-        lessonId={nextRelevantBooking?.type === 'lesson' && selectedLessonId === nextRelevantBooking.id ? selectedLessonId : null}
-        bookingId={nextRelevantBooking?.type === 'booking' && selectedLessonId === nextRelevantBooking.id ? selectedLessonId : (todayNeedingOutcome.find(item => item.id === selectedLessonId)?.type === 'booking' ? selectedLessonId : null)}
+        lessonId={(() => {
+          if (!selectedLessonId) return null;
+          // Pending admin lessons are Lesson entities
+          if (lessons.some(l => l.id === selectedLessonId)) return selectedLessonId;
+          if (nextRelevantBooking?.type === 'lesson' && nextRelevantBooking.id === selectedLessonId) return selectedLessonId;
+          return null;
+        })()}
+        bookingId={(() => {
+          if (!selectedLessonId) return null;
+          if (lessons.some(l => l.id === selectedLessonId)) return null;
+          if (nextRelevantBooking?.type === 'booking' && nextRelevantBooking.id === selectedLessonId) return selectedLessonId;
+          if (todayNeedingOutcome.find(item => item.id === selectedLessonId)?.type === 'booking') return selectedLessonId;
+          return null;
+        })()}
       />
 
       <PupilLessonSummaryModal
