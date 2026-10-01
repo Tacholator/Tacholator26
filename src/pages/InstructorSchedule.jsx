@@ -268,7 +268,7 @@ export default function InstructorSchedule() {
                                 </span>
                               </div>
                             </div>
-                            <Badge className="shrink-0 text-xs bg-indigo-100 text-indigo-700">Personal</Badge>
+                            <Badge className="shrink-0 text-xs bg-yellow-100 text-yellow-800">Personal</Badge>
                           </CardContent>
                         </Card>
                       );
