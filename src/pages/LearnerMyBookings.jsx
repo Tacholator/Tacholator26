@@ -215,7 +215,7 @@ export default function LearnerMyBookings() {
           <Tabs defaultValue="upcoming">
             <TabsList className="mb-4 w-full">
               <TabsTrigger value="upcoming" className="flex-1">
-                Upcoming ({upcoming.length})
+                Upcoming ({upcoming.filter(b => b.status === 'confirmed').length})
               </TabsTrigger>
               <TabsTrigger value="past" className="flex-1">
                 Past ({past.length})
