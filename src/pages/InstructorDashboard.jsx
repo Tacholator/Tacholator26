@@ -12,6 +12,7 @@ import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
 import NewLessonModal from '@/components/booking/NewLessonModal';
 import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
+import TodayRevenueCard from '@/components/dashboard/TodayRevenueCard';
 import OnboardingPopup from '@/components/onboarding/OnboardingPopup';
 import InstructorAppTour from '@/components/onboarding/InstructorAppTour';
 
@@ -545,6 +546,9 @@ export default function InstructorDashboard() {
 
             </CardContent>
           </Card>
+
+          {/* 3a. Today's Revenue Card */}
+          <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} />
 
           {/* 3b. DVLA Verification Card */}
           <DvlaVerificationCard pupils={pupils} />
