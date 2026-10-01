@@ -3,12 +3,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Calendar, Clock, MapPin, FileText, Save, Gauge, CheckCircle } from 'lucide-react';
+import { Loader2, Save, CheckCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
@@ -335,22 +332,6 @@ export default function BookingSummaryModal({
     return null;
   }
 
-  const startMoment = moment(booking.startAtUtc).local();
-  const endMoment = moment(booking.endAtUtc).local();
-
-  // Parse locations from notes
-  const parseLocations = () => {
-    const notes = booking.notesFromPupil || '';
-    const pickupMatch = notes.match(/Pickup:\s*([^|]+)/);
-    const dropoffMatch = notes.match(/Dropoff:\s*([^|]+)/);
-    return {
-      pickup: pickupMatch ? pickupMatch[1].trim() : 'Not specified',
-      dropoff: dropoffMatch ? dropoffMatch[1].trim() : 'Not specified'
-    };
-  };
-
-  const locations = parseLocations();
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -359,54 +340,6 @@ export default function BookingSummaryModal({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Lesson Info Card */}
-          <Card className="border-blue-200 bg-blue-50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-blue-600" />
-                Lesson Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <span className="text-slate-600">Date:</span>
-                  <p className="font-medium text-slate-800">
-                    {startMoment.format('dddd, D MMMM YYYY')}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-slate-600">Time:</span>
-                  <p className="font-medium text-slate-800">
-                    {startMoment.format('HH:mm')} – {endMoment.format('HH:mm')}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-slate-600">Duration:</span>
-                  <p className="font-medium text-slate-800">
-                    {booking.durationHours} hour{booking.durationHours !== 1 ? 's' : ''}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-slate-600">Pupil:</span>
-                  <p className="font-medium text-slate-800">
-                    {pupil.firstName} {pupil.lastName}
-                  </p>
-                </div>
-              </div>
-              <div className="pt-2 border-t">
-                <div className="mb-2">
-                  <span className="text-slate-600">Pickup:</span>
-                  <p className="font-medium text-slate-800">{locations.pickup}</p>
-                </div>
-                <div>
-                  <span className="text-slate-600">Drop-off:</span>
-                  <p className="font-medium text-slate-800">{locations.dropoff}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Summary Form */}
           <div className="space-y-4">
             {/* Topic Duration Selector */}
