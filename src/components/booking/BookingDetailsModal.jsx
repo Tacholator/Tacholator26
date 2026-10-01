@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import {
   AlertDialog,
@@ -44,7 +43,6 @@ export default function BookingDetailsModal({
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showReassignDialog, setShowReassignDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showOutcomeModal, setShowOutcomeModal] = useState(false);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [selectedPupilId, setSelectedPupilId] = useState('');
@@ -545,12 +543,6 @@ export default function BookingDetailsModal({
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete
               </Button>
-              <Button 
-                onClick={() => setShowOutcomeModal(true)}
-                className="bg-emerald-600 hover:bg-emerald-700"
-              >
-                Set Lesson Status
-              </Button>
             </>
           ) : (
             <Button onClick={() => onOpenChange(false)}>Close</Button>
@@ -722,16 +714,6 @@ export default function BookingDetailsModal({
         </AlertDialogFooter>
       </AlertDialogContent>
       </AlertDialog>
-
-      {/* Lesson Outcome Modal */}
-      <LessonOutcomeModal
-      open={showOutcomeModal}
-      onClose={() => {
-        setShowOutcomeModal(false);
-        onOpenChange(false);
-      }}
-      bookingId={booking.id}
-      />
 
       {/* Lesson Summary Modal */}
       <BookingSummaryModal

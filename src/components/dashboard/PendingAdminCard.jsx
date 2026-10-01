@@ -18,6 +18,7 @@ export default function PendingAdminCard({ items = [], pupils = [], isLoading, o
 
   const pending = items
     .filter(item => {
+      if (item.type !== 'booking') return false;
       if (!item.date || !item.endTime) return false;
       const end = moment(`${item.date} ${item.endTime}`, 'YYYY-MM-DD HH:mm');
       // Only consider lessons from 1 Oct 2026 onwards
@@ -81,7 +82,7 @@ export default function PendingAdminCard({ items = [], pupils = [], isLoading, o
                     </div>
                     <Button
                       size="sm"
-                      onClick={() => onMarkLesson(item.id)}
+                      onClick={() => onMarkLesson(item)}
                       className="bg-rose-600 hover:bg-rose-700 text-white shrink-0"
                     >
                       Complete

@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Calendar, Clock, Bell, Flag, PlusCircle, Sparkles, Plus, ClockIcon, UserCheck, HelpCircle, Phone } from 'lucide-react';
 import moment from 'moment';
-import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
-import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
+import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import NewLessonModal from '@/components/booking/NewLessonModal';
 import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
 import TodayRevenueCard from '@/components/dashboard/TodayRevenueCard';
@@ -31,10 +30,9 @@ const warmPalette = {
 };
 
 export default function InstructorDashboard() {
-  const [outcomeModalOpen, setOutcomeModalOpen] = useState(false);
-  const [selectedLessonId, setSelectedLessonId] = useState(null);
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
-  const [selectedPupilForSummary, setSelectedPupilForSummary] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [selectedPupil, setSelectedPupil] = useState(null);
   const [newLessonModalOpen, setNewLessonModalOpen] = useState(false);
   const [showOnboardingPopup, setShowOnboardingPopup] = useState(false);
   const [showAppTour, setShowAppTour] = useState(false);
@@ -364,15 +362,6 @@ export default function InstructorDashboard() {
 
   const nextPupil = nextRelevantBooking ? pupils.find(p => p.id === nextRelevantBooking.pupilId) : null;
   const ongoingPupil = ongoingEvent ? pupils.find(p => p.id === ongoingEvent.pupilId) : null;
-  const { data: lastDiaryEntry } = useQuery({
-    queryKey: ['lastDiaryEntry', nextPupil?.id],
-    queryFn: async () => {
-      if (!nextPupil?.id) return null;
-      const diaries = await base44.entities.DiaryEntry.filter({ pupilId: nextPupil.id }, '-date', 1);
-      return diaries.length > 0 ? diaries[0] : null;
-    },
-    enabled: !!nextPupil?.id
-  });
 
   const getTimeOfDay = () => {
     const hour = moment().hour();
@@ -401,13 +390,12 @@ export default function InstructorDashboard() {
 
   const firstName = user.firstName || user.full_name?.split(' ')[0] || 'there';
 
-  const handleMarkLesson = (lessonId) => {
-    setSelectedLessonId(lessonId);
-    setOutcomeModalOpen(true);
-  };
-
-  const handleViewSummary = (pupil) => {
-    setSelectedPupilForSummary(pupil);
+  const handleMarkLesson = (item) => {
+    const booking = bookings.find(b => b.id === item.id);
+    const pupil = pupils.find(p => p.id === item.pupilId);
+    if (!booking || !pupil) return;
+    setSelectedBooking(booking);
+    setSelectedPupil(pupil);
     setSummaryModalOpen(true);
   };
 
@@ -737,36 +725,17 @@ export default function InstructorDashboard() {
         />
       )}
 
-      <LessonOutcomeModal
-        open={outcomeModalOpen}
-        onClose={() => {
-          setOutcomeModalOpen(false);
-          setSelectedLessonId(null);
-        }}
-        lessonId={(() => {
-          if (!selectedLessonId) return null;
-          // Pending admin lessons are Lesson entities
-          if (lessons.some(l => l.id === selectedLessonId)) return selectedLessonId;
-          if (nextRelevantBooking?.type === 'lesson' && nextRelevantBooking.id === selectedLessonId) return selectedLessonId;
-          return null;
-        })()}
-        bookingId={(() => {
-          if (!selectedLessonId) return null;
-          if (lessons.some(l => l.id === selectedLessonId)) return null;
-          if (nextRelevantBooking?.type === 'booking' && nextRelevantBooking.id === selectedLessonId) return selectedLessonId;
-          if (todayNeedingOutcome.find(item => item.id === selectedLessonId)?.type === 'booking') return selectedLessonId;
-          return null;
-        })()}
-      />
-
-      <PupilLessonSummaryModal
+      <BookingSummaryModal
         open={summaryModalOpen}
-        onClose={() => {
-          setSummaryModalOpen(false);
-          setSelectedPupilForSummary(null);
+        onOpenChange={(isOpen) => {
+          setSummaryModalOpen(isOpen);
+          if (!isOpen) {
+            setSelectedBooking(null);
+            setSelectedPupil(null);
+          }
         }}
-        pupil={selectedPupilForSummary}
-        lastDiaryEntry={selectedPupilForSummary?.id === nextPupil?.id ? lastDiaryEntry : null}
+        booking={selectedBooking}
+        pupil={selectedPupil}
       />
 
       <NewLessonModal
