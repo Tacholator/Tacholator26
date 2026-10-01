@@ -443,26 +443,7 @@ export default function InstructorDashboard() {
                   <Calendar className="w-5 h-5 text-amber-600" />
                   Today's Schedule
                 </h3>
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <Link to={createPageUrl('InstructorSchedule')} className="flex-1 sm:flex-none">
-                    <Button
-                      variant="outline"
-                      className="bg-white/60 hover:bg-white text-slate-700 border-slate-300 w-full"
-                      size="sm"
-                    >
-                      <Calendar className="w-4 h-4 mr-1" />
-                      View Schedule
-                    </Button>
-                  </Link>
-                  <Button
-                    onClick={() => setNewLessonModalOpen(true)}
-                    className="bg-[#071739] hover:bg-[#0e2a5a] text-white flex-1 sm:flex-none"
-                    size="sm"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    New Lesson
-                  </Button>
-                </div>
+
               </div>
 
               <div className="bg-white/70 rounded-lg p-4 mb-4">
