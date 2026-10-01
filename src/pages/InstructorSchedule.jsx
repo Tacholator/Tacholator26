@@ -268,7 +268,7 @@ export default function InstructorSchedule() {
                                 </span>
                               </div>
                             </div>
-                            <Badge className="shrink-0 text-xs bg-indigo-100 text-indigo-700">Event</Badge>
+                            <Badge className="shrink-0 text-xs bg-indigo-100 text-indigo-700">Personal</Badge>
                           </CardContent>
                         </Card>
                       );
@@ -326,9 +326,9 @@ export default function InstructorSchedule() {
                             </div>
                           </div>
 
-                          {/* Status badge */}
-                          <Badge className={`shrink-0 text-xs ${statusStyle}`}>
-                            {formatStatusLabel(booking.status)}
+                          {/* Type badge */}
+                          <Badge className={`shrink-0 text-xs ${booking.isPracticalTest ? 'bg-violet-100 text-violet-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                            {booking.isPracticalTest ? 'Driving Test' : 'Lessons'}
                           </Badge>
                         </CardContent>
                       </Card>
