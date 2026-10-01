@@ -54,7 +54,7 @@ export default function TodayRevenueCard({ userId, disabled, range = 'today' }) 
     <Card className="bg-gradient-to-br from-emerald-100 to-teal-100 border-0 shadow-sm overflow-hidden h-full">
       <CardContent className="p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-          <h3 className="text-base font-semibold text-slate-800 flex items-center gap-2">
+          <h3 className="text-base font-semibold text-slate-800 flex items-center gap-2 whitespace-nowrap">
             <Wallet className="w-5 h-5 text-emerald-600" />
             {RANGE_LABEL[range]}
           </h3>

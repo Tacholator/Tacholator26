@@ -549,11 +549,19 @@ export default function InstructorDashboard() {
           </Card>
 
           {/* 3a. Revenue Cards (Today / Week / Month / Negative Balances) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="today" />
-            <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="week" />
-            <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="month" />
-            <NegativeBalancesCard pupils={pupils} isLoading={isPupilCheckLoading} />
+          <div className="flex gap-4 overflow-x-auto scrollbar-thin pb-2 -mx-1 px-1 snap-x">
+            <div className="shrink-0 snap-start" style={{ width: '22rem', minWidth: '22rem' }}>
+              <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="today" />
+            </div>
+            <div className="shrink-0 snap-start" style={{ width: '22rem', minWidth: '22rem' }}>
+              <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="week" />
+            </div>
+            <div className="shrink-0 snap-start" style={{ width: '22rem', minWidth: '22rem' }}>
+              <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="month" />
+            </div>
+            <div className="shrink-0 snap-start" style={{ width: '22rem', minWidth: '22rem' }}>
+              <NegativeBalancesCard pupils={pupils} isLoading={isPupilCheckLoading} />
+            </div>
           </div>
 
           {/* 3b. DVLA Verification Card */}
