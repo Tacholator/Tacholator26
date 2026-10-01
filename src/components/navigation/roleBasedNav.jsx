@@ -87,7 +87,6 @@ export const instructorOnlyLinks = [
       { name: 'Teaching Notes', icon: StickyNote, page: 'InstructorTeachingNotes' },
       { name: 'Manage Nerves', icon: Brain, page: 'ManageNerves' },
       { name: 'Top 10 Reasons for Test Fails', icon: Scroll, page: 'TopTenReasons' },
-      { name: 'Commandments Checklist', icon: CheckSquare, page: 'TenCommandmentsChecklist' },
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },

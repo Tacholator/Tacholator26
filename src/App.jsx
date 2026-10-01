@@ -45,7 +45,6 @@ import InstructorReadinessReview from './pages/InstructorReadinessReview';
 import AdminMarketing from './pages/AdminMarketing';
 import ManageNerves from './pages/ManageNerves';
 import TenCommandments from './pages/TenCommandments';
-import TenCommandmentsChecklist from './pages/TenCommandmentsChecklist';
 import PupilTopicDetail from './pages/PupilTopicDetail';
 import LearnerFreeTestRoutes from './pages/LearnerFreeTestRoutes';
 import TopTenReasons from './pages/TopTenReasons';
@@ -276,11 +275,6 @@ const AuthenticatedApp = () => {
       <Route path="/TenCommandments" element={
         <LayoutWrapper currentPageName="TenCommandments">
           <TenCommandments />
-        </LayoutWrapper>
-      } />
-      <Route path="/TenCommandmentsChecklist" element={
-        <LayoutWrapper currentPageName="TenCommandmentsChecklist">
-          <TenCommandmentsChecklist />
         </LayoutWrapper>
       } />
       <Route path="/PupilTopicDetail" element={
