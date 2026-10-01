@@ -649,7 +649,7 @@ export default function InstructorDashboard() {
                   <Flag className="w-5 h-5 text-rose-600" />
                   Upcoming Tests
                 </h3>
-                <div className="space-y-2 max-h-80 overflow-y-auto">
+                <div className="space-y-2 max-h-[10.5rem] overflow-y-auto">
                   {upcomingTests.map(pupil => {
                     const daysUntil = moment(pupil.practicalTestDate).diff(moment(), 'days');
                     return (
