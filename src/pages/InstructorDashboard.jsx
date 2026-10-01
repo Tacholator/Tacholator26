@@ -420,7 +420,7 @@ export default function InstructorDashboard() {
           {/* Pending bookings pill */}
           {pendingBookingsCount > 0 && (
             <Link to={createPageUrl('PendingBookingRequests')} className="inline-flex items-center self-start">
-              <span className="inline-flex items-center gap-2 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold px-4 py-2 shadow-sm transition-colors">
+              <span className="inline-flex items-center gap-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-4 py-2 shadow-sm transition-colors">
                 <Clock className="w-4 h-4" />
                 {pendingBookingsCount} pending booking{pendingBookingsCount !== 1 ? 's' : ''}
               </span>
