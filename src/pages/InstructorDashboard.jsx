@@ -549,6 +549,14 @@ export default function InstructorDashboard() {
             </CardContent>
           </Card>
 
+          {/* 3a. Pending Admin — lessons awaiting completion */}
+          <PendingAdminCard
+            lessons={lessons}
+            pupils={pupils}
+            isLoading={isPupilCheckLoading}
+            onMarkLesson={handleMarkLesson}
+          />
+
           {/* 3a. Revenue Cards (Today / Week / Month / Negative Balances) */}
           <div className="flex gap-3 overflow-x-auto scrollbar-thin pb-2 -mx-1 px-1 snap-x">
             <div className="shrink-0 snap-start w-[76vw] sm:w-[20rem] lg:w-[22rem]">
@@ -564,14 +572,6 @@ export default function InstructorDashboard() {
               <NegativeBalancesCard pupils={pupils} isLoading={isPupilCheckLoading} />
             </div>
           </div>
-
-          {/* 3a. Pending Admin — lessons awaiting completion */}
-          <PendingAdminCard
-            lessons={lessons}
-            pupils={pupils}
-            isLoading={isPupilCheckLoading}
-            onMarkLesson={handleMarkLesson}
-          />
 
           {/* 3b. DVLA Verification Card */}
           <DvlaVerificationCard pupils={pupils} />
