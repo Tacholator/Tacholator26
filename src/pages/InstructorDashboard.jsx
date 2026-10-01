@@ -499,63 +499,6 @@ export default function InstructorDashboard() {
                 )}
               </div>
 
-              {upcomingTodayBookings.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-slate-700 mb-2">Upcoming Today</p>
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {upcomingTodayBookings.map(item => {
-                      const pupil = pupils.find(p => p.id === item.pupilId);
-                      return (
-                        <div key={`${item.type}-${item.id}`} className="bg-white/70 rounded-lg p-3">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-slate-800 truncate">
-                                {moment(item.startAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
-                              </p>
-                              <Badge className={`${getStatusColor(item.status)} text-xs mt-1`}>
-                                {item.status}
-                              </Badge>
-                            </div>
-                            <span className="text-xs text-slate-500">{item.durationHours?.toFixed(1)}h</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {todayNeedingOutcome.length > 0 && (
-                <>
-                  <div className="border-t my-4"></div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-700 mb-1">Needs Outcome (Today)</p>
-                    <p className="text-xs text-slate-500 mb-3">Past lessons shown only if they need an outcome.</p>
-                    <div className="space-y-2">
-                      {todayNeedingOutcome.map(item => {
-                        const pupil = pupils.find(p => p.id === item.pupilId);
-                        return (
-                          <div key={`${item.type}-${item.id}`} className="bg-rose-50/70 rounded-lg p-3 border border-rose-200">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-slate-800 truncate">
-                                  {moment(item.startAtUtc).local().format('HH:mm')}–{moment(item.endAtUtc).local().format('HH:mm')} • {pupil?.firstName} {pupil?.lastName}
-                                </p>
-                                <p className="text-xs text-rose-600 mt-1">Needs outcome</p>
-                              </div>
-                              <Link to={createPageUrl('PupilProfile') + `?id=${item.pupilId}`}>
-                                <Button size="sm" className="bg-[#071739] hover:bg-[#0e2a5a] text-white">
-                                  View Profile
-                                </Button>
-                              </Link>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </>
-              )}
             </CardContent>
           </Card>
 
