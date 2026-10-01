@@ -5,8 +5,10 @@ import NotLinkedBanner from '@/components/learner/NotLinkedBanner';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { Calendar, Clock, MapPin, FileText, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, FileText, AlertCircle, CheckCircle, XCircle, Loader2, MessageCircleQuestion } from 'lucide-react';
 import moment from 'moment';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const STATUS_CONFIG = {
   pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800' },
@@ -23,11 +25,14 @@ const STATUS_CONFIG = {
 };
 
 function BookingCard({ booking }) {
+  const [showReason, setShowReason] = useState(false);
   const statusConf = STATUS_CONFIG[booking.status] || { label: booking.status, color: 'bg-gray-100 text-gray-700' };
   const isCancelledOrDeclined = ['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor', 'no_show', 'deleted'].includes(booking.status);
+  const isDeclined = booking.status === 'declined_by_instructor';
+  const declineReason = booking.cancellationReason;
 
   return (
-    <Card className="mb-3">
+    <Card className={`mb-3 ${isDeclined ? 'border-rose-200 bg-rose-50/30' : ''}`}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 space-y-2">
@@ -84,12 +89,25 @@ function BookingCard({ booking }) {
               </div>
             )}
 
-            {/* Cancellation reason */}
-            {isCancelledOrDeclined && booking.cancellationReason && (
+            {/* Cancellation reason (inline for non-declined cancellations) */}
+            {isCancelledOrDeclined && !isDeclined && booking.cancellationReason && (
               <div className="flex items-start gap-1.5 text-sm text-rose-700 bg-rose-50 rounded-lg p-2">
                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                 <span><span className="font-medium">Reason:</span> {booking.cancellationReason}</span>
               </div>
+            )}
+
+            {/* View Reason button for declined bookings */}
+            {isDeclined && declineReason && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowReason(true)}
+                className="text-rose-700 border-rose-300 hover:bg-rose-100 hover:text-rose-800"
+              >
+                <MessageCircleQuestion className="w-4 h-4 mr-1.5" />
+                View Reason
+              </Button>
             )}
 
             {/* Late cancellation penalty */}
@@ -112,6 +130,27 @@ function BookingCard({ booking }) {
           </Badge>
         </div>
       </CardContent>
+
+      {/* Decline reason popup */}
+      <Dialog open={showReason} onOpenChange={setShowReason}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-rose-700">
+              <AlertCircle className="w-5 h-5" />
+              Booking Declined
+            </DialogTitle>
+            <DialogDescription className="text-left pt-2">
+              Your instructor declined this booking request.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-800">
+            {declineReason || 'No reason was provided.'}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowReason(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
@@ -144,14 +183,16 @@ export default function LearnerMyBookings() {
 
   const now = moment();
   const activeStatuses = ['reserved_pending_instructor', 'pending', 'confirmed', 'in_progress'];
-  const pastStatuses = ['completed', 'cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor', 'no_show', 'deleted'];
+
+  // Declined bookings with a future date show in Upcoming so the learner sees the decline reason.
+  const isUpcoming = (b) => (activeStatuses.includes(b.status) || b.status === 'declined_by_instructor') && moment(b.startAtUtc).isAfter(now);
 
   const upcoming = bookings
-    .filter(b => activeStatuses.includes(b.status) && moment(b.startAtUtc).isAfter(now))
+    .filter(isUpcoming)
     .sort((a, b) => moment(a.startAtUtc).diff(moment(b.startAtUtc)));
 
   const past = bookings
-    .filter(b => pastStatuses.includes(b.status) || moment(b.startAtUtc).isBefore(now))
+    .filter(b => !isUpcoming(b))
     .sort((a, b) => moment(b.startAtUtc).diff(moment(a.startAtUtc)));
 
   const isLoading = pupilLoading || bookingsLoading;
