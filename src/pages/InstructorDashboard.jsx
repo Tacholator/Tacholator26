@@ -542,7 +542,7 @@ export default function InstructorDashboard() {
               </div>
 
               {ongoingEvents.length > 0 && (
-                <div className="bg-emerald-50 border-2 border-[#F7B602] rounded-lg p-4 mb-4">
+                <div className="bg-emerald-50 rounded-lg p-4 mb-4">
                   <p className="text-xs font-medium text-emerald-600 mb-3 flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     Ongoing Now
