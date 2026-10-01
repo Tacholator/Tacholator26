@@ -301,6 +301,35 @@ export default function InstructorDashboard() {
     return endTime.isBefore(now) && validStatus;
   }).sort((a, b) => moment(b.endAtUtc).local().diff(moment(a.endAtUtc).local()));
 
+  // Normalized list of lessons + non-test bookings for the Pending Admin card.
+  // Only items that have ended and are not yet completed will be shown.
+  const pendingAdminItems = [
+    ...lessons.map(l => ({
+      id: l.id,
+      type: 'lesson',
+      date: l.date,
+      startTime: l.startTime,
+      endTime: l.endTime,
+      pupilId: l.pupilId,
+      status: l.status,
+      completionOutcome: l.completionOutcome
+    })),
+    ...bookings.filter(b => !b.isDeleted && !b.isPracticalTest).map(b => {
+      const s = moment(b.startAtUtc).local();
+      const e = moment(b.endAtUtc).local();
+      return {
+        id: b.id,
+        type: 'booking',
+        date: s.format('YYYY-MM-DD'),
+        startTime: s.format('HH:mm'),
+        endTime: e.format('HH:mm'),
+        pupilId: b.pupilId,
+        status: b.status,
+        completionOutcome: b.completionOutcome
+      };
+    })
+  ];
+
   const getStatusColor = (status) => {
     const colors = {
       pending: 'bg-slate-100 text-slate-700',
@@ -563,7 +592,7 @@ export default function InstructorDashboard() {
 
           {/* 3a. Pending Admin — lessons awaiting completion */}
           <PendingAdminCard
-            lessons={lessons}
+            items={pendingAdminItems}
             pupils={pupils}
             isLoading={isPupilCheckLoading}
             onMarkLesson={handleMarkLesson}

@@ -6,24 +6,26 @@ import { ClipboardList, Loader2, Clock } from 'lucide-react';
 import moment from 'moment';
 
 /**
- * Shows lessons that have ended but have not yet been marked as completed
- * (status still "Scheduled" with no completionOutcome). Latest first.
- * A lesson only leaves this list once the instructor sets its outcome.
+ * Shows lessons/bookings that have ended but have NOT been marked as completed
+ * (no completionOutcome and status not completed). Latest first.
+ * Accepts a normalized `items` list (lessons + non-test bookings) where each
+ * item has: { id, date, startTime, endTime, pupilId, status, completionOutcome }.
+ * An item leaves this list once the instructor sets its outcome.
  */
-export default function PendingAdminCard({ lessons = [], pupils = [], isLoading, onMarkLesson }) {
+export default function PendingAdminCard({ items = [], pupils = [], isLoading, onMarkLesson }) {
   const now = moment();
   const cutoff = moment('2026-10-01', 'YYYY-MM-DD').startOf('day');
 
-  const pending = lessons
-    .filter(l => {
-      if (!l.date || !l.endTime) return false;
-      const end = moment(`${l.date} ${l.endTime}`, 'YYYY-MM-DD HH:mm');
+  const pending = items
+    .filter(item => {
+      if (!item.date || !item.endTime) return false;
+      const end = moment(`${item.date} ${item.endTime}`, 'YYYY-MM-DD HH:mm');
       // Only consider lessons from 1 Oct 2026 onwards
       if (end.isBefore(cutoff)) return false;
-      // Ended and still awaiting an outcome
+      // Ended and not yet marked complete (no outcome, status not completed)
       const ended = end.isBefore(now);
-      const awaiting = l.status === 'Scheduled' && !l.completionOutcome;
-      return ended && awaiting;
+      const isCompleted = item.status === 'completed' || !!item.completionOutcome;
+      return ended && !isCompleted;
     })
     .sort((a, b) => {
       const aEnd = moment(`${a.date} ${a.endTime}`, 'YYYY-MM-DD HH:mm');
@@ -57,12 +59,12 @@ export default function PendingAdminCard({ lessons = [], pupils = [], isLoading,
           </div>
         ) : (
           <div className="space-y-2 max-h-44 overflow-y-auto scrollbar-thin pr-1">
-            {pending.map(lesson => {
-              const start = moment(`${lesson.date} ${lesson.startTime}`, 'YYYY-MM-DD HH:mm');
-              const end = moment(`${lesson.date} ${lesson.endTime}`, 'YYYY-MM-DD HH:mm');
+            {pending.map(item => {
+              const start = moment(`${item.date} ${item.startTime}`, 'YYYY-MM-DD HH:mm');
+              const end = moment(`${item.date} ${item.endTime}`, 'YYYY-MM-DD HH:mm');
               return (
                 <div
-                  key={lesson.id}
+                  key={item.id}
                   className="bg-white/80 rounded-lg p-3 border border-rose-100"
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -70,7 +72,7 @@ export default function PendingAdminCard({ lessons = [], pupils = [], isLoading,
                       <Clock className="w-4 h-4 text-rose-600 shrink-0" />
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-slate-800 truncate">
-                          {pupilName(lesson.pupilId)}
+                          {pupilName(item.pupilId)}
                         </p>
                         <p className="text-xs text-slate-500 mt-0.5">
                           {start.format('ddd D MMM')} · {start.format('HH:mm')}–{end.format('HH:mm')}
@@ -79,7 +81,7 @@ export default function PendingAdminCard({ lessons = [], pupils = [], isLoading,
                     </div>
                     <Button
                       size="sm"
-                      onClick={() => onMarkLesson(lesson.id)}
+                      onClick={() => onMarkLesson(item.id)}
                       className="bg-rose-600 hover:bg-rose-700 text-white shrink-0"
                     >
                       Complete
