@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ClipboardList, Loader2, CheckCircle2, Clock } from 'lucide-react';
+import { ClipboardList, Loader2, Clock } from 'lucide-react';
 import moment from 'moment';
 
 /**
@@ -33,6 +33,8 @@ export default function PendingAdminCard({ lessons = [], pupils = [], isLoading,
     return p ? `${p.firstName} ${p.lastName}` : 'Unknown Pupil';
   };
 
+  if (!isLoading && pending.length === 0) return null;
+
   return (
     <Card className="bg-gradient-to-br from-rose-50 to-orange-100 border border-rose-200 shadow-sm overflow-hidden">
       <CardContent className="p-6">
@@ -49,11 +51,6 @@ export default function PendingAdminCard({ lessons = [], pupils = [], isLoading,
         {isLoading ? (
           <div className="flex items-center justify-center py-6">
             <Loader2 className="w-6 h-6 animate-spin text-rose-600" />
-          </div>
-        ) : pending.length === 0 ? (
-          <div className="text-center py-5">
-            <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-rose-300" />
-            <p className="text-sm text-slate-500">All lessons are up to date.</p>
           </div>
         ) : (
           <div className="space-y-2 max-h-44 overflow-y-auto scrollbar-thin pr-1">
