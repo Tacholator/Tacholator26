@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles, Plus, ClockIcon, UserCheck, HelpCircle, Phone } from 'lucide-react';
+import { Loader2, Calendar, Clock, Bell, Flag, PlusCircle, Sparkles, Plus, ClockIcon, UserCheck, HelpCircle, Phone } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
@@ -27,7 +27,7 @@ const warmPalette = {
   card_todays_schedule: 'bg-gradient-to-br from-green-100 to-emerald-100',
   card_upcoming_tests: 'bg-gradient-to-br from-orange-100 to-amber-100',
   card_notifications: 'bg-gradient-to-br from-amber-100 to-yellow-100',
-  card_pupil_activities: 'bg-gradient-to-br from-indigo-100 to-purple-100'
+
 };
 
 export default function InstructorDashboard() {
@@ -207,52 +207,6 @@ export default function InstructorDashboard() {
       return await base44.entities.Notification.filter({ userId: user.id }, '-created_date', 20);
     },
     enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
-  });
-
-  const { data: pupilActivities = [] } = useQuery({
-    queryKey: ['pupilActivities', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      // Run all 3 queries in parallel
-      const [recentHomework, recentMcqAttempts, recentDiaries] = await Promise.all([
-        base44.entities.HomeworkItem.filter({ instructorId: user.id, status: 'Completed' }, '-updated_date', 10),
-        base44.entities.McqAttempt.filter({ instructorId: user.id }, '-submittedAt', 10),
-        base44.entities.DiaryEntry.filter({ instructorId: user.id }, '-created_date', 10)
-      ]);
-      const activities = [];
-      recentHomework.forEach(hw => {
-        const pupil = pupils.find(p => p.id === hw.pupilId);
-        if (pupil) activities.push({
-          type: 'homework',
-          pupilName: `${pupil.firstName} ${pupil.lastName}`,
-          message: `Completed homework: ${hw.title}`,
-          timestamp: hw.updated_date,
-          icon: CheckCircle
-        });
-      });
-      recentMcqAttempts.forEach(attempt => {
-        const pupil = pupils.find(p => p.id === attempt.pupilId);
-        if (pupil) activities.push({
-          type: 'mcq',
-          pupilName: `${pupil.firstName} ${pupil.lastName}`,
-          message: `${attempt.passed ? 'Passed' : 'Attempted'} MCQ: ${attempt.topicId.replace(/_/g, ' ')} (${attempt.score}/${attempt.totalQuestions})`,
-          timestamp: attempt.submittedAt,
-          icon: MessageCircle
-        });
-      });
-      recentDiaries.forEach(diary => {
-        const pupil = pupils.find(p => p.id === diary.pupilId);
-        if (pupil) activities.push({
-          type: 'diary',
-          pupilName: `${pupil.firstName} ${pupil.lastName}`,
-          message: `New lesson diary entry`,
-          timestamp: diary.created_date,
-          icon: Calendar
-        });
-      });
-      return activities.sort((a, b) => moment(b.timestamp).diff(moment(a.timestamp))).slice(0, 10);
-    },
-    enabled: !!user?.id && pupils.length > 0 && !isPupilCheckLoading && !pupilCheck
   });
 
   const subscriptionEnabled = !!user?.id && !isPupilCheckLoading && !pupilCheck;
@@ -684,46 +638,6 @@ export default function InstructorDashboard() {
               </CardContent>
             </Card>
           )}
-
-          {/* Pupil Activities */}
-          <div>
-            {pupilActivities.length > 0 && (
-              <Card className={`${warmPalette.card_pupil_activities} border-0 shadow-sm overflow-hidden`}>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-indigo-600" />
-                    Pupil Activities
-                  </h3>
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {pupilActivities.map((activity, index) => {
-                      const Icon = activity.icon;
-                      return (
-                        <div
-                          key={`${activity.type}-${index}`}
-                          className="bg-white/70 rounded-lg p-3"
-                        >
-                          <div className="flex items-start gap-2">
-                            <Icon className="w-4 h-4 text-indigo-600 mt-0.5 shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-slate-800 truncate">
-                                {activity.pupilName}
-                              </p>
-                              <p className="text-xs text-slate-600 mt-1 line-clamp-2 break-words">
-                                {activity.message}
-                              </p>
-                              <p className="text-xs text-slate-400 mt-1">
-                                {moment(activity.timestamp).fromNow()}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
 
         </div>
       </div>
