@@ -179,6 +179,12 @@ export default function InstructorDashboard() {
     enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
   });
 
+  const { data: calendarEvents = [] } = useQuery({
+    queryKey: ['calendarEvents', user?.id],
+    queryFn: () => base44.entities.CalendarEvent.filter({ instructorId: user.id }),
+    enabled: !!user?.id && !isPupilCheckLoading && !pupilCheck
+  });
+
   const { data: dailyQuiz } = useQuery({
     queryKey: ['todayDailyQuiz'],
     queryFn: async () => {
@@ -289,7 +295,16 @@ export default function InstructorDashboard() {
     return moment(b.startAtUtc).local().isSame(today, 'day');
   }).map(b => ({ ...b, type: 'booking' }));
 
-  const todaySchedule = [...todayLessons, ...todayBookings];
+  const todayPersonalEvents = calendarEvents.filter(e => {
+    if (!e.startAtUtc) return false;
+    return moment(e.startAtUtc).local().isSame(today, 'day');
+  }).map(e => ({
+    ...e,
+    type: 'personal',
+    durationHours: e.durationMinutes ? e.durationMinutes / 60 : moment(e.endAtUtc).diff(moment(e.startAtUtc), 'hours', true)
+  }));
+
+  const todaySchedule = [...todayLessons, ...todayBookings, ...todayPersonalEvents];
 
   const nextRelevantBooking = todaySchedule
     .filter(item => {
@@ -298,7 +313,7 @@ export default function InstructorDashboard() {
       const endTime = moment(item.endAtUtc).local();
       const isUpcoming = startTime.isAfter(now);
       const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
-      const validStatus = item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
+      const validStatus = item.type === 'personal' || item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
       return (isUpcoming || isOngoing) && validStatus;
     })
     .sort((a, b) => Math.abs(moment(a.startAtUtc).local().diff(now)) - Math.abs(moment(b.startAtUtc).local().diff(now)))[0];
@@ -306,7 +321,7 @@ export default function InstructorDashboard() {
   const upcomingTodayBookings = todaySchedule.filter(item => {
     if (!item.startAtUtc) return false;
     const startTime = moment(item.startAtUtc).local();
-    const validStatus = item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
+    const validStatus = item.type === 'personal' || item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
     return startTime.isAfter(now) && validStatus && item.id !== nextRelevantBooking?.id;
   }).sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()));
 
@@ -331,6 +346,12 @@ export default function InstructorDashboard() {
       no_show: 'bg-red-100 text-red-700'
     };
     return colors[status] || 'bg-slate-100 text-slate-700';
+  };
+
+  const getCategoryBadge = (item) => {
+    if (item?.type === 'personal') return { label: 'Personal', className: 'bg-yellow-100 text-yellow-800' };
+    if (item?.type === 'booking' && item?.isPracticalTest) return { label: 'Driving Test', className: 'bg-violet-100 text-violet-700' };
+    return { label: 'Lesson', className: 'bg-emerald-100 text-emerald-700' };
   };
 
   const upcomingTests = pupils.filter(p =>
@@ -446,7 +467,7 @@ export default function InstructorDashboard() {
               </div>
 
               <div className="bg-white/70 rounded-lg p-4 mb-4">
-                <p className="text-xs font-medium text-slate-500 mb-2">Next Lesson</p>
+                <p className="text-xs font-medium text-slate-500 mb-2">Next Event</p>
                 {nextRelevantBooking ? (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
@@ -454,11 +475,13 @@ export default function InstructorDashboard() {
                         {moment(nextRelevantBooking.startAtUtc).local().format('HH:mm')} – {moment(nextRelevantBooking.endAtUtc).local().format('HH:mm')}
                       </p>
                       <p className="text-slate-700 mt-1 truncate">
-                        {pupils.find(p => p.id === nextRelevantBooking.pupilId)?.firstName} {pupils.find(p => p.id === nextRelevantBooking.pupilId)?.lastName}
+                        {nextRelevantBooking.type === 'personal'
+                          ? nextRelevantBooking.title
+                          : `${pupils.find(p => p.id === nextRelevantBooking.pupilId)?.firstName || ''} ${pupils.find(p => p.id === nextRelevantBooking.pupilId)?.lastName || ''}`.trim()}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <Badge className={getStatusColor(nextRelevantBooking.status)}>
-                          {nextRelevantBooking.status}
+                        <Badge className={getCategoryBadge(nextRelevantBooking).className}>
+                          {getCategoryBadge(nextRelevantBooking).label}
                         </Badge>
                         <span className="text-sm text-slate-600">
                           {nextRelevantBooking.durationHours}h
@@ -468,11 +491,13 @@ export default function InstructorDashboard() {
                         <p className="text-sm text-slate-500 mt-1 truncate">{nextRelevantBooking.pickupLocation}</p>
                       )}
                       <div className="mt-3 flex flex-col sm:flex-row gap-2">
-                        <Link to={createPageUrl('PupilProfile') + `?id=${nextRelevantBooking.pupilId}`} className="w-full sm:flex-1">
-                          <Button size="sm" className="w-full bg-[#071739] hover:bg-[#0e2a5a] text-white">
-                            View Pupil Profile
-                          </Button>
-                        </Link>
+                        {nextRelevantBooking.type !== 'personal' && nextRelevantBooking.pupilId && (
+                          <Link to={createPageUrl('PupilProfile') + `?id=${nextRelevantBooking.pupilId}`} className="w-full sm:flex-1">
+                            <Button size="sm" className="w-full bg-[#071739] hover:bg-[#0e2a5a] text-white">
+                              View Pupil Profile
+                            </Button>
+                          </Link>
+                        )}
                         <Link to={createPageUrl('InstructorSchedule')} className="w-full sm:flex-1">
                           <Button size="sm" className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
                             View Schedule
