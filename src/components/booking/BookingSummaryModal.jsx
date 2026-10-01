@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Calendar, Clock, MapPin, FileText, Save, Sparkles, Gauge, CheckCircle } from 'lucide-react';
+import { Loader2, Calendar, Clock, MapPin, FileText, Save, Gauge, CheckCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
@@ -30,12 +30,9 @@ export default function BookingSummaryModal({
     mainTopic: '',
     whatWasCovered: '',
     progressNotes: '',
-    nextSteps: '',
-    instructorComments: '',
-    aiSummary: ''
+    nextSteps: ''
   });
   const [selectedTopics, setSelectedTopics] = useState([]);
-  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [startMileage, setStartMileage] = useState('');
   const [endMileage, setEndMileage] = useState('');
 
@@ -67,18 +64,14 @@ export default function BookingSummaryModal({
         mainTopic: existingDiaryEntry.mainTopic || '',
         whatWasCovered: existingDiaryEntry.objective || '',
         progressNotes: existingDiaryEntry.whatWentWell || '',
-        nextSteps: existingDiaryEntry.areasToImprove || '',
-        instructorComments: existingDiaryEntry.instructorComments || '',
-        aiSummary: existingDiaryEntry.aiSummary || ''
+        nextSteps: existingDiaryEntry.areasToImprove || ''
       });
     } else {
       setSummaryData({
         mainTopic: '',
         whatWasCovered: '',
         progressNotes: '',
-        nextSteps: '',
-        instructorComments: '',
-        aiSummary: ''
+        nextSteps: ''
       });
     }
   }, [existingDiaryEntry?.id, open]);
@@ -105,43 +98,6 @@ export default function BookingSummaryModal({
     }
   }, [existingTopicDurations, booking?.id, open]);
 
-  const handleGenerateAISummary = async () => {
-    setIsGeneratingSummary(true);
-    try {
-      const prompt = `Write a brief lesson summary directly to the pupil using second person (you/your). Maximum 120 words, 1 short paragraph.
-
-What was covered: ${summaryData.whatWasCovered || 'Not provided'}
-What went well: ${summaryData.progressNotes || 'Not provided'}
-Next steps: ${summaryData.nextSteps || 'Not provided'}
-Instructor notes: ${summaryData.instructorComments || 'Not provided'}
-
-Requirements:
-- Address the pupil directly using "you" and "your"
-- NEVER use "the student", "the pupil", "the learner", "student showed", "pupil demonstrated"
-- Keep it brief, clear, and supportive
-- Focus on: what you worked on, what you did well, and next steps
-- Maximum 120 words, one paragraph`;
-
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: prompt
-      });
-
-      setSummaryData({ ...summaryData, aiSummary: response });
-      toast({ 
-        title: 'AI summary generated', 
-        description: 'Review and edit as needed before saving' 
-      });
-    } catch (error) {
-      toast({ 
-        title: 'Failed to generate summary', 
-        description: error.message, 
-        variant: 'destructive' 
-      });
-    } finally {
-      setIsGeneratingSummary(false);
-    }
-  };
-
   const handleSaveDraft = async () => {
     if (!booking || !pupil) return;
 
@@ -157,10 +113,7 @@ Requirements:
         mainTopic: mainTopicId,
         objective: summaryData.whatWasCovered,
         whatWentWell: summaryData.progressNotes,
-        areasToImprove: summaryData.nextSteps,
-        instructorComments: summaryData.instructorComments,
-        aiSummary: summaryData.aiSummary,
-        aiSummaryGeneratedAt: summaryData.aiSummary ? new Date().toISOString() : null
+        areasToImprove: summaryData.nextSteps
       };
 
       let diaryEntryId;
@@ -257,10 +210,7 @@ Requirements:
         mainTopic: mainTopicId,
         objective: summaryData.whatWasCovered,
         whatWentWell: summaryData.progressNotes,
-        areasToImprove: summaryData.nextSteps,
-        instructorComments: summaryData.instructorComments,
-        aiSummary: summaryData.aiSummary,
-        aiSummaryGeneratedAt: summaryData.aiSummary ? new Date().toISOString() : null
+        areasToImprove: summaryData.nextSteps
       };
 
       // Save diary entry
@@ -525,64 +475,7 @@ Requirements:
               />
             </div>
 
-            <div>
-              <Label htmlFor="instructorComments">Instructor Comments</Label>
-              <Textarea
-                id="instructorComments"
-                value={summaryData.instructorComments}
-                onChange={(e) => setSummaryData({ ...summaryData, instructorComments: e.target.value })}
-                placeholder="Additional notes or observations..."
-                rows={2}
-                className="mt-2"
-                disabled={readOnly}
-              />
-            </div>
           </div>
-
-          {/* AI Summary Section */}
-          <Card className="border-purple-200 bg-purple-50">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-purple-600" />
-                  AI-Generated Summary
-                </CardTitle>
-                {!readOnly && (
-                  <Button
-                    onClick={handleGenerateAISummary}
-                    disabled={isGeneratingSummary}
-                    size="sm"
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    {isGeneratingSummary ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        Generate Summary
-                      </>
-                    )}
-                  </Button>
-                )}
-              </div>
-            </CardHeader>
-            {summaryData.aiSummary && (
-              <CardContent>
-                <p className="text-xs text-purple-600 mb-2">This summary is written directly to the pupil and kept brief.</p>
-                <Textarea
-                  value={summaryData.aiSummary}
-                  onChange={(e) => setSummaryData({ ...summaryData, aiSummary: e.target.value })}
-                  placeholder="Click 'Generate Summary' to create an AI-powered lesson summary based on your notes..."
-                  rows={4}
-                  className="bg-white"
-                  disabled={readOnly}
-                />
-              </CardContent>
-            )}
-          </Card>
         </div>
 
         <DialogFooter>
