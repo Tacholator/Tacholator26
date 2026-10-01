@@ -422,24 +422,6 @@ export default function BookingSummaryModal({
                 Cancel
               </Button>
               <Button
-                variant="outline"
-                onClick={handleSaveDraft}
-                disabled={isSavingDraft || isSaving}
-                className="border-slate-400 text-slate-700 hover:bg-slate-100"
-              >
-                {isSavingDraft ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Draft
-                  </>
-                )}
-              </Button>
-              <Button
                 onClick={handleSave}
                 disabled={isSaving || isSavingDraft}
                 className="bg-emerald-600 hover:bg-emerald-700"
