@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles, Plus, ClockIcon, UserCheck, HelpCircle } from 'lucide-react';
+import { Loader2, Calendar, Clock, Bell, Flag, MessageCircle, CheckCircle, Activity, PlusCircle, Sparkles, Plus, ClockIcon, UserCheck, HelpCircle, Phone } from 'lucide-react';
 import moment from 'moment';
 import LessonOutcomeModal from '@/components/lessons/LessonOutcomeModal';
 import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModal';
@@ -497,6 +497,14 @@ export default function InstructorDashboard() {
                               View Pupil Profile
                             </Button>
                           </Link>
+                        )}
+                        {nextPupil?.phone && (
+                          <a href={`tel:${nextPupil.phone.replace(/\s+/g, '')}`} className="w-full sm:flex-1">
+                            <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                              <Phone className="w-4 h-4 mr-2" />
+                              Call
+                            </Button>
+                          </a>
                         )}
                         <Link to={createPageUrl('InstructorSchedule')} className="w-full sm:flex-1">
                           <Button size="sm" className="w-full bg-[#F7B602] hover:bg-[#d99f02] text-[#071739]">
