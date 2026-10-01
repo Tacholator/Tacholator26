@@ -550,16 +550,16 @@ export default function InstructorDashboard() {
 
           {/* 3a. Revenue Cards (Today / Week / Month / Negative Balances) */}
           <div className="flex gap-3 overflow-x-auto scrollbar-thin pb-2 -mx-1 px-1 snap-x">
-            <div className="shrink-0 snap-start w-[76vw] sm:w-[22rem]">
+            <div className="shrink-0 snap-start w-[76vw] sm:w-[20rem] lg:w-[22rem]">
               <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="today" />
             </div>
-            <div className="shrink-0 snap-start w-[76vw] sm:w-[22rem]">
+            <div className="shrink-0 snap-start w-[76vw] sm:w-[20rem] lg:w-[22rem]">
               <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="week" />
             </div>
-            <div className="shrink-0 snap-start w-[76vw] sm:w-[22rem]">
+            <div className="shrink-0 snap-start w-[76vw] sm:w-[20rem] lg:w-[22rem]">
               <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="month" />
             </div>
-            <div className="shrink-0 snap-start w-[76vw] sm:w-[22rem]">
+            <div className="shrink-0 snap-start w-[76vw] sm:w-[20rem] lg:w-[22rem]">
               <NegativeBalancesCard pupils={pupils} isLoading={isPupilCheckLoading} />
             </div>
           </div>
