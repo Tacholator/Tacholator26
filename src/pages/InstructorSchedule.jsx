@@ -57,6 +57,12 @@ export default function InstructorSchedule() {
     enabled: !!user?.email,
   });
 
+  const { data: calendarEvents = [] } = useQuery({
+    queryKey: ['scheduleCalendarEvents', user?.id],
+    queryFn: () => base44.entities.CalendarEvent.filter({ instructorId: user.id }),
+    enabled: !!user?.id,
+  });
+
   const bookings = useMemo(
     () => allBookings.filter(b => !b.isDeleted),
     [allBookings]
@@ -87,22 +93,26 @@ export default function InstructorSchedule() {
     return { rangeStart: start, rangeEnd: end, periodLabel: label };
   }, [viewMode, currentDate]);
 
-  // Group bookings by date
+  // Group bookings and personal events by date
   const groupedBookings = useMemo(() => {
-    const filtered = bookings.filter(b => {
-      if (!b.startAtUtc) return false;
-      const bookingDate = moment(b.startAtUtc);
-      if (!bookingDate.isValid()) return false;
-      return bookingDate.isBetween(rangeStart, rangeEnd, null, '[]');
+    const lessonItems = bookings.map(b => ({ kind: 'lesson', startAtUtc: b.startAtUtc, endAtUtc: b.endAtUtc, raw: b }));
+    const eventItems = calendarEvents.map(e => ({ kind: 'event', startAtUtc: e.startAtUtc, endAtUtc: e.endAtUtc, raw: e }));
+    const all = [...lessonItems, ...eventItems];
+
+    const filtered = all.filter(item => {
+      if (!item.startAtUtc) return false;
+      const d = moment(item.startAtUtc);
+      if (!d.isValid()) return false;
+      return d.isBetween(rangeStart, rangeEnd, null, '[]');
     });
 
     const sorted = filtered.sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
 
     const groups = {};
-    sorted.forEach(b => {
-      const dateKey = moment(b.startAtUtc).format('YYYY-MM-DD');
+    sorted.forEach(item => {
+      const dateKey = moment(item.startAtUtc).format('YYYY-MM-DD');
       if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(b);
+      groups[dateKey].push(item);
     });
 
     return Object.entries(groups).map(([dateKey, items]) => ({
@@ -110,7 +120,7 @@ export default function InstructorSchedule() {
       dateLabel: moment(dateKey).format('dddd, D MMMM'),
       items,
     }));
-  }, [bookings, rangeStart, rangeEnd]);
+  }, [bookings, calendarEvents, rangeStart, rangeEnd]);
 
   const handlePrev = () => {
     if (viewMode === 'day') setCurrentDate(moment(currentDate).subtract(1, 'day'));
@@ -218,14 +228,53 @@ export default function InstructorSchedule() {
                     <Badge className="bg-[#F7B602] text-[#071739] text-xs">Today</Badge>
                   )}
                   <span className="text-xs text-slate-400">
-                    {group.items.length} lesson{group.items.length !== 1 ? 's' : ''}
+                    {group.items.length} item{group.items.length !== 1 ? 's' : ''}
                   </span>
                   <div className="flex-1 border-t border-slate-100" />
                 </div>
 
-                {/* Booking items */}
+                {/* Schedule items */}
                 <div className="space-y-2">
-                  {group.items.map(booking => {
+                  {group.items.map(item => {
+                    if (item.kind === 'event') {
+                      const ev = item.raw;
+                      const startMoment = moment(ev.startAtUtc).local();
+                      const endMoment = moment(ev.endAtUtc).local();
+                      const color = ev.color || '#6366f1';
+                      return (
+                        <Card
+                          key={`event-${ev.id}`}
+                          className="transition-colors"
+                          style={{ borderLeft: `4px solid ${color}` }}
+                        >
+                          <CardContent className="flex items-center gap-4 p-3">
+                            <div className="flex flex-col items-center justify-center min-w-[60px]">
+                              <span className="text-lg font-bold text-[#071739]">
+                                {startMoment.format('HH:mm')}
+                              </span>
+                              <span className="text-xs text-slate-400">
+                                {endMoment.format('HH:mm')}
+                              </span>
+                            </div>
+                            <div className="w-px h-10 bg-slate-100" />
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm font-medium text-[#071739] truncate block">
+                                {ev.title || 'Personal event'}
+                              </span>
+                              <div className="flex items-center gap-1 mt-1">
+                                <Clock className="w-3 h-3 text-slate-400" />
+                                <span className="text-xs text-slate-500">
+                                  {ev.durationMinutes ? `${(ev.durationMinutes / 60).toFixed(1)}h` : ''}
+                                </span>
+                              </div>
+                            </div>
+                            <Badge className="shrink-0 text-xs bg-indigo-100 text-indigo-700">Event</Badge>
+                          </CardContent>
+                        </Card>
+                      );
+                    }
+
+                    const booking = item.raw;
                     const pupil = pupilMap[booking.pupilId];
                     const startMoment = moment(booking.startAtUtc).local();
                     const endMoment = moment(booking.endAtUtc).local();
@@ -233,7 +282,7 @@ export default function InstructorSchedule() {
 
                     return (
                       <Card
-                        key={booking.id}
+                        key={`lesson-${booking.id}`}
                         className="cursor-pointer hover:border-[#F7B602] transition-colors"
                         onClick={() => openBookingDetails(booking)}
                       >
