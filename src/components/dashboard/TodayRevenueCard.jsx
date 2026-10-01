@@ -14,6 +14,33 @@ const RANGE_LABEL = {
   month: "This Month's Revenue"
 };
 
+const RANGE_THEME = {
+  today: {
+    card: 'bg-gradient-to-br from-emerald-100 to-teal-100',
+    icon: 'text-emerald-600',
+    total: 'text-emerald-700',
+    empty: 'text-emerald-300',
+    btn: 'border-emerald-300 text-emerald-800 hover:bg-emerald-50',
+    accent: 'text-emerald-600'
+  },
+  week: {
+    card: 'bg-gradient-to-br from-blue-100 to-cyan-100',
+    icon: 'text-blue-600',
+    total: 'text-blue-700',
+    empty: 'text-blue-300',
+    btn: 'border-blue-300 text-blue-800 hover:bg-blue-50',
+    accent: 'text-blue-600'
+  },
+  month: {
+    card: 'bg-gradient-to-br from-violet-100 to-purple-100',
+    icon: 'text-violet-600',
+    total: 'text-violet-700',
+    empty: 'text-violet-300',
+    btn: 'border-violet-300 text-violet-800 hover:bg-violet-50',
+    accent: 'text-violet-600'
+  }
+};
+
 export default function TodayRevenueCard({ userId, disabled, range = 'today' }) {
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ['rangeInvoices', userId, range],
@@ -49,27 +76,28 @@ export default function TodayRevenueCard({ userId, disabled, range = 'today' }) 
   const bacsTotal = bacsPayments.reduce((s, i) => s + (i.amount || 0), 0);
 
   const fmt = (v) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(v || 0);
+  const theme = RANGE_THEME[range] || RANGE_THEME.today;
 
   return (
-    <Card className="bg-gradient-to-br from-emerald-100 to-teal-100 border-0 shadow-sm overflow-hidden h-full">
+    <Card className={`${theme.card} border-0 shadow-sm overflow-hidden h-full`}>
       <CardContent className="p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <h3 className="text-base font-semibold text-slate-800 flex items-center gap-2 whitespace-nowrap">
-            <Wallet className="w-5 h-5 text-emerald-600" />
+            <Wallet className={`w-5 h-5 ${theme.icon}`} />
             {RANGE_LABEL[range]}
           </h3>
           {invoices.length > 0 && (
-            <span className="text-xl font-bold text-emerald-700">{fmt(total)}</span>
+            <span className={`text-xl font-bold ${theme.total}`}>{fmt(total)}</span>
           )}
         </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-6">
-            <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
+            <Loader2 className={`w-6 h-6 animate-spin ${theme.icon}`} />
           </div>
         ) : invoices.length === 0 ? (
           <div className="text-center py-5">
-            <Wallet className="w-8 h-8 mx-auto mb-2 text-emerald-300" />
+            <Wallet className={`w-8 h-8 mx-auto mb-2 ${theme.empty}`} />
             <p className="text-sm text-slate-500">No payments recorded.</p>
           </div>
         ) : (
@@ -109,7 +137,7 @@ export default function TodayRevenueCard({ userId, disabled, range = 'today' }) 
 
         {invoices.length > 0 && (
           <Link to={createPageUrl('Invoices')} className="block mt-3">
-            <Button size="sm" variant="outline" className="w-full border-emerald-300 text-emerald-800 hover:bg-emerald-50">
+            <Button size="sm" variant="outline" className={`w-full ${theme.btn}`}>
               View Invoices
             </Button>
           </Link>
