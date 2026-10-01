@@ -274,14 +274,14 @@ export default function InstructorDashboard() {
     })
     .sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()))[0];
 
-  const ongoingEvent = todaySchedule.filter(item => {
+  const ongoingEvents = todaySchedule.filter(item => {
     if (!item.startAtUtc || !item.endAtUtc) return false;
     const startTime = moment(item.startAtUtc).local();
     const endTime = moment(item.endAtUtc).local();
     const isOngoing = startTime.isSameOrBefore(now) && endTime.isAfter(now);
     const validStatus = item.type === 'personal' || item.status === 'Scheduled' || ['pending', 'confirmed', 'in_progress'].includes(item.status);
     return isOngoing && validStatus;
-  }).sort((a, b) => moment(a.endAtUtc).local().diff(moment(b.endAtUtc).local()))[0];
+  }).sort((a, b) => moment(a.endAtUtc).local().diff(moment(b.endAtUtc).local()));
 
   const isLessonItem = (item) => !!item && (item.type === 'lesson' || (item.type === 'booking' && !item.isPracticalTest));
 
@@ -361,7 +361,6 @@ export default function InstructorDashboard() {
   const pendingBookingsCount = bookings.filter(b => b.status === 'reserved_pending_instructor').length;
 
   const nextPupil = nextRelevantBooking ? pupils.find(p => p.id === nextRelevantBooking.pupilId) : null;
-  const ongoingPupil = ongoingEvent ? pupils.find(p => p.id === ongoingEvent.pupilId) : null;
 
   const getTimeOfDay = () => {
     const hour = moment().hour();
@@ -542,36 +541,45 @@ export default function InstructorDashboard() {
                 )}
               </div>
 
-              {ongoingEvent && (
-                <div className="bg-emerald-50 border-2 border-[#F7B602] rounded-lg p-4 mb-4 relative">
-                  {isLessonItem(ongoingEvent) && ongoingPupil?.phone && (
-                    <a href={`tel:${ongoingPupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-3 right-3">
-                      <span className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
-                        <Phone className="w-5 h-5" />
-                      </span>
-                    </a>
-                  )}
-                  <p className="text-xs font-medium text-emerald-600 mb-2 flex items-center gap-1.5">
+              {ongoingEvents.length > 0 && (
+                <div className="bg-emerald-50 border-2 border-[#F7B602] rounded-lg p-4 mb-4">
+                  <p className="text-xs font-medium text-emerald-600 mb-3 flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     Ongoing Now
                   </p>
-                  <p className="text-lg font-semibold text-slate-800">
-                    {moment(ongoingEvent.startAtUtc).local().format('HH:mm')} – {moment(ongoingEvent.endAtUtc).local().format('HH:mm')}
-                  </p>
-                  <p className="text-slate-700 mt-1 truncate">
-                    {ongoingEvent.type === 'personal'
-                      ? ongoingEvent.title
-                      : `${ongoingPupil?.firstName || ''} ${ongoingPupil?.lastName || ''}`.trim()}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge className={getCategoryBadge(ongoingEvent).className}>
-                      {getCategoryBadge(ongoingEvent).label}
-                    </Badge>
-                    <span className="text-sm text-slate-600">{ongoingEvent.durationHours}h</span>
+                  <div className="flex gap-3 overflow-x-auto scrollbar-thin pb-2 -mx-1 px-1 snap-x">
+                    {ongoingEvents.map(evt => {
+                      const evtPupil = pupils.find(p => p.id === evt.pupilId);
+                      return (
+                        <div key={evt.id} className="shrink-0 snap-start w-[76vw] sm:w-[20rem] lg:w-[22rem] bg-white/70 rounded-lg p-3 relative border border-emerald-200">
+                          {isLessonItem(evt) && evtPupil?.phone && (
+                            <a href={`tel:${evtPupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-3 right-3">
+                              <span className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
+                                <Phone className="w-5 h-5" />
+                              </span>
+                            </a>
+                          )}
+                          <p className="text-lg font-semibold text-slate-800">
+                            {moment(evt.startAtUtc).local().format('HH:mm')} – {moment(evt.endAtUtc).local().format('HH:mm')}
+                          </p>
+                          <p className="text-slate-700 mt-1 truncate">
+                            {evt.type === 'personal'
+                              ? evt.title
+                              : `${evtPupil?.firstName || ''} ${evtPupil?.lastName || ''}`.trim()}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge className={getCategoryBadge(evt).className}>
+                              {getCategoryBadge(evt).label}
+                            </Badge>
+                            <span className="text-sm text-slate-600">{evt.durationHours}h</span>
+                          </div>
+                          {evt.pickupLocation && (
+                            <p className="text-sm text-slate-500 mt-1 truncate">{evt.pickupLocation}</p>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-                  {ongoingEvent.pickupLocation && (
-                    <p className="text-sm text-slate-500 mt-1 truncate">{ongoingEvent.pickupLocation}</p>
-                  )}
                 </div>
               )}
 
