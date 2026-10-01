@@ -16,6 +16,7 @@ import TodayRevenueCard from '@/components/dashboard/TodayRevenueCard';
 import NegativeBalancesCard from '@/components/dashboard/NegativeBalancesCard';
 import PendingAdminCard from '@/components/dashboard/PendingAdminCard';
 import TopTenReasonsBento from '@/components/dashboard/TopTenReasonsBento';
+import ShowMeTellMeBento from '@/components/dashboard/ShowMeTellMeBento';
 import OnboardingPopup from '@/components/onboarding/OnboardingPopup';
 import InstructorAppTour from '@/components/onboarding/InstructorAppTour';
 
@@ -576,6 +577,9 @@ export default function InstructorDashboard() {
 
           {/* Top 10 Reasons for Test Fails */}
           <TopTenReasonsBento />
+
+          {/* Show Me, Tell Me Questions */}
+          <ShowMeTellMeBento />
 
           {/* 3b. DVLA Verification Card */}
           <DvlaVerificationCard pupils={pupils} />
