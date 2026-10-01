@@ -16,12 +16,12 @@ const RANGE_LABEL = {
 
 const RANGE_THEME = {
   today: {
-    card: 'bg-gradient-to-br from-emerald-100 to-teal-100',
-    icon: 'text-emerald-600',
-    total: 'text-emerald-700',
-    empty: 'text-emerald-300',
-    btn: 'border-emerald-300 text-emerald-800 hover:bg-emerald-50',
-    accent: 'text-emerald-600'
+    card: 'bg-gradient-to-br from-amber-100 to-orange-100',
+    icon: 'text-amber-600',
+    total: 'text-amber-700',
+    empty: 'text-amber-300',
+    btn: 'border-amber-300 text-amber-800 hover:bg-amber-50',
+    accent: 'text-amber-600'
   },
   week: {
     card: 'bg-gradient-to-br from-blue-100 to-cyan-100',
