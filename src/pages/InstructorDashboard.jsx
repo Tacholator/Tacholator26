@@ -13,6 +13,7 @@ import PupilLessonSummaryModal from '@/components/lessons/PupilLessonSummaryModa
 import NewLessonModal from '@/components/booking/NewLessonModal';
 import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
 import TodayRevenueCard from '@/components/dashboard/TodayRevenueCard';
+import NegativeBalancesCard from '@/components/dashboard/NegativeBalancesCard';
 import OnboardingPopup from '@/components/onboarding/OnboardingPopup';
 import InstructorAppTour from '@/components/onboarding/InstructorAppTour';
 
@@ -547,11 +548,12 @@ export default function InstructorDashboard() {
             </CardContent>
           </Card>
 
-          {/* 3a. Revenue Cards (Today / Week / Month) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* 3a. Revenue Cards (Today / Week / Month / Negative Balances) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="today" />
             <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="week" />
             <TodayRevenueCard userId={user?.id} disabled={isPupilCheckLoading || !!pupilCheck} range="month" />
+            <NegativeBalancesCard pupils={pupils} isLoading={isPupilCheckLoading} />
           </div>
 
           {/* 3b. DVLA Verification Card */}
