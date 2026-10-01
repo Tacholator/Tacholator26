@@ -465,7 +465,7 @@ export default function InstructorDashboard() {
               </div>
 
               <div className="bg-emerald-50 rounded-lg p-4 mb-4 relative border-2 border-[#F7B602]">
-                {nextRelevantBooking && isLessonItem(nextRelevantBooking) && nextPupil?.phone && (
+                {nextRelevantBooking && nextRelevantBooking.type !== 'personal' && nextPupil?.phone && (
                   <a href={`tel:${nextPupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-3 right-3">
                     <span className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
                       <Phone className="w-5 h-5" />
