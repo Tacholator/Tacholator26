@@ -522,7 +522,7 @@ export default function InstructorDashboard() {
                         {ongoingEvents.length > 0 ? (
                           <div className="space-y-2">
                             {ongoingEvents.map(event => (
-                              <div key={event.id} className="bg-white rounded-lg p-3 border border-emerald-100">
+                              <div key={event.id} className="bg-lime-100 rounded-lg p-3 border border-lime-300">
                                 {renderEventContent(event, { showCall: false })}
                               </div>
                             ))}
@@ -543,7 +543,7 @@ export default function InstructorDashboard() {
                         {nextEvents.length > 0 ? (
                           <div className="space-y-2">
                             {nextEvents.map(event => (
-                              <div key={event.id} className="bg-white rounded-lg p-3 border border-slate-100">
+                              <div key={event.id} className="bg-lime-100 rounded-lg p-3 border border-lime-300">
                                 {renderEventContent(event, { showCall: true })}
                               </div>
                             ))}
