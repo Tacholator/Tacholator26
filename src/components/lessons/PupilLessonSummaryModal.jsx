@@ -5,9 +5,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Sparkles, TrendingUp, AlertCircle, MessageSquare, Target, Loader2 } from 'lucide-react';
+import { Sparkles, TrendingUp, AlertCircle, Target } from 'lucide-react';
 import moment from 'moment';
 
 export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiaryEntry, isGenerating, showNextSteps = true }) {
@@ -34,13 +33,6 @@ export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiar
       color: 'text-amber-600',
       bgColor: 'bg-amber-50',
       content: lastDiaryEntry?.areasToImprove || 'No improvement areas noted'
-    },
-    {
-      icon: MessageSquare,
-      title: 'Instructor Comments',
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-      content: lastDiaryEntry?.instructorComments || 'No additional comments'
     }
   ];
 
@@ -127,23 +119,6 @@ export default function PupilLessonSummaryModal({ open, onClose, pupil, lastDiar
               );
             })}
           </div>
-
-          {/* AI-Generated Summary */}
-          {lastDiaryEntry?.aiSummary && (
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                <h3 className="font-semibold text-slate-800">AI Summary</h3>
-                <Badge className="ml-auto bg-purple-600 text-white text-xs">Generated</Badge>
-              </div>
-              <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
-                {lastDiaryEntry.aiSummary}
-              </p>
-              <p className="text-xs text-slate-500 mt-2">
-                Generated {moment(lastDiaryEntry.aiSummaryGeneratedAt).fromNow()}
-              </p>
-            </div>
-          )}
 
           {showNextSteps && (
             <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border border-teal-200">
