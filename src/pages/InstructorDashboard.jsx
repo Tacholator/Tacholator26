@@ -392,11 +392,18 @@ export default function InstructorDashboard() {
     setSummaryModalOpen(true);
   };
 
-  const renderEventContent = (event) => {
+  const renderEventContent = (event, { showCall = false } = {}) => {
     const pupil = event.type === 'personal' ? null : pupils.find(p => p.id === event.pupilId);
     return (
-      <div>
-        <p className="text-lg font-semibold text-slate-800">
+      <div className="relative">
+        {showCall && pupil?.phone && (
+          <a href={`tel:${pupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-0 right-0">
+            <span className="w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
+              <Phone className="w-4 h-4" />
+            </span>
+          </a>
+        )}
+        <p className="text-lg font-semibold text-slate-800 pr-10 sm:pr-0">
           {moment(event.startAtUtc).local().format('HH:mm')} – {moment(event.endAtUtc).local().format('HH:mm')}
         </p>
         <p className="text-slate-700 mt-1 truncate">
@@ -423,8 +430,8 @@ export default function InstructorDashboard() {
               </Button>
             </Link>
           )}
-          {pupil?.phone && (
-            <a href={`tel:${pupil.phone.replace(/\s+/g, '')}`} className="w-full sm:flex-1">
+          {showCall && pupil?.phone && (
+            <a href={`tel:${pupil.phone.replace(/\s+/g, '')}`} className="hidden sm:block sm:flex-1">
               <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
                 <Phone className="w-4 h-4 mr-2" />
                 Call
@@ -516,7 +523,7 @@ export default function InstructorDashboard() {
                           <div className="space-y-2">
                             {ongoingEvents.map(event => (
                               <div key={event.id} className="bg-white rounded-lg p-3 border border-emerald-100">
-                                {renderEventContent(event)}
+                                {renderEventContent(event, { showCall: false })}
                               </div>
                             ))}
                           </div>
@@ -537,7 +544,7 @@ export default function InstructorDashboard() {
                           <div className="space-y-2">
                             {nextEvents.map(event => (
                               <div key={event.id} className="bg-white rounded-lg p-3 border border-slate-100">
-                                {renderEventContent(event)}
+                                {renderEventContent(event, { showCall: true })}
                               </div>
                             ))}
                           </div>
