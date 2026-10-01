@@ -321,6 +321,8 @@ export default function InstructorDashboard() {
 
   const unreadNotifications = notifications.filter(n => !n.readAt);
 
+  const pendingBookingsCount = bookings.filter(b => b.status === 'reserved_pending_instructor').length;
+
   const nextPupil = nextRelevantBooking ? pupils.find(p => p.id === nextRelevantBooking.pupilId) : null;
   const { data: lastDiaryEntry } = useQuery({
     queryKey: ['lastDiaryEntry', nextPupil?.id],
@@ -413,6 +415,16 @@ export default function InstructorDashboard() {
                 </Link>
               </CardContent>
             </Card>
+          )}
+
+          {/* Pending bookings pill */}
+          {pendingBookingsCount > 0 && (
+            <Link to={createPageUrl('PendingBookingRequests')} className="inline-flex items-center self-start">
+              <span className="inline-flex items-center gap-2 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold px-4 py-2 shadow-sm transition-colors">
+                <Clock className="w-4 h-4" />
+                {pendingBookingsCount} pending booking{pendingBookingsCount !== 1 ? 's' : ''}
+              </span>
+            </Link>
           )}
 
           {/* 3. Today's Schedule Card */}
