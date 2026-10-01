@@ -448,7 +448,7 @@ export default function InstructorDashboard() {
                 </h3>
               </div>
 
-              <div className="bg-emerald-100/80 rounded-lg p-4 mb-4 relative border-2 border-[#F7B602]">
+              <div className="bg-emerald-50 rounded-lg p-4 mb-4 relative border-2 border-[#F7B602]">
                 {nextRelevantBooking && isLessonItem(nextRelevantBooking) && nextPupil?.phone && (
                   <a href={`tel:${nextPupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-3 right-3">
                     <span className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
@@ -526,7 +526,7 @@ export default function InstructorDashboard() {
               </div>
 
               {ongoingEvent && (
-                <div className="bg-emerald-100/90 border-2 border-[#F7B602] rounded-lg p-4 mb-4 relative">
+                <div className="bg-emerald-50 border-2 border-[#F7B602] rounded-lg p-4 mb-4 relative">
                   {isLessonItem(ongoingEvent) && ongoingPupil?.phone && (
                     <a href={`tel:${ongoingPupil.phone.replace(/\s+/g, '')}`} className="sm:hidden absolute top-3 right-3">
                       <span className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm">
