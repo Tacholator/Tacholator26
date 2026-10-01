@@ -232,6 +232,11 @@ export default function Layout({ children, currentPageName }) {
                           )}
                         </button>
                         {isExpanded && item.children && (
+                           <>
+                           <div
+                             className="fixed inset-0 left-64 z-[150]"
+                             onClick={() => setExpandedMenus({})}
+                           />
                            <AnimatePresence>
                              <motion.div
                                initial={{ opacity: 0, x: -20 }}
@@ -265,10 +270,11 @@ export default function Layout({ children, currentPageName }) {
                                 })}
                               </div>
                             </motion.div>
-                          </AnimatePresence>
-                        )}
-                      </>
-                    ) : (
+                            </AnimatePresence>
+                            </>
+                            )}
+                            </>
+                            ) : (
                       <Link
                         to={createPageUrl(item.page)}
                         onClick={() => setExpandedMenus({})}
