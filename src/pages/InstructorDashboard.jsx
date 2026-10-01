@@ -283,13 +283,20 @@ export default function InstructorDashboard() {
     return validStatus;
   };
 
-  const ongoingEvent = todaySchedule
+  const ongoingEvents = todaySchedule
     .filter(item => isScheduleItemActive(item) && moment(item.startAtUtc).local().isSameOrBefore(now) && moment(item.endAtUtc).local().isAfter(now))
-    .sort((a, b) => moment(a.endAtUtc).local().diff(moment(b.endAtUtc).local()))[0];
+    .sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()));
 
-  const nextEvent = todaySchedule
-    .filter(item => isScheduleItemActive(item) && moment(item.startAtUtc).local().isAfter(now) && item.id !== ongoingEvent?.id)
-    .sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()))[0];
+  const upcomingActiveEvents = todaySchedule
+    .filter(item => isScheduleItemActive(item) && moment(item.startAtUtc).local().isAfter(now))
+    .sort((a, b) => moment(a.startAtUtc).local().diff(moment(b.startAtUtc).local()));
+
+  // Next events: the earliest upcoming event plus any other upcoming events that overlap it in time
+  const nextEvents = (() => {
+    if (upcomingActiveEvents.length === 0) return [];
+    const earliestEnd = moment(upcomingActiveEvents[0].endAtUtc).local();
+    return upcomingActiveEvents.filter(item => moment(item.startAtUtc).local().isBefore(earliestEnd));
+  })();
 
   const upcomingTodayBookings = todaySchedule.filter(item => {
     if (!item.startAtUtc) return false;
@@ -496,29 +503,45 @@ export default function InstructorDashboard() {
               </div>
 
               <div className="bg-white/70 rounded-lg p-4 mb-4">
-                {(ongoingEvent || nextEvent) ? (
+                {(ongoingEvents.length > 0 || nextEvents.length > 0) ? (
                   <>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-                      {/* Ongoing Event */}
-                      <div className={ongoingEvent ? '' : 'opacity-60'}>
+                    <div className="flex gap-4 overflow-x-auto scrollbar-thin pb-2 -mx-1 px-1 snap-x">
+                      {/* Ongoing Event(s) */}
+                      <div className="shrink-0 snap-start w-[80vw] sm:w-[20rem]">
                         <p className="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">
                           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                          Ongoing
+                          Ongoing{ongoingEvents.length > 1 ? ` (${ongoingEvents.length})` : ''}
                         </p>
-                        {ongoingEvent ? renderEventContent(ongoingEvent) : (
+                        {ongoingEvents.length > 0 ? (
+                          <div className="space-y-2">
+                            {ongoingEvents.map(event => (
+                              <div key={event.id} className="bg-white rounded-lg p-3 border border-emerald-100">
+                                {renderEventContent(event)}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
                           <div className="text-center py-4">
                             <p className="text-sm text-slate-500">No lesson in progress</p>
                           </div>
                         )}
                       </div>
 
-                      {/* Next Event */}
-                      <div>
+                      {/* Next Event(s) */}
+                      <div className="shrink-0 snap-start w-[80vw] sm:w-[20rem]">
                         <p className="text-xs font-semibold text-slate-500 mb-2 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          Next Event
+                          Next Event{nextEvents.length > 1 ? ` (${nextEvents.length})` : ''}
                         </p>
-                        {nextEvent ? renderEventContent(nextEvent) : (
+                        {nextEvents.length > 0 ? (
+                          <div className="space-y-2">
+                            {nextEvents.map(event => (
+                              <div key={event.id} className="bg-white rounded-lg p-3 border border-slate-100">
+                                {renderEventContent(event)}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
                           <div className="text-center py-4">
                             <p className="text-sm text-slate-500">No upcoming lessons today</p>
                           </div>
