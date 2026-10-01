@@ -15,6 +15,7 @@ import DvlaVerificationCard from '@/components/dashboard/DvlaVerificationCard';
 import TodayRevenueCard from '@/components/dashboard/TodayRevenueCard';
 import NegativeBalancesCard from '@/components/dashboard/NegativeBalancesCard';
 import PendingAdminCard from '@/components/dashboard/PendingAdminCard';
+import TopTenReasonsBento from '@/components/dashboard/TopTenReasonsBento';
 import OnboardingPopup from '@/components/onboarding/OnboardingPopup';
 import InstructorAppTour from '@/components/onboarding/InstructorAppTour';
 
@@ -572,6 +573,9 @@ export default function InstructorDashboard() {
               <NegativeBalancesCard pupils={pupils} isLoading={isPupilCheckLoading} />
             </div>
           </div>
+
+          {/* Top 10 Reasons for Test Fails */}
+          <TopTenReasonsBento />
 
           {/* 3b. DVLA Verification Card */}
           <DvlaVerificationCard pupils={pupils} />
