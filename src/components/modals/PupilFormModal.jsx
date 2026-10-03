@@ -143,11 +143,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
               <Calendar className="w-4 h-4" />
               Tests
             </TabsTrigger>
-            <TabsTrigger value="payments" className="gap-2">
-              £
-              Payments
-            </TabsTrigger>
-          </TabsList>
+            </TabsList>
 
           <TabsContent value="personal" className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
@@ -448,114 +444,6 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
                           </div>
                         </TabsContent>
 
-          <TabsContent value="payments" className="space-y-4 mt-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="hourlyRate">Hourly Rate (£)</Label>
-                <Input
-                  id="hourlyRate"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.hourlyRate || ''}
-                  onChange={(e) => handleChange('hourlyRate', parseFloat(e.target.value) || 0)}
-                  placeholder="e.g. 35.00"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="bulkAmountPaid">Bulk Amount Paid (£)</Label>
-                <Input
-                  id="bulkAmountPaid"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.bulkAmountPaid || ''}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value) || 0;
-                    handleChange('bulkAmountPaid', val);
-                    // Recalculate remaining balance
-                    const totalHours = (formData.hoursCompleted || 0);
-                    const amountUsed = totalHours * (formData.hourlyRate || 0);
-                    handleChange('bulkPaymentBalance', val - amountUsed);
-                  }}
-                  placeholder="e.g. 350.00"
-                />
-              </div>
-            </div>
-
-            <div className="border-t pt-4 mt-4">
-              <h4 className="font-medium text-slate-700 mb-3">Manual Adjustments</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="hoursAlreadyCompleted">Hours Already Completed</Label>
-                  <Input
-                    id="hoursAlreadyCompleted"
-                    type="number"
-                    step="0.25"
-                    min="0"
-                    value={formData.hoursCompleted || ''}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value);
-                      if (e.target.value === '' || (!isNaN(val) && val >= 0)) {
-                        const hours = e.target.value === '' ? 0 : val;
-                        handleChange('hoursCompleted', hours);
-                        // Recalculate remaining balance
-                        const amountUsed = hours * (formData.hourlyRate || 0);
-                        handleChange('bulkPaymentBalance', (formData.bulkAmountPaid || 0) - amountUsed);
-                      }
-                    }}
-                    placeholder="e.g. 10.5"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="hoursToDeduct">Hours to Deduct from Balance</Label>
-                  <Input
-                    id="hoursToDeduct"
-                    type="number"
-                    step="0.25"
-                    min="0"
-                    placeholder="e.g. 2.0"
-                    onChange={(e) => {
-                      const hoursToDeduct = parseFloat(e.target.value) || 0;
-                      if (hoursToDeduct > 0) {
-                        const newHours = (formData.hoursCompleted || 0) + hoursToDeduct;
-                        handleChange('hoursCompleted', newHours);
-                        // Recalculate remaining balance
-                        const amountUsed = newHours * (formData.hourlyRate || 0);
-                        handleChange('bulkPaymentBalance', (formData.bulkAmountPaid || 0) - amountUsed);
-                      }
-                    }}
-                  />
-                  <p className="text-xs text-slate-500">
-                    Add hours to deduct (£{((formData.hourlyRate || 0)).toFixed(2)}/hr)
-                  </p>
-                </div>
-              </div>
-              
-              {(formData.hourlyRate > 0 || formData.bulkAmountPaid > 0) && (
-                <div className="mt-4 p-4 bg-slate-50 rounded-lg space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Bulk Amount Paid:</span>
-                    <span className="font-medium text-slate-700">£{(formData.bulkAmountPaid || 0).toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Total Hours Used:</span>
-                    <span className="font-medium text-slate-700">{(formData.hoursCompleted || 0).toFixed(2)} hrs</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Amount Deducted:</span>
-                    <span className="font-medium text-slate-700">£{((formData.hoursCompleted || 0) * (formData.hourlyRate || 0)).toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm pt-2 border-t">
-                    <span className="text-slate-700 font-medium">Remaining Balance:</span>
-                    <span className={`font-bold ${(formData.bulkPaymentBalance || 0) < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                      £{(formData.bulkPaymentBalance || 0).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </TabsContent>
         </Tabs>
 
         <DialogFooter className="gap-2 mt-6">
