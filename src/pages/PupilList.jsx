@@ -164,20 +164,6 @@ export default function PupilList() {
     mutationFn: ({ id, data }) => base44.entities.Pupil.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['pupils']);
-      // After updating, check for more past test pupils
-      setTimeout(() => {
-        const updatedPupils = queryClient.getQueryData(['pupils', currentUser?.id]);
-        if (updatedPupils) {
-          const pupilsWithPastTests = updatedPupils.filter(p => 
-            p.practicalTestDate && moment(p.practicalTestDate).isBefore(moment()) && p.status === 'Active'
-          );
-          setPastTestPupils(pupilsWithPastTests);
-          if (pupilsWithPastTests.length > 0) {
-            setCurrentTestPupilIndex(0);
-            setShowTestDialog(true);
-          }
-        }
-      }, 100);
     }
   });
 
