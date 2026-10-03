@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Save, User, Car, Calendar } from 'lucide-react';
+import { Loader2, Save, User, Calendar } from 'lucide-react';
 
 const DVSA_SKILLS = [
   { code: '1', name: 'Legal responsibilities' },
@@ -130,14 +130,10 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="personal" className="gap-2">
               <User className="w-4 h-4" />
               Personal
-            </TabsTrigger>
-            <TabsTrigger value="driving" className="gap-2">
-              <Car className="w-4 h-4" />
-              Driving
             </TabsTrigger>
             <TabsTrigger value="tests" className="gap-2">
               <Calendar className="w-4 h-4" />
@@ -232,59 +228,6 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
               </p>
             </div>
 
-          </TabsContent>
-
-          <TabsContent value="driving" className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Label htmlFor="provisionalLicenceNumber">Provisional Licence Number</Label>
-              <Input
-                id="provisionalLicenceNumber"
-                value={formData.provisionalLicenceNumber}
-                onChange={(e) => handleChange('provisionalLicenceNumber', e.target.value)}
-                placeholder="SMITH901256AB9CD"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="targetHours">Target Hours</Label>
-                <Input
-                  id="targetHours"
-                  type="number"
-                  value={formData.targetHours}
-                  onChange={(e) => handleChange('targetHours', parseInt(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                                    <Label htmlFor="hoursCompleted">Hours Completed</Label>
-                                    <Input
-                                      id="hoursCompleted"
-                                      type="number"
-                                      inputMode="decimal"
-                                      step="0.25"
-                                      min="0"
-                                      placeholder="e.g. 3.5"
-                                      value={formData.hoursCompleted || ''}
-                                      onChange={(e) => {
-                                        const val = e.target.value;
-                                        const numVal = parseFloat(val);
-                                        if (val === '' || (!isNaN(numVal) && numVal >= 0)) {
-                                          handleChange('hoursCompleted', val === '' ? 0 : numVal);
-                                        }
-                                      }}
-                                    />
-                                  </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="googleSheetUrl">Google Sheet URL</Label>
-              <Input
-                id="googleSheetUrl"
-                value={formData.googleSheetUrl || ''}
-                onChange={(e) => handleChange('googleSheetUrl', e.target.value)}
-                placeholder="https://docs.google.com/spreadsheets/..."
-              />
-            </div>
           </TabsContent>
 
           <TabsContent value="tests" className="space-y-4 mt-4">
