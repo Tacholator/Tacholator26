@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Loader2, Save, CheckCircle, Clock, User, AlertCircle } from 'lucide-react';
+import { Loader2, Save, CheckCircle, Clock, User, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { base44 } from '@/api/base44Client';
 import moment from 'moment';
@@ -18,10 +18,7 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
     objective: '',
     mainTopic: '',
     whatWentWell: '',
-    areasToImprove: '',
-    instructorComments: '',
-    homeworkSuggestions: '',
-    aiSummary: ''
+    areasToImprove: ''
   });
   const [topicDurations, setTopicDurations] = useState([]);
 
@@ -50,10 +47,7 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
         objective: '',
         mainTopic: '',
         whatWentWell: '',
-        areasToImprove: '',
-        instructorComments: '',
-        homeworkSuggestions: '',
-        aiSummary: ''
+        areasToImprove: ''
       });
     }
   }, [existingEntry?.id, open]);
@@ -64,40 +58,10 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
     const endMoment = moment(lesson.endTime, 'HH:mm');
     return endMoment.diff(startMoment, 'minutes');
   })() : 0;
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const generateAiSummary = async () => {
-    setIsGenerating(true);
-    try {
-      const prompt = `You are a driving instructor's assistant. Create a friendly, encouraging summary for a learner driver based on this lesson feedback. Keep it concise (2-3 sentences) and suitable for sharing via WhatsApp.
-
-Objective: ${formData.objective}
-What went well: ${formData.whatWentWell}
-Areas to improve: ${formData.areasToImprove}
-Instructor comments: ${formData.instructorComments}
-Homework suggestions: ${formData.homeworkSuggestions}
-
-Write a warm, supportive summary that highlights progress and next steps.`;
-
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt
-      });
-      
-      setFormData(prev => ({ 
-        ...prev, 
-        aiSummary: typeof response === 'string' ? response : (response?.summary || response?.text || JSON.stringify(response)),
-        aiSummaryGeneratedAt: new Date().toISOString()
-      }));
-    } catch (error) {
-      console.error('Failed to generate AI summary:', error);
-    } finally {
-      setIsGenerating(false);
-    }
   };
 
   const handleSubmit = async () => {
@@ -257,78 +221,6 @@ Write a warm, supportive summary that highlights progress and next steps.`;
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="instructorComments">Instructor Comments</Label>
-            {readOnly ? (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
-                {formData.instructorComments || 'Not specified'}
-              </div>
-            ) : (
-              <Textarea
-                id="instructorComments"
-                value={formData.instructorComments}
-                onChange={(e) => handleChange('instructorComments', e.target.value)}
-                placeholder="Additional notes..."
-                rows={2}
-                disabled={readOnly}
-              />
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="homeworkSuggestions">Homework Suggestions</Label>
-            {readOnly ? (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap">
-                {formData.homeworkSuggestions || 'Not specified'}
-              </div>
-            ) : (
-              <Textarea
-                id="homeworkSuggestions"
-                value={formData.homeworkSuggestions}
-                onChange={(e) => handleChange('homeworkSuggestions', e.target.value)}
-                placeholder="Practice exercises or study topics..."
-                rows={2}
-                disabled={readOnly}
-              />
-            )}
-          </div>
-
-          {!readOnly && (
-            <div className="border-t pt-5 space-y-3">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <Label>AI Summary</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={generateAiSummary}
-                  disabled={isGenerating}
-                  className="gap-2"
-                >
-                  {isGenerating ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-4 h-4" />
-                  )}
-                  <span className="hidden sm:inline">Generate</span> Summary
-                </Button>
-              </div>
-              {formData.aiSummary && (
-                <div className="bg-purple-50 border border-purple-100 rounded-lg p-4">
-                  <p className="text-sm text-purple-800">{formData.aiSummary}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {readOnly && formData.aiSummary && (
-            <div className="border-t pt-5 space-y-3">
-              <Label>AI Summary</Label>
-              <div className="bg-purple-50 border border-purple-100 rounded-lg p-4">
-                <p className="text-sm text-purple-800">{formData.aiSummary}</p>
-              </div>
-            </div>
-          )}
         </div>
 
         <DialogFooter className="gap-2">
