@@ -20,6 +20,10 @@ Deno.serve(async (req) => {
       return Response.json({ skipped: true, reason: 'Not cancelled or deleted' });
     }
 
+    // Silent instructor delete (from the booking details modal): cancel pending SMS
+    // and release the slot, but do NOT send cancellation emails or SMS to either party.
+    const isSilentDelete = booking.isDeleted === true && booking.deletedByRole === 'instructor';
+
     // 0. Restore slot instance to available — try slotInstanceId first, then search by bookingId as fallback
     const slotInstanceId = booking.slotInstanceId;
     if (slotInstanceId) {
@@ -52,37 +56,45 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 2. Send cancellation emails via Resend
-    try {
-      await base44.asServiceRole.functions.invoke('sendBookingEmail', {
-        type: 'booking_cancelled',
-        bookingId: booking.id
-      });
-    } catch (error) {
-      console.error('Email send error:', error.message);
+    // 2. Send cancellation emails via Resend (skipped for silent instructor deletes)
+    if (!isSilentDelete) {
+      try {
+        await base44.asServiceRole.functions.invoke('sendBookingEmail', {
+          type: 'booking_cancelled',
+          bookingId: booking.id
+        });
+      } catch (error) {
+        console.error('Email send error:', error.message);
+      }
+
+      // 3. Enqueue cancellation SMS notification
+      try {
+        const cancelResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
+          bookingId: booking.id,
+          templateKey: 'booking_cancelled',
+          sendAtUtc: moment().toISOString(),
+          skipIfTooClose: false
+        });
+
+        return Response.json({ 
+          success: true,
+          cancelledCount: pendingSms.length,
+          cancellationNotification: cancelResult.data
+        });
+      } catch (error) {
+        return Response.json({ 
+          success: true,
+          cancelledCount: pendingSms.length,
+          cancellationNotificationError: error.message
+        });
+      }
     }
 
-    // 3. Enqueue cancellation SMS notification
-    try {
-      const cancelResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
-        bookingId: booking.id,
-        templateKey: 'booking_cancelled',
-        sendAtUtc: moment().toISOString(),
-        skipIfTooClose: false
-      });
-
-      return Response.json({ 
-        success: true,
-        cancelledCount: pendingSms.length,
-        cancellationNotification: cancelResult.data
-      });
-    } catch (error) {
-      return Response.json({ 
-        success: true,
-        cancelledCount: pendingSms.length,
-        cancellationNotificationError: error.message
-      });
-    }
+    return Response.json({
+      success: true,
+      cancelledCount: pendingSms.length,
+      silentDelete: isSilentDelete
+    });
 
   } catch (error) {
     console.error('Handle booking cancelled error:', error);
