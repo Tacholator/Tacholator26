@@ -294,12 +294,15 @@ export default function BookingDetailsModal({
       const freshBookingResults2 = await base44.entities.LessonBooking.filter({ id: booking.id });
       const freshBooking2 = freshBookingResults2[0] || booking;
 
-      // Mark booking as deleted
+      // Mark booking as cancelled (kept in records, hidden from active lists).
+      // No email or notification is sent to the pupil or instructor.
       await base44.entities.LessonBooking.update(freshBooking2.id, {
         isDeleted: true,
         deletedAt: new Date().toISOString(),
         deletedByRole: 'instructor',
-        status: 'deleted'
+        status: 'cancelled',
+        cancelledAt: new Date().toISOString(),
+        cancelledByRole: 'instructor'
       });
 
       // Release slot instance — use fresh booking's slotInstanceId
@@ -311,22 +314,14 @@ export default function BookingDetailsModal({
           reservedByPupilId: null
         });
       }
-
-      // Notify pupil
-      if (pupil?.linkedUserId) {
-        await base44.entities.Notification.create({
-          userId: pupil.linkedUserId,
-          title: 'Lesson Cancelled by Instructor',
-          message: `Your instructor has cancelled your lesson on ${moment(booking.startAtUtc).local().format('D MMM')} at ${moment(booking.startAtUtc).local().format('HH:mm')}.`,
-          type: 'booking',
-          linkTarget: 'LearnerScheduledLessons'
-        });
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lessonBookings'] });
       queryClient.invalidateQueries({ queryKey: ['slotInstances'] });
       queryClient.invalidateQueries({ queryKey: ['pupils'] });
+      queryClient.invalidateQueries({ queryKey: ['instructorBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['myBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['pupilConfirmedBookings'] });
       toast({ title: 'Booking deleted' });
       setIsProcessing(false);
       setShowDeleteDialog(false);
@@ -699,7 +694,7 @@ export default function BookingDetailsModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Booking</AlertDialogTitle>
           <AlertDialogDescription>
-            Delete this booking entirely? The pupil will be notified. This action cannot be undone.
+            Delete this booking? It will be cancelled and removed from your pending tasks and the learner's booked lessons. No notification will be sent.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
