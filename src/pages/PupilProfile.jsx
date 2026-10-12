@@ -46,7 +46,7 @@ import DiaryTimeline from '@/components/diary/DiaryTimeline';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
-import NewLessonModal from '@/components/booking/NewLessonModal';
+import PupilNewSlotModal from '@/components/booking/PupilNewSlotModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import HomeworkSection from '@/components/homework/HomeworkSection';
 import ClassNotesTab from '@/components/classnotes/ClassNotesTab';
@@ -1258,7 +1258,7 @@ export default function PupilProfile() {
         readOnly={selectedBooking?.hasDiaryEntry}
       />
 
-      <NewLessonModal
+      <PupilNewSlotModal
         open={showNewLessonModal}
         onOpenChange={(open) => {
           setShowNewLessonModal(open);
@@ -1267,6 +1267,7 @@ export default function PupilProfile() {
             queryClient.invalidateQueries(['pupil', pupilId]);
           }
         }}
+        instructorId={pupil?.instructorId || currentUser?.id}
         defaultPupilId={pupilId}
       />
 
