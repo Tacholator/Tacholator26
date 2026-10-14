@@ -285,8 +285,13 @@ export default function LearnerCalendar() {
   };
 
   const handleCancelClick = (booking) => {
+    // Pending bookings (awaiting instructor approval) cancel freely with no penalty
+    if (booking.status === 'reserved_pending_instructor') {
+      cancelBookingMutation.mutate({ bookingId: booking.id, isLate: false });
+      return;
+    }
     const hoursUntilStart = moment(booking.startAtUtc).diff(moment(), 'hours', true);
-    
+
     if (hoursUntilStart < 48) {
       setCancellingBooking(booking);
       setShowLateCancelDialog(true);

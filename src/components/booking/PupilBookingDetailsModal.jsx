@@ -26,7 +26,8 @@ export default function PupilBookingDetailsModal({
   const startMoment = moment(booking.startAtUtc).local();
   const endMoment = moment(booking.endAtUtc).local();
   const hoursUntilStart = startMoment.diff(moment(), 'hours', true);
-  const isLateCancellation = hoursUntilStart < 48;
+  // Pending bookings (not yet approved by instructor) can always be cancelled without penalty
+  const isLateCancellation = !isPending && hoursUntilStart < 48;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -123,7 +124,7 @@ export default function PupilBookingDetailsModal({
               disabled={isCancelling}
               className="w-full sm:w-auto"
             >
-              {isCancelling ? 'Cancelling...' : isLateCancellation ? 'Cancel (Full Deduction)' : 'Cancel Booking'}
+              {isCancelling ? 'Cancelling...' : isPending ? 'Cancel Pending Booking' : isLateCancellation ? 'Cancel (Full Deduction)' : 'Cancel Booking'}
             </Button>
           )}
         </DialogFooter>
