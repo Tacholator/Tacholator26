@@ -243,6 +243,15 @@ export default function LearnerCalendar() {
         penaltyHours: isLate ? booking.durationHours : 0
       });
 
+      // Free the slot instance so it shows as available again
+      if (booking.slotInstanceId) {
+        await base44.entities.BookableSlotInstance.update(booking.slotInstanceId, {
+          status: 'available',
+          bookingId: null,
+          reservedByPupilId: null
+        });
+      }
+
       if (isLate) {
         await base44.entities.PaymentLedger.create({
           userId: pupil.id,
@@ -267,6 +276,8 @@ export default function LearnerCalendar() {
     onSuccess: (_, { isLate }) => {
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['instructorBookings']);
+      queryClient.invalidateQueries(['slotInstances']);
+      queryClient.invalidateQueries(['lessonBookings']);
       setShowLateCancelDialog(false);
       setCancellingBooking(null);
       toast({ 

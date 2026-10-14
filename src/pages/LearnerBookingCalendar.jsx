@@ -323,6 +323,8 @@ export default function LearnerBookingCalendar() {
       queryClient.invalidateQueries(['myBookings']);
       queryClient.invalidateQueries(['instructorBookings']);
       queryClient.invalidateQueries(['instructorSlotInstances']);
+      queryClient.invalidateQueries(['slotInstances']);
+      queryClient.invalidateQueries(['lessonBookings']);
       setShowLateCancelDialog(false);
       setShowBookingDetailsModal(false);
       setCancellingBooking(null);

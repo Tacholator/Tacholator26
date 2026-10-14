@@ -758,7 +758,8 @@ export default function Calendar() {
       }
     });
 
-    const matchingBookings = bookings.filter(b => inRange(b.startAtUtc));
+    const cancelledStatuses = ['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor', 'deleted'];
+    const matchingBookings = bookings.filter(b => inRange(b.startAtUtc) && !cancelledStatuses.includes(b.status));
 
     return [...matchingBookings, ...availableSlots, ...closedEntries]
       .sort((a, b) => new Date(a.startAtUtc) - new Date(b.startAtUtc));
