@@ -8,7 +8,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
-  Calendar as CalendarIcon,
   CalendarCheck,
   Loader2,
   Settings,
@@ -26,9 +25,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import LessonFormModal from '@/components/modals/LessonFormModal';
-import NewLessonModal from '@/components/booking/NewLessonModal';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
-import CalendarDayView from '@/components/calendar/CalendarDayView';
 import LessonDetailsDrawer from '@/components/calendar/LessonDetailsDrawer';
 import Calendar24Hour from '@/components/booking/Calendar24Hour';
 import InstructorMonthCalendar from '@/components/booking/InstructorMonthCalendar';
@@ -85,7 +82,6 @@ export default function Calendar() {
   
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [showNewLessonModal, setShowNewLessonModal] = useState(false);
   const [showCloseDayModal, setShowCloseDayModal] = useState(false);
   const [selectedPersonalEvent, setSelectedPersonalEvent] = useState(null);
   const [showPersonalEventModal, setShowPersonalEventModal] = useState(false);
