@@ -1269,6 +1269,7 @@ export default function PupilProfile() {
         }}
         instructorId={pupil?.instructorId || currentUser?.id}
         defaultPupilId={pupilId}
+        defaultPickupLocation={pupil?.pickupAddress || ''}
       />
 
       <TestResultModal

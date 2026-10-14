@@ -51,7 +51,10 @@ export default function CreateBookableSlotModal({
   slotDateTime,
   existingSlot,
   slotInstances = [],
-  defaultSlotType = 'personal'
+  defaultSlotType = 'personal',
+  defaultLessonMode = 'bookable',
+  defaultPupilId = '',
+  defaultPickupLocation = ''
 }) {
   const slotMoment = slotDateTime ? moment(slotDateTime) : (() => {
     // Snap "now" to the 15-min grid so generated slots align with the calendar grid
@@ -99,10 +102,19 @@ export default function CreateBookableSlotModal({
     if (open) setSlotType(defaultSlotType);
   }, [open, defaultSlotType]);
 
+  // Apply defaults (lesson mode, pupil, pickup) when modal opens without a slotDateTime
+  useEffect(() => {
+    if (open && !existingSlot && !slotDateTime) {
+      setLessonMode(defaultLessonMode);
+      setSelectedPupilId(defaultPupilId);
+      setPickupLocation(defaultPickupLocation);
+    }
+  }, [open, existingSlot, slotDateTime, defaultLessonMode, defaultPupilId, defaultPickupLocation]);
+
   // Lesson booking-for-pupil state
-  const [lessonMode, setLessonMode] = useState('bookable'); // 'bookable' | 'booking'
-  const [selectedPupilId, setSelectedPupilId] = useState('');
-  const [pickupLocation, setPickupLocation] = useState('');
+  const [lessonMode, setLessonMode] = useState(defaultLessonMode); // 'bookable' | 'booking'
+  const [selectedPupilId, setSelectedPupilId] = useState(defaultPupilId);
+  const [pickupLocation, setPickupLocation] = useState(defaultPickupLocation);
   const [dropoffSameAsPickup, setDropoffSameAsPickup] = useState(false);
   const [dropoffLocation, setDropoffLocation] = useState('');
   const [pupilSearch, setPupilSearch] = useState('');
@@ -142,17 +154,17 @@ export default function CreateBookableSlotModal({
         .filter(p => p.status === 'Active' || p.status === 'Stopped')
         .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
     },
-    enabled: !!user?.id && !!user?.email && open && slotType === 'lesson' && lessonMode === 'booking'
+    enabled: !!user?.id && !!user?.email && open && slotType === 'lesson' && (lessonMode === 'booking' || !!defaultPupilId)
   });
 
   const selectedPupil = pupils.find(p => p.id === selectedPupilId);
 
-  // Auto-fill pickup from pupil profile
+  // Auto-fill pickup from pupil profile (only once the pupil object is available)
   React.useEffect(() => {
-    if (selectedPupilId) {
-      setPickupLocation(selectedPupil?.pickupAddress || '');
+    if (selectedPupilId && selectedPupil) {
+      setPickupLocation(selectedPupil.pickupAddress || '');
     }
-  }, [selectedPupilId, selectedPupil?.pickupAddress]);
+  }, [selectedPupilId, selectedPupil]);
 
   const filteredPupils = pupils.filter(p => {
     if (!pupilSearch.trim()) return true;

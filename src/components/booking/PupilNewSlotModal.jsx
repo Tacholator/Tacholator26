@@ -10,7 +10,7 @@ import moment from 'moment';
  * Handles the three onSave slot types (bookable slot, booking-for-pupil,
  * personal event) so the parent page stays clean.
  */
-export default function PupilNewSlotModal({ open, onOpenChange, instructorId, defaultPupilId }) {
+export default function PupilNewSlotModal({ open, onOpenChange, instructorId, defaultPupilId, defaultPickupLocation }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isSaving, setIsSaving] = useState(false);
@@ -219,6 +219,9 @@ export default function PupilNewSlotModal({ open, onOpenChange, instructorId, de
       isSaving={isSaving}
       slotInstances={slotInstances}
       defaultSlotType="lesson"
+      defaultLessonMode="booking"
+      defaultPupilId={defaultPupilId}
+      defaultPickupLocation={defaultPickupLocation}
     />
   );
 }
