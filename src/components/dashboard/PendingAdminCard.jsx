@@ -1,8 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ClipboardList, Loader2, Clock } from 'lucide-react';
+import { createPageUrl } from '@/utils';
 import moment from 'moment';
 
 /**
@@ -80,13 +82,24 @@ export default function PendingAdminCard({ items = [], pupils = [], isLoading, o
                         </p>
                       </div>
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={() => onMarkLesson(item)}
-                      className="bg-rose-600 hover:bg-rose-700 text-white shrink-0"
-                    >
-                      Complete
-                    </Button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <Link to={createPageUrl('PupilProfile') + `?id=${item.pupilId}`}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                        >
+                          View Profile
+                        </Button>
+                      </Link>
+                      <Button
+                        size="sm"
+                        onClick={() => onMarkLesson(item)}
+                        className="bg-rose-600 hover:bg-rose-700 text-white"
+                      >
+                        Complete
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
