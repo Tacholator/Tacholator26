@@ -32,7 +32,19 @@ import {
   Trophy,
   Lock,
   Gauge,
+  Trash2,
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/components/ui/use-toast';
 
 const isAccessRestricted = (pupil) => {
   if (!pupil || pupil.status !== 'Passed' || !pupil.practicalTestPassDate) return false;
@@ -87,6 +99,10 @@ export default function PupilProfile() {
   const [showBookingSummaryModal, setShowBookingSummaryModal] = useState(false);
   const [showNewLessonModal, setShowNewLessonModal] = useState(false);
   const [showTestResultModal, setShowTestResultModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [bookingToDelete, setBookingToDelete] = useState(null);
+  const [isDeletingBooking, setIsDeletingBooking] = useState(false);
+  const { toast } = useToast();
   const [checksData, setChecksData] = useState({
     licenseChecked: false,
     licenseCheckDate: '',
@@ -312,6 +328,46 @@ export default function PupilProfile() {
 
   const handleSavePupil = async (data) => {
     await updatePupilMutation.mutateAsync(data);
+  };
+
+  const handleDeleteBooking = async () => {
+    if (!bookingToDelete) return;
+    setIsDeletingBooking(true);
+    try {
+      // Fetch fresh booking to ensure slotInstanceId is current
+      const freshResults = await base44.entities.LessonBooking.filter({ id: bookingToDelete.id });
+      const freshBooking = freshResults[0] || bookingToDelete;
+
+      // Soft-delete: mark as cancelled, no notifications sent
+      await base44.entities.LessonBooking.update(freshBooking.id, {
+        isDeleted: true,
+        deletedAt: new Date().toISOString(),
+        deletedByRole: 'instructor',
+        status: 'cancelled',
+        cancelledAt: new Date().toISOString(),
+        cancelledByRole: 'instructor'
+      });
+
+      // Release slot instance if linked
+      const slotInstanceId = freshBooking.slotInstanceId;
+      if (slotInstanceId) {
+        await base44.entities.BookableSlotInstance.update(slotInstanceId, {
+          status: 'available',
+          bookingId: null,
+          reservedByPupilId: null
+        });
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['pupilConfirmedBookings', pupilId] });
+      queryClient.invalidateQueries({ queryKey: ['pupil', pupilId] });
+      toast({ title: 'Booking deleted' });
+    } catch (error) {
+      toast({ title: 'Deletion failed', description: error.message, variant: 'destructive' });
+    } finally {
+      setIsDeletingBooking(false);
+      setShowDeleteDialog(false);
+      setBookingToDelete(null);
+    }
   };
 
   const saveChecksMutation = useMutation({
@@ -1135,6 +1191,7 @@ export default function PupilProfile() {
                       <TableHead>Duration</TableHead>
                       <TableHead>Location</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1180,12 +1237,27 @@ export default function PupilProfile() {
                               Confirmed
                             </Badge>
                           </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-rose-600 hover:bg-rose-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setBookingToDelete(booking);
+                                setShowDeleteDialog(true);
+                              }}
+                              title="Delete booking"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       );
                     })}
                     {confirmedBookings.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-12 text-slate-400">
+                        <TableCell colSpan={6} className="text-center py-12 text-slate-400">
                           No confirmed lessons yet
                         </TableCell>
                       </TableRow>
@@ -1278,6 +1350,32 @@ export default function PupilProfile() {
         pupil={pupil}
         instructorId={currentUser?.id}
       />
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Booking</AlertDialogTitle>
+            <AlertDialogDescription>
+              Delete this booking? It will be cancelled and removed from the learner's booked lessons. No notification will be sent.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeletingBooking}>No, Keep Booking</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteBooking}
+              disabled={isDeletingBooking}
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              {isDeletingBooking ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : 'Yes, Delete Booking'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
