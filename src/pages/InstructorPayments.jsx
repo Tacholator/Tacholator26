@@ -19,13 +19,16 @@ import {
   Wallet,
   CheckCircle2,
   AlertCircle,
-  Star
+  Star,
+  Pencil
 } from 'lucide-react';
+import EditPupilBalanceDialog from '@/components/payments/EditPupilBalanceDialog';
 import moment from 'moment';
 
 export default function InstructorPayments({ adminProxyInstructorId = null }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [balanceTab, setBalanceTab] = useState('active');
+  const [editingPupil, setEditingPupil] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -406,7 +409,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                             key={pupil.id}
                             to={createPageUrl('InstructorPupilPayments') + `?id=${pupil.id}`}
                           >
-                            <Card className={`hover:shadow-lg transition-all cursor-pointer h-full aspect-square flex flex-col ${
+                            <Card className={`relative hover:shadow-lg transition-all cursor-pointer h-full aspect-square flex flex-col ${
                               balance > 0 
                                 ? 'bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-300 hover:shadow-emerald-200' 
                                 : balance < 0 
@@ -414,6 +417,19 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                                 : 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-300'
                             }`}>
                               <CardContent className="p-6 flex flex-col justify-between h-full">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setEditingPupil(pupil);
+                                  }}
+                                  className="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white text-slate-600 hover:text-[#071739] shadow-sm border border-slate-200 transition-colors"
+                                  title="Adjust balance"
+                                  aria-label={`Adjust balance for ${pupil.firstName} ${pupil.lastName}`}
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </button>
                                 <div className="space-y-4">
                                   <div className="flex flex-col items-center text-center">
                                     <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl shadow-md ${
@@ -652,6 +668,12 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
             </Card>
           </TabsContent>
         </Tabs>
+
+        <EditPupilBalanceDialog
+          open={!!editingPupil}
+          onOpenChange={(open) => { if (!open) setEditingPupil(null); }}
+          pupil={editingPupil}
+        />
       </div>
     </div>
   );
