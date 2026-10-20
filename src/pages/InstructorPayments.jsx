@@ -23,6 +23,7 @@ import {
   Pencil
 } from 'lucide-react';
 import EditPupilBalanceDialog from '@/components/payments/EditPupilBalanceDialog';
+import InlineBalanceEditor from '@/components/payments/InlineBalanceEditor';
 import moment from 'moment';
 
 export default function InstructorPayments({ adminProxyInstructorId = null }) {
@@ -448,14 +449,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                                 </div>
                                 
                                 <div className="space-y-3">
-                                  <div className="text-center py-3 border-t border-b">
-                                    <div className="text-xs text-slate-600 mb-1">Balance</div>
-                                    <div className={`text-4xl font-bold ${
-                                      balance > 0 ? 'text-emerald-700' : balance < 0 ? 'text-rose-700' : 'text-slate-500'
-                                    }`}>
-                                      £{balance.toFixed(2)}
-                                    </div>
-                                  </div>
+                                  <InlineBalanceEditor pupil={pupil} />
                                   
                                   <div className="text-center">
                                     <div className="text-xs text-slate-600">Available Hours</div>
