@@ -117,7 +117,8 @@ export default function Calendar() {
       // Filter out deleted bookings
       return allBookings.filter(b => !b.isDeleted);
     },
-    enabled: !!currentUser?.id
+    enabled: !!currentUser?.id,
+    refetchInterval: 30000
   });
 
   const { data: slotInstances = [] } = useQuery({

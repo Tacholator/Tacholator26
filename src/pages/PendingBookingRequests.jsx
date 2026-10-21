@@ -24,7 +24,8 @@ export default function PendingBookingRequests() {
       const all = await base44.entities.LessonBooking.filter({ instructorId: currentUser.id });
       return all.filter(b => !b.isDeleted);
     },
-    enabled: !!currentUser?.id
+    enabled: !!currentUser?.id,
+    refetchInterval: 15000
   });
 
   const { data: pupils = [] } = useQuery({
@@ -118,12 +119,31 @@ export default function PendingBookingRequests() {
 
   const confirmAllBookingsMutation = useMutation({
     mutationFn: async () => {
-      await Promise.all(pendingBookings.map(booking =>
+      const results = await Promise.allSettled(pendingBookings.map(booking =>
         confirmBookingMutation.mutateAsync(booking.id)
       ));
+      return {
+        total: pendingBookings.length,
+        failed: results.filter(r => r.status === 'rejected').length
+      };
     },
-    onSuccess: () => {
-      toast({ title: `All ${pendingBookings.length} bookings confirmed` });
+    onSuccess: ({ total, failed }) => {
+      if (failed === 0) {
+        toast({ title: `All ${total} bookings confirmed` });
+      } else {
+        toast({
+          title: `${total - failed} of ${total} bookings confirmed`,
+          description: `${failed} could not be confirmed — please try again.`,
+          variant: 'destructive'
+        });
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: 'Could not confirm bookings',
+        description: error.message,
+        variant: 'destructive'
+      });
     }
   });
 
