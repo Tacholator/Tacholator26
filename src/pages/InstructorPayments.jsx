@@ -142,9 +142,9 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
   const passedPupils = pupils.filter(p => p.status === 'Passed');
   const totalBalances = activePupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
 
-  // Pupils owing money (negative balance) among active + on hold
+  // Pupils owing money (negative balance) among active, on hold and passed
   const owingPupils = pupils.filter(p =>
-    (p.status === 'Active' || p.status === 'OnHold') && (p.bulkPaymentBalance || 0) < 0
+    (p.status === 'Active' || p.status === 'OnHold' || p.status === 'Passed') && (p.bulkPaymentBalance || 0) < 0
   );
   const totalNegativeBalance = owingPupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
 
@@ -276,7 +276,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
               <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
                 <div>
                   <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">Outstanding (Owed)</div>
-                  <div className="text-xs text-slate-400">Active & on-hold pupils with negative balances</div>
+                  <div className="text-xs text-slate-400">Active, on-hold & passed pupils with negative balances</div>
                 </div>
                 <div className="text-right">
                   <div className="text-xl sm:text-2xl font-bold text-rose-600">£{Math.abs(totalNegativeBalance).toFixed(2)}</div>
