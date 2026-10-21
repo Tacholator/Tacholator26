@@ -139,6 +139,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
 
   const activePupils = pupils.filter(p => p.status === 'Active');
   const onHoldPupils = pupils.filter(p => p.status === 'OnHold');
+  const passedPupils = pupils.filter(p => p.status === 'Passed');
   const totalBalances = activePupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
 
   // Pupils owing money (negative balance) among active + on hold
@@ -147,7 +148,8 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
   );
   const totalNegativeBalance = owingPupils.reduce((sum, p) => sum + (p.bulkPaymentBalance || 0), 0);
 
-  const balancePupils = balanceTab === 'onhold' ? onHoldPupils : activePupils;
+  const balancePupils = balanceTab === 'onhold' ? onHoldPupils : balanceTab === 'passed' ? passedPupils : activePupils;
+  const balanceTabLabel = balanceTab === 'onhold' ? 'on-hold' : balanceTab === 'passed' ? 'passed' : 'active';
 
   // Filter pupils by search
   const filteredPupils = pupils.filter(p => {
@@ -359,13 +361,14 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                       Showing {balancePupils.filter(p => {
                         const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
                         return fullName.includes(searchQuery.toLowerCase());
-                      }).length} of {balancePupils.length} {balanceTab === 'onhold' ? 'on-hold' : 'active'} pupils
+                      }).length} of {balancePupils.length} {balanceTabLabel} pupils
                     </CardDescription>
                   </div>
                   <Tabs value={balanceTab} onValueChange={setBalanceTab}>
                     <TabsList>
                       <TabsTrigger value="active" className="data-[state=active]:bg-[#F7B602] data-[state=active]:text-[#071739] data-[state=active]:font-bold">Active</TabsTrigger>
                       <TabsTrigger value="onhold">On Hold</TabsTrigger>
+                      <TabsTrigger value="passed" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:font-bold">Passed</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>
@@ -373,7 +376,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <Input
-                      placeholder={`Search ${balanceTab === 'onhold' ? 'on-hold' : 'active'} pupils...`}
+                      placeholder={`Search ${balanceTabLabel} pupils...`}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10"
@@ -384,14 +387,14 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
               <CardContent>
                 {balancePupils.length === 0 ? (
                   <div className="text-center py-8 text-slate-500">
-                    No {balanceTab === 'onhold' ? 'on-hold' : 'active'} pupils found
+                    No {balanceTabLabel} pupils found
                   </div>
                 ) : balancePupils.filter(p => {
                   const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
                   return fullName.includes(searchQuery.toLowerCase());
                 }).length === 0 ? (
                   <div className="text-center py-8 text-slate-500">
-                    No {balanceTab === 'onhold' ? 'on-hold' : 'active'} pupils match your search
+                    No {balanceTabLabel} pupils match your search
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
