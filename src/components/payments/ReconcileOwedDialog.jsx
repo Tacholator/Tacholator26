@@ -17,8 +17,6 @@ import { HandCoins, Loader2 } from 'lucide-react';
 export default function ReconcileOwedDialog({ open, onOpenChange, pupil }) {
   const queryClient = useQueryClient();
   const [amount, setAmount] = useState('');
-  const [method, setMethod] = useState('CASH');
-  const [note, setNote] = useState('');
 
   const currentBalance = pupil?.bulkPaymentBalance || 0;
   const owed = currentBalance < 0 ? Math.abs(currentBalance) : 0;
@@ -26,8 +24,6 @@ export default function ReconcileOwedDialog({ open, onOpenChange, pupil }) {
   useEffect(() => {
     if (open) {
       setAmount(owed > 0 ? owed.toFixed(2) : '');
-      setMethod('CASH');
-      setNote('');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, pupil?.id]);
@@ -52,9 +48,7 @@ export default function ReconcileOwedDialog({ open, onOpenChange, pupil }) {
         reason: 'manual_adjustment',
         amountGbp: parsedAmount,
         createdByRole: 'instructor',
-        note: note.trim()
-          ? `Reconciliation (${method}): £${parsedAmount.toFixed(2)} — ${note.trim()}`
-          : `Reconciliation (${method}): £${parsedAmount.toFixed(2)} owed settled by instructor`,
+        note: `Reconciliation: £${parsedAmount.toFixed(2)} owed settled by instructor`,
       });
     },
     onSuccess: () => {
@@ -81,7 +75,7 @@ export default function ReconcileOwedDialog({ open, onOpenChange, pupil }) {
 
         <div className="space-y-4">
           <div>
-            <Label className="text-sm font-medium text-slate-700 mb-2 block">Reconcile amount (£)</Label>
+            <Label className="text-sm font-medium text-slate-700 mb-2 block">Amount owed (£)</Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">£</span>
               <Input
@@ -94,38 +88,6 @@ export default function ReconcileOwedDialog({ open, onOpenChange, pupil }) {
                 autoFocus
               />
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Defaults to the full amount owed. This credits the balance without using the top-up flow.
-            </p>
-          </div>
-
-          <div>
-            <Label className="text-sm font-medium text-slate-700 mb-2 block">Settled via</Label>
-            <div className="flex gap-2">
-              {['CASH', 'BACS', 'CARD', 'WAIVED'].map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setMethod(m)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                    method === m
-                      ? 'bg-[#071739] text-white border-[#071739]'
-                      : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <Label className="text-sm font-medium text-slate-700 mb-2 block">Note (optional)</Label>
-            <Input
-              placeholder="Reason for the reconciliation"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            />
           </div>
 
           {amountValid && (
