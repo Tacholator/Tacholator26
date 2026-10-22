@@ -33,6 +33,7 @@ import {
   Lock,
   Gauge,
   Trash2,
+  HandCoins,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -60,6 +61,7 @@ import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
 import PupilNewSlotModal from '@/components/booking/PupilNewSlotModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
+import ReconcileOwedDialog from '@/components/payments/ReconcileOwedDialog';
 import HomeworkSection from '@/components/homework/HomeworkSection';
 import ClassNotesTab from '@/components/classnotes/ClassNotesTab';
 import MockTestsSection from '@/components/progress/MockTestsSection';
@@ -99,6 +101,7 @@ export default function PupilProfile() {
   const [showBookingSummaryModal, setShowBookingSummaryModal] = useState(false);
   const [showNewLessonModal, setShowNewLessonModal] = useState(false);
   const [showTestResultModal, setShowTestResultModal] = useState(false);
+  const [showReconcileModal, setShowReconcileModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState(null);
   const [isDeletingBooking, setIsDeletingBooking] = useState(false);
@@ -665,6 +668,13 @@ export default function PupilProfile() {
                         <Plus className="w-3.5 h-3.5" />
                         Top Up Balance
                       </Link>
+                      <button
+                        onClick={() => setShowReconcileModal(true)}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[#071739] text-white text-xs font-semibold hover:bg-[#0a2142] transition-colors"
+                      >
+                        <HandCoins className="w-3.5 h-3.5" />
+                        Reconcile Owed
+                      </button>
                     </div>
                     {((pupil.auditNoShowHours || 0) > 0 || (pupil.auditLateCancellationHours || 0) > 0) && (
                       <div className="text-xs text-slate-500 space-y-0.5">
@@ -1349,6 +1359,12 @@ export default function PupilProfile() {
         onClose={() => setShowTestResultModal(false)}
         pupil={pupil}
         instructorId={currentUser?.id}
+      />
+
+      <ReconcileOwedDialog
+        open={showReconcileModal}
+        onOpenChange={setShowReconcileModal}
+        pupil={pupil}
       />
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
