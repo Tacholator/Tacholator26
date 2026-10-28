@@ -21,6 +21,40 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
     areasToImprove: ''
   });
   const [topicDurations, setTopicDurations] = useState([]);
+  const [visualViewport, setVisualViewport] = useState(null);
+
+  // On mobile the keyboard shrinks the visual viewport but the dialog is
+  // positioned against the layout viewport, which leaves the focused field
+  // (and its caret) sitting behind the keyboard. Track the visible area so the
+  // dialog can stay centred above the keyboard.
+  React.useEffect(() => {
+    if (!open || typeof window === 'undefined' || !window.visualViewport) return;
+    const vv = window.visualViewport;
+    const update = () => {
+      if (window.innerWidth >= 768) {
+        setVisualViewport(null);
+        return;
+      }
+      setVisualViewport({ height: vv.height, offsetTop: vv.offsetTop });
+    };
+    update();
+    vv.addEventListener('resize', update);
+    vv.addEventListener('scroll', update);
+    return () => {
+      vv.removeEventListener('resize', update);
+      vv.removeEventListener('scroll', update);
+    };
+  }, [open]);
+
+  const handleFieldFocus = (e) => {
+    if (typeof window === 'undefined' || window.innerWidth >= 768) return;
+    const el = e.target;
+    if (!(el instanceof HTMLElement)) return;
+    // Wait for the keyboard animation before bringing the field into view.
+    setTimeout(() => {
+      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }, 300);
+  };
 
   // Fetch topic durations for this lesson to get all topics
   React.useEffect(() => {
@@ -83,7 +117,14 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="max-w-2xl max-h-[90vh] overflow-y-auto"
+        style={visualViewport ? {
+          top: visualViewport.offsetTop + visualViewport.height / 2,
+          maxHeight: visualViewport.height - 16,
+        } : undefined}
+        onFocusCapture={handleFieldFocus}
+      >
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-slate-800">
             {readOnly ? 'Lesson Feedback Details' : existingEntry ? 'Edit Lesson Feedback' : 'Lesson Feedback'}
