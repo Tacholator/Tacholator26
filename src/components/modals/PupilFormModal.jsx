@@ -5,8 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Save, User } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
 
 const DVSA_SKILLS = [
   { code: '1', name: 'Legal responsibilities' },
@@ -64,7 +63,6 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
     tags: []
   });
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState('personal');
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -129,15 +127,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid w-full grid-cols-1">
-            <TabsTrigger value="personal" className="gap-2">
-              <User className="w-4 h-4" />
-              Personal
-            </TabsTrigger>
-            </TabsList>
-
-          <TabsContent value="personal" className="space-y-4 mt-4">
+        <div className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name *</Label>
@@ -224,9 +214,7 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
               </p>
             </div>
 
-          </TabsContent>
-
-        </Tabs>
+        </div>
 
         <DialogFooter className="gap-2 mt-6">
           <Button variant="outline" onClick={onClose}>
