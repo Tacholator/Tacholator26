@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Save, User, Calendar } from 'lucide-react';
+import { Loader2, Save, User } from 'lucide-react';
 
 const DVSA_SKILLS = [
   { code: '1', name: 'Legal responsibilities' },
@@ -130,14 +130,10 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-1">
             <TabsTrigger value="personal" className="gap-2">
               <User className="w-4 h-4" />
               Personal
-            </TabsTrigger>
-            <TabsTrigger value="tests" className="gap-2">
-              <Calendar className="w-4 h-4" />
-              Tests
             </TabsTrigger>
             </TabsList>
 
@@ -229,163 +225,6 @@ export default function PupilFormModal({ open, onClose, existingPupil, onSave })
             </div>
 
           </TabsContent>
-
-          <TabsContent value="tests" className="space-y-4 mt-4">
-                          <div className="space-y-2">
-                            <Label>Theory Test</Label>
-                            <div className="flex gap-4 mb-2">
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="theoryStatus"
-                                  checked={!formData.theoryTestNotBooked && !formData.theoryTestPassed}
-                                  onChange={() => {
-                                    setFormData(prev => ({
-                                      ...prev,
-                                      theoryTestNotBooked: false,
-                                      theoryTestPassed: false
-                                    }));
-                                  }}
-                                  className="w-4 h-4 text-teal-600"
-                                />
-                                <span className="text-sm text-slate-600">Date booked</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="theoryStatus"
-                                  checked={formData.theoryTestNotBooked}
-                                  onChange={() => {
-                                    setFormData(prev => ({
-                                      ...prev,
-                                      theoryTestNotBooked: true,
-                                      theoryTestPassed: false,
-                                      theoryTestDate: ''
-                                    }));
-                                  }}
-                                  className="w-4 h-4 text-teal-600"
-                                />
-                                <span className="text-sm text-slate-600">Not booked</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="theoryStatus"
-                                  checked={formData.theoryTestPassed}
-                                  onChange={() => {
-                                    setFormData(prev => ({
-                                      ...prev,
-                                      theoryTestPassed: true,
-                                      theoryTestNotBooked: false,
-                                      theoryTestDate: ''
-                                    }));
-                                  }}
-                                  className="w-4 h-4 text-teal-600"
-                                />
-                                <span className="text-sm text-slate-600">Passed</span>
-                              </label>
-                            </div>
-                            {!formData.theoryTestNotBooked && !formData.theoryTestPassed && (
-                              <Input
-                                id="theoryTestDate"
-                                type="date"
-                                value={formData.theoryTestDate}
-                                onChange={(e) => handleChange('theoryTestDate', e.target.value)}
-                              />
-                            )}
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Practical Test</Label>
-                            <div className="flex gap-4 mb-2">
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="practicalStatus"
-                                  checked={!formData.practicalTestNotBooked && !formData.practicalTestPassed}
-                                  onChange={() => {
-                                    setFormData(prev => ({
-                                      ...prev,
-                                      practicalTestNotBooked: false,
-                                      practicalTestPassed: false
-                                    }));
-                                  }}
-                                  className="w-4 h-4 text-teal-600"
-                                />
-                                <span className="text-sm text-slate-600">Date booked</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="practicalStatus"
-                                  checked={formData.practicalTestNotBooked}
-                                  onChange={() => {
-                                    setFormData(prev => ({
-                                      ...prev,
-                                      practicalTestNotBooked: true,
-                                      practicalTestPassed: false,
-                                      practicalTestDate: '',
-                                      practicalTestTime: ''
-                                    }));
-                                  }}
-                                  className="w-4 h-4 text-teal-600"
-                                />
-                                <span className="text-sm text-slate-600">Not booked</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="practicalStatus"
-                                  checked={formData.practicalTestPassed}
-                                  onChange={() => {
-                                    setFormData(prev => ({
-                                      ...prev,
-                                      practicalTestPassed: true,
-                                      practicalTestNotBooked: false,
-                                      practicalTestDate: '',
-                                      practicalTestTime: ''
-                                    }));
-                                  }}
-                                  className="w-4 h-4 text-teal-600"
-                                />
-                                <span className="text-sm text-slate-600">Passed</span>
-                              </label>
-                            </div>
-                            {!formData.practicalTestNotBooked && !formData.practicalTestPassed && (
-                                                <div className="grid grid-cols-2 gap-4">
-                                                  <div className="space-y-1">
-                                                    <Label htmlFor="practicalTestDate" className="text-xs text-slate-500">Date</Label>
-                                                    <Input
-                                                      id="practicalTestDate"
-                                                      type="date"
-                                                      value={formData.practicalTestDate}
-                                                      onChange={(e) => handleChange('practicalTestDate', e.target.value)}
-                                                    />
-                                                  </div>
-                                                  <div className="space-y-1">
-                                                    <Label htmlFor="practicalTestTime" className="text-xs text-slate-500">Time (24hr)</Label>
-                                                    <Input
-                                                      id="practicalTestTime"
-                                                      type="time"
-                                                      value={formData.practicalTestTime || ''}
-                                                      onChange={(e) => handleChange('practicalTestTime', e.target.value)}
-                                                      placeholder="e.g. 14:30"
-                                                    />
-                                                  </div>
-                                                </div>
-                                              )}
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="practicalTestCentre">Test Centre</Label>
-                            <Input
-                              id="practicalTestCentre"
-                              value={formData.practicalTestCentre}
-                              onChange={(e) => handleChange('practicalTestCentre', e.target.value)}
-                              placeholder="e.g., London Chingford"
-                            />
-                          </div>
-                        </TabsContent>
 
         </Tabs>
 
