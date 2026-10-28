@@ -84,7 +84,7 @@ export default function BookingSummaryModal({
     if (coveredEditedByUser) return;
     setSummaryData(prev => ({
       ...prev,
-      whatWasCovered: nextTopics.map(t => t.topicName).join(', ')
+      whatWasCovered: nextTopics.map(t => t.topicName).join('\n')
     }));
   };
 
