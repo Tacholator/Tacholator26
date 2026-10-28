@@ -57,6 +57,34 @@ export default function EditTestInfoModal({ open, onClose, pupil }) {
 
   const set = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
 
+  const toggleTheoryNotBooked = (checked) =>
+    setForm((prev) => ({
+      ...prev,
+      theoryTestNotBooked: checked,
+      theoryTestPassed: checked ? false : prev.theoryTestPassed,
+    }));
+
+  const toggleTheoryPassed = (checked) =>
+    setForm((prev) => ({
+      ...prev,
+      theoryTestPassed: checked,
+      theoryTestNotBooked: checked ? false : prev.theoryTestNotBooked,
+    }));
+
+  const togglePracticalNotBooked = (checked) =>
+    setForm((prev) => ({
+      ...prev,
+      practicalTestNotBooked: checked,
+      practicalTestPassed: checked ? false : prev.practicalTestPassed,
+    }));
+
+  const togglePracticalPassed = (checked) =>
+    setForm((prev) => ({
+      ...prev,
+      practicalTestPassed: checked,
+      practicalTestNotBooked: checked ? false : prev.practicalTestNotBooked,
+    }));
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
@@ -75,7 +103,7 @@ export default function EditTestInfoModal({ open, onClose, pupil }) {
             <div className="flex items-center gap-2">
               <Checkbox
                 checked={!!form.theoryTestNotBooked}
-                onCheckedChange={(c) => set('theoryTestNotBooked', !!c)}
+                onCheckedChange={(c) => toggleTheoryNotBooked(!!c)}
               />
               <Label className="text-sm font-normal cursor-pointer">Not booked yet</Label>
             </div>
@@ -94,7 +122,7 @@ export default function EditTestInfoModal({ open, onClose, pupil }) {
             <div className="flex items-center gap-2">
               <Checkbox
                 checked={!!form.theoryTestPassed}
-                onCheckedChange={(c) => set('theoryTestPassed', !!c)}
+                onCheckedChange={(c) => toggleTheoryPassed(!!c)}
               />
               <Label className="text-sm font-normal cursor-pointer">Theory test passed</Label>
             </div>
@@ -107,7 +135,7 @@ export default function EditTestInfoModal({ open, onClose, pupil }) {
             <div className="flex items-center gap-2">
               <Checkbox
                 checked={!!form.practicalTestNotBooked}
-                onCheckedChange={(c) => set('practicalTestNotBooked', !!c)}
+                onCheckedChange={(c) => togglePracticalNotBooked(!!c)}
               />
               <Label className="text-sm font-normal cursor-pointer">Not booked yet</Label>
             </div>
@@ -147,7 +175,7 @@ export default function EditTestInfoModal({ open, onClose, pupil }) {
             <div className="flex items-center gap-2">
               <Checkbox
                 checked={!!form.practicalTestPassed}
-                onCheckedChange={(c) => set('practicalTestPassed', !!c)}
+                onCheckedChange={(c) => togglePracticalPassed(!!c)}
               />
               <Label className="text-sm font-normal cursor-pointer">Practical test passed</Label>
             </div>
