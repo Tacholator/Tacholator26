@@ -30,6 +30,9 @@ export default function BookingSummaryModal({
     nextSteps: ''
   });
   const [selectedTopics, setSelectedTopics] = useState([]);
+  // Once the instructor types their own notes in "What Was Covered", topic
+  // changes stop overwriting it.
+  const [coveredEditedByUser, setCoveredEditedByUser] = useState(false);
   const [startMileage, setStartMileage] = useState('');
   const [endMileage, setEndMileage] = useState('');
 
@@ -63,6 +66,7 @@ export default function BookingSummaryModal({
         progressNotes: existingDiaryEntry.whatWentWell || '',
         nextSteps: existingDiaryEntry.areasToImprove || ''
       });
+      setCoveredEditedByUser(Boolean(existingDiaryEntry.objective?.trim()));
     } else {
       setSummaryData({
         mainTopic: '',
@@ -70,8 +74,19 @@ export default function BookingSummaryModal({
         progressNotes: '',
         nextSteps: ''
       });
+      setCoveredEditedByUser(false);
     }
   }, [existingDiaryEntry?.id, open]);
+
+  // Selecting topics also writes their names into "What Was Covered".
+  const handleTopicsChange = (nextTopics) => {
+    setSelectedTopics(nextTopics);
+    if (coveredEditedByUser) return;
+    setSummaryData(prev => ({
+      ...prev,
+      whatWasCovered: nextTopics.map(t => t.topicName).join(', ')
+    }));
+  };
 
   React.useEffect(() => {
     if (booking?.startMileage != null) {
@@ -363,7 +378,7 @@ export default function BookingSummaryModal({
             ) : (
               <TopicDurationSelector
                 selectedTopics={selectedTopics}
-                onChange={setSelectedTopics}
+                onChange={handleTopicsChange}
                 totalLessonMinutes={(booking.durationHours || 0) * 60}
                 disabled={readOnly}
               />
@@ -374,7 +389,10 @@ export default function BookingSummaryModal({
               <Textarea
                 id="whatWasCovered"
                 value={summaryData.whatWasCovered}
-                onChange={(e) => setSummaryData({ ...summaryData, whatWasCovered: e.target.value })}
+                onChange={(e) => {
+                  setCoveredEditedByUser(true);
+                  setSummaryData({ ...summaryData, whatWasCovered: e.target.value });
+                }}
                 placeholder="Topics, maneuvers, or skills practiced during the lesson..."
                 rows={3}
                 className="mt-2"
