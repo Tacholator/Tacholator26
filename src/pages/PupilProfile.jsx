@@ -59,6 +59,7 @@ import DiaryTimeline from '@/components/diary/DiaryTimeline';
 import DiaryEntryModal from '@/components/modals/DiaryEntryModal';
 import PupilFormModal from '@/components/modals/PupilFormModal';
 import LessonFormModal from '@/components/modals/LessonFormModal';
+import EditTestInfoModal from '@/components/modals/EditTestInfoModal';
 import PupilNewSlotModal from '@/components/booking/PupilNewSlotModal';
 import BookingSummaryModal from '@/components/booking/BookingSummaryModal';
 import ReconcileOwedDialog from '@/components/payments/ReconcileOwedDialog';
@@ -102,6 +103,7 @@ export default function PupilProfile() {
   const [showNewLessonModal, setShowNewLessonModal] = useState(false);
   const [showTestResultModal, setShowTestResultModal] = useState(false);
   const [showReconcileModal, setShowReconcileModal] = useState(false);
+  const [showTestInfoModal, setShowTestInfoModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState(null);
   const [isDeletingBooking, setIsDeletingBooking] = useState(false);
@@ -557,6 +559,14 @@ export default function PupilProfile() {
                        pupil.theoryTestDate ? moment(pupil.theoryTestDate).format('D MMM YYYY') : 'Not set'}
                     </p>
                   </div>
+                  <button
+                    onClick={() => setShowTestInfoModal(true)}
+                    className="ml-1 inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 text-[#071739] text-xs font-semibold hover:bg-slate-200 transition-colors shrink-0"
+                    title="Edit test information"
+                  >
+                    <Edit className="w-3.5 h-3.5" />
+                    Edit
+                  </button>
                 </div>
                 
                 {/* Practical Test */}
@@ -1364,6 +1374,12 @@ export default function PupilProfile() {
       <ReconcileOwedDialog
         open={showReconcileModal}
         onOpenChange={setShowReconcileModal}
+        pupil={pupil}
+      />
+
+      <EditTestInfoModal
+        open={showTestInfoModal}
+        onClose={() => setShowTestInfoModal(false)}
         pupil={pupil}
       />
 
