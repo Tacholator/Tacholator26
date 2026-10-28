@@ -30,9 +30,6 @@ export default function BookingSummaryModal({
     nextSteps: ''
   });
   const [selectedTopics, setSelectedTopics] = useState([]);
-  // Once the instructor types their own notes in "What Was Covered", topic
-  // changes stop overwriting it.
-  const [coveredEditedByUser, setCoveredEditedByUser] = useState(false);
   const [startMileage, setStartMileage] = useState('');
   const [endMileage, setEndMileage] = useState('');
 
@@ -66,7 +63,6 @@ export default function BookingSummaryModal({
         progressNotes: existingDiaryEntry.whatWentWell || '',
         nextSteps: existingDiaryEntry.areasToImprove || ''
       });
-      setCoveredEditedByUser(Boolean(existingDiaryEntry.objective?.trim()));
     } else {
       setSummaryData({
         mainTopic: '',
@@ -74,18 +70,30 @@ export default function BookingSummaryModal({
         progressNotes: '',
         nextSteps: ''
       });
-      setCoveredEditedByUser(false);
     }
   }, [existingDiaryEntry?.id, open]);
 
-  // Selecting topics also writes their names into "What Was Covered".
+  // Every topic added (predefined or custom) lands on its own line in
+  // "What Was Covered"; removing a topic removes its line.
   const handleTopicsChange = (nextTopics) => {
+    const added = nextTopics.filter(t => !selectedTopics.some(st => st.topicId === t.topicId));
+    const removedNames = selectedTopics
+      .filter(st => !nextTopics.some(t => t.topicId === st.topicId))
+      .map(st => st.topicName);
+
     setSelectedTopics(nextTopics);
-    if (coveredEditedByUser) return;
-    setSummaryData(prev => ({
-      ...prev,
-      whatWasCovered: nextTopics.map(t => t.topicName).join('\n')
-    }));
+    if (added.length === 0 && removedNames.length === 0) return;
+
+    setSummaryData(prev => {
+      let lines = prev.whatWasCovered ? prev.whatWasCovered.split('\n') : [];
+      if (removedNames.length > 0) {
+        lines = lines.filter(line => !removedNames.includes(line.trim()));
+      }
+      added.forEach(t => {
+        if (!lines.includes(t.topicName)) lines.push(t.topicName);
+      });
+      return { ...prev, whatWasCovered: lines.join('\n') };
+    });
   };
 
   React.useEffect(() => {
@@ -389,10 +397,7 @@ export default function BookingSummaryModal({
               <Textarea
                 id="whatWasCovered"
                 value={summaryData.whatWasCovered}
-                onChange={(e) => {
-                  setCoveredEditedByUser(true);
-                  setSummaryData({ ...summaryData, whatWasCovered: e.target.value });
-                }}
+                onChange={(e) => setSummaryData({ ...summaryData, whatWasCovered: e.target.value })}
                 placeholder="Topics, maneuvers, or skills practiced during the lesson..."
                 rows={3}
                 className="mt-2"
