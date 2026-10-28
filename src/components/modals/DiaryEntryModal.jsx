@@ -22,6 +22,9 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
   });
   const [topicDurations, setTopicDurations] = useState([]);
   const [visualViewport, setVisualViewport] = useState(null);
+  // Tracks the "What was covered" text auto-filled from the selected topic, so
+  // choosing a different topic updates it without wiping notes typed by hand.
+  const [autoObjective, setAutoObjective] = useState(null);
 
   // On mobile the keyboard shrinks the visual viewport but the dialog is
   // positioned against the layout viewport, which leaves the focused field
@@ -75,6 +78,8 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
   React.useEffect(() => {
     if (existingEntry) {
       setFormData(existingEntry);
+      const topic = courseWorkTopics.find(t => t.topicId === existingEntry.mainTopic);
+      setAutoObjective(topic && topic.title === existingEntry.objective ? topic.title : null);
     } else {
       setFormData({
         date: lesson?.date || moment().format('YYYY-MM-DD'),
@@ -83,6 +88,7 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
         whatWentWell: '',
         areasToImprove: ''
       });
+      setAutoObjective(null);
     }
   }, [existingEntry?.id, open]);
 
@@ -96,6 +102,17 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Selecting a topic also fills "What was covered" with that topic's title.
+  const handleTopicChange = (value) => {
+    const title = courseWorkTopics.find(t => t.topicId === value)?.title || '';
+    setFormData(prev => {
+      const current = (prev.objective || '').trim();
+      const shouldUpdate = current === '' || (autoObjective !== null && current === autoObjective);
+      return { ...prev, mainTopic: value, objective: shouldUpdate ? title : prev.objective };
+    });
+    setAutoObjective(title);
   };
 
   const handleSubmit = async () => {
@@ -192,7 +209,7 @@ export default function DiaryEntryModal({ open, onClose, pupilId, lessonId, exis
             ) : (
               <Select 
                 value={formData.mainTopic} 
-                onValueChange={(value) => handleChange('mainTopic', value)}
+                onValueChange={handleTopicChange}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select main topic covered..." />
