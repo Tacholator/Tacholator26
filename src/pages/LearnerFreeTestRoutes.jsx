@@ -123,7 +123,6 @@ export default function LearnerFreeTestRoutes() {
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <h1 className="text-3xl font-bold text-[#071739]">Test Routes</h1>
-            <Badge className="bg-emerald-500 text-white font-semibold text-xs">FREE</Badge>
           </div>
           <p className="text-slate-600">
             Free route walkthroughs from your instructor and the national catalogue.
