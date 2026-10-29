@@ -32,6 +32,7 @@ export default function AdminNationalCentreDetail() {
   const [creatingRoute, setCreatingRoute] = useState(false);
   const [newRouteName, setNewRouteName] = useState('');
   const [newRouteUrl, setNewRouteUrl] = useState('');
+  const [newExitDirection, setNewExitDirection] = useState('left');
   const [newGpsType, setNewGpsType] = useState('gpx_url');
   const [newGpsUrl, setNewGpsUrl] = useState('');
   const [newGpsUploading, setNewGpsUploading] = useState(false);
@@ -67,20 +68,32 @@ export default function AdminNationalCentreDetail() {
   };
 
   const createRouteMutation = useMutation({
-    mutationFn: ({ name, youtubeUrl, youtubeVideoId, gpsRouteType, gpsRouteUrl }) =>
-      base44.entities.TestRoute.create({ routeName: name, city: centreName, youtubeUrl, youtubeVideoId, gpsRouteType: gpsRouteUrl ? gpsRouteType : undefined, gpsRouteUrl: gpsRouteUrl || undefined }),
+    mutationFn: ({ name, youtubeUrl, youtubeVideoId, gpsRouteType, gpsRouteUrl, exitDirection }) =>
+      base44.entities.TestRoute.create({ routeName: name, city: centreName, exitDirection, youtubeUrl, youtubeVideoId, gpsRouteType: gpsRouteUrl ? gpsRouteType : undefined, gpsRouteUrl: gpsRouteUrl || undefined }),
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ['nationalCentreRoutes', centreName] });
       queryClient.refetchQueries({ queryKey: ['nationalTestCentres'] });
       queryClient.refetchQueries({ queryKey: ['allTestRoutes'] });
       setNewRouteName('');
       setNewRouteUrl('');
+      setNewExitDirection('left');
       setNewGpsType('gpx_url');
       setNewGpsUrl('');
       setCreatingRoute(false);
       toast({ title: 'Success', description: 'Route created.' });
     },
     onError: () => toast({ title: 'Error', description: 'Failed to create route.', variant: 'destructive' })
+  });
+
+  const updateDirectionMutation = useMutation({
+    mutationFn: ({ id, exitDirection }) =>
+      base44.entities.TestRoute.update(id, { exitDirection: exitDirection || null }),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['nationalCentreRoutes', centreName] });
+      queryClient.refetchQueries({ queryKey: ['allTestRoutes'] });
+      toast({ title: 'Saved', description: 'Route category updated.' });
+    },
+    onError: () => toast({ title: 'Error', description: 'Failed to update route category.', variant: 'destructive' })
   });
 
   const updateNameMutation = useMutation({
@@ -118,6 +131,12 @@ export default function AdminNationalCentreDetail() {
   });
 
   const totalWithVideo = routes.filter(r => r.youtubeVideoId).length;
+
+  const routeGroups = [
+    { key: 'left', label: 'Left from Test centre', routes: routes.filter(r => r.exitDirection === 'left') },
+    { key: 'right', label: 'Right turn from Test centre', routes: routes.filter(r => r.exitDirection === 'right') },
+    { key: 'none', label: 'Not categorised', routes: routes.filter(r => !r.exitDirection) },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
@@ -158,6 +177,18 @@ export default function AdminNationalCentreDetail() {
                   onChange={(e) => setNewRouteUrl(e.target.value)}
                   placeholder="YouTube URL (optional)"
                 />
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold text-slate-600">Leaving the test centre</Label>
+                  <Select value={newExitDirection} onValueChange={setNewExitDirection}>
+                    <SelectTrigger className="h-8 text-sm bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="left">Left from Test centre</SelectItem>
+                      <SelectItem value="right">Right turn from Test centre</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 {/* GPS Route Section */}
                 <div className="border border-slate-200 rounded-lg p-3 space-y-2 bg-slate-50">
                   <Label className="text-xs font-semibold text-slate-600 flex items-center gap-1"><Navigation className="w-3.5 h-3.5" /> GPS Route (optional)</Label>
@@ -198,14 +229,14 @@ export default function AdminNationalCentreDetail() {
                   <Button
                     onClick={() => {
                       const videoId = extractVideoId(newRouteUrl);
-                      createRouteMutation.mutate({ name: newRouteName.trim(), youtubeUrl: newRouteUrl, youtubeVideoId: videoId, gpsRouteType: newGpsType, gpsRouteUrl: newGpsUrl });
+                      createRouteMutation.mutate({ name: newRouteName.trim(), youtubeUrl: newRouteUrl, youtubeVideoId: videoId, gpsRouteType: newGpsType, gpsRouteUrl: newGpsUrl, exitDirection: newExitDirection });
                     }}
                     disabled={createRouteMutation.isPending || !newRouteName.trim()}
                     className="bg-emerald-500 hover:bg-emerald-600 gap-1"
                   >
                     <Check className="w-4 h-4" /> Save Route
                   </Button>
-                  <Button variant="outline" onClick={() => { setCreatingRoute(false); setNewRouteName(''); setNewRouteUrl(''); setNewGpsUrl(''); setNewGpsType('gpx_url'); }}>
+                  <Button variant="outline" onClick={() => { setCreatingRoute(false); setNewRouteName(''); setNewRouteUrl(''); setNewExitDirection('left'); setNewGpsUrl(''); setNewGpsType('gpx_url'); }}>
                     <X className="w-4 h-4" /> Cancel
                   </Button>
                 </div>
@@ -229,8 +260,15 @@ export default function AdminNationalCentreDetail() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
-            {routes.map(route => (
+          <div className="space-y-8">
+            {routeGroups.map(group => group.routes.length === 0 ? null : (
+              <div key={group.key} className="space-y-3">
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                  <h2 className="text-lg font-semibold text-[#071739]">{group.label}</h2>
+                  <Badge className="bg-slate-200 text-slate-700 text-xs">{group.routes.length}</Badge>
+                </div>
+                <div className="space-y-4">
+            {group.routes.map(route => (
               <Card key={route.id} className="border border-slate-200 bg-white">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
@@ -293,6 +331,19 @@ export default function AdminNationalCentreDetail() {
                           )}
                         </div>
                         <div className="flex items-center gap-2">
+                          <Select
+                            value={route.exitDirection || 'none'}
+                            onValueChange={(value) => updateDirectionMutation.mutate({ id: route.id, exitDirection: value === 'none' ? null : value })}
+                          >
+                            <SelectTrigger className="h-7 w-[108px] text-xs bg-white">
+                              <SelectValue placeholder="Category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="left">Left</SelectItem>
+                              <SelectItem value="right">Right</SelectItem>
+                              <SelectItem value="none">Not set</SelectItem>
+                            </SelectContent>
+                          </Select>
                           {route.youtubeVideoId && (
                             <Button
                               size="sm"
@@ -402,6 +453,9 @@ export default function AdminNationalCentreDetail() {
                   )}
                 </CardContent>
               </Card>
+            ))}
+                </div>
+              </div>
             ))}
           </div>
         )}

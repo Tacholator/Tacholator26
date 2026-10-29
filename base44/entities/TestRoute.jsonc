@@ -22,6 +22,14 @@
       "type": "string",
       "description": "Name/title of the route"
     },
+    "exitDirection": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right"
+      ],
+      "description": "Direction taken when leaving the test centre (left or right) - used to group routes"
+    },
     "youtubeUrl": {
       "type": "string",
       "description": "Full YouTube URL for this route"
