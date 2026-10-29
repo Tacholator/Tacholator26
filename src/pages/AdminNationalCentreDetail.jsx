@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
+import { buildExitDirectionGroups } from '@/lib/routeGroups';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -132,11 +133,7 @@ export default function AdminNationalCentreDetail() {
 
   const totalWithVideo = routes.filter(r => r.youtubeVideoId).length;
 
-  const routeGroups = [
-    { key: 'left', label: 'Left from Test centre onto Sullivan Road', routes: routes.filter(r => r.exitDirection === 'left') },
-    { key: 'right', label: 'Right from Test Centre onto Sullivan Road', routes: routes.filter(r => r.exitDirection === 'right') },
-    { key: 'none', label: 'Not categorised', routes: routes.filter(r => !r.exitDirection) },
-  ];
+  const routeGroups = buildExitDirectionGroups(routes);
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">

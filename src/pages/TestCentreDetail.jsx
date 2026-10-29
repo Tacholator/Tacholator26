@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import RouteNavigationOverlay from '@/components/testroutes/RouteNavigationOverlay';
+import { EXIT_DIRECTION_LABELS } from '@/lib/routeGroups';
 
 function encodePolyline(coords) {
   let output = '';
@@ -87,6 +88,11 @@ export default function TestCentreDetail() {
 
   const subscription = subscriptions.find(s => s.cityId === centreId && s.status === 'active');
   const isSubscribed = !!subscription;
+
+  const directionOrder = ['left', 'right', 'none'];
+  const sortedRoutes = [...routes].sort(
+    (a, b) => directionOrder.indexOf(a.exitDirection || 'none') - directionOrder.indexOf(b.exitDirection || 'none')
+  );
 
   const handleSubscribe = async () => {
     if (!centre?.stripePriceId) {
@@ -221,11 +227,19 @@ export default function TestCentreDetail() {
             <p className="text-sm text-slate-400 mt-1">Check back later for this centre</p>
           </div>
         ) : (
-          routes.map((route, idx) => {
+          sortedRoutes.map((route, idx) => {
             const tab = activeTab[route.id] || 'video';
             const hasGps = !!route.gpsRouteUrl;
+            const groupKey = route.exitDirection || 'none';
+            const showGroupHeader = idx === 0 || (sortedRoutes[idx - 1].exitDirection || 'none') !== groupKey;
             return (
-              <div key={route.id} className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+              <React.Fragment key={route.id}>
+              {showGroupHeader && (
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-2 pt-2">
+                  <h2 className="text-lg font-semibold text-[#071739]">{EXIT_DIRECTION_LABELS[groupKey]}</h2>
+                </div>
+              )}
+              <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
                 {/* Route header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
                   <div>
@@ -379,6 +393,7 @@ export default function TestCentreDetail() {
                   );
                 })()}
               </div>
+              </React.Fragment>
             );
           })
         )}
