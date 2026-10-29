@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Youtube, Lock, Play, X, Search, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { EXIT_DIRECTION_LABELS, sortRoutesByExitDirection } from '@/lib/routeGroups';
 
 export default function LearnerFreeTestRoutes() {
   const navigate = useNavigate();
@@ -55,6 +56,12 @@ export default function LearnerFreeTestRoutes() {
   const isLoading = pupilLoading || (accessEnabled && (instructorRoutesLoading || adminRoutesLoading));
 
   const mergedRoutes = useMemo(() => {
+    // Catalogue routes carry the exit direction; instructor copies of the same
+    // video often don't, so inherit it to keep the left/right grouping intact.
+    const catalogueExitByVideo = {};
+    adminRoutes.forEach(r => {
+      if (r.youtubeVideoId && r.exitDirection) catalogueExitByVideo[r.youtubeVideoId] = r.exitDirection;
+    });
     const seen = new Set();
     const combined = [];
     const push = (r) => {
@@ -62,7 +69,11 @@ export default function LearnerFreeTestRoutes() {
       const key = r.youtubeVideoId;
       if (seen.has(key)) return;
       seen.add(key);
-      combined.push({ ...r, source: r.instructorId ? 'instructor' : 'catalogue' });
+      combined.push({
+        ...r,
+        exitDirection: r.exitDirection || catalogueExitByVideo[key] || null,
+        source: r.instructorId ? 'instructor' : 'catalogue'
+      });
     };
     instructorRoutes.forEach(push);
     adminRoutes.forEach(push);
@@ -77,6 +88,14 @@ export default function LearnerFreeTestRoutes() {
       (r.city || '').toLowerCase().includes(q)
     );
   }, [mergedRoutes, search]);
+
+  const groupedRoutes = useMemo(() => sortRoutesByExitDirection(filteredRoutes), [filteredRoutes]);
+
+  const groupCounts = useMemo(() => groupedRoutes.reduce((acc, r) => {
+    const key = r.exitDirection || 'none';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {}), [groupedRoutes]);
 
   if (isLoading) {
     return <div className="p-6 text-center py-12 text-slate-500">Loading...</div>;
@@ -139,8 +158,18 @@ export default function LearnerFreeTestRoutes() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {filteredRoutes.map(route => (
-              <Card key={route.id} className="overflow-hidden">
+            {groupedRoutes.map((route, idx) => {
+              const groupKey = route.exitDirection || 'none';
+              const showGroupHeader = idx === 0 || (groupedRoutes[idx - 1].exitDirection || 'none') !== groupKey;
+              return (
+              <React.Fragment key={route.id}>
+                {showGroupHeader && (
+                  <div className="md:col-span-2 flex items-center gap-2 border-b border-slate-200 pb-2 mt-2">
+                    <h2 className="text-lg font-semibold text-[#071739]">{EXIT_DIRECTION_LABELS[groupKey]}</h2>
+                    <Badge className="bg-slate-200 text-slate-700 text-xs">{groupCounts[groupKey]}</Badge>
+                  </div>
+                )}
+              <Card className="overflow-hidden">
                 <CardContent className="p-0">
                   {playingId === route.id ? (
                     <div>
@@ -200,7 +229,9 @@ export default function LearnerFreeTestRoutes() {
                   )}
                 </CardContent>
               </Card>
-            ))}
+              </React.Fragment>
+              );
+            })}
           </div>
         )}
       </div>

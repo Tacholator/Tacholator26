@@ -4,6 +4,14 @@ export const EXIT_DIRECTION_LABELS = {
   none: 'Not categorised',
 };
 
+const EXIT_ORDER = ['left', 'right', 'none'];
+
+export function sortRoutesByExitDirection(routes = []) {
+  return [...routes].sort(
+    (a, b) => EXIT_ORDER.indexOf(a.exitDirection || 'none') - EXIT_ORDER.indexOf(b.exitDirection || 'none')
+  );
+}
+
 export function buildExitDirectionGroups(routes = []) {
   return [
     { key: 'left', label: EXIT_DIRECTION_LABELS.left, routes: routes.filter(r => r.exitDirection === 'left') },
