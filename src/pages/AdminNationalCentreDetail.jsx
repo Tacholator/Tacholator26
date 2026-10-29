@@ -133,8 +133,8 @@ export default function AdminNationalCentreDetail() {
   const totalWithVideo = routes.filter(r => r.youtubeVideoId).length;
 
   const routeGroups = [
-    { key: 'left', label: 'Left from Test centre', routes: routes.filter(r => r.exitDirection === 'left') },
-    { key: 'right', label: 'Right turn from Test centre', routes: routes.filter(r => r.exitDirection === 'right') },
+    { key: 'left', label: 'Left from Test centre onto Sullivan Road', routes: routes.filter(r => r.exitDirection === 'left') },
+    { key: 'right', label: 'Right from Test Centre onto Sullivan Road', routes: routes.filter(r => r.exitDirection === 'right') },
     { key: 'none', label: 'Not categorised', routes: routes.filter(r => !r.exitDirection) },
   ];
 
