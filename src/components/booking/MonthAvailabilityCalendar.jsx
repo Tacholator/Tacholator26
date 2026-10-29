@@ -84,6 +84,24 @@ export default function MonthAvailabilityCalendar({
     return rows;
   }, [currentDate]);
 
+  // Real totals for the displayed month (replaces the old static legend numbers)
+  const monthStats = useMemo(() => {
+    let availableSlots = 0;
+    let daysWithNoSlots = 0;
+    let bookingCount = 0;
+    const cursor = currentDate.clone().startOf('month');
+    const monthEnd = currentDate.clone().endOf('month');
+    while (cursor.isSameOrBefore(monthEnd)) {
+      const key = cursor.format('YYYY-MM-DD');
+      const slots = availableByDate[key]?.length || 0;
+      availableSlots += slots;
+      if (slots === 0) daysWithNoSlots += 1;
+      bookingCount += bookingsByDate[key]?.length || 0;
+      cursor.add(1, 'day');
+    }
+    return { availableSlots, daysWithNoSlots, bookingCount };
+  }, [currentDate, availableByDate, bookingsByDate]);
+
   const selectedKey = selectedDate ? selectedDate.format('YYYY-MM-DD') : null;
   const daySlots = selectedKey ? availableByDate[selectedKey] || [] : [];
   const dayBookings = selectedKey ? bookingsByDate[selectedKey] || [] : [];
@@ -236,19 +254,33 @@ export default function MonthAvailabilityCalendar({
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 mt-4 flex-wrap text-xs text-slate-500">
-        <div className="flex items-center gap-1.5">
-          <span className="inline-flex items-center justify-center min-w-[1.4rem] h-5 px-1 rounded-full text-[11px] font-bold bg-emerald-500 text-white">3</span>
-          <span>Available slots</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="inline-flex items-center justify-center min-w-[1.4rem] h-5 px-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-400">0</span>
-          <span>No slots</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-          <span>Your booking</span>
+      {/* Month totals */}
+      <div className="mt-4">
+        <p className="text-[11px] font-semibold text-slate-400 uppercase mb-1.5">
+          {currentDate.format('MMMM YYYY')}
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-2 text-center">
+            <p className="text-lg font-bold leading-tight text-emerald-700">{monthStats.availableSlots}</p>
+            <p className="flex items-center justify-center gap-1 text-[11px] font-medium text-emerald-800">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Available slots
+            </p>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-2 text-center">
+            <p className="text-lg font-bold leading-tight text-slate-500">{monthStats.daysWithNoSlots}</p>
+            <p className="flex items-center justify-center gap-1 text-[11px] font-medium text-slate-600">
+              <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+              Days with no slots
+            </p>
+          </div>
+          <div className="rounded-lg border border-blue-100 bg-blue-50 px-2 py-2 text-center">
+            <p className="text-lg font-bold leading-tight text-blue-700">{monthStats.bookingCount}</p>
+            <p className="flex items-center justify-center gap-1 text-[11px] font-medium text-blue-800">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+              Your bookings
+            </p>
+          </div>
         </div>
       </div>
     </div>
