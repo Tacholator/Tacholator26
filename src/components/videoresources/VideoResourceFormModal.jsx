@@ -20,7 +20,7 @@ import { Loader2 } from 'lucide-react';
 import { extractYouTubeId, youtubeThumbnail } from '@/lib/youtube';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
-const emptyForm = { title: '', videoUrl: '', topic: '', description: '' };
+const emptyForm = { title: '', videoUrl: '', topic: '' };
 
 export default function VideoResourceFormModal({
   open,
@@ -43,7 +43,6 @@ export default function VideoResourceFormModal({
       title: initialVideo?.title || '',
       videoUrl: initialVideo?.videoUrl || '',
       topic: initialVideo?.topic || '',
-      description: initialVideo?.description || '',
     });
   }, [open, initialVideo]);
 
@@ -57,7 +56,6 @@ export default function VideoResourceFormModal({
       title: form.title.trim(),
       videoUrl: form.videoUrl.trim(),
       topic: form.topic.trim(),
-      description: form.description.trim(),
       videoId: extractYouTubeId(form.videoUrl) || null,
     });
   };
@@ -108,16 +106,6 @@ export default function VideoResourceFormModal({
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="videoDescription">Description</Label>
-            <Input
-              id="videoDescription"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Optional"
-            />
           </div>
 
           <DialogFooter className="gap-2">
