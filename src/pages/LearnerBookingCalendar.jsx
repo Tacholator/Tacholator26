@@ -393,12 +393,16 @@ export default function LearnerBookingCalendar() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <Link to={createPageUrl('LearnerDashboard')}>
-          <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </Button>
-        </Link>
+        {/* Back to dashboard only when the page is opened from the dashboard on desktop,
+            never when the learner reaches it through the mobile bottom navigation */}
+        <div className="hidden lg:block">
+          <Link to={createPageUrl('LearnerDashboard')}>
+            <Button variant="ghost" className="mb-6 gap-2 text-slate-600 hover:text-slate-800">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+        </div>
 
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-800 mb-2">Book a Lesson</h1>
