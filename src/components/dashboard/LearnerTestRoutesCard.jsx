@@ -4,7 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { Youtube, ChevronRight } from 'lucide-react';
+import { Youtube, ChevronRight, Play } from 'lucide-react';
+
+const routesUrl = () => createPageUrl('LearnerFreeTestRoutes');
 
 export default function LearnerTestRoutesCard({ pupil }) {
   const accessEnabled = !!pupil?.testRoutesAccessEnabled;
@@ -24,8 +26,7 @@ export default function LearnerTestRoutesCard({ pupil }) {
     });
   }, [routes]);
 
-  const leftCount = uniqueRoutes.filter((r) => r.exitDirection === 'left').length;
-  const rightCount = uniqueRoutes.filter((r) => r.exitDirection === 'right').length;
+  const previewRoutes = uniqueRoutes.slice(0, 2);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden ring-1 ring-[#F7B602]/20">
@@ -48,28 +49,39 @@ export default function LearnerTestRoutesCard({ pupil }) {
           </p>
         ) : isLoading ? (
           <p className="text-sm text-slate-400 py-4">Loading...</p>
-        ) : uniqueRoutes.length === 0 ? (
+        ) : previewRoutes.length === 0 ? (
           <p className="text-sm text-slate-500 py-3">
             No route videos from your instructor yet.
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-xl bg-gradient-to-br from-sky-50 to-sky-100 p-3">
-              <p className="text-2xl font-bold text-sky-900 leading-none">{leftCount}</p>
-              <p className="text-[11px] font-semibold text-sky-700 uppercase tracking-wide mt-1">
-                Exiting left
-              </p>
-            </div>
-            <div className="rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 p-3">
-              <p className="text-2xl font-bold text-emerald-900 leading-none">{rightCount}</p>
-              <p className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wide mt-1">
-                Exiting right
-              </p>
-            </div>
+            {previewRoutes.map((route) => (
+              <Link
+                key={route.id}
+                to={routesUrl()}
+                className="group block rounded-xl overflow-hidden bg-slate-50 border border-slate-100"
+              >
+                <div className="relative">
+                  <img
+                    src={`https://img.youtube.com/vi/${route.youtubeVideoId}/mqdefault.jpg`}
+                    alt={route.routeName}
+                    className="w-full h-20 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
+                      <Play className="w-4 h-4 text-[#071739] ml-0.5" />
+                    </div>
+                  </div>
+                </div>
+                <p className="p-2 text-xs font-semibold text-[#071739] leading-snug line-clamp-2 min-h-[2.25rem]">
+                  {route.routeName}
+                </p>
+              </Link>
+            ))}
           </div>
         )}
 
-        <Link to={createPageUrl('LearnerFreeTestRoutes')}>
+        <Link to={routesUrl()}>
           <Button variant="outline" className="w-full gap-1 mt-4 border-[#F7B602] text-[#071739] hover:bg-amber-50">
             View More <ChevronRight className="w-4 h-4" />
           </Button>
