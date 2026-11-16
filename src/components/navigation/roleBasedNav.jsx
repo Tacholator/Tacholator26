@@ -91,6 +91,7 @@ export const instructorOnlyLinks = [
     ]
   },
   { name: 'Video Resources', icon: Video, page: 'InstructorVideoResources' },
+  { name: 'Test Route Videos', icon: Video, page: 'InstructorTestRoutes' },
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
   { name: 'Readiness Reviews', icon: CheckSquare, page: 'InstructorReadinessReview' },
   { name: 'Expenses', icon: Fuel, page: 'InstructorExpenses' },
