@@ -47,6 +47,7 @@ import ManageNerves from './pages/ManageNerves';
 import PupilTopicDetail from './pages/PupilTopicDetail';
 import LearnerFreeTestRoutes from './pages/LearnerFreeTestRoutes';
 import LearnerVideoResources from './pages/LearnerVideoResources';
+import LearnerVideoTopicDetail from './pages/LearnerVideoTopicDetail';
 import TopTenReasons from './pages/TopTenReasons';
 import AdminVideoResources from './pages/AdminVideoResources';
 import InstructorVideoResources from './pages/InstructorVideoResources';
@@ -287,6 +288,11 @@ const AuthenticatedApp = () => {
       <Route path="/LearnerVideoResources" element={
         <LayoutWrapper currentPageName="LearnerVideoResources">
           <LearnerVideoResources />
+        </LayoutWrapper>
+      } />
+      <Route path="/LearnerVideoTopicDetail" element={
+        <LayoutWrapper currentPageName="LearnerVideoResources">
+          <LearnerVideoTopicDetail />
         </LayoutWrapper>
       } />
       <Route path="/TopTenReasons" element={
