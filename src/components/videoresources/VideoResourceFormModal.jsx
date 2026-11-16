@@ -28,23 +28,24 @@ export default function VideoResourceFormModal({
   onSave,
   initialVideo,
   saving = false,
+  defaultTopic = '',
 }) {
   const [form, setForm] = useState(emptyForm);
 
   const topicTitles = courseWorkTopics.map((topic) => topic.title);
-  const topicOptions =
-    initialVideo?.topic && !topicTitles.includes(initialVideo.topic)
-      ? [...topicTitles, initialVideo.topic]
-      : topicTitles;
+  const extras = [...new Set([initialVideo?.topic, defaultTopic])].filter(
+    (topic) => topic && !topicTitles.includes(topic)
+  );
+  const topicOptions = [...extras, ...topicTitles];
 
   useEffect(() => {
     if (!open) return;
     setForm({
       title: initialVideo?.title || '',
       videoUrl: initialVideo?.videoUrl || '',
-      topic: initialVideo?.topic || '',
+      topic: initialVideo?.topic || defaultTopic,
     });
-  }, [open, initialVideo]);
+  }, [open, initialVideo, defaultTopic]);
 
   const canSave = !!(form.title.trim() && form.videoUrl.trim() && form.topic.trim());
   const thumb = youtubeThumbnail(form.videoUrl);

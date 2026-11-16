@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Loader2, Video } from 'lucide-react';
 import VideoResourceFormModal from '@/components/videoresources/VideoResourceFormModal';
-import VideoTopicGroup from '@/components/videoresources/VideoTopicGroup';
+import VideoTopicSummaryCard from '@/components/videoresources/VideoTopicSummaryCard';
 import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 const topicRank = (topic) => {
@@ -45,30 +45,26 @@ export default function InstructorVideoResources() {
     },
   });
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.InstructorVideoResource.update(id, data),
-    onSuccess: () => {
-      invalidate();
-      setShowModal(false);
-      setEditingVideo(null);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.InstructorVideoResource.delete(id),
+  const bulkUpdateMutation = useMutation({
+    mutationFn: (updates) => base44.entities.InstructorVideoResource.bulkUpdate(updates),
     onSuccess: invalidate,
   });
 
-  const toggleVisibility = (video, visible) =>
-    updateMutation.mutate({ id: video.id, data: { visibleToPupils: visible } });
+  const deleteTopicMutation = useMutation({
+    mutationFn: (items) =>
+      Promise.all(items.map((video) => base44.entities.InstructorVideoResource.delete(video.id))),
+    onSuccess: invalidate,
+  });
 
-  const handleDelete = (video) => {
-    if (confirm(`Delete "${video.title}"?`)) deleteMutation.mutate(video.id);
-  };
+  const toggleTopic = (group, visible) =>
+    bulkUpdateMutation.mutate(group.items.map((v) => ({ id: v.id, visibleToPupils: visible })));
 
-  const handleSave = (payload) => {
-    if (editingVideo) updateMutation.mutate({ id: editingVideo.id, data: payload });
-    else createMutation.mutate(payload);
+  const renameTopic = (group, newTopic) =>
+    bulkUpdateMutation.mutate(group.items.map((v) => ({ id: v.id, topic: newTopic })));
+
+  const deleteTopic = (group) => {
+    if (!confirm(`Delete "${group.topic}" and its ${group.items.length} video(s)?`)) return;
+    deleteTopicMutation.mutate(group.items);
   };
 
   const grouped = useMemo(() => {
@@ -124,16 +120,13 @@ export default function InstructorVideoResources() {
         ) : (
           <div className="space-y-4">
             {grouped.map((group) => (
-              <VideoTopicGroup
+              <VideoTopicSummaryCard
                 key={group.topic}
                 topic={group.topic}
                 videos={group.items}
-                onToggleVisibility={toggleVisibility}
-                onEdit={(video) => {
-                  setEditingVideo(video);
-                  setShowModal(true);
-                }}
-                onDelete={handleDelete}
+                onToggleAll={(visible) => toggleTopic(group, visible)}
+                onRename={(newTopic) => renameTopic(group, newTopic)}
+                onDelete={() => deleteTopic(group)}
               />
             ))}
           </div>
@@ -146,9 +139,9 @@ export default function InstructorVideoResources() {
           setShowModal(false);
           setEditingVideo(null);
         }}
-        onSave={handleSave}
+        onSave={(payload) => createMutation.mutate(payload)}
         initialVideo={editingVideo}
-        saving={createMutation.isPending || updateMutation.isPending}
+        saving={createMutation.isPending}
       />
     </div>
   );
