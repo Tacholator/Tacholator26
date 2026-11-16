@@ -53,16 +53,7 @@ export default function InstructorTestRoutes() {
     enabled: !!user?.id
   });
 
-  // Admin-managed catalogue videos — instructors manage only their own bespoke routes
-  const { data: adminVideoIds = [] } = useQuery({
-    queryKey: ['adminCatalogueVideoIds'],
-    queryFn: async () => {
-      const all = await base44.entities.TestRoute.list();
-      return all.filter(r => !r.instructorId && r.youtubeVideoId).map(r => r.youtubeVideoId);
-    }
-  });
-
-  const routes = ownRoutes.filter(r => !r.youtubeVideoId || !adminVideoIds.includes(r.youtubeVideoId));
+  const routes = ownRoutes;
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['myPupils', user?.id],
