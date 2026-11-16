@@ -3,6 +3,12 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Video, Loader2, ExternalLink } from 'lucide-react';
 import { youtubeThumbnail } from '@/lib/youtube';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
+
+const topicRank = (topic) => {
+  const index = courseWorkTopics.findIndex((t) => t.title === topic);
+  return index === -1 ? courseWorkTopics.length : index;
+};
 
 export default function LearnerTopicVideos({ instructorId }) {
   const [videos, setVideos] = useState([]);
@@ -37,8 +43,8 @@ export default function LearnerTopicVideos({ instructorId }) {
         if (!map.has(key)) map.set(key, []);
         map.get(key).push(video);
       });
-    return Array.from(map, ([topic, items]) => ({ topic, items })).sort((a, b) =>
-      a.topic.localeCompare(b.topic)
+    return Array.from(map, ([topic, items]) => ({ topic, items })).sort(
+      (a, b) => topicRank(a.topic) - topicRank(b.topic)
     );
   }, [videos]);
 

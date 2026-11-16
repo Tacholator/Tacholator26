@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { extractYouTubeId, youtubeThumbnail } from '@/lib/youtube';
-import { DRIVING_SKILLS } from '@/components/progress/skillsData';
+import { courseWorkTopics } from '@/components/coursework/topicIndex';
 
 const emptyForm = { title: '', videoUrl: '', topic: '', description: '' };
 
@@ -31,11 +31,11 @@ export default function VideoResourceFormModal({
 }) {
   const [form, setForm] = useState(emptyForm);
 
-  const skillTitles = DRIVING_SKILLS.map((skill) => skill.title);
+  const topicTitles = courseWorkTopics.map((topic) => topic.title);
   const topicOptions =
-    initialVideo?.topic && !skillTitles.includes(initialVideo.topic)
-      ? [...skillTitles, initialVideo.topic]
-      : skillTitles;
+    initialVideo?.topic && !topicTitles.includes(initialVideo.topic)
+      ? [...topicTitles, initialVideo.topic]
+      : topicTitles;
 
   useEffect(() => {
     if (!open) return;
