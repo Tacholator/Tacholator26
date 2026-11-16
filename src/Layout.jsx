@@ -355,30 +355,6 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </aside>
 
-      {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-x-4 bg-slate-50 border-b border-slate-200 px-4 shadow-sm" style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(4rem + env(safe-area-inset-top))', willChange: 'transform', transform: 'translateZ(0)' }}>
-        <div className="flex items-center gap-2 flex-1">
-                      <img 
-                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/b4113dc99_MobrageLearner33.png" 
-                        alt="Mobrage" 
-                        className="w-8 h-8 rounded-lg object-cover"
-                        />
-                        <span className="font-bold text-lg text-[#071739]">Tacholator</span>
-                                </div>
-                      <div className="flex items-center gap-2">
-                      <button 
-                        onClick={() => setShowAccountPanel(true)}
-                        className="focus:outline-none"
-                      >
-                        <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
-                          <AvatarFallback className="bg-gradient-to-br from-[#F7B602] to-[#d99f02] text-[#071739] text-sm">
-                            {user?.firstName?.[0] || user?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                      </button>
-          </div>
-      </div>
-
       {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
@@ -527,7 +503,7 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="lg:pl-64 pb-nav-safe main-content-top">
+      <main className="lg:pl-64 pb-nav-safe">
         <AppDownloadBanner />
         {children}
       </main>
