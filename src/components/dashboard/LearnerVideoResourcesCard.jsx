@@ -49,7 +49,7 @@ export default function LearnerVideoResourcesCard() {
         )}
 
         <Link to={createPageUrl('LearnerVideoResources')}>
-          <Button variant="outline" className="w-full gap-1 mt-4 border-[#F7B602] text-[#071739] hover:bg-amber-50">
+          <Button className="w-full gap-1 mt-4 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold">
             View More <ChevronRight className="w-4 h-4" />
           </Button>
         </Link>

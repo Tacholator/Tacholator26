@@ -82,7 +82,7 @@ export default function LearnerTestRoutesCard({ pupil }) {
         )}
 
         <Link to={routesUrl()}>
-          <Button variant="outline" className="w-full gap-1 mt-4 border-[#F7B602] text-[#071739] hover:bg-amber-50">
+          <Button className="w-full gap-1 mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold">
             View More <ChevronRight className="w-4 h-4" />
           </Button>
         </Link>
