@@ -9,8 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Trash2, Plus, Loader2, Video, Pencil, X, ExternalLink } from 'lucide-react';
 import { youtubeThumbnail } from '@/lib/youtube';
+import AdminVideoGroupCard from '@/components/videoresources/AdminVideoGroupCard';
 
 const emptyForm = { title: '', description: '', youtubeUrl: '', category: 'general', order: 0, published: true };
+
+const CATEGORY_ORDER = [
+  { key: 'general', label: 'General' },
+  { key: 'tell_me', label: 'Tell Me' },
+  { key: 'show_me', label: 'Show Me' }
+];
 
 export default function AdminVideoResources() {
   const queryClient = useQueryClient();
@@ -36,6 +43,14 @@ export default function AdminVideoResources() {
     mutationFn: (id) => base44.entities.LearnerVideo.delete(id),
     onSuccess: () => { queryClient.invalidateQueries(['adminLearnerVideos']); queryClient.invalidateQueries(['learnerVideos']); }
   });
+
+  const bulkUpdateMutation = useMutation({
+    mutationFn: (updates) => base44.entities.LearnerVideo.bulkUpdate(updates),
+    onSuccess: () => { queryClient.invalidateQueries(['adminLearnerVideos']); queryClient.invalidateQueries(['learnerVideos']); }
+  });
+
+  const toggleGroup = (group, published) =>
+    bulkUpdateMutation.mutate(group.items.map((v) => ({ id: v.id, published })));
 
   const resetForm = () => { setForm(emptyForm); setEditingId(null); };
 
@@ -69,6 +84,13 @@ export default function AdminVideoResources() {
   };
 
   const sorted = [...videos].sort((a, b) => (a.order || 0) - (b.order || 0));
+  const grouped = CATEGORY_ORDER
+    .map(({ key, label }) => ({
+      key,
+      label,
+      items: sorted.filter((v) => (v.category || 'general') === key)
+    }))
+    .filter((group) => group.items.length > 0);
   const saving = createMutation.isLoading || updateMutation.isLoading;
   const previewThumb = youtubeThumbnail(form.youtubeUrl);
 
@@ -154,24 +176,31 @@ export default function AdminVideoResources() {
           </CardContent>
         </Card>
 
-        {/* List */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg text-[#071739]">Manage videos ({sorted.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-10">
+        {/* List grouped by topic */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-[#071739]">Manage videos ({sorted.length})</h2>
+          {isLoading ? (
+            <Card>
+              <CardContent className="flex items-center justify-center py-10">
                 <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-              </div>
-            ) : sorted.length === 0 ? (
-              <div className="text-center py-10">
+              </CardContent>
+            </Card>
+          ) : grouped.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-10">
                 <Video className="w-12 h-12 mx-auto mb-3 text-slate-300" />
                 <p className="text-sm text-slate-500">No videos yet. Add your first one above.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {sorted.map((v) => (
+              </CardContent>
+            </Card>
+          ) : (
+            grouped.map((group) => (
+              <AdminVideoGroupCard
+                key={group.key}
+                label={group.label}
+                videos={group.items}
+                onToggleAll={(published) => toggleGroup(group, published)}
+              >
+                {group.items.map((v) => (
                   <div key={v.id} className="flex items-center gap-4 p-3 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors">
                     <img
                       src={v.youtubeVideoId ? `https://img.youtube.com/vi/${v.youtubeVideoId}/hqdefault.jpg` : youtubeThumbnail(v.youtubeUrl)}
@@ -204,10 +233,10 @@ export default function AdminVideoResources() {
                     </Button>
                   </div>
                 ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </AdminVideoGroupCard>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
