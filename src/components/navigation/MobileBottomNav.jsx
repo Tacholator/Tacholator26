@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Badge } from '@/components/ui/badge';
 import {
   Home,
   Users,
@@ -66,7 +65,7 @@ const pupilNavItems = [
   }
 ];
 
-export default function MobileBottomNav({ userId, currentPageName, isInstructor, unreadNotificationsCount = 0, onOpenMenu, onOpenAccount }) {
+export default function MobileBottomNav({ userId, currentPageName, isInstructor, onOpenMenu, onOpenAccount }) {
   // Fetch pupil status for learners
   const { data: pupilProfile } = useQuery({
     queryKey: ['learnerPupilProfile', userId],
@@ -147,11 +146,6 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor,
         >
           <div className="relative flex items-center justify-center w-9 h-9 rounded-full transition-colors">
             <Menu className="w-5 h-5 stroke-2" />
-            {!isInstructor && unreadNotificationsCount > 0 && (
-              <Badge className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-rose-500 text-white text-xs font-bold">
-                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
-              </Badge>
-            )}
           </div>
           <span className="text-[11px] mt-1 leading-tight text-center font-medium">More</span>
         </button>
