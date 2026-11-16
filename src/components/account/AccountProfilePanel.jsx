@@ -294,7 +294,7 @@ export default function AccountProfilePanel({ user, isInstructor, onLogout, onDe
           })()}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+          className="hidden lg:flex w-full items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
         >
           <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-cyan-500 shrink-0">
             <Smartphone className="w-4 h-4 text-white" />
