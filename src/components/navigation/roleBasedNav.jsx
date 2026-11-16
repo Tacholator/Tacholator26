@@ -33,7 +33,8 @@ import {
   CheckSquare,
   Brain,
   Scroll,
-  Video
+  Video,
+  Film
 } from 'lucide-react';
 
 // Shared navigation links that route based on user role
@@ -150,14 +151,19 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
     ...learnerOnlyLinks,
   ];
 
-  // Learners: inject the "Test Route Videos" link (gated by instructor access flag) above "My Instructor"
-  if (!isInstructor && testRoutesAccessEnabled) {
+  // Learners: inject "Video Resources" (always) and "Test Route Videos" (gated by instructor access flag) above "My Instructor"
+  if (!isInstructor) {
     const myInstructorIdx = roleSpecific.findIndex(l => l.page === 'LearnerMyInstructor');
-    const testRouteVideosLink = { name: 'Test Route Videos', icon: Video, page: 'LearnerFreeTestRoutes' };
+    const learnerVideoLinks = [
+      { name: 'Video Resources', icon: Film, page: 'LearnerVideoResources' }
+    ];
+    if (testRoutesAccessEnabled) {
+      learnerVideoLinks.push({ name: 'Test Route Videos', icon: Video, page: 'LearnerFreeTestRoutes' });
+    }
     if (myInstructorIdx >= 0) {
-      roleSpecific.splice(myInstructorIdx, 0, testRouteVideosLink);
+      roleSpecific.splice(myInstructorIdx, 0, ...learnerVideoLinks);
     } else {
-      roleSpecific.push(testRouteVideosLink);
+      roleSpecific.push(...learnerVideoLinks);
     }
   }
   
