@@ -14,6 +14,16 @@ import moment from 'moment';
  * item has: { id, date, startTime, endTime, pupilId, status, completionOutcome }.
  * An item leaves this list once the instructor sets its outcome.
  */
+// Bookings with these statuses are finished for admin purposes and must never
+// be listed, even though they carry no completionOutcome.
+const CLOSED_STATUSES = [
+  'cancelled',
+  'cancelled_by_pupil',
+  'cancelled_late_by_pupil',
+  'declined_by_instructor',
+  'deleted'
+];
+
 export default function PendingAdminCard({ items = [], pupils = [], isLoading, onMarkLesson }) {
   const now = moment();
   const cutoff = moment('2026-10-01', 'YYYY-MM-DD').startOf('day');
@@ -22,6 +32,8 @@ export default function PendingAdminCard({ items = [], pupils = [], isLoading, o
     .filter(item => {
       if (item.type !== 'booking') return false;
       if (!item.date || !item.endTime) return false;
+      // Cancelled / declined / deleted bookings are not awaiting an outcome
+      if (CLOSED_STATUSES.includes(item.status)) return false;
       const end = moment(`${item.date} ${item.endTime}`, 'YYYY-MM-DD HH:mm');
       // Only consider lessons from 1 Oct 2026 onwards
       if (end.isBefore(cutoff)) return false;
