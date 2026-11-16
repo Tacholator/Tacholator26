@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
@@ -90,10 +91,12 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor,
 
 
 
-  return (
+  // Rendered straight into <body> so no page wrapper (transforms, overflow or
+  // scrolling containers) can drag the bar with the content while scrolling
+  return createPortal(
     <div
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3"
-      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)', willChange: 'transform', transform: 'translateZ(0)' }}
+      className="lg:hidden fixed inset-x-0 bottom-0 z-50 px-3"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
     >
       <div className="flex items-center justify-around h-16 bg-white rounded-[1.75rem] shadow-xl border border-slate-200/80 px-2">
         {navItems.map((item) => {
@@ -134,6 +137,7 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor,
           <span className="text-[11px] mt-1 leading-tight text-center font-medium">More</span>
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
