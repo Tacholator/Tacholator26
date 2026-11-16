@@ -43,6 +43,14 @@ const ruleMatchesDate = (rule, day) => {
 
 const ROW_PX = 22.5;
 
+const CANCELLED_STATUSES = [
+  'cancelled',
+  'cancelled_by_pupil',
+  'cancelled_late_by_pupil',
+  'cancelled_by_instructor',
+  'declined_by_instructor'
+];
+
 export default function Calendar24Hour({
   viewMode = 'week',
   onViewModeChange,
@@ -188,7 +196,9 @@ export default function Calendar24Hour({
         }
         let state = 'reserved_pending';
         if (b.status === 'completed') state = 'completed';
-        else if (b.status === 'cancelled') state = 'cancelled';
+        // Every cancellation flavour (by pupil, late by pupil, by instructor,
+        // declined) must render as cancelled — never as a pending lesson.
+        else if (CANCELLED_STATUSES.includes(b.status)) state = 'cancelled';
         else if (b.status === 'no_show') state = 'no_show';
         else if (b.status === 'confirmed') state = b.isPracticalTest ? 'confirmed_test' : 'confirmed';
         else if (b.status === 'reserved_pending_instructor') state = 'reserved_pending';
@@ -349,7 +359,16 @@ export default function Calendar24Hour({
     const displayColor = isOthersReserved
       ? SLOT_COLORS.reserved_confirmed_other
       : (personalBg || (isAvailableSlotCard ? SLOT_COLORS.available_slot : SLOT_COLORS[state]));
-    const displayLabel = isOthersReserved && (state === 'confirmed' || state === 'confirmed_test') ? 'Unavailable' : statusLabels[state];
+    const cancelledLabel = booking?.status === 'cancelled_by_pupil' || booking?.status === 'cancelled_late_by_pupil'
+      ? 'Cancelled by pupil'
+      : booking?.status === 'declined_by_instructor'
+        ? 'Declined'
+        : 'Cancelled';
+    const displayLabel = isOthersReserved && (state === 'confirmed' || state === 'confirmed_test')
+      ? 'Unavailable'
+      : state === 'cancelled'
+        ? cancelledLabel
+        : statusLabels[state];
 
     let pupilName = null;
     if (isInstructor && booking && (state === 'reserved_pending' || state === 'confirmed' || state === 'confirmed_test' || state === 'completed' || state === 'cancelled' || state === 'no_show')) {
