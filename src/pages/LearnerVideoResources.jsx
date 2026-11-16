@@ -35,15 +35,27 @@ export default function LearnerVideoResources() {
   });
 
   const instructorId = pupilProfile?.instructorId;
+  const instructorEmail = pupilProfile?.instructorEmail;
 
   const { data: videos = [], isLoading: videosLoading } = useQuery({
-    queryKey: ['learnerInstructorVideos', instructorId],
-    queryFn: () =>
-      base44.entities.InstructorVideoResource.filter({
-        instructorId,
-        visibleToPupils: true
-      }),
-    enabled: !!instructorId
+    queryKey: ['learnerInstructorVideos', instructorId, instructorEmail],
+    queryFn: async () => {
+      if (instructorId) {
+        return base44.entities.InstructorVideoResource.filter({
+          instructorId,
+          visibleToPupils: true
+        });
+      }
+      // Fallback for pupils linked only by instructor email
+      if (instructorEmail) {
+        return base44.entities.InstructorVideoResource.filter({
+          instructorEmail,
+          visibleToPupils: true
+        });
+      }
+      return [];
+    },
+    enabled: !!instructorId || !!instructorEmail
   });
 
   const grouped = useMemo(() => {
