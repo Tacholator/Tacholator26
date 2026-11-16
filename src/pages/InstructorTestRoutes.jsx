@@ -59,7 +59,7 @@ export default function InstructorTestRoutes() {
     enabled: !!user?.id
   });
 
-  const activePupils = pupils.filter(p => p.status === 'Active' || p.status === 'OnHold');
+  const activePupils = pupils.filter(p => p.status === 'Active');
 
   const addRouteMutation = useMutation({
     mutationFn: (data) => base44.entities.TestRoute.create({
