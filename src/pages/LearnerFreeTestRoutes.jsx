@@ -43,42 +43,18 @@ export default function LearnerFreeTestRoutes() {
     enabled: accessEnabled && !!pupilProfile?.instructorId
   });
 
-  // Admin-managed city routes (no centreId, city set)
-  const { data: adminRoutes = [], isLoading: adminRoutesLoading } = useQuery({
-    queryKey: ['learnerFreeAdminCityRoutes'],
-    queryFn: async () => {
-      const all = await base44.entities.TestRoute.list();
-      return all.filter(r => !r.centreId && r.city);
-    },
-    enabled: accessEnabled
-  });
+  const isLoading = pupilLoading || (accessEnabled && instructorRoutesLoading);
 
-  const isLoading = pupilLoading || (accessEnabled && (instructorRoutesLoading || adminRoutesLoading));
-
+  // Only the videos the learner's own instructor added
   const mergedRoutes = useMemo(() => {
-    // Catalogue routes carry the exit direction; instructor copies of the same
-    // video often don't, so inherit it to keep the left/right grouping intact.
-    const catalogueExitByVideo = {};
-    adminRoutes.forEach(r => {
-      if (r.youtubeVideoId && r.exitDirection) catalogueExitByVideo[r.youtubeVideoId] = r.exitDirection;
-    });
     const seen = new Set();
-    const combined = [];
-    const push = (r) => {
-      if (!r || !r.youtubeVideoId) return;
-      const key = r.youtubeVideoId;
-      if (seen.has(key)) return;
-      seen.add(key);
-      combined.push({
-        ...r,
-        exitDirection: r.exitDirection || catalogueExitByVideo[key] || null,
-        source: r.instructorId ? 'instructor' : 'catalogue'
-      });
-    };
-    instructorRoutes.forEach(push);
-    adminRoutes.forEach(push);
-    return combined;
-  }, [instructorRoutes, adminRoutes]);
+    return instructorRoutes.filter(r => {
+      if (!r || !r.youtubeVideoId) return false;
+      if (seen.has(r.youtubeVideoId)) return false;
+      seen.add(r.youtubeVideoId);
+      return true;
+    });
+  }, [instructorRoutes]);
 
   const filteredRoutes = useMemo(() => {
     if (!search.trim()) return mergedRoutes;
@@ -125,7 +101,7 @@ export default function LearnerFreeTestRoutes() {
             <h1 className="text-3xl font-bold text-[#071739]">Test Routes</h1>
           </div>
           <p className="text-slate-600">
-            Free route walkthroughs from your instructor and the national catalogue.
+            Route walkthroughs added by your instructor.
           </p>
         </div>
 
@@ -221,7 +197,7 @@ export default function LearnerFreeTestRoutes() {
                           )}
                         </div>
                         <p className="text-xs text-slate-400 mt-0.5">
-                          {route.source === 'instructor' ? 'From your instructor' : 'National catalogue'}
+                          From your instructor
                         </p>
                       </div>
                     </button>
