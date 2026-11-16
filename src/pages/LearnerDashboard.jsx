@@ -45,7 +45,6 @@ import TestReadinessCard from '@/components/dashboard/TestReadinessCard';
 import GoldenRuleCard from '@/components/dashboard/GoldenRuleCard';
 import TopTenReasonsBento from '@/components/dashboard/TopTenReasonsBento';
 import ShowMeTellMeBento from '@/components/dashboard/ShowMeTellMeBento';
-import VideoResourcesBento from '@/components/dashboard/VideoResourcesBento';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
@@ -880,9 +879,6 @@ export default function LearnerDashboard() {
             })()}
           </motion.div>
         </div>
-
-        {/* Video Resources */}
-        <VideoResourcesBento />
 
         {/* Test Readiness Card */}
         {pupil?.id && (
