@@ -45,6 +45,8 @@ import TestReadinessCard from '@/components/dashboard/TestReadinessCard';
 import GoldenRuleCard from '@/components/dashboard/GoldenRuleCard';
 import TopTenReasonsBento from '@/components/dashboard/TopTenReasonsBento';
 import ShowMeTellMeBento from '@/components/dashboard/ShowMeTellMeBento';
+import LearnerVideoResourcesCard from '@/components/dashboard/LearnerVideoResourcesCard';
+import LearnerTestRoutesCard from '@/components/dashboard/LearnerTestRoutesCard';
 
 export default function LearnerDashboard() {
   const queryClient = useQueryClient();
@@ -531,6 +533,24 @@ export default function LearnerDashboard() {
 
         {/* Show Me, Tell Me Questions */}
         <ShowMeTellMeBento />
+
+        {/* Video Resources Summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.06 }}
+        >
+          <LearnerVideoResourcesCard />
+        </motion.div>
+
+        {/* Test Route Videos Summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.07 }}
+        >
+          <LearnerTestRoutesCard pupil={pupil} />
+        </motion.div>
 
         {/* Arrival Notification Banner */}
         {arrivalNotification && (
