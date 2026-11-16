@@ -539,6 +539,7 @@ export default function Layout({ children, currentPageName }) {
         isInstructor={isInstructor}
         unreadNotificationsCount={unreadNotificationsCount}
         onOpenMenu={() => setMobileMenuOpen(true)}
+        onOpenAccount={() => setShowAccountPanel(true)}
       />
 
       {/* Mobile Account Panel Full Screen */}
