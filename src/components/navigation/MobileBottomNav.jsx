@@ -35,7 +35,8 @@ const instructorNavItems = [
   {
     id: 'account',
     label: 'Account',
-    icon: UserRound
+    icon: UserRound,
+    page: 'Account'
   }
 ];
 
@@ -61,11 +62,12 @@ const pupilNavItems = [
   {
     id: 'account',
     label: 'Account',
-    icon: UserRound
+    icon: UserRound,
+    page: 'Account'
   }
 ];
 
-export default function MobileBottomNav({ userId, currentPageName, isInstructor, onOpenMenu, onOpenAccount }) {
+export default function MobileBottomNav({ userId, currentPageName, isInstructor, onOpenMenu }) {
   // Fetch pupil status for learners
   const { data: pupilProfile } = useQuery({
     queryKey: ['learnerPupilProfile', userId],
@@ -96,24 +98,6 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor,
       <div className="flex items-center justify-around h-16 bg-white rounded-[1.75rem] shadow-xl border border-slate-200/80 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-
-          if (item.id === 'account') {
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={onOpenAccount}
-                className="flex flex-col items-center justify-center flex-1 h-full relative transition-colors text-slate-500 active:text-[#071739]"
-              >
-                <div className="relative flex items-center justify-center w-9 h-9 rounded-full transition-colors">
-                  <Icon className="w-5 h-5 stroke-2" />
-                </div>
-                <span className="text-[11px] mt-1 leading-tight text-center font-medium">
-                  {item.label}
-                </span>
-              </button>
-            );
-          }
 
           const isActive = currentPageName === item.page || (item.id === 'home' && currentPageName === 'Home');
 

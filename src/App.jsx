@@ -54,6 +54,7 @@ import InstructorVideoResources from './pages/InstructorVideoResources';
 import InstructorVideoTopicDetail from './pages/InstructorVideoTopicDetail';
 import AdminDeletedAccounts from './pages/AdminDeletedAccounts';
 import PendingBookingRequests from './pages/PendingBookingRequests';
+import Account from './pages/Account';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -323,6 +324,11 @@ const AuthenticatedApp = () => {
       <Route path="/PendingBookingRequests" element={
         <LayoutWrapper currentPageName="PendingBookingRequests">
           <PendingBookingRequests />
+        </LayoutWrapper>
+      } />
+      <Route path="/Account" element={
+        <LayoutWrapper currentPageName="Account">
+          <Account />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
