@@ -279,6 +279,20 @@ export default function InstructorSchedule() {
                     const startMoment = moment(booking.startAtUtc).local();
                     const endMoment = moment(booking.endAtUtc).local();
                     const statusStyle = STATUS_STYLES[booking.status] || 'bg-slate-100 text-slate-600';
+                    // Learner cancellations (incl. late ones) get their own stamp instead
+                    // of the usual lesson/test stamp.
+                    const cancelledByPupil = booking.status === 'cancelled_by_pupil'
+                      || booking.status === 'cancelled_late_by_pupil';
+                    const typeBadgeClass = cancelledByPupil
+                      ? 'bg-rose-100 text-rose-700'
+                      : booking.isPracticalTest
+                        ? 'bg-violet-100 text-violet-700'
+                        : 'bg-emerald-100 text-emerald-700';
+                    const typeBadgeLabel = cancelledByPupil
+                      ? 'Cancelled by pupil'
+                      : booking.isPracticalTest
+                        ? 'Driving Test'
+                        : 'Lessons';
 
                     return (
                       <Card
@@ -327,8 +341,8 @@ export default function InstructorSchedule() {
                           </div>
 
                           {/* Type badge */}
-                          <Badge className={`shrink-0 text-xs ${booking.isPracticalTest ? 'bg-violet-100 text-violet-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                            {booking.isPracticalTest ? 'Driving Test' : 'Lessons'}
+                          <Badge className={`shrink-0 text-xs ${typeBadgeClass}`}>
+                            {typeBadgeLabel}
                           </Badge>
                         </CardContent>
                       </Card>
