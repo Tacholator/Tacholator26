@@ -25,7 +25,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   LogOut,
-  Menu,
   X,
   Car,
   Trash2,
@@ -358,12 +357,6 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-x-4 bg-slate-50 border-b border-slate-200 px-4 shadow-sm" style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(4rem + env(safe-area-inset-top))', willChange: 'transform', transform: 'translateZ(0)' }}>
-        <button
-          onClick={() => setMobileMenuOpen(true)}
-          className="p-2 -m-2 text-[#071739]"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
         <div className="flex items-center gap-2 flex-1">
                       <img 
                         src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6928de5cfb626066705b29e3/b4113dc99_MobrageLearner33.png" 
@@ -545,6 +538,7 @@ export default function Layout({ children, currentPageName }) {
         currentPageName={currentPageName}
         isInstructor={isInstructor}
         unreadNotificationsCount={unreadNotificationsCount}
+        onOpenMenu={() => setMobileMenuOpen(true)}
       />
 
       {/* Mobile Account Panel Full Screen */}

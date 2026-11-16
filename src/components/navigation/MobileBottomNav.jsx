@@ -6,15 +6,13 @@ import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import {
   Home,
-  Calendar,
   Users,
   CalendarPlus,
-  FileText,
-  Bell,
   GraduationCap,
   BookOpen,
   BookMarked,
-  CalendarDays
+  CalendarDays,
+  Menu
 } from 'lucide-react';
 
 const instructorNavItems = [
@@ -23,12 +21,6 @@ const instructorNavItems = [
     label: 'Home',
     icon: Home,
     page: 'Home'
-  },
-  {
-    id: 'calendar',
-    label: 'Calendar',
-    icon: Calendar,
-    page: 'Calendar'
   },
   {
     id: 'schedule',
@@ -74,16 +66,10 @@ const pupilNavItems = [
     label: 'My Learning',
     icon: BookOpen,
     page: 'LearnerLearningHub'
-  },
-  {
-    id: 'notifications',
-    label: 'Notifications',
-    icon: Bell,
-    page: 'LearnerNotifications'
   }
 ];
 
-export default function MobileBottomNav({ userId, currentPageName, isInstructor, unreadNotificationsCount = 0 }) {
+export default function MobileBottomNav({ userId, currentPageName, isInstructor, unreadNotificationsCount = 0, onOpenMenu }) {
   // Fetch pupil status for learners
   const { data: pupilProfile } = useQuery({
     queryKey: ['learnerPupilProfile', userId],
@@ -128,13 +114,6 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor,
             >
               <div className={`relative flex items-center justify-center w-9 h-9 rounded-full transition-colors ${isActive ? 'bg-blue-100' : ''}`}>
                 <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-                {item.id === 'notifications' && unreadNotificationsCount > 0 && (
-                  <Badge 
-                    className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-rose-500 text-white text-xs font-bold"
-                  >
-                    {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
-                  </Badge>
-                )}
               </div>
               <span className={`text-[11px] mt-1 leading-tight text-center ${isActive ? 'font-semibold' : 'font-medium'}`}>
                 {item.label}
@@ -142,6 +121,24 @@ export default function MobileBottomNav({ userId, currentPageName, isInstructor,
             </Link>
           );
         })}
+
+        {/* More — opens the navigation drawer */}
+        <button
+          type="button"
+          onClick={onOpenMenu}
+          aria-label="More"
+          className="flex flex-col items-center justify-center flex-1 h-full relative transition-colors text-slate-500 active:text-[#071739]"
+        >
+          <div className="relative flex items-center justify-center w-9 h-9 rounded-full transition-colors">
+            <Menu className="w-5 h-5 stroke-2" />
+            {!isInstructor && unreadNotificationsCount > 0 && (
+              <Badge className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 px-1.5 bg-rose-500 text-white text-xs font-bold">
+                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+              </Badge>
+            )}
+          </div>
+          <span className="text-[11px] mt-1 leading-tight text-center font-medium">More</span>
+        </button>
       </div>
     </div>
   );
