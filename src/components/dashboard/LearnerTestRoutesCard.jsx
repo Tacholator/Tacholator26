@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
+import { sortRoutesByOrder } from '@/lib/routeOrder';
 import { Youtube, ChevronRight, Play } from 'lucide-react';
 
 const routesUrl = () => createPageUrl('LearnerFreeTestRoutes');
@@ -19,11 +20,12 @@ export default function LearnerTestRoutesCard({ pupil }) {
 
   const uniqueRoutes = React.useMemo(() => {
     const seen = new Set();
-    return routes.filter((r) => {
+    const unique = routes.filter((r) => {
       if (!r?.youtubeVideoId || seen.has(r.youtubeVideoId)) return false;
       seen.add(r.youtubeVideoId);
       return true;
     });
+    return sortRoutesByOrder(unique);
   }, [routes]);
 
   const previewRoutes = uniqueRoutes.slice(0, 2);

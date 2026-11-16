@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Youtube, Lock, Play, X, Search, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { sortRoutesByOrder } from '@/lib/routeOrder';
 
 export default function LearnerFreeTestRoutes() {
   const navigate = useNavigate();
@@ -51,12 +52,13 @@ export default function LearnerFreeTestRoutes() {
   // Only the videos the learner's own instructor added
   const mergedRoutes = useMemo(() => {
     const seen = new Set();
-    return instructorRoutes.filter(r => {
+    const unique = instructorRoutes.filter(r => {
       if (!r || !r.youtubeVideoId) return false;
       if (seen.has(r.youtubeVideoId)) return false;
       seen.add(r.youtubeVideoId);
       return true;
     });
+    return sortRoutesByOrder(unique);
   }, [instructorRoutes]);
 
   const filteredRoutes = useMemo(() => {

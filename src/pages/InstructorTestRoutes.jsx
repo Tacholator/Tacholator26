@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Youtube, Plus, Trash2, Users, Video, ExternalLink, Pencil } from 'lucide-react';
+import { Youtube, Plus, Trash2, Users, Video, ExternalLink, Pencil, ArrowUpDown, Check } from 'lucide-react';
+import RouteReorderList from '@/components/testroutes/RouteReorderList';
+import { sortRoutesByOrder } from '@/lib/routeOrder';
 import { useToast } from '@/components/ui/use-toast';
 import {
   AlertDialog,
@@ -41,6 +43,7 @@ export default function InstructorTestRoutes() {
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [editingUrl, setEditingUrl] = useState({});
   const [editingName, setEditingName] = useState({});
+  const [isReordering, setIsReordering] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -53,7 +56,7 @@ export default function InstructorTestRoutes() {
     enabled: !!user?.id
   });
 
-  const routes = ownRoutes;
+  const routes = React.useMemo(() => sortRoutesByOrder(ownRoutes), [ownRoutes]);
 
   const { data: pupils = [] } = useQuery({
     queryKey: ['myPupils', user?.id],
@@ -67,6 +70,7 @@ export default function InstructorTestRoutes() {
     mutationFn: (data) => base44.entities.TestRoute.create({
       ...data,
       instructorId: user.id,
+      displayOrder: routes.length,
       youtubeVideoId: extractYouTubeId(data.youtubeUrl)
     }),
     onSuccess: () => {
@@ -91,6 +95,16 @@ export default function InstructorTestRoutes() {
       queryClient.invalidateQueries(['myTestRoutes', user?.id]);
       setDeleteTargetId(null);
       toast({ title: 'Route deleted' });
+    }
+  });
+
+  const reorderRoutesMutation = useMutation({
+    mutationFn: (items) => base44.entities.TestRoute.bulkUpdate(
+      items.map((route, index) => ({ id: route.id, displayOrder: index }))
+    ),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['myTestRoutes', user?.id]);
+      toast({ title: 'Order saved' });
     }
   });
 
@@ -143,13 +157,31 @@ export default function InstructorTestRoutes() {
             <h1 className="text-2xl sm:text-3xl font-bold text-[#071739] mb-1">Test Route Videos</h1>
             <p className="text-sm sm:text-base text-slate-600">Add YouTube videos for your test routes and control which pupils can see them</p>
           </div>
-          <Button
-            onClick={() => setShowAddForm(true)}
-            className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold shrink-0"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Route
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            {routes.length > 1 && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setIsReordering(prev => !prev);
+                }}
+                className={`gap-2 ${isReordering ? 'border-emerald-500 text-emerald-700' : 'border-slate-300 text-slate-700'}`}
+              >
+                {isReordering ? <Check className="w-4 h-4" /> : <ArrowUpDown className="w-4 h-4" />}
+                {isReordering ? 'Done' : 'Reorder'}
+              </Button>
+            )}
+            <Button
+              onClick={() => {
+                setIsReordering(false);
+                setShowAddForm(true);
+              }}
+              className="bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Route
+            </Button>
+          </div>
         </div>
 
         {/* Add Route Form */}
@@ -211,6 +243,17 @@ export default function InstructorTestRoutes() {
                 <p className="text-sm text-slate-400 mt-1">Click "Add Route" to add your first test route video</p>
               </CardContent>
             </Card>
+          ) : isReordering ? (
+            <div className="space-y-3">
+              <p className="text-sm text-slate-500">
+                Drag the videos into the order you want pupils to see them. The order saves automatically.
+              </p>
+              <RouteReorderList
+                routes={routes}
+                onReorder={(items) => reorderRoutesMutation.mutate(items)}
+                isSaving={reorderRoutesMutation.isPending}
+              />
+            </div>
           ) : (
             <div className="space-y-3">
               {routes.map(route => {
