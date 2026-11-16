@@ -79,8 +79,6 @@ export default function InstructorVideoResources() {
     );
   }, [videos]);
 
-  const topics = grouped.map((g) => g.topic);
-
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto space-y-5">
@@ -144,7 +142,6 @@ export default function InstructorVideoResources() {
         }}
         onSave={handleSave}
         initialVideo={editingVideo}
-        existingTopics={topics}
         saving={createMutation.isPending || updateMutation.isPending}
       />
     </div>

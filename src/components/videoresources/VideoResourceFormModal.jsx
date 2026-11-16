@@ -9,8 +9,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { extractYouTubeId, youtubeThumbnail } from '@/lib/youtube';
+import { DRIVING_SKILLS } from '@/components/progress/skillsData';
 
 const emptyForm = { title: '', videoUrl: '', topic: '', description: '' };
 
@@ -19,10 +27,15 @@ export default function VideoResourceFormModal({
   onClose,
   onSave,
   initialVideo,
-  existingTopics = [],
   saving = false,
 }) {
   const [form, setForm] = useState(emptyForm);
+
+  const skillTitles = DRIVING_SKILLS.map((skill) => skill.title);
+  const topicOptions =
+    initialVideo?.topic && !skillTitles.includes(initialVideo.topic)
+      ? [...skillTitles, initialVideo.topic]
+      : skillTitles;
 
   useEffect(() => {
     if (!open) return;
@@ -82,32 +95,19 @@ export default function VideoResourceFormModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="videoTopic">Topic *</Label>
-            <Input
-              id="videoTopic"
-              value={form.topic}
-              onChange={(e) => setForm({ ...form, topic: e.target.value })}
-              placeholder="e.g. Manoeuvres"
-              required
-            />
-            {existingTopics.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {existingTopics.map((topic) => (
-                  <button
-                    key={topic}
-                    type="button"
-                    onClick={() => setForm({ ...form, topic })}
-                    className={`text-xs px-2 py-1 rounded-full border transition-colors ${
-                      form.topic === topic
-                        ? 'bg-[#F7B602] border-[#F7B602] text-[#071739] font-semibold'
-                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-                    }`}
-                  >
+            <Label>Topic *</Label>
+            <Select value={form.topic} onValueChange={(val) => setForm({ ...form, topic: val })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a skill" />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                {topicOptions.map((topic) => (
+                  <SelectItem key={topic} value={topic}>
                     {topic}
-                  </button>
+                  </SelectItem>
                 ))}
-              </div>
-            )}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-1.5">
