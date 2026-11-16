@@ -96,7 +96,8 @@ export const instructorOnlyLinks = [
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
   { name: 'Readiness Reviews', icon: CheckSquare, page: 'InstructorReadinessReview' },
   { name: 'Expenses', icon: Fuel, page: 'InstructorExpenses' },
-  { name: 'Reports', icon: BarChart2, page: 'InstructorReports' }
+  { name: 'Reports', icon: BarChart2, page: 'InstructorReports' },
+  { name: 'Subscriptions', icon: Star, page: 'InstructorSubscription' }
 ];
 
 // Learner-only navigation items
