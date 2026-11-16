@@ -35,12 +35,13 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Could not find subscription item.' }, { status: 400 });
     }
 
-    // Upgrade: switch price to yearly, prorate immediately
+    // Upgrade: switch price to yearly and start the new yearly cycle now, prorating the change.
+    // Do not pass trial_end here — an already-running trial must stay as it is, and a past
+    // timestamp is rejected by Stripe (that was breaking every upgrade attempt).
     await stripe.subscriptions.update(subRecord.stripeSubscriptionId, {
       items: [{ id: itemId, price: YEARLY_PRICE_ID }],
       proration_behavior: 'create_prorations',
-      billing_cycle_anchor: 'now',
-      trial_end: stripeSub.trial_end || 'now'
+      billing_cycle_anchor: 'now'
     });
 
     // Update the local record

@@ -147,7 +147,14 @@ async function processWebhookEvent(event, base44) {
 
 async function handleCheckoutSessionCompleted(session, base44) {
   console.log('Processing checkout.session.completed:', session.id);
-  
+
+  // Instructor subscription checkouts are handled by the customer.subscription.* events.
+  // Only one-off lesson top-ups create ledger entries / pupil invoices.
+  if (session.mode !== 'payment') {
+    console.log('Skipping non-payment checkout session:', session.id, session.mode);
+    return { success: true, skipped: true };
+  }
+
   const { id, amount_total, metadata } = session;
   const totalGbp = amount_total / 100;
 

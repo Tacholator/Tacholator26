@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { ArrowLeft } from 'lucide-react';
@@ -59,7 +59,6 @@ function formatDate(dateStr) {
 
 export default function InstructorSubscription() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [subscribing, setSubscribing] = useState(null);
   const [openingPortal, setOpeningPortal] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
@@ -67,9 +66,10 @@ export default function InstructorSubscription() {
   const [cancelling, setCancelling] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const justSubscribed = urlParams.get('subscribed') === 'true';
+  const [errorMessage, setErrorMessage] = useState('');
+  const [confirming, setConfirming] = useState(
+    new URLSearchParams(window.location.search).get('subscribed') === 'true'
+  );
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -84,53 +84,96 @@ export default function InstructorSubscription() {
       return subs[0] || null;
     },
     enabled: !!user?.id,
-    refetchInterval: justSubscribed ? 3000 : false,
+    refetchInterval: confirming ? 3000 : false,
   });
 
   useEffect(() => {
-    if (justSubscribed) {
-      setSuccessMessage('Welcome! Your 3-day free trial has started. You can explore all features now.');
+    if (confirming && ['trialing', 'active'].includes(subscription?.status)) {
+      setConfirming(false);
+      setSuccessMessage('Welcome! Your subscription is active. You can explore all features now.');
       window.history.replaceState({}, '', '/InstructorSubscription');
     }
-  }, [justSubscribed]);
+  }, [confirming, subscription?.status]);
 
+  // Don't leave the instructor stuck on the confirming screen if the webhook is delayed
   useEffect(() => {
-    if (justSubscribed && subscription?.status === 'trialing') {
-      queryClient.setQueryDefaults(['instructorSubscription', user?.id], { refetchInterval: false });
-    }
-  }, [subscription?.status, justSubscribed]);
+    if (!confirming) return;
+    const timer = setTimeout(() => {
+      setConfirming(false);
+      setErrorMessage('We could not confirm your subscription yet. If you completed payment, refresh in a moment, otherwise try again.');
+    }, 20000);
+    return () => clearTimeout(timer);
+  }, [confirming]);
 
   const handleStartTrial = async (billingPeriod) => {
+    setErrorMessage('');
     setSubscribing(billingPeriod);
-    const res = await base44.functions.invoke('createInstructorSubscription', { billingPeriod });
-    if (res.data?.url) window.location.href = res.data.url;
-    setSubscribing(null);
+    try {
+      const res = await base44.functions.invoke('createInstructorSubscription', { billingPeriod });
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+        return;
+      }
+      setErrorMessage(res.data?.error || 'Checkout could not be started. Please try again.');
+    } catch (err) {
+      setErrorMessage(err?.response?.data?.error || 'Checkout could not be started. Please try again.');
+    } finally {
+      setSubscribing(null);
+    }
   };
 
   const handleUpgrade = async () => {
+    setErrorMessage('');
     setUpgrading(true);
-    const res = await base44.functions.invoke('upgradeInstructorSubscription', {});
-    if (res.data?.success) {
-      await refetchSub();
-      setSuccessMessage('You have been upgraded to the Annual plan (£100/year).');
+    try {
+      const res = await base44.functions.invoke('upgradeInstructorSubscription', {});
+      if (res.data?.success) {
+        await refetchSub();
+        setSuccessMessage('You have been upgraded to the Annual plan (£100/year).');
+      } else {
+        setErrorMessage(res.data?.error || 'The upgrade could not be completed.');
+      }
+    } catch (err) {
+      setErrorMessage(err?.response?.data?.error || 'The upgrade could not be completed.');
+    } finally {
+      setUpgrading(false);
+      setShowUpgradeDialog(false);
     }
-    setUpgrading(false);
-    setShowUpgradeDialog(false);
   };
 
   const handleCancel = async () => {
+    setErrorMessage('');
     setCancelling(true);
-    await base44.functions.invoke('cancelInstructorSubscription', {});
-    await refetchSub();
-    setCancelling(false);
-    setShowCancelDialog(false);
+    try {
+      const res = await base44.functions.invoke('cancelInstructorSubscription', {});
+      if (res.data?.success) {
+        await refetchSub();
+      } else {
+        setErrorMessage(res.data?.error || 'The subscription could not be cancelled.');
+      }
+    } catch (err) {
+      setErrorMessage(err?.response?.data?.error || 'The subscription could not be cancelled.');
+    } finally {
+      setCancelling(false);
+      setShowCancelDialog(false);
+    }
   };
 
   const handleManagePayment = async () => {
+    setErrorMessage('');
     setOpeningPortal(true);
-    const res = await base44.functions.invoke('createStripeCustomerPortalSession', {});
-    if (res.data?.url) window.location.href = res.data.url;
-    setOpeningPortal(false);
+    try {
+      const res = await base44.functions.invoke('createStripeCustomerPortalSession', {});
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+        return;
+      }
+      setErrorMessage(res.data?.error || 'The billing portal could not be opened.');
+    } catch (err) {
+      setErrorMessage(err?.response?.data?.error || 'The billing portal could not be opened.');
+    } finally {
+      setOpeningPortal(false);
+    }
   };
 
   // If status is still 'trialing' but trial has ended, treat it as active (webhook may have been delayed)
@@ -181,6 +224,17 @@ export default function InstructorSubscription() {
             <div>
               <p className="font-semibold text-emerald-800">You're all set!</p>
               <p className="text-emerald-700 text-sm">{successMessage}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Error banner */}
+        {errorMessage && (
+          <div className="mb-6 bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-rose-800">That didn't work</p>
+              <p className="text-rose-700 text-sm">{errorMessage}</p>
             </div>
           </div>
         )}
@@ -252,7 +306,7 @@ export default function InstructorSubscription() {
         )}
 
         {/* Trial banner — only when no active sub */}
-        {!hasValidSub && (
+        {!hasValidSub && !confirming && (
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 bg-[#F7B602]/10 border border-[#F7B602]/30 rounded-full px-4 py-2 text-[#071739] font-semibold text-sm mb-4">
               <Zap className="w-4 h-4 text-[#F7B602]" />
@@ -264,7 +318,21 @@ export default function InstructorSubscription() {
           </div>
         )}
 
-        {/* Plan cards — always visible */}
+        {/* Confirming checkout */}
+        {confirming && !hasValidSub && (
+          <Card className="mb-8 border-2 border-[#F7B602]">
+            <CardContent className="p-8 flex flex-col items-center text-center gap-2">
+              <Loader2 className="w-8 h-8 animate-spin text-[#F7B602]" />
+              <h2 className="text-lg font-bold text-[#071739]">Confirming your subscription</h2>
+              <p className="text-slate-500 text-sm">
+                This usually takes a few seconds. Please don't start a second checkout.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Plan cards */}
+        {!confirming && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {PLANS.map((plan) => {
             const isCurrentPlan = hasValidSub && subscription?.billingPeriod === plan.id;
@@ -342,6 +410,7 @@ export default function InstructorSubscription() {
             );
           })}
         </div>
+        )}
 
         {/* Management actions */}
         {hasValidSub && (
