@@ -48,6 +48,7 @@ import PupilTopicDetail from './pages/PupilTopicDetail';
 import LearnerFreeTestRoutes from './pages/LearnerFreeTestRoutes';
 import TopTenReasons from './pages/TopTenReasons';
 import AdminVideoResources from './pages/AdminVideoResources';
+import InstructorVideoResources from './pages/InstructorVideoResources';
 import AdminDeletedAccounts from './pages/AdminDeletedAccounts';
 import PendingBookingRequests from './pages/PendingBookingRequests';
 
@@ -289,6 +290,11 @@ const AuthenticatedApp = () => {
       <Route path="/AdminVideoResources" element={
         <LayoutWrapper currentPageName="AdminVideoResources">
           <AdminVideoResources />
+        </LayoutWrapper>
+      } />
+      <Route path="/InstructorVideoResources" element={
+        <LayoutWrapper currentPageName="InstructorVideoResources">
+          <InstructorVideoResources />
         </LayoutWrapper>
       } />
       <Route path="/AdminDeletedAccounts" element={

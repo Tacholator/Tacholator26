@@ -90,6 +90,7 @@ export const instructorOnlyLinks = [
       { name: 'Homework', icon: ClipboardList, page: 'HomeworkLibrary' }
     ]
   },
+  { name: 'Video Resources', icon: Video, page: 'InstructorVideoResources' },
   { name: 'Test Routes', icon: Navigation, page: 'TestRoutes', isPremium: true },
   { name: 'Readiness Reviews', icon: CheckSquare, page: 'InstructorReadinessReview' },
   { name: 'Expenses', icon: Fuel, page: 'InstructorExpenses' },

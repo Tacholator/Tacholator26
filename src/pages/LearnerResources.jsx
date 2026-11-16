@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import RestrictedAccessMessage from '@/components/access/RestrictedAccessMessage';
+import LearnerTopicVideos from '@/components/videoresources/LearnerTopicVideos';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -114,6 +115,8 @@ export default function LearnerResources() {
           <h1 className="text-3xl font-bold text-slate-800">Resources</h1>
           <p className="text-slate-500 mt-1">Learning materials shared by your instructor</p>
         </motion.div>
+
+        <LearnerTopicVideos instructorId={pupil.instructorId} />
 
         {myResources.length === 0 ? (
           <Card className="border-0 shadow-sm">
