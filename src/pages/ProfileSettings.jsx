@@ -629,7 +629,7 @@ export default function ProfileSettings() {
               <Link to={createPageUrl('AccountDeletionRequest')}>
                 <Button variant="outline" className="text-rose-600 border-rose-300 hover:bg-rose-50 gap-2">
                   <Trash2 className="w-4 h-4" />
-                  Request Account Deletion
+                  Delete Account
                 </Button>
               </Link>
             </CardContent>
