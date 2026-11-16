@@ -54,6 +54,7 @@ import InstructorVideoResources from './pages/InstructorVideoResources';
 import InstructorVideoTopicDetail from './pages/InstructorVideoTopicDetail';
 import AdminDeletedAccounts from './pages/AdminDeletedAccounts';
 import PendingBookingRequests from './pages/PendingBookingRequests';
+import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
 import Account from './pages/Account';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -324,6 +325,11 @@ const AuthenticatedApp = () => {
       <Route path="/PendingBookingRequests" element={
         <LayoutWrapper currentPageName="PendingBookingRequests">
           <PendingBookingRequests />
+        </LayoutWrapper>
+      } />
+      <Route path="/InstructorTopicAssignment" element={
+        <LayoutWrapper currentPageName="InstructorTopicAssignment">
+          <InstructorTopicAssignment />
         </LayoutWrapper>
       } />
       <Route path="/Account" element={
