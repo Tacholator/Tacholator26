@@ -5,8 +5,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
 import { Plus, Trash2, Loader2, Upload } from 'lucide-react';
+import InstructorVideoPicker from './InstructorVideoPicker';
 
-export default function HomeworkFormatForm({ formatType, payload, onChange }) {
+export default function HomeworkFormatForm({ formatType, payload, onChange, instructorId, onVideoSelect }) {
   const [uploading, setUploading] = useState(false);
 
   const handleFileUpload = async (e, field) => {
@@ -116,7 +117,21 @@ export default function HomeworkFormatForm({ formatType, payload, onChange }) {
       return (
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Video URL</Label>
+            <Label>Pick from your videos</Label>
+            <InstructorVideoPicker
+              instructorId={instructorId}
+              selectedUrl={payload?.videoUrl}
+              onSelect={(video) => {
+                updatePayload({
+                  videoUrl: video.videoUrl,
+                  description: payload?.description || video.description || ''
+                });
+                if (onVideoSelect) onVideoSelect(video);
+              }}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Or paste a video URL</Label>
             <Input
               value={payload?.videoUrl || ''}
               onChange={(e) => updatePayload({ videoUrl: e.target.value })}

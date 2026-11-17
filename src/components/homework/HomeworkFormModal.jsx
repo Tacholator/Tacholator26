@@ -186,6 +186,10 @@ export default function HomeworkFormModal({ open, onClose, pupilId, instructorId
                 formatType={formData.formatType}
                 payload={formData.formatPayload}
                 onChange={(payload) => setFormData({ ...formData, formatPayload: payload })}
+                instructorId={instructorId}
+                onVideoSelect={(video) => {
+                  if (!formData.title) setFormData(prev => ({ ...prev, title: video.title }));
+                }}
               />
 
               <div className="space-y-2">
