@@ -7,6 +7,7 @@ import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
+import Welcome from './pages/Welcome';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import RoleSelection from './pages/RoleSelection';
@@ -82,7 +83,11 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
+      // Logged-out visitors land on the welcome page; everything else goes to login
+      const path = window.location.pathname.replace(/\/+$/, '');
+      if (path === '' || path === '/Welcome') {
+        return <Welcome />;
+      }
       navigateToLogin();
       return null;
     }
@@ -337,6 +342,7 @@ const AuthenticatedApp = () => {
           <Account />
         </LayoutWrapper>
       } />
+      <Route path="/Welcome" element={<Welcome />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
