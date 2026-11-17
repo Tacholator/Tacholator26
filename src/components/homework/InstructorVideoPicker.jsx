@@ -7,7 +7,13 @@ import { Check, Video } from 'lucide-react';
 export default function InstructorVideoPicker({ instructorId, selectedUrl, onSelect }) {
   const { data: videos = [], isLoading } = useQuery({
     queryKey: ['instructorVideoLibrary', instructorId],
-    queryFn: () => base44.entities.InstructorVideoResource.filter({ instructorId }, { sort: '-created_date', limit: 100 }),
+    queryFn: async () => {
+      const page = await base44.entities.InstructorVideoResource.filter(
+        { instructorId },
+        { sort: '-created_date', limit: 100 }
+      );
+      return page?.items || [];
+    },
     enabled: !!instructorId
   });
 
