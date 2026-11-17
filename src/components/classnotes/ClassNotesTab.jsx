@@ -29,6 +29,13 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
+  // Linked learner user id — stored on each note so the learner's Class Notes page can see it
+  const { data: pupilRecord } = useQuery({
+    queryKey: ['classNotesPupil', pupilId],
+    queryFn: () => base44.entities.Pupil.get(pupilId),
+    enabled: !!pupilId
+  });
+
   const { data: notes = [], isLoading } = useQuery({
     queryKey: ['whiteboardScribbles', pupilId],
     queryFn: async () => {
@@ -89,13 +96,15 @@ export default function ClassNotesTab({ pupilId, instructorId }) {
 
   const handleSave = () => {
     const currentState = history[historyIndex] || { objects: [], strokes: [] };
-    saveMutation.mutate({
+    const payload = {
       pupilId,
       instructorId,
       topic: topic || 'Untitled note',
       scribbleData: { strokes: currentState.strokes || [] },
       timestamp: new Date().toISOString()
-    });
+    };
+    if (pupilRecord?.linkedUserId) payload.pupilUserId = pupilRecord.linkedUserId;
+    saveMutation.mutate(payload);
   };
 
   const handleClearAll = () => {
