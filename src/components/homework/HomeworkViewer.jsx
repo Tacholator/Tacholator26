@@ -67,9 +67,9 @@ export default function HomeworkViewer({ homework, onChecklistUpdate }) {
           {videos.length === 0 && (
             <p className="text-sm text-slate-500">No video attached to this homework yet.</p>
           )}
-          {videos.map((video) => (
+          {videos.map((video, index) => (
             <HomeworkVideoPlayer
-              key={video.videoUrl}
+              key={video.id || `${video.videoUrl}-${index}`}
               videoUrl={video.videoUrl}
               title={video.title}
             />

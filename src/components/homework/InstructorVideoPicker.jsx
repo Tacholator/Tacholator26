@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import { Check, Video } from 'lucide-react';
 
-export default function InstructorVideoPicker({ instructorId, selectedUrls = [], onToggle }) {
+export default function InstructorVideoPicker({ instructorId, selectedIds = [], onToggle }) {
   const { data: videos = [], isLoading } = useQuery({
     queryKey: ['instructorVideoLibrary', instructorId],
     queryFn: async () => {
@@ -32,7 +32,7 @@ export default function InstructorVideoPicker({ instructorId, selectedUrls = [],
   return (
     <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-56 overflow-y-auto">
       {videos.map((video) => {
-        const isSelected = selectedUrls.includes(video.videoUrl);
+        const isSelected = selectedIds.includes(video.id);
         return (
           <button
             key={video.id}

@@ -120,13 +120,19 @@ export default function HomeworkFormatForm({ formatType, payload, onChange, inst
         (payload?.videoUrl
           ? [{ videoUrl: payload.videoUrl, title: '', description: payload?.description || '' }]
           : []);
+      const videoKey = (v) => v.id || v.videoUrl;
       const toggleVideo = (video) => {
-        const exists = selectedVideos.some((v) => v.videoUrl === video.videoUrl);
+        const exists = selectedVideos.some((v) => videoKey(v) === video.id);
         const next = exists
-          ? selectedVideos.filter((v) => v.videoUrl !== video.videoUrl)
+          ? selectedVideos.filter((v) => videoKey(v) !== video.id)
           : [
               ...selectedVideos,
-              { videoUrl: video.videoUrl, title: video.title, description: video.description || '' }
+              {
+                id: video.id,
+                videoUrl: video.videoUrl,
+                title: video.title,
+                description: video.description || ''
+              }
             ];
         updatePayload({ videos: next });
         if (!exists && onVideoSelect) onVideoSelect(video);
@@ -135,8 +141,8 @@ export default function HomeworkFormatForm({ formatType, payload, onChange, inst
         if (selectedVideos.some((v) => v.videoUrl === url)) return;
         updatePayload({ videos: [...selectedVideos, { videoUrl: url, title: '', description: '' }] });
       };
-      const removeVideo = (url) =>
-        updatePayload({ videos: selectedVideos.filter((v) => v.videoUrl !== url) });
+      const removeVideo = (key) =>
+        updatePayload({ videos: selectedVideos.filter((v) => videoKey(v) !== key) });
 
       return (
         <div className="space-y-4">
@@ -144,7 +150,7 @@ export default function HomeworkFormatForm({ formatType, payload, onChange, inst
             <Label>Pick from your videos</Label>
             <InstructorVideoPicker
               instructorId={instructorId}
-              selectedUrls={selectedVideos.map((v) => v.videoUrl)}
+              selectedIds={selectedVideos.map((v) => v.id).filter(Boolean)}
               onToggle={toggleVideo}
             />
           </div>
@@ -154,7 +160,7 @@ export default function HomeworkFormatForm({ formatType, payload, onChange, inst
               <div className="space-y-1">
                 {selectedVideos.map((video) => (
                   <div
-                    key={video.videoUrl}
+                    key={videoKey(video)}
                     className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg"
                   >
                     <span className="flex-1 text-sm text-slate-700 truncate">
@@ -162,7 +168,7 @@ export default function HomeworkFormatForm({ formatType, payload, onChange, inst
                     </span>
                     <button
                       type="button"
-                      onClick={() => removeVideo(video.videoUrl)}
+                      onClick={() => removeVideo(videoKey(video))}
                       className="text-slate-400 hover:text-rose-600"
                     >
                       <X className="w-4 h-4" />
