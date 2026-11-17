@@ -221,14 +221,10 @@ export const buildNavigation = (isInstructor, isMainAdmin = false, pupilStatus =
       ] 
     : [];
   
-  const contactSupport = { name: 'Contact Support', icon: HeadphonesIcon, page: 'ContactSupport' };
-  const appFeedback = { name: 'App Feedback', icon: MessageSquarePlus, page: 'AppFeedback' };
-
   return [
     shared[0], // Home
     ...roleSpecific,
     ...shared.slice(1), // Payments, Notifications (Homework excluded for instructors)
-    ...adminDashboard, // Admin Dashboard at the end (after Chats)
-    ...(isMainAdmin ? [] : [contactSupport, appFeedback]) // Contact Support & Feedback for non-main-admin users
+    ...adminDashboard // Admin Dashboard at the end (after Chats)
   ];
 };
