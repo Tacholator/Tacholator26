@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
-import { Plus, Trash2, Loader2, Upload } from 'lucide-react';
+import { Plus, Trash2, Loader2, Upload, X } from 'lucide-react';
 import InstructorVideoPicker from './InstructorVideoPicker';
+import VideoLinkAdder from './VideoLinkAdder';
 
 export default function HomeworkFormatForm({ formatType, payload, onChange, instructorId, onVideoSelect }) {
   const [uploading, setUploading] = useState(false);
@@ -113,30 +114,67 @@ export default function HomeworkFormatForm({ formatType, payload, onChange, inst
         </div>
       );
 
-    case 'video':
+    case 'video': {
+      const selectedVideos =
+        payload?.videos ??
+        (payload?.videoUrl
+          ? [{ videoUrl: payload.videoUrl, title: '', description: payload?.description || '' }]
+          : []);
+      const toggleVideo = (video) => {
+        const exists = selectedVideos.some((v) => v.videoUrl === video.videoUrl);
+        const next = exists
+          ? selectedVideos.filter((v) => v.videoUrl !== video.videoUrl)
+          : [
+              ...selectedVideos,
+              { videoUrl: video.videoUrl, title: video.title, description: video.description || '' }
+            ];
+        updatePayload({ videos: next });
+        if (!exists && onVideoSelect) onVideoSelect(video);
+      };
+      const addLink = (url) => {
+        if (selectedVideos.some((v) => v.videoUrl === url)) return;
+        updatePayload({ videos: [...selectedVideos, { videoUrl: url, title: '', description: '' }] });
+      };
+      const removeVideo = (url) =>
+        updatePayload({ videos: selectedVideos.filter((v) => v.videoUrl !== url) });
+
       return (
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Pick from your videos</Label>
             <InstructorVideoPicker
               instructorId={instructorId}
-              selectedUrl={payload?.videoUrl}
-              onSelect={(video) => {
-                updatePayload({
-                  videoUrl: video.videoUrl,
-                  description: payload?.description || video.description || ''
-                });
-                if (onVideoSelect) onVideoSelect(video);
-              }}
+              selectedUrls={selectedVideos.map((v) => v.videoUrl)}
+              onToggle={toggleVideo}
             />
           </div>
+          {selectedVideos.length > 0 && (
+            <div className="space-y-2">
+              <Label>Selected videos ({selectedVideos.length})</Label>
+              <div className="space-y-1">
+                {selectedVideos.map((video) => (
+                  <div
+                    key={video.videoUrl}
+                    className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg"
+                  >
+                    <span className="flex-1 text-sm text-slate-700 truncate">
+                      {video.title || video.videoUrl}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeVideo(video.videoUrl)}
+                      className="text-slate-400 hover:text-rose-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="space-y-2">
-            <Label>Or paste a video URL</Label>
-            <Input
-              value={payload?.videoUrl || ''}
-              onChange={(e) => updatePayload({ videoUrl: e.target.value })}
-              placeholder="YouTube, Vimeo, or direct video URL"
-            />
+            <Label>Or add a video by link</Label>
+            <VideoLinkAdder onAdd={addLink} />
           </div>
           <div className="space-y-2">
             <Label>Description (optional)</Label>
@@ -149,6 +187,7 @@ export default function HomeworkFormatForm({ formatType, payload, onChange, inst
           </div>
         </div>
       );
+    }
 
     case 'audio':
       return (

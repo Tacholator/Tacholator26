@@ -1,6 +1,7 @@
 import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ExternalLink, FileText, CheckSquare, Image, Video, Music, Link2, Paperclip } from 'lucide-react';
+import HomeworkVideoPlayer from './HomeworkVideoPlayer';
 
 export default function HomeworkViewer({ homework, onChecklistUpdate }) {
   const { formatType, formatPayload } = homework;
@@ -54,35 +55,31 @@ export default function HomeworkViewer({ homework, onChecklistUpdate }) {
         </div>
       );
 
-    case 'video':
+    case 'video': {
+      const videos = formatPayload?.videos?.length
+        ? formatPayload.videos
+        : formatPayload?.videoUrl
+        ? [{ videoUrl: formatPayload.videoUrl }]
+        : [];
+
       return (
-        <div className="space-y-3">
-          {formatPayload?.videoUrl && (
-            formatPayload.videoUrl.includes('youtube') || formatPayload.videoUrl.includes('youtu.be') ? (
-              <div className="aspect-video">
-                <iframe
-                  src={formatPayload.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
-                  className="w-full h-full rounded-lg"
-                  allowFullScreen
-                />
-              </div>
-            ) : formatPayload.videoUrl.includes('vimeo') ? (
-              <div className="aspect-video">
-                <iframe
-                  src={formatPayload.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
-                  className="w-full h-full rounded-lg"
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <video controls src={formatPayload.videoUrl} className="w-full rounded-lg" />
-            )
+        <div className="space-y-4">
+          {videos.length === 0 && (
+            <p className="text-sm text-slate-500">No video attached to this homework yet.</p>
           )}
+          {videos.map((video) => (
+            <HomeworkVideoPlayer
+              key={video.videoUrl}
+              videoUrl={video.videoUrl}
+              title={video.title}
+            />
+          ))}
           {formatPayload?.description && (
             <p className="text-sm text-slate-600">{formatPayload.description}</p>
           )}
         </div>
       );
+    }
 
     case 'audio':
       return (
