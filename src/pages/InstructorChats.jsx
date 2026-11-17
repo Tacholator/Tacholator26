@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
@@ -155,7 +156,7 @@ export default function InstructorChats() {
       pupilId: selectedConversation.pupilId,
       senderId: user.id,
       senderRole: 'instructor',
-      senderName: user.full_name,
+      senderName: getUserDisplayName(user),
       messageText,
       status: 'sent'
     };

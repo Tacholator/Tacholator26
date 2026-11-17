@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 
 export default function CommunityPostForm({ user, userDisplayName, onPostCreated }) {
   const [content, setContent] = useState('');
@@ -14,7 +15,7 @@ export default function CommunityPostForm({ user, userDisplayName, onPostCreated
     setSubmitting(true);
     try {
       const userRole = user.email === 'fasobah@gmail.com' ? 'admin' : (user.role === 'admin' ? 'instructor' : 'learner');
-      const displayName = userDisplayName || user.full_name?.split(' ')[0] || user.email;
+      const displayName = userDisplayName || getUserDisplayName(user, user.email).split(' ')[0];
       await base44.entities.CommunityPost.create({
         userId: user.id,
         userFullName: displayName,

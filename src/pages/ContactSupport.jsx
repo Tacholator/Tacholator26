@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -45,7 +46,7 @@ export default function ContactSupport() {
     await base44.entities.SupportMessage.create({
       userId: user.id,
       userEmail: user.email,
-      userName: user.full_name || user.email,
+      userName: getUserDisplayName(user, user.email),
       userRole,
       subject: subject.trim(),
       message: message.trim(),

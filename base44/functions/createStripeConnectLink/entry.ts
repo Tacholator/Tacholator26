@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import Stripe from 'npm:stripe@17.7.0';
+import { resolveUserName } from '../../shared/userName.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), {
   apiVersion: '2024-12-18.acacia'
@@ -32,7 +33,7 @@ Deno.serve(async (req) => {
 
     let accountId = instructor.stripeAccountId;
 
-    const nameParts = (user.full_name || '').trim().split(/\s+/);
+    const nameParts = resolveUserName(user, user.email).trim().split(/\s+/);
     const firstName = nameParts[0] || '';
     const lastName = nameParts.slice(1).join(' ') || '';
 

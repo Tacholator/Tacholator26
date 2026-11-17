@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { resolveUserName } from '../../shared/userName.ts';
 
 export default async function(req) {
   try {
@@ -18,7 +19,7 @@ export default async function(req) {
       await base44.asServiceRole.entities.DeletionRequest.create({
         userId,
         userEmail: user.email,
-        userName: user.full_name,
+        userName: resolveUserName(user, user.email),
         role,
         reason,
         additionalInfo,

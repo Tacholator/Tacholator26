@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
@@ -166,7 +167,7 @@ export default function AdminDataManagement() {
       await base44.integrations.Core.SendEmail({
         to: 'fasobah@gmail.com',
         subject: 'Account Deletion Request - Mobrage Tacholator',
-        body: `User ${user?.full_name || user?.email} (${user?.email}) has requested to delete their Tacholator account.\n\nUser ID: ${user?.id}\nRequest Date: ${moment().format('D MMM YYYY, h:mm a')}`
+        body: `User ${getUserDisplayName(user, user?.email)} (${user?.email}) has requested to delete their Tacholator account.\n\nUser ID: ${user?.id}\nRequest Date: ${moment().format('D MMM YYYY, h:mm a')}`
       });
       setRequestSent(true);
       setTimeout(() => setRequestSent(false), 5000);

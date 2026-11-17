@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,7 +61,7 @@ export default function InstructorPayments({ adminProxyInstructorId = null }) {
       // Auto-create instructor profile for admin users
       if (user.role === 'admin') {
         const newInstructor = await base44.entities.Instructor.create({
-          name: user.full_name || user.email,
+          name: getUserDisplayName(user, user.email),
           phone: '',
           stripeAccountStatus: 'not_connected'
         });

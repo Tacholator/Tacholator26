@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -48,7 +49,7 @@ export default function AppFeedback() {
     await base44.entities.AppFeedback.create({
       userId: user.id,
       userEmail: user.email,
-      userName: user.full_name || user.email,
+      userName: getUserDisplayName(user, user.email),
       userRole,
       rating,
       category,

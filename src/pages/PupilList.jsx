@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -194,7 +195,7 @@ export default function PupilList() {
         ...data,
         instructorId: currentUser?.id,
         instructorEmail: currentUser?.email,
-        instructorName: currentUser?.full_name,
+        instructorName: getUserDisplayName(currentUser, currentUser?.email),
         linkedUserId: linkedUserId
       };
       const result = await createPupilMutation.mutateAsync(pupilData);

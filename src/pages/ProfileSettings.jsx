@@ -173,19 +173,14 @@ export default function ProfileSettings() {
         }
       }
       
+      await base44.functions.invoke('updateMyDisplayName', {
+        firstName: formData.firstName,
+        lastName: formData.lastName
+      });
+
       queryClient.invalidateQueries(['currentUser']);
-      
-      if (isInstructor && (formData.firstName || formData.lastName)) {
-        const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-        if (fullName) {
-          const pupils = await base44.entities.Pupil.filter({ instructorId: user.id });
-          await Promise.all(
-            pupils.map(pupil => 
-              base44.entities.Pupil.update(pupil.id, { instructorName: fullName })
-            )
-          );
-        }
-      }
+      queryClient.invalidateQueries(['myPupilProfile']);
+      queryClient.invalidateQueries(['learnerPupilProfile']);
       
       setSaveSuccess(true);
       setIsPersonalEditing(false);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -42,7 +43,7 @@ export default function InstructorStripeConnect() {
       // Auto-create instructor profile for admin users
       if (user.role === 'admin') {
         const newInstructor = await base44.entities.Instructor.create({
-          name: user.full_name || user.email,
+          name: getUserDisplayName(user, user.email),
           phone: '',
           stripeAccountStatus: 'not_connected'
         });

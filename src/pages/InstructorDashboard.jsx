@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
@@ -86,7 +87,7 @@ export default function InstructorDashboard() {
       
       if (user.role === 'admin') {
         const newInstructor = await base44.entities.Instructor.create({
-          name: user.full_name || user.email,
+          name: getUserDisplayName(user, user.email),
           phone: '',
           calendarDefaultView: 'week',
           lessonDurationDefaultMinutes: 60,

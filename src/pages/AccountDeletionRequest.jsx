@@ -112,7 +112,7 @@ export default function AccountDeletionRequest() {
               <div className="space-y-2">
                 <Label>Name</Label>
                 <Input
-                  value={user?.full_name || ''}
+                  value={[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.full_name || ''}
                   disabled
                   className="bg-slate-50"
                 />

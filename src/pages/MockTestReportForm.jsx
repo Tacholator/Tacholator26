@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { getUserDisplayName } from "@/lib/userName";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -149,7 +150,7 @@ export default function MockTestReportForm() {
   const buildSavePayload = () => ({
     ...reportMeta,
     instructorId: currentUser?.id,
-    instructorName: instructor ? `${instructor.name}` : currentUser?.full_name || currentUser?.email,
+    instructorName: instructor ? `${instructor.name}` : getUserDisplayName(currentUser, currentUser?.email),
     learnerId: learnerId || existingReport?.learnerId,
     learnerName: pupil ? `${pupil.firstName} ${pupil.lastName}` : existingReport?.learnerName,
     totalDriverFaults: df,

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { getUserDisplayName } from '@/lib/userName';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Car, BookOpen, Users, ArrowLeft, Loader2, ChevronRight, Mail, Phone, MapPin, Calendar, User } from 'lucide-react';
@@ -255,8 +256,8 @@ export default function AdminUserManagement() {
                   <div>
                     <h2 className="text-xl font-bold text-[#071739]">
                       {isInstructorType
-                        ? (instructor?.name || selectedUser.full_name || selectedUser.email)
-                        : (pupil ? `${pupil.firstName} ${pupil.lastName}` : selectedUser.full_name || selectedUser.email)}
+                        ? (instructor?.name || getUserDisplayName(selectedUser, selectedUser.email))
+                        : (pupil ? `${pupil.firstName} ${pupil.lastName}` : getUserDisplayName(selectedUser, selectedUser.email))}
                     </h2>
                     <Badge className={isInstructorType ? 'bg-[#F7B602]/20 text-[#071739]' : 'bg-[#071739]/10 text-[#071739]'}>
                       {isInstructorType ? 'Instructor' : 'Learner'}
@@ -267,7 +268,7 @@ export default function AdminUserManagement() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <DetailRow icon={Mail} label="Email" value={selectedUser.email} />
                   <DetailRow icon={Phone} label="Phone" value={isInstructorType ? (instructor?.phone || '—') : (pupil?.phone || '—')} />
-                  <DetailRow icon={User} label="Full Name" value={selectedUser.full_name || '—'} />
+                  <DetailRow icon={User} label="Full Name" value={getUserDisplayName(selectedUser, '—')} />
                   <DetailRow icon={Calendar} label="Joined" value={selectedUser.created_date ? new Date(selectedUser.created_date).toLocaleDateString('en-GB') : '—'} />
                   {isInstructorType && (
                     <DetailRow icon={Users} label="Pupils" value={`${pupilCount} pupil${pupilCount !== 1 ? 's' : ''}`} />

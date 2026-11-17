@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { resolveUserName } from '../../shared/userName.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -79,7 +80,7 @@ Deno.serve(async (req) => {
       pupilName: `${pupil.firstName} ${pupil.lastName}`,
       pupilEmail: pupil.email || '',
       instructorId: user.id,
-      instructorName: instructor?.name || user.full_name || user.email,
+      instructorName: instructor?.name || resolveUserName(user, user.email),
       instructorEmail: user.email,
       instructorPhone: instructor?.phone || '',
       amount: parseFloat(amount),

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+import { resolveUserName } from '../../shared/userName.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -20,12 +21,12 @@ Deno.serve(async (req) => {
       // Instructors store their real name in the Instructor entity (filter by created_by_id for reliability)
       const instructors = await base44.asServiceRole.entities.Instructor.filter({ created_by: user.email });
       const instructor = instructors[0];
-      displayName = instructor?.name?.split(' ')[0] || user.full_name?.split(' ')[0] || user.email;
+      displayName = instructor?.name?.split(' ')[0] || resolveUserName(user, user.email).split(' ')[0];
     } else {
       // Learners: use pupil firstName
       const pupils = await base44.asServiceRole.entities.Pupil.filter({ linkedUserId: user.id });
       const pupil = pupils[0];
-      displayName = pupil?.firstName || user.full_name?.split(' ')[0] || user.email;
+      displayName = pupil?.firstName || resolveUserName(user, user.email).split(' ')[0];
     }
 
     const comment = await base44.asServiceRole.entities.CommunityComment.create({
