@@ -25,8 +25,9 @@ export default function RoleSelection() {
         const fullName = user?.full_name || user?.email?.split('@')[0] || '';
         await base44.entities.Instructor.create({ name: fullName });
         // Invalidate cache and hard-navigate so Home sees fresh user data
+        // New instructors land on their dashboard, where the setup popup opens
         queryClient.clear();
-        window.location.href = '/InstructorSubscription';
+        window.location.href = '/';
       } else {
         await base44.auth.updateMe({ userType: role });
         // Invalidate cache and hard-navigate so Home sees fresh user data
