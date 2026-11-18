@@ -333,6 +333,26 @@ export default function CreateBookableSlotModal({
           </button>
         </div>
 
+        {requireSubscription && (
+          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div className="flex items-start gap-2">
+              <Lock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <p className="text-amber-800 text-xs font-medium">
+                To create {slotType === 'personal' ? 'personal events' : 'bookable slots and lessons'}, select a plan.
+              </p>
+            </div>
+            <Link to="/InstructorSubscription">
+              <button
+                type="button"
+                className="flex items-center gap-1.5 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold text-xs px-3 py-1.5 rounded-lg transition-colors shrink-0"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                Start Free Trial
+              </button>
+            </Link>
+          </div>
+        )}
+
         {slotType === 'personal' ? (
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -412,26 +432,6 @@ export default function CreateBookableSlotModal({
           </div>
         ) : (
           <div className="space-y-4 py-4">
-            {requireSubscription && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                <div className="flex items-start gap-2">
-                  <Lock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                  <p className="text-amber-800 text-xs font-medium">
-                    To create personal events, bookable slots and lessons, select a plan.
-                  </p>
-                </div>
-                <Link to="/InstructorSubscription">
-                  <button
-                    type="button"
-                    className="flex items-center gap-1.5 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold text-xs px-3 py-1.5 rounded-lg transition-colors shrink-0"
-                  >
-                    <Zap className="w-3.5 h-3.5" />
-                    Start Free Trial
-                  </button>
-                </Link>
-              </div>
-            )}
-
             {!existingSlot && (
               <div className="flex items-center justify-center gap-2 p-1 bg-slate-100 rounded-full w-fit mx-auto">
                 <button
