@@ -417,7 +417,7 @@ export default function CreateBookableSlotModal({
                 <div className="flex items-start gap-2">
                   <Lock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                   <p className="text-amber-800 text-xs font-medium">
-                    To create bookable slots and schedule lessons, select a plan.
+                    To create personal events, bookable slots and lessons, select a plan.
                   </p>
                 </div>
                 <Link to="/InstructorSubscription">
@@ -658,7 +658,7 @@ export default function CreateBookableSlotModal({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={isSaving || (requireSubscription && slotType === 'lesson') || (slotType === 'personal' ? !isPersonalValid : !isLessonValid)}
+            disabled={isSaving || requireSubscription || (slotType === 'personal' ? !isPersonalValid : !isLessonValid)}
             className="bg-teal-600 hover:bg-teal-700"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : (existingSlot ? 'Update Slot' : (slotType === 'lesson' && lessonMode === 'booking' ? 'Schedule Lesson' : 'Save Slot'))}
