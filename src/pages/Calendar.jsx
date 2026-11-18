@@ -42,6 +42,7 @@ import InstructorScheduleLessonModal from '@/components/booking/InstructorSchedu
 import CloseDayModal from '@/components/booking/CloseDayModal';
 import { useToast } from '@/components/ui/use-toast';
 import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
+import SubscriptionReminderBanner from '@/components/subscription/SubscriptionReminderBanner';
 import {
   Select,
   SelectContent,
@@ -877,6 +878,8 @@ export default function Calendar() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
+        <SubscriptionReminderBanner userId={currentUser?.id} />
+
         {/* Header */}
         <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
           <div className="flex items-center gap-2 w-full sm:w-auto">

@@ -9,6 +9,7 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
+import SubscriptionReminderBanner from '@/components/subscription/SubscriptionReminderBanner';
 
 const VIEW_OPTIONS = [
   { value: 'day', label: 'Day' },
@@ -145,6 +146,8 @@ export default function InstructorSchedule() {
 
   return (
     <div className="p-4 lg:p-6 max-w-4xl mx-auto">
+      <SubscriptionReminderBanner userId={user?.id} />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div>
