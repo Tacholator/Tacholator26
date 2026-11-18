@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Search, GraduationCap } from 'lucide-react';
+import { Loader2, Search, GraduationCap, Lock, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { TimeRangePicker, TimePicker } from '@/components/ui/TimePicker';
 
@@ -51,6 +52,7 @@ export default function CreateBookableSlotModal({
   slotDateTime,
   existingSlot,
   slotInstances = [],
+  requireSubscription = false,
   defaultSlotType = 'personal',
   defaultLessonMode = 'bookable',
   defaultPupilId = '',
@@ -410,6 +412,26 @@ export default function CreateBookableSlotModal({
           </div>
         ) : (
           <div className="space-y-4 py-4">
+            {requireSubscription && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div className="flex items-start gap-2">
+                  <Lock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-amber-800 text-xs font-medium">
+                    To create bookable slots and schedule lessons, select a plan.
+                  </p>
+                </div>
+                <Link to="/InstructorSubscription">
+                  <button
+                    type="button"
+                    className="flex items-center gap-1.5 bg-[#F7B602] hover:bg-[#d99f02] text-[#071739] font-semibold text-xs px-3 py-1.5 rounded-lg transition-colors shrink-0"
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    Start Free Trial
+                  </button>
+                </Link>
+              </div>
+            )}
+
             {!existingSlot && (
               <div className="flex items-center justify-center gap-2 p-1 bg-slate-100 rounded-full w-fit mx-auto">
                 <button
@@ -636,7 +658,7 @@ export default function CreateBookableSlotModal({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={isSaving || (slotType === 'personal' ? !isPersonalValid : !isLessonValid)}
+            disabled={isSaving || (requireSubscription && slotType === 'lesson') || (slotType === 'personal' ? !isPersonalValid : !isLessonValid)}
             className="bg-teal-600 hover:bg-teal-700"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : (existingSlot ? 'Update Slot' : (slotType === 'lesson' && lessonMode === 'booking' ? 'Schedule Lesson' : 'Save Slot'))}

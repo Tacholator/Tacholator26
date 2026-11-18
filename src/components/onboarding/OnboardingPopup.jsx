@@ -18,7 +18,7 @@ const steps = [
     icon: Calendar,
     label: 'Set Up Your Calendar',
     description: 'Configure your working hours and availability for bookings.',
-    page: 'InstructorBookingCalendar',
+    page: 'Calendar',
     color: 'bg-emerald-100 text-emerald-700',
   },
   {

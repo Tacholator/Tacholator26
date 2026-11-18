@@ -34,7 +34,7 @@ import ProfileSettingsContent from './ProfileSettingsContent.jsx';
 
 const onboardingSteps = [
   { key: 'onboardingProfileCompleted', label: 'Personal & Business Info', page: 'ProfileSettings', icon: User },
-  { key: 'onboardingCalendarCompleted', label: 'Set Up Your Calendar', page: 'InstructorBookingCalendar', icon: Calendar },
+  { key: 'onboardingCalendarCompleted', label: 'Set Up Your Calendar', page: 'Calendar', icon: Calendar },
   { key: 'onboardingStripeCompleted', label: 'Connect Stripe Payout', page: 'InstructorStripeConnect', icon: CreditCard },
 ];
 

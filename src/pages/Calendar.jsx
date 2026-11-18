@@ -11,7 +11,9 @@ import {
   CalendarCheck,
   Loader2,
   Settings,
-  Clock
+  Clock,
+  Lock,
+  Zap
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -39,6 +41,7 @@ import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
 import InstructorScheduleLessonModal from '@/components/booking/InstructorScheduleLessonModal';
 import CloseDayModal from '@/components/booking/CloseDayModal';
 import { useToast } from '@/components/ui/use-toast';
+import { useInstructorSubscription } from '@/hooks/useInstructorSubscription';
 import {
   Select,
   SelectContent,
@@ -103,6 +106,8 @@ export default function Calendar() {
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
   });
+
+  const { hasValidSub } = useInstructorSubscription(currentUser?.id);
 
   const { data: rules = [] } = useQuery({
     queryKey: ['calendarRules', currentUser?.id],
@@ -1326,6 +1331,7 @@ export default function Calendar() {
           return createBookableSlotMutation.mutate(data);
         }}
         isSaving={createBookableSlotMutation.isPending || createCalendarEventMutation.isPending || createInstructorBookingMutation.isPending}
+        requireSubscription={!hasValidSub}
         slotDateTime={selectedSlotDateTime}
         existingSlot={selectedSlotInstance}
         slotInstances={slotInstances}
