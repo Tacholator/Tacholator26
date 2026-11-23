@@ -445,7 +445,7 @@ export default function InstructorSubscription() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             { icon: Shield, title: 'Cancel Anytime', desc: 'Cancel during your trial and pay nothing. No questions asked.' },
-            { icon: CreditCard, title: 'Secure Payments', desc: 'Payments processed securely by Stripe. Your card details are never stored by us.' },
+            { icon: CreditCard, title: 'Secure Payments', desc: 'Payments processed securely. Your card details are never stored by us.' },
             { icon: Calendar, title: 'Instant Access', desc: 'Get full access to all features immediately after starting your trial.' },
           ].map(({ icon: Icon, title, desc }) => (
             <Card key={title} className="text-center p-4 border-slate-200">
