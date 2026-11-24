@@ -18,18 +18,18 @@ const PLANS = [
   {
     id: 'monthly',
     name: 'Monthly',
-    price: '£10.00',
+    price: '£9.99',
     period: '/month',
-    annualEquivalent: '£120/year',
+    annualEquivalent: '£119.88/year',
     priceNote: 'Billed monthly',
     badge: null,
   },
   {
     id: 'yearly',
     name: 'Annual',
-    price: '£100.00',
+    price: '£99.99',
     period: '/year',
-    annualEquivalent: 'Save £20 vs monthly',
+    annualEquivalent: 'Save £19.89 vs monthly',
     priceNote: 'Billed annually',
     badge: 'Best Value',
   },
@@ -129,7 +129,7 @@ export default function InstructorSubscription() {
       const res = await base44.functions.invoke('upgradeInstructorSubscription', {});
       if (res.data?.success) {
         await refetchSub();
-        setSuccessMessage('You have been upgraded to the Annual plan (£100/year).');
+        setSuccessMessage('You have been upgraded to the Annual plan (£99.99/year).');
       } else {
         setErrorMessage(res.data?.error || 'The upgrade could not be completed.');
       }
@@ -263,7 +263,7 @@ export default function InstructorSubscription() {
                       )}
                     </div>
                     <p className="text-slate-600 text-sm">
-                      {subscription?.billingPeriod === 'yearly' ? 'Annual Plan — £100/year' : 'Monthly Plan — £10/month'}
+                      {subscription?.billingPeriod === 'yearly' ? 'Annual Plan — £99.99/year' : 'Monthly Plan — £9.99/month'}
                     </p>
                     {isTrialing && (
                       <p className="text-[#F7B602] font-semibold text-sm mt-1">
@@ -466,7 +466,7 @@ export default function InstructorSubscription() {
           <AlertDialogHeader>
             <AlertDialogTitle>Upgrade to Annual Plan?</AlertDialogTitle>
             <AlertDialogDescription>
-              You'll switch from £10/month to £100/year — saving £20. The change takes effect immediately and any unused days on your current cycle will be prorated.
+              You'll switch from £9.99/month to £99.99/year — saving £19.89. The change takes effect immediately and any unused days on your current cycle will be prorated.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
