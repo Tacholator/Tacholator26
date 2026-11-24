@@ -76,8 +76,8 @@ Deno.serve(async (req) => {
         await base44.asServiceRole.entities.PaymentCard.update(card.id, { isDefault: false });
       }
 
-      // Set selected card as default
-      const card = await base44.entities.PaymentCard.filter({ id: cardId });
+      // Set selected card as default — the card must belong to the caller
+      const card = await base44.entities.PaymentCard.filter({ id: cardId, userId: user.id });
       if (card.length > 0 && card[0].stripePaymentMethodId) {
         await base44.asServiceRole.entities.PaymentCard.update(cardId, { isDefault: true });
         await stripe.customers.update(stripeCustomerId, {
@@ -89,12 +89,16 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'delete') {
-      const cards = await base44.entities.PaymentCard.filter({ id: cardId });
-      if (cards.length > 0 && cards[0].stripePaymentMethodId) {
+      // The card must belong to the caller before we touch Stripe or the record
+      const cards = await base44.entities.PaymentCard.filter({ id: cardId, userId: user.id });
+      if (cards.length === 0) {
+        return Response.json({ error: 'Card not found' }, { status: 404 });
+      }
+      if (cards[0].stripePaymentMethodId) {
         // Detach from Stripe
         await stripe.paymentMethods.detach(cards[0].stripePaymentMethodId);
         // Delete from database
-        await base44.asServiceRole.entities.PaymentCard.delete(cardId);
+        await base44.asServiceRole.entities.PaymentCard.delete(cards[0].id);
       }
 
       return Response.json({ success: true });

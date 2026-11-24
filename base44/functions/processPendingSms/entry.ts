@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import moment from 'npm:moment@2.30.1';
+import { INTERNAL_TOKEN } from '../../shared/internalAuth.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -39,6 +40,7 @@ Deno.serve(async (req) => {
 
         // Send SMS
         const sendResult = await base44.asServiceRole.functions.invoke('sendSms', {
+          _internalToken: INTERNAL_TOKEN,
           toE164: sms.toE164,
           templateKey: sms.templateKey,
           variablesJson: sms.variablesJson

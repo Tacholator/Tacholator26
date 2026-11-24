@@ -22,8 +22,30 @@ Deno.serve(async (req) => {
     // Clean up the URL - remove any extra characters
     const cleanUrl = gpsDataUrl.trim().replace(/^\(+|\)+$/g, '');
 
+    // Only fetch ordinary public https URLs — no internal hosts or IP literals
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(cleanUrl);
+    } catch {
+      return Response.json({ error: 'Invalid GPS data URL' }, { status: 400 });
+    }
+
+    const host = parsedUrl.hostname.toLowerCase();
+    const isIpLiteral = /^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.startsWith('[');
+    const isPrivateHost =
+      isIpLiteral ||
+      host === 'localhost' ||
+      host.endsWith('.localhost') ||
+      host.endsWith('.internal') ||
+      host.endsWith('.local') ||
+      !host.includes('.');
+
+    if (parsedUrl.protocol !== 'https:' || isPrivateHost) {
+      return Response.json({ error: 'GPS data URL must be a public https address' }, { status: 400 });
+    }
+
     // Fetch the GPS data from URL
-    const gpsResponse = await fetch(cleanUrl);
+    const gpsResponse = await fetch(parsedUrl.href, { signal: AbortSignal.timeout(15000) });
     if (!gpsResponse.ok) {
       return Response.json({ 
         error: 'Failed to fetch GPS data file' 

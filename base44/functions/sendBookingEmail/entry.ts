@@ -1,8 +1,18 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 import moment from 'npm:moment@2.30.1';
 import 'npm:moment-timezone@0.5.45';
+import { isInternalCall } from '../../shared/internalAuth.ts';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 const FROM_EMAIL = 'noreply@mobragedrivingacademy.com';
 const FROM_NAME = 'Mobrage Driving Academy';
 
@@ -71,7 +81,7 @@ function lessonDetailsBlock(booking) {
         <tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;width:120px;">Date</td><td style="padding:4px 0;color:#374151;font-size:15px;">${start.format('dddd, D MMMM YYYY')}</td></tr>
         <tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;">Time</td><td style="padding:4px 0;color:#374151;font-size:15px;">${start.format('HH:mm')}</td></tr>
         <tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;">Duration</td><td style="padding:4px 0;color:#374151;font-size:15px;">${booking.durationHours} hour${booking.durationHours !== 1 ? 's' : ''}</td></tr>
-        ${booking.pickupLocation ? `<tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;">Pickup</td><td style="padding:4px 0;color:#374151;font-size:15px;">${booking.pickupLocation}</td></tr>` : ''}
+        ${booking.pickupLocation ? `<tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;">Pickup</td><td style="padding:4px 0;color:#374151;font-size:15px;">${escapeHtml(booking.pickupLocation)}</td></tr>` : ''}
       </table>
     </div>`;
 }
@@ -100,31 +110,31 @@ async function sendEmail(to, subject, html) {
 function buildBookingConfirmedPupil(pupilName, instructorName, booking) {
   const body = `
     <h2 style="color:#071739;font-size:22px;margin:0 0 8px;">Booking Confirmed!</h2>
-    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${pupilName},</p>
+    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${escapeHtml(pupilName)},</p>
     <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 16px;">
-      Great news! Your driving lesson with <strong>${instructorName}</strong> has been confirmed.
+      Great news! Your driving lesson with <strong>${escapeHtml(instructorName)}</strong> has been confirmed.
     </p>
     ${lessonDetailsBlock(booking)}
     <div style="background:#ecfdf5;border-radius:8px;padding:16px 20px;margin:24px 0;">
       <p style="color:#065f46;font-size:14px;margin:0;"><strong>✓ What's next?</strong> You'll receive a reminder before your lesson. Please ensure you're ready at your pickup location on time.</p>
     </div>
     <p style="color:#374151;font-size:15px;line-height:1.6;">If you need to cancel, please do so at least 48 hours in advance to avoid any cancellation charges.</p>
-    <p style="color:#374151;font-size:15px;margin:24px 0 0;">Best regards,<br/><strong style="color:#071739;">${instructorName}</strong><br/><span style="color:#6b7280;">Mobrage Driving Academy</span></p>`;
+    <p style="color:#374151;font-size:15px;margin:24px 0 0;">Best regards,<br/><strong style="color:#071739;">${escapeHtml(instructorName)}</strong><br/><span style="color:#6b7280;">Mobrage Driving Academy</span></p>`;
   return buildEmailHtml('Booking Confirmed – Mobrage Driving Academy', body, `Your lesson on ${moment(booking.startAtUtc).tz('Europe/London').format('D MMM')} is confirmed!`);
 }
 
 function buildBookingConfirmedInstructor(instructorName, pupilName, pupilEmail, pupilPhone, booking) {
   const body = `
     <h2 style="color:#071739;font-size:22px;margin:0 0 8px;">New Booking Confirmed</h2>
-    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${instructorName},</p>
+    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${escapeHtml(instructorName)},</p>
     <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 16px;">
-      A lesson booking with <strong>${pupilName}</strong> has been confirmed.
+      A lesson booking with <strong>${escapeHtml(pupilName)}</strong> has been confirmed.
     </p>
     ${lessonDetailsBlock(booking)}
     <div style="background:#f8f9fb;border-radius:8px;padding:16px 20px;margin:24px 0;">
       <p style="margin:0 0 8px;font-size:14px;color:#6b7280;font-weight:600;">Pupil Contact</p>
-      ${pupilEmail ? `<p style="margin:4px 0;font-size:14px;color:#374151;">Email: ${pupilEmail}</p>` : ''}
-      ${pupilPhone ? `<p style="margin:4px 0;font-size:14px;color:#374151;">Phone: ${pupilPhone}</p>` : ''}
+      ${pupilEmail ? `<p style="margin:4px 0;font-size:14px;color:#374151;">Email: ${escapeHtml(pupilEmail)}</p>` : ''}
+      ${pupilPhone ? `<p style="margin:4px 0;font-size:14px;color:#374151;">Phone: ${escapeHtml(pupilPhone)}</p>` : ''}
     </div>
     <p style="color:#374151;font-size:15px;margin:24px 0 0;">This is an automated notification from Tacholator.</p>`;
   return buildEmailHtml('Lesson Booking Confirmed – Tacholator', body);
@@ -139,9 +149,9 @@ function buildCancellationPupil(pupilName, instructorName, booking, cancelledByR
 
   const body = `
     <h2 style="color:#071739;font-size:22px;margin:0 0 8px;">Lesson Cancelled</h2>
-    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${pupilName},</p>
+    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${escapeHtml(pupilName)},</p>
     <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 16px;">
-      Your lesson has been cancelled by <strong>${cancelledBy}</strong>.
+      Your lesson has been cancelled by <strong>${escapeHtml(cancelledBy)}</strong>.
     </p>
     ${lessonDetailsBlock(booking)}
     ${chargeBlock}
@@ -153,9 +163,9 @@ function buildCancellationPupil(pupilName, instructorName, booking, cancelledByR
 function buildCancellationInstructor(instructorName, pupilName, booking, cancelledByRole, isLate, chargesApplied) {
   const body = `
     <h2 style="color:#071739;font-size:22px;margin:0 0 8px;">Lesson Cancellation Notice</h2>
-    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${instructorName},</p>
+    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${escapeHtml(instructorName)},</p>
     <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 16px;">
-      A lesson with <strong>${pupilName}</strong> has been ${cancelledByRole === 'instructor' ? 'cancelled by you' : 'cancelled by the pupil'}.
+      A lesson with <strong>${escapeHtml(pupilName)}</strong> has been ${cancelledByRole === 'instructor' ? 'cancelled by you' : 'cancelled by the pupil'}.
     </p>
     ${lessonDetailsBlock(booking)}
     <div style="background:#f8f9fb;border-radius:8px;padding:16px 20px;margin:24px 0;">
@@ -173,10 +183,22 @@ function buildCancellationInstructor(instructorName, pupilName, booking, cancell
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { type, bookingId } = await req.json();
+    const payload = await req.json().catch(() => ({}));
+
+    // Internal only: sends branded email on the app's Resend account. Called by
+    // the booking handlers, which prove they are internal with the shared token.
+    if (!isInternalCall(req, payload)) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { type, bookingId } = payload;
 
     if (!type || !bookingId) {
       return Response.json({ error: 'Missing type or bookingId' }, { status: 400 });
+    }
+
+    if (type !== 'booking_confirmed' && type !== 'booking_cancelled') {
+      return Response.json({ error: 'Invalid type' }, { status: 400 });
     }
 
     // Fetch booking

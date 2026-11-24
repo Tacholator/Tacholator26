@@ -1,14 +1,29 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import moment from 'npm:moment@2.30.1';
+import { isInternalCall } from '../../shared/internalAuth.ts';
+
+const ALLOWED_TEMPLATES = ['booking_confirmed', 'lesson_reminder_24h', 'lesson_reminder_1h', 'booking_cancelled'];
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    const { bookingId, templateKey, sendAtUtc, skipIfTooClose } = await req.json();
+    const payload = await req.json().catch(() => ({}));
+
+    // Internal only: queues SMS to a pupil's phone. Called by the booking
+    // handlers, which prove they are internal with the shared token.
+    if (!isInternalCall(req, payload)) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { bookingId, templateKey, sendAtUtc, skipIfTooClose } = payload;
 
     if (!bookingId || !templateKey || !sendAtUtc) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (!ALLOWED_TEMPLATES.includes(templateKey)) {
+      return Response.json({ error: 'Invalid template key' }, { status: 400 });
     }
 
     // Get booking details using service role
@@ -26,7 +41,16 @@ Deno.serve(async (req) => {
     }
 
     const pupil = pupils[0];
-    
+
+    // Never queue more than one of the same message for the same booking
+    const alreadyQueued = await base44.asServiceRole.entities.SmsNotification.filter({
+      bookingId,
+      templateKey
+    });
+    if (alreadyQueued.length > 0) {
+      return Response.json({ skipped: true, reason: 'Already queued' });
+    }
+
     // Convert phone to E.164 format if needed
     let phoneE164 = pupil.phone.trim();
     if (phoneE164.startsWith('0')) {

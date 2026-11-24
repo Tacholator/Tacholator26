@@ -3,17 +3,38 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const payload = await req.json();
 
-    const { event, data } = payload;
+    const user = await base44.auth.me().catch((e) => (e.status === 401 ? null : Promise.reject(e)));
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const payload = await req.json().catch(() => ({}));
+
+    const { event } = payload;
 
     // Only process create/update events
-    if (event.type !== 'create' && event.type !== 'update') {
+    if (event?.type !== 'create' && event?.type !== 'update') {
       return Response.json({ success: true });
     }
 
     const pupilId = event.entity_id;
-    const instructorEmail = data?.instructorEmail;
+    if (!pupilId) {
+      return Response.json({ error: 'Missing pupil id' }, { status: 400 });
+    }
+
+    // Read the pupil from the database rather than trusting the request body
+    const pupil = await base44.asServiceRole.entities.Pupil
+      .get(pupilId)
+      .catch((e) => (e.status === 404 ? null : Promise.reject(e)));
+    if (!pupil) {
+      return Response.json({ success: true });
+    }
+
+    const instructorEmail = pupil.instructorEmail;
 
     if (!instructorEmail) {
       return Response.json({ success: true });

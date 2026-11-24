@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Clock, BookOpen } from 'lucide-react';
+import { sanitizeHtml } from '@/lib/sanitizeHtml';
 
 export default function StudyMaterial({ content, onProgress, isComplete }) {
   const containerRef = useRef(null);
@@ -61,7 +62,7 @@ export default function StudyMaterial({ content, onProgress, isComplete }) {
         ref={containerRef}
         className="max-h-[60vh] overflow-y-auto prose prose-slate prose-headings:font-bold prose-h2:text-2xl prose-h2:mb-4 prose-h2:mt-6 prose-h3:text-xl prose-h3:mb-3 prose-h3:mt-5 prose-h4:text-lg prose-h4:mb-2 prose-h4:mt-3 prose-ul:list-disc prose-ul:ml-6 prose-li:mb-1 max-w-none bg-white rounded-xl p-6 border"
       >
-        <div dangerouslySetInnerHTML={{ __html: content }} />
+        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }} />
       </div>
     </div>
   );

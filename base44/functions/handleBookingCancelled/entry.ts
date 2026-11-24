@@ -1,17 +1,34 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import moment from 'npm:moment@2.30.1';
+import { INTERNAL_TOKEN } from '../../shared/internalAuth.ts';
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    
-    const { event, data } = await req.json();
 
-    if (event?.type !== 'update' || !data) {
+    const user = await base44.auth.me().catch((e) => (e.status === 401 ? null : Promise.reject(e)));
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = await req.json().catch(() => ({}));
+
+    // Never trust the request body for booking state: only take the id and read
+    // the authoritative record from the database.
+    const bookingId = body?.data?.id || body?.event?.entity_id || body?.id;
+    if (!bookingId) {
       return Response.json({ error: 'Invalid event' }, { status: 400 });
     }
 
-    const booking = data;
+    const booking = await base44.asServiceRole.entities.LessonBooking
+      .get(bookingId)
+      .catch((e) => (e.status === 404 ? null : Promise.reject(e)));
+    if (!booking) {
+      return Response.json({ error: 'Booking not found' }, { status: 404 });
+    }
 
     // Only process cancelled or deleted bookings
     const isCancelled = ['cancelled', 'cancelled_by_pupil', 'cancelled_late_by_pupil', 'declined_by_instructor'].includes(booking.status);
@@ -60,6 +77,7 @@ Deno.serve(async (req) => {
     if (!isSilentDelete) {
       try {
         await base44.asServiceRole.functions.invoke('sendBookingEmail', {
+          _internalToken: INTERNAL_TOKEN,
           type: 'booking_cancelled',
           bookingId: booking.id
         });
@@ -70,6 +88,7 @@ Deno.serve(async (req) => {
       // 3. Enqueue cancellation SMS notification
       try {
         const cancelResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
+          _internalToken: INTERNAL_TOKEN,
           bookingId: booking.id,
           templateKey: 'booking_cancelled',
           sendAtUtc: moment().toISOString(),

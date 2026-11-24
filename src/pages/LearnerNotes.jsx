@@ -15,6 +15,7 @@ import NoteEditorModal from '@/components/notes/NoteEditorModal';
 import NoteDetailModal from '@/components/notes/NoteDetailModal';
 import { useToast } from '@/components/ui/use-toast';
 import moment from 'moment';
+import { htmlToText } from '@/lib/sanitizeHtml';
 
 const colorClasses = {
   sunny: 'bg-gradient-to-br from-yellow-100 to-amber-100 border-yellow-200',
@@ -109,11 +110,7 @@ export default function LearnerNotes() {
     return colors[index % colors.length];
   };
 
-  const stripHtml = (html) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
-  };
+  const stripHtml = (html) => htmlToText(html);
 
   const filteredNotes = notes
     .filter(note => !searchQuery || note.title.toLowerCase().includes(searchQuery.toLowerCase()))

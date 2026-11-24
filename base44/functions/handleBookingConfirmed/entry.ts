@@ -1,16 +1,33 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import moment from 'npm:moment@2.30.1';
+import { INTERNAL_TOKEN } from '../../shared/internalAuth.ts';
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    
-    const body = await req.json();
-    const booking = body.data || body;
-    const oldData = body.old_data;
 
-    if (!booking?.id || !booking?.status) {
+    const user = await base44.auth.me().catch((e) => (e.status === 401 ? null : Promise.reject(e)));
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = await req.json().catch(() => ({}));
+
+    // Never trust the request body for booking state: only take the id and read
+    // the authoritative record from the database.
+    const bookingId = body?.data?.id || body?.id || body?.event?.entity_id;
+    if (!bookingId) {
       return Response.json({ error: 'Invalid booking data' }, { status: 400 });
+    }
+
+    const booking = await base44.asServiceRole.entities.LessonBooking
+      .get(bookingId)
+      .catch((e) => (e.status === 404 ? null : Promise.reject(e)));
+    if (!booking) {
+      return Response.json({ error: 'Booking not found' }, { status: 404 });
     }
 
     // Only process confirmed bookings
@@ -18,9 +35,13 @@ Deno.serve(async (req) => {
       return Response.json({ skipped: true, reason: 'Not confirmed' });
     }
 
-    // Skip if the booking was already confirmed (e.g. mileage or summary update)
-    if (oldData && oldData.status === 'confirmed') {
-      return Response.json({ skipped: true, reason: 'Already confirmed — not a new confirmation' });
+    // Idempotent: don't re-send for a booking that already has its confirmation SMS
+    const alreadyQueued = await base44.asServiceRole.entities.SmsNotification.filter({
+      bookingId: booking.id,
+      templateKey: 'booking_confirmed'
+    });
+    if (alreadyQueued.length > 0) {
+      return Response.json({ skipped: true, reason: 'Already confirmed — notifications sent' });
     }
 
     const results = [];
@@ -28,6 +49,7 @@ Deno.serve(async (req) => {
     // 1. Enqueue immediate confirmation SMS
     try {
       const confirmResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
+        _internalToken: INTERNAL_TOKEN,
         bookingId: booking.id,
         templateKey: 'booking_confirmed',
         sendAtUtc: moment().toISOString(),
@@ -47,6 +69,7 @@ Deno.serve(async (req) => {
       try {
         const reminder24Time = moment(booking.startAtUtc).subtract(24, 'hours');
         const reminder24hResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
+          _internalToken: INTERNAL_TOKEN,
           bookingId: booking.id,
           templateKey: 'lesson_reminder_24h',
           sendAtUtc: reminder24Time.toISOString(),
@@ -62,6 +85,7 @@ Deno.serve(async (req) => {
     if (hoursUntilLesson >= 1.2) { // 1.2 hours = 72 minutes
       try {
         const reminder1hResult = await base44.asServiceRole.functions.invoke('enqueueSms', {
+          _internalToken: INTERNAL_TOKEN,
           bookingId: booking.id,
           templateKey: 'lesson_reminder_1h',
           sendAtUtc: moment(booking.startAtUtc).subtract(1, 'hour').toISOString(),
@@ -76,6 +100,7 @@ Deno.serve(async (req) => {
     // Send confirmation emails via Resend
     try {
       const emailResult = await base44.asServiceRole.functions.invoke('sendBookingEmail', {
+        _internalToken: INTERNAL_TOKEN,
         type: 'booking_confirmed',
         bookingId: booking.id
       });

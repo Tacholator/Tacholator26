@@ -8,7 +8,21 @@
     },
     "phone": {
       "type": "string",
-      "description": "Contact phone number"
+      "description": "Contact phone number",
+      "rls": {
+        "read": {
+          "$or": [
+            {
+              "created_by_id": "{{user.id}}"
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      }
     },
     "profilePhotoUrl": {
       "type": "string",
@@ -38,7 +52,21 @@
     },
     "stripeAccountId": {
       "type": "string",
-      "description": "Stripe Connect account ID for receiving payments"
+      "description": "Stripe Connect account ID for receiving payments",
+      "rls": {
+        "read": {
+          "$or": [
+            {
+              "created_by_id": "{{user.id}}"
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      }
     },
     "stripeAccountStatus": {
       "type": "string",
@@ -109,19 +137,75 @@
     },
     "bankAccountName": {
       "type": "string",
-      "description": "Account holder name for bank transfers"
+      "description": "Account holder name for bank transfers",
+      "rls": {
+        "read": {
+          "$or": [
+            {
+              "created_by_id": "{{user.id}}"
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      }
     },
     "bankSortCode": {
       "type": "string",
-      "description": "Sort code for bank transfers (e.g. 12-34-56)"
+      "description": "Sort code for bank transfers (e.g. 12-34-56)",
+      "rls": {
+        "read": {
+          "$or": [
+            {
+              "created_by_id": "{{user.id}}"
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      }
     },
     "bankAccountNumber": {
       "type": "string",
-      "description": "Account number for bank transfers"
+      "description": "Account number for bank transfers",
+      "rls": {
+        "read": {
+          "$or": [
+            {
+              "created_by_id": "{{user.id}}"
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      }
     },
     "bankPaymentReference": {
       "type": "string",
-      "description": "Payment reference pupils should use (e.g. their name)"
+      "description": "Payment reference pupils should use (e.g. their name)",
+      "rls": {
+        "read": {
+          "$or": [
+            {
+              "created_by_id": "{{user.id}}"
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      }
     },
     "bankTransferNote": {
       "type": "string",

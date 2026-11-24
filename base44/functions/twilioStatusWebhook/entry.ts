@@ -49,7 +49,8 @@ Deno.serve(async (req) => {
     const twilioSignature = req.headers.get('X-Twilio-Signature');
     const url = `${Deno.env.get('PUBLIC_APP_BASE_URL')}/api/functions/twilioStatusWebhook`;
     
-    if (twilioSignature && !validateTwilioSignature(authToken, twilioSignature, url, params)) {
+    // The signature is mandatory: a request without one is not from Twilio
+    if (!twilioSignature || !validateTwilioSignature(authToken, twilioSignature, url, params)) {
       return Response.json({ error: 'Invalid signature' }, { status: 403 });
     }
 

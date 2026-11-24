@@ -30,8 +30,19 @@ export default function LearnerMyInstructor() {
     enabled: !!user?.id
   });
 
+  // The instructor's personal phone is hidden on the record itself, so it is
+  // fetched through a scoped call for this pupil's own instructor.
+  const { data: contactDetails } = useQuery({
+    queryKey: ['instructorContactDetails', pupil?.instructorId],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getInstructorContactDetails', { instructorId: pupil.instructorId });
+      return res.data;
+    },
+    enabled: !!pupil?.instructorId
+  });
+
   const { data: instructor, isLoading: instructorLoading } = useQuery({
-    queryKey: ['myInstructor', pupil?.instructorId],
+    queryKey: ['myInstructor', pupil?.instructorId, contactDetails?.phone],
     queryFn: async () => {
       if (!pupil?.instructorId) return null;
 
@@ -43,7 +54,7 @@ export default function LearnerMyInstructor() {
         id: pupil.instructorId,
         full_name: instructorDetails?.name || pupil.instructorName || pupil.instructorEmail,
         email: pupil.instructorEmail,
-        phone: instructorDetails?.phone || instructorDetails?.businessPhone || null,
+        phone: contactDetails?.phone || instructorDetails?.businessPhone || null,
         profilePhotoUrl: instructorDetails?.profilePhotoUrl || null,
         businessName: instructorDetails?.businessName || null,
         businessAddress: instructorDetails?.businessAddress || null,

@@ -1,5 +1,27 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
+// Every value that reaches the invoice HTML is escaped, because the HTML is
+// written straight into a same-origin print window.
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Only allow plain https image URLs through to the <img src>
+function safeImageUrl(value) {
+  if (typeof value !== 'string') return '';
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' ? url.href : '';
+  } catch {
+    return '';
+  }
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -56,7 +78,7 @@ Deno.serve(async (req) => {
       ? invoice.instructorEmail
       : (instructorProfile?.businessEmail || invoice.instructorEmail || '');
     const businessReg = instructorProfile?.businessRegistration || '';
-    const logoUrl = instructorProfile?.businessLogoUrl || '';
+    const logoUrl = safeImageUrl(instructorProfile?.businessLogoUrl || '');
 
     // Generate HTML invoice
     const html = `
@@ -88,27 +110,27 @@ Deno.serve(async (req) => {
       ${logoUrl ? `<img src="${logoUrl}" class="logo" alt="Logo">` : ''}
     </div>
     <div class="business-info">
-      <div class="business-name">${businessName}</div>
-      ${businessAddress ? `<div>${businessAddress}</div>` : ''}
-      ${businessCity || businessPostcode ? `<div>${businessCity} ${businessPostcode}</div>` : ''}
-      ${businessPhone ? `<div>Tel: ${businessPhone}</div>` : ''}
-      ${businessEmail ? `<div>${businessEmail}</div>` : ''}
-      ${businessReg ? `<div>Reg: ${businessReg}</div>` : ''}
+      <div class="business-name">${escapeHtml(businessName)}</div>
+      ${businessAddress ? `<div>${escapeHtml(businessAddress)}</div>` : ''}
+      ${businessCity || businessPostcode ? `<div>${escapeHtml(businessCity)} ${escapeHtml(businessPostcode)}</div>` : ''}
+      ${businessPhone ? `<div>Tel: ${escapeHtml(businessPhone)}</div>` : ''}
+      ${businessEmail ? `<div>${escapeHtml(businessEmail)}</div>` : ''}
+      ${businessReg ? `<div>Reg: ${escapeHtml(businessReg)}</div>` : ''}
     </div>
   </div>
 
   <div class="invoice-title">INVOICE</div>
 
   <div class="invoice-details">
-    <strong>Invoice Number:</strong> ${invoice.invoiceNumber}<br>
+    <strong>Invoice Number:</strong> ${escapeHtml(invoice.invoiceNumber)}<br>
     <strong>Date:</strong> ${new Date(invoice.paymentDate).toLocaleDateString('en-GB')}<br>
-    <strong>Status:</strong> ${invoice.status}
+    <strong>Status:</strong> ${escapeHtml(invoice.status)}
   </div>
 
   <div class="bill-to">
     <h3>Bill To:</h3>
-    <div>${invoice.pupilName}</div>
-    ${invoice.pupilEmail ? `<div>${invoice.pupilEmail}</div>` : ''}
+    <div>${escapeHtml(invoice.pupilName)}</div>
+    ${invoice.pupilEmail ? `<div>${escapeHtml(invoice.pupilEmail)}</div>` : ''}
   </div>
 
   <table>
@@ -122,7 +144,7 @@ Deno.serve(async (req) => {
     </thead>
     <tbody>
       <tr>
-        <td>${invoice.description || 'Driving lessons'}</td>
+        <td>${escapeHtml(invoice.description || 'Driving lessons')}</td>
         <td>${invoice.hours}</td>
         <td>£${(invoice.amount / invoice.hours).toFixed(2)}</td>
         <td>£${invoice.amount.toFixed(2)}</td>
@@ -136,14 +158,14 @@ Deno.serve(async (req) => {
 
   <div class="payment-info">
     <strong>Payment Details:</strong><br>
-    Method: ${invoice.paymentMethod}<br>
+    Method: ${escapeHtml(invoice.paymentMethod)}<br>
     Date Paid: ${new Date(invoice.paymentDate).toLocaleDateString('en-GB')}
   </div>
 
   ${invoice.notes ? `
   <div style="margin-bottom: 20px;">
     <strong>Notes:</strong><br>
-    ${invoice.notes}
+    ${escapeHtml(invoice.notes)}
   </div>
   ` : ''}
 

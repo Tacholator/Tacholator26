@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { isInternalCall } from '../../shared/internalAuth.ts';
 
 const TEMPLATES = {
   booking_confirmed: "✅ Lesson confirmed: {{date}} {{time}} with {{instructorName}}. Pickup: {{pickupShort}}. Manage: {{manageLink}}",
@@ -18,11 +19,21 @@ function renderTemplate(template, variables) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    
-    // Service role function - no user auth required
-    // This is called from processPendingSms which is admin-gated
 
-    const { toE164, templateKey, variablesJson } = await req.json();
+    const payload = await req.json().catch(() => ({}));
+
+    // Internal only: this sends SMS on the app's Twilio account, so it must never
+    // be callable from the internet. Only processPendingSms (another backend
+    // function) calls it, and it proves that with the internal token.
+    if (!isInternalCall(req, payload)) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { toE164, templateKey, variablesJson } = payload;
+
+    if (typeof toE164 !== 'string' || !/^\+[1-9]\d{6,14}$/.test(toE164)) {
+      return Response.json({ error: 'Invalid destination number' }, { status: 400 });
+    }
 
     const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
     const authToken = Deno.env.get('TWILIO_AUTH_TOKEN');
@@ -38,7 +49,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Invalid template key' }, { status: 400 });
     }
 
-    const messageBody = renderTemplate(template, variablesJson || {});
+    const messageBody = renderTemplate(template, variablesJson || {}).slice(0, 1000);
 
     // Send SMS via Twilio
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;

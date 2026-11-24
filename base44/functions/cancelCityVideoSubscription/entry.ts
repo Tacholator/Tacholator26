@@ -16,13 +16,18 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'subscriptionId is required' }, { status: 400 });
     }
 
-    await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true });
-
-    // Update in DB
-    const subs = await base44.asServiceRole.entities.CityVideoSubscription.filter({ stripeSubscriptionId: subscriptionId, userId: user.id });
-    if (subs.length > 0) {
-      await base44.asServiceRole.entities.CityVideoSubscription.update(subs[0].id, { cancelAtPeriodEnd: true });
+    // Look the subscription up scoped to the caller BEFORE touching Stripe, so
+    // nobody can cancel someone else's subscription.
+    const subs = await base44.asServiceRole.entities.CityVideoSubscription.filter({
+      stripeSubscriptionId: subscriptionId,
+      userId: user.id
+    });
+    if (subs.length === 0) {
+      return Response.json({ error: 'Subscription not found' }, { status: 404 });
     }
+
+    await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true });
+    await base44.asServiceRole.entities.CityVideoSubscription.update(subs[0].id, { cancelAtPeriodEnd: true });
 
     return Response.json({ success: true });
   } catch (error) {

@@ -32,6 +32,17 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
+    // Cap the amount of paid TTS work a single request can trigger
+    const MAX_TEXT_CHARS = 20000;
+    if (typeof sectionText !== 'string' || sectionText.length > MAX_TEXT_CHARS) {
+      return Response.json({
+        errorCode: 'TTS_TEXT_TOO_LONG',
+        errorStage: 'VALIDATION_INPUT',
+        errorMessage: `Text is too long for audio generation (max ${MAX_TEXT_CHARS} characters)`,
+        httpStatus: 400
+      }, { status: 400 });
+    }
+
     // Convert text to SSML first
     let ssml;
     try {
@@ -79,6 +90,15 @@ Deno.serve(async (req) => {
     // If SSML is too long, we need to chunk it
     const ssmlChunks = ssml.length > 5000 ? chunkSSML(ssml, 4500) : [ssml];
     console.log('Number of SSML chunks:', ssmlChunks.length);
+
+    if (ssmlChunks.length > 6) {
+      return Response.json({
+        errorCode: 'TTS_TOO_MANY_CHUNKS',
+        errorStage: 'VALIDATION_INPUT',
+        errorMessage: 'This section is too long to convert to audio. Please try a shorter section.',
+        httpStatus: 400
+      }, { status: 400 });
+    }
 
     // Get Google Cloud credentials
     let credentialsJson = Deno.env.get('GOOGLE_TTS_SERVICE_ACCOUNT_JSON');

@@ -10,6 +10,7 @@ import { createPageUrl } from '@/utils';
 import NoteEditorModal from '@/components/notes/NoteEditorModal';
 import NoteDetailModal from '@/components/notes/NoteDetailModal';
 import moment from 'moment';
+import { htmlToText } from '@/lib/sanitizeHtml';
 
 const colorClasses = {
   auto: 'bg-gradient-to-br from-slate-100 to-gray-100 border-slate-200',
@@ -55,11 +56,7 @@ export default function InstructorPupilNotesList() {
     enabled: !!pupilId && !!user?.id
   });
 
-  const stripHtml = (html) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
-  };
+  const stripHtml = (html) => htmlToText(html);
 
   const getCardColor = (note, index) => {
     if (note.cardColor && note.cardColor !== 'auto') return colorClasses[note.cardColor];

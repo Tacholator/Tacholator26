@@ -6,6 +6,15 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const FROM_EMAIL = 'noreply@mobragedrivingacademy.com';
 const FROM_NAME = 'Mobrage Driving Academy';
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function buildReminderEmail(pupilName, instructorName, booking) {
   const start = moment(booking.startAtUtc).tz('Europe/London');
   const timeStr = start.format('HH:mm');
@@ -13,9 +22,9 @@ function buildReminderEmail(pupilName, instructorName, booking) {
 
   const body = `
     <h2 style="color:#071739;font-size:22px;margin:0 0 8px;">Lesson Reminder 🚗</h2>
-    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${pupilName},</p>
+    <p style="color:#6b7280;font-size:15px;margin:0 0 20px;">Hi ${escapeHtml(pupilName)},</p>
     <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 16px;">
-      Just a friendly reminder that you have a driving lesson <strong>tomorrow</strong> with <strong>${instructorName}</strong>.
+      Just a friendly reminder that you have a driving lesson <strong>tomorrow</strong> with <strong>${escapeHtml(instructorName)}</strong>.
     </p>
     <div style="background:#f8f9fb;border-left:4px solid #F7B602;border-radius:8px;padding:20px 24px;margin:24px 0;">
       <p style="margin:0 0 8px;font-size:14px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Lesson Details</p>
@@ -23,7 +32,7 @@ function buildReminderEmail(pupilName, instructorName, booking) {
         <tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;width:120px;">Date</td><td style="padding:4px 0;color:#374151;font-size:15px;">${dateStr}</td></tr>
         <tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;">Time</td><td style="padding:4px 0;color:#374151;font-size:15px;">${timeStr}</td></tr>
         <tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;">Duration</td><td style="padding:4px 0;color:#374151;font-size:15px;">${booking.durationHours} hour${booking.durationHours !== 1 ? 's' : ''}</td></tr>
-        ${booking.pickupLocation ? `<tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;">Pickup</td><td style="padding:4px 0;color:#374151;font-size:15px;">${booking.pickupLocation}</td></tr>` : ''}
+        ${booking.pickupLocation ? `<tr><td style="padding:4px 0;color:#374151;font-size:15px;font-weight:600;">Pickup</td><td style="padding:4px 0;color:#374151;font-size:15px;">${escapeHtml(booking.pickupLocation)}</td></tr>` : ''}
       </table>
     </div>
     <div style="background:#ecfdf5;border-radius:8px;padding:16px 20px;margin:24px 0;">
@@ -33,7 +42,7 @@ function buildReminderEmail(pupilName, instructorName, booking) {
       • If you need to cancel, please contact your instructor immediately</p>
     </div>
     <p style="color:#374151;font-size:15px;line-height:1.6;">Good luck tomorrow! 🎉</p>
-    <p style="color:#374151;font-size:15px;margin:24px 0 0;">Best regards,<br/><strong style="color:#071739;">${instructorName}</strong><br/><span style="color:#6b7280;">Mobrage Driving Academy</span></p>`;
+    <p style="color:#374151;font-size:15px;margin:24px 0 0;">Best regards,<br/><strong style="color:#071739;">${escapeHtml(instructorName)}</strong><br/><span style="color:#6b7280;">Mobrage Driving Academy</span></p>`;
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -93,6 +102,15 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
+    // Scheduled bulk email job — admin only (the scheduler runs with an admin context)
+    const user = await base44.auth.me().catch((e) => (e.status === 401 ? null : Promise.reject(e)));
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     // Define "tomorrow" in UK time
     const nowUK = moment().tz('Europe/London');
     const tomorrowStart = nowUK.clone().add(1, 'day').startOf('day').utc().toISOString();
@@ -134,8 +152,8 @@ Deno.serve(async (req) => {
         })
       });
 
-      const data = await res.json();
-      results.push({ bookingId: booking.id, pupilEmail: pupil.email, success: res.ok, result: data });
+      // Never return pupil email addresses in the response
+      results.push({ bookingId: booking.id, success: res.ok });
     }
 
     return Response.json({ success: true, remindersSent: results.length, results });

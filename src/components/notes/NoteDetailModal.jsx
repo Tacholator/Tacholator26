@@ -4,15 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Lock, Unlock } from 'lucide-react';
 import moment from 'moment';
+import { htmlToText } from '@/lib/sanitizeHtml';
 
 export default function NoteDetailModal({ open, onClose, note }) {
   if (!note) return null;
 
-  const stripHtml = (html) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
-  };
+  const stripHtml = (html) => htmlToText(html);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

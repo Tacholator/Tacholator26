@@ -12,10 +12,23 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { centreId, centreName, stripePriceId } = await req.json();
-    if (!centreId || !stripePriceId) {
-      return Response.json({ error: 'centreId and stripePriceId are required' }, { status: 400 });
+    const { centreId } = await req.json();
+    if (!centreId) {
+      return Response.json({ error: 'centreId is required' }, { status: 400 });
     }
+
+    // Price comes from the centre record, never from the request body
+    const centre = await base44.asServiceRole.entities.NationalTestCentre
+      .get(centreId)
+      .catch((e) => (e.status === 404 ? null : Promise.reject(e)));
+    if (!centre) {
+      return Response.json({ error: 'Test centre not found' }, { status: 404 });
+    }
+    const stripePriceId = centre.stripePriceId;
+    if (!stripePriceId) {
+      return Response.json({ error: 'This centre is not yet available for subscription' }, { status: 400 });
+    }
+    const centreName = centre.name || '';
 
     // Find or create Stripe customer
     let customerId;

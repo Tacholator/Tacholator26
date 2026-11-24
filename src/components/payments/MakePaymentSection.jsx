@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,9 +55,22 @@ export default function MakePaymentSection({ pupil, instructor }) {
 
   const quickAmounts = [25, 50, 100, 200];
 
+  // Bank details are hidden on the Instructor record itself, so the learner's
+  // own instructor details are fetched through a scoped backend call.
+  const { data: bankDetails } = useQuery({
+    queryKey: ['instructorContactDetails', instructor?.id],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getInstructorContactDetails', { instructorId: instructor.id });
+      return res.data;
+    },
+    enabled: !!instructor?.id
+  });
+
+  const bank = bankDetails || {};
+
   const canPayByCard = instructor?.stripeAccountStatus === 'active';
-  const canPayByBankTransfer = instructor?.bankTransferEnabled &&
-    instructor?.bankSortCode && instructor?.bankAccountNumber;
+  const canPayByBankTransfer = bank.bankTransferEnabled &&
+    bank.bankSortCode && bank.bankAccountNumber;
 
   const createPaymentMutation = useMutation({
     mutationFn: async (amount) => {
@@ -244,22 +257,22 @@ export default function MakePaymentSection({ pupil, instructor }) {
               <div className="border-t">
                 <p className="px-4 pt-3 pb-1 text-sm text-slate-600">Transfer directly to your instructor's bank account:</p>
                 <div className="divide-y divide-slate-100">
-                  {instructor.bankName && (
-                    <BankRow label="Bank" value={instructor.bankName} onCopy={() => copyToClipboard(instructor.bankName, 'bank')} copied={copied === 'bank'} />
+                  {bank.bankName && (
+                    <BankRow label="Bank" value={bank.bankName} onCopy={() => copyToClipboard(bank.bankName, 'bank')} copied={copied === 'bank'} />
                   )}
-                  {instructor.bankAccountName && (
-                    <BankRow label="Account Name" value={instructor.bankAccountName} onCopy={() => copyToClipboard(instructor.bankAccountName, 'name')} copied={copied === 'name'} />
+                  {bank.bankAccountName && (
+                    <BankRow label="Account Name" value={bank.bankAccountName} onCopy={() => copyToClipboard(bank.bankAccountName, 'name')} copied={copied === 'name'} />
                   )}
-                  <BankRow label="Sort Code" value={instructor.bankSortCode} onCopy={() => copyToClipboard(instructor.bankSortCode, 'sort')} copied={copied === 'sort'} />
-                  <BankRow label="Account Number" value={instructor.bankAccountNumber} onCopy={() => copyToClipboard(instructor.bankAccountNumber, 'acc')} copied={copied === 'acc'} />
-                  {instructor.bankPaymentReference && (
-                    <BankRow label="Reference to Use" value={instructor.bankPaymentReference} onCopy={() => copyToClipboard(instructor.bankPaymentReference, 'ref')} copied={copied === 'ref'} highlight />
+                  <BankRow label="Sort Code" value={bank.bankSortCode} onCopy={() => copyToClipboard(bank.bankSortCode, 'sort')} copied={copied === 'sort'} />
+                  <BankRow label="Account Number" value={bank.bankAccountNumber} onCopy={() => copyToClipboard(bank.bankAccountNumber, 'acc')} copied={copied === 'acc'} />
+                  {bank.bankPaymentReference && (
+                    <BankRow label="Reference to Use" value={bank.bankPaymentReference} onCopy={() => copyToClipboard(bank.bankPaymentReference, 'ref')} copied={copied === 'ref'} highlight />
                   )}
                 </div>
-                {instructor.bankTransferNote && (
+                {bank.bankTransferNote && (
                   <div className="mx-4 mb-4 mt-2 text-sm text-slate-600 bg-amber-50 border border-amber-200 rounded-lg p-3">
                     <p className="font-medium text-amber-800 mb-1">Note from your instructor:</p>
-                    <p>{instructor.bankTransferNote}</p>
+                    <p>{bank.bankTransferNote}</p>
                   </div>
                 )}
               </div>
