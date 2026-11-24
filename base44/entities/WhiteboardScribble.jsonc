@@ -48,7 +48,7 @@
           }
         },
         {
-          "pupilUserId": "{{user.id}}"
+          "data.pupilUserId": "{{user.id}}"
         }
       ]
     },

@@ -143,14 +143,9 @@
           "data.instructorId": "{{user.id}}"
         },
         {
-          "$and": [
-            {
-              "data.learnerId": "{{user.data.pupil.id}}"
-            },
-            {
-              "data.isSharedWithLearner": true
-            }
-          ]
+          "user_condition": {
+            "role": "admin"
+          }
         }
       ]
     },

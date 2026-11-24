@@ -122,11 +122,6 @@
           "user_condition": {
             "role": "admin"
           }
-        },
-        {
-          "user_condition": {
-            "role": "service_role"
-          }
         }
       ]
     },
@@ -136,7 +131,7 @@
           "data.instructorId": "{{user.id}}"
         },
         {
-          "data.pupilId": "{{user.data.pupil.id}}"
+          "data.pupilEmail": "{{user.email}}"
         },
         {
           "user_condition": {

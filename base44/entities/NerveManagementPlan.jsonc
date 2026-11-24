@@ -49,23 +49,33 @@
     "pupilId"
   ],
   "rls": {
-    "read": {
-      "$or": [
-        {
-          "data.instructorId": "{{user.id}}"
-        },
-        {
-          "data.pupilId": "{{user.data.pupil.id}}"
-        }
-      ]
-    },
     "create": {
       "$or": [
         {
           "data.instructorId": "{{user.id}}"
         },
         {
-          "data.pupilId": "{{user.data.pupil.id}}"
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.instructorId": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
         }
       ]
     },
@@ -75,7 +85,12 @@
           "data.instructorId": "{{user.id}}"
         },
         {
-          "data.pupilId": "{{user.data.pupil.id}}"
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
         }
       ]
     },
@@ -85,7 +100,12 @@
           "data.instructorId": "{{user.id}}"
         },
         {
-          "data.pupilId": "{{user.data.pupil.id}}"
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
         }
       ]
     }
