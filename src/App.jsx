@@ -56,7 +56,6 @@ import AdminDeletedAccounts from './pages/AdminDeletedAccounts';
 import PendingBookingRequests from './pages/PendingBookingRequests';
 import InstructorTopicAssignment from './pages/InstructorTopicAssignment';
 import Account from './pages/Account';
-import AdminSubscriptionFunctionProbe from './components/admin/AdminSubscriptionFunctionProbe';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -336,11 +335,6 @@ const AuthenticatedApp = () => {
       <Route path="/Account" element={
         <LayoutWrapper currentPageName="Account">
           <Account />
-        </LayoutWrapper>
-      } />
-      <Route path="/AdminSubscriptionFunctionProbe" element={
-        <LayoutWrapper currentPageName="AdminSubscriptionFunctionProbe">
-          <AdminSubscriptionFunctionProbe />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
